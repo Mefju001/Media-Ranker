@@ -58,6 +58,7 @@ builder.Services.AddScoped<IMovieServices,MovieServices>();
 builder.Services.AddScoped<IReviewServices, ReviewServices>();
 builder.Services.AddScoped<IUserServices, UserServices>();
 builder.Services.AddScoped<ILikedMovieServices, LikedMovieServices>();
+builder.Services.AddScoped<ITvSeriesServices, TvSeriesServices>();
 builder.Services.AddAuthentication("Bearer")
     .AddJwtBearer("Bearer",options=>
     {

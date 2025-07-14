@@ -18,7 +18,7 @@ namespace WebApplication1.Data
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<UserMovieLike>()
-                .HasIndex(uml => new { uml.userId, uml.mediaId })
+                .HasIndex(uml => new { uml.userId, uml.movieId })
                 .IsUnique();
 
             modelBuilder.Entity<UserMovieLike>()
@@ -27,9 +27,9 @@ namespace WebApplication1.Data
                 .HasForeignKey(uml => uml.userId);
 
             modelBuilder.Entity<UserMovieLike>()
-                .HasOne(uml => uml.media)
+                .HasOne(uml => uml.movie)
                 .WithMany()
-                .HasForeignKey(uml => uml.mediaId);
+                .HasForeignKey(uml => uml.movieId);
 
             modelBuilder.Entity<UserRole>()
                 .HasKey(ur => new { ur.UserId, ur.RoleId });
@@ -59,12 +59,12 @@ namespace WebApplication1.Data
                 .OnDelete(DeleteBehavior.Cascade);
 
             modelBuilder.Entity<Media>()
-                .HasOne(m => m.Director)
+                .HasOne(m => m.director)
                 .WithMany()
                 .HasForeignKey("directorId");
 
             modelBuilder.Entity<Media>()
-                .HasOne(m => m.Genre)
+                .HasOne(m => m.genre)
                 .WithMany()
                 .HasForeignKey("genreId");
             modelBuilder.Entity<Media>()

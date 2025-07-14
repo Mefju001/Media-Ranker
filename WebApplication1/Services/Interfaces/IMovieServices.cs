@@ -4,7 +4,7 @@ using WebApplication1.Models;
 
 public interface IMovieServices
 {
-    Task<List<MovieResponse>> GetAllAsync();
+    Task<List<MovieResponse>>GetAllAsync();
     Task<List<MovieResponse>> GetSortAll(string sort);
     Task<List<MovieResponse>> GetMoviesByAvrRating();
     Task<List<MovieResponse>> GetMovies(string? name, string? genreId, string? directorId,int?movieid);

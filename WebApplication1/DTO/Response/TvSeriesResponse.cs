@@ -6,12 +6,12 @@
         GenreResponse Genre,
         DirectorResponse Director,
         DateTime ReleaseDate,
-        string? language,
+        string? Language,
         List<ReviewResponse>? Reviews,
 
         int Seasons,
         int Episodes,
         string? Network,
         string? Status
-        ) :MediaResponse(Title, Description, Genre, Director, ReleaseDate, language, Reviews);
+        ) :MediaResponse(Title, Description, Genre, Director, ReleaseDate, Language, Reviews);
 }

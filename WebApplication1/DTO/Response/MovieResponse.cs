@@ -6,10 +6,10 @@
         GenreResponse Genre,
         DirectorResponse Director,
         DateTime ReleaseDate,
-        string? language,
+        string? Language,
         List<ReviewResponse>? Reviews,
 
         TimeSpan Duration,
         bool IsCinemaRelease
-        ) :MediaResponse(Title, Description, Genre, Director, ReleaseDate, language, Reviews);
+        ) :MediaResponse(Title, Description, Genre, Director, ReleaseDate, Language, Reviews);
 }

@@ -6,6 +6,11 @@ namespace WebApplication1.DTO.Request
 		string Title, 
 		string Description,
 		GenreRequest Genre,
-		DirectorRequest Director);
+		DirectorRequest Director,
+		DateTime ReleaseDate,
+        string Language,
+        TimeSpan Duration,
+		bool IsCinemaRelease
+		);
 
 }

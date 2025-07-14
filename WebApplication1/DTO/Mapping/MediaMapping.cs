@@ -8,10 +8,10 @@ namespace WebApplication1.DTO.Mapping
         public static MediaResponse ToResponse(Media media)
         {
             return new MediaResponse(
-                media.Title,
-                media.Description,
-                GenreMapping.ToResponse(media.Genre),
-                DirectorMapping.ToResponse(media.Director),
+                media.title,
+                media.description,
+                GenreMapping.ToResponse(media.genre),
+                DirectorMapping.ToResponse(media.director),
                 media.ReleaseDate,
                 media.Language,
                 media.Reviews?.Select(r => ReviewMapping.ToResponse(r)).ToList() ?? new List<ReviewResponse>());
