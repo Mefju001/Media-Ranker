@@ -57,6 +57,8 @@ builder.Services.AddScoped<IPasswordHasher<User>, PasswordHasher<User>>();
 builder.Services.AddScoped<IMovieServices,MovieServices>();
 builder.Services.AddScoped<IReviewServices, ReviewServices>();
 builder.Services.AddScoped<IUserServices, UserServices>();
+builder.Services.AddScoped<ILikedMovieServices, LikedMovieServices>();
+builder.Services.AddScoped<ITvSeriesServices, TvSeriesServices>();
 builder.Services.AddAuthentication("Bearer")
     .AddJwtBearer("Bearer",options=>
     {
@@ -86,7 +88,6 @@ if (app.Environment.IsDevelopment())
     app.UseDeveloperExceptionPage();
 }
 //app.UseHttpsRedirection();
-app.MapGet("/", () => "Hello from Movie API");
 app.UseAuthentication();
 app.UseAuthorization();
 app.UseMiddleware<GlobalExceptionHandlerMiddleware>();

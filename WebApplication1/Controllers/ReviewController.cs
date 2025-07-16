@@ -36,7 +36,7 @@ namespace WebApplication1.Controllers
         }
         [Authorize(Roles = "Admin,User")]
         [HttpPost]
-        public async Task<IActionResult> Add(int movieId,ReviewRequest reviewRequest)
+        public async Task<IActionResult> Upsert(int? reviewId, int movieId, ReviewRequest reviewRequest)
         {
             var stringUserId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
             if (stringUserId == null)
@@ -44,8 +44,13 @@ namespace WebApplication1.Controllers
                 return Unauthorized();
             }
             int userId = parse(stringUserId);
-            var (id, response) = await services.Add(userId, movieId, reviewRequest);
-            return CreatedAtAction(nameof(GetById), new {id=id},response);
+            var (id, response) = await services.Upsert(reviewId,userId, movieId, reviewRequest);
+            if (reviewId is null)
+            {
+                return CreatedAtAction(nameof(GetById), new { id }, response);
+            }
+
+            return Ok(response);
 
         }
         [Authorize(Roles = "Admin,User")]
@@ -62,14 +67,6 @@ namespace WebApplication1.Controllers
             if(!deletedReview)return NotFound();
             return NoContent();
         }
-        [Authorize(Roles = "Admin,User")]
-        [HttpPatch("{id}")]
-        public async Task<IActionResult> Update(int id,ReviewRequest reviewRequest)
-        {
-            var updatedReview = await services.Update(reviewRequest, id);
-            if(!updatedReview) return NotFound();
-            return NoContent();
 
-        }
     }
 }

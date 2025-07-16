@@ -66,7 +66,7 @@ namespace WebApplication1.Services
                 .Include(u=>u.UserRoles)
                 .ThenInclude(ur => ur.Role)
                 .Include(u=>u.Reviews)
-                .ThenInclude(r=>r.Movie)
+                .ThenInclude(r=>r.Media)
                 .ToListAsync();
             return users.Select(UserMapping.ToResponse).ToList();
         }
@@ -103,7 +103,7 @@ namespace WebApplication1.Services
                 .Include(u => u.UserRoles)
                     .ThenInclude(ur => ur.Role)
                 .Include(u => u.Reviews)
-                    .ThenInclude(r => r.Movie)
+                    .ThenInclude(r => r.Media)
                 .FirstOrDefaultAsync(u=>u.Id == id);
             if (user is null) return null;
             return UserMapping.ToResponse(user);
@@ -114,7 +114,7 @@ namespace WebApplication1.Services
                 .Include(u => u.UserRoles)
                     .ThenInclude(ur => ur.Role)
                 .Include(u => u.Reviews)
-                    .ThenInclude(r => r.Movie)
+                    .ThenInclude(r => r.Media)
                 .Where(u=>
                         EF.Functions.Like(u.name,$"%{name}") ||
                         EF.Functions.Like(u.surname,$"{name}")||

@@ -1,45 +1,39 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using Azure;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using System.ComponentModel.DataAnnotations;
 using System.Security.Claims;
 using WebApplication1.DTO.Request;
+using WebApplication1.DTO.Response;
 using WebApplication1.Models;
 using WebApplication1.Services;
 using WebApplication1.Services.Interfaces;
 
 namespace WebApplication1.Controllers
 {
+    [Authorize(Roles = "User")]
     [ApiController]
     [Route("[controller]")]
     public class UserController:ControllerBase
     {
         private readonly AuthService authService;
         private readonly IUserServices userServices;
-        public UserController(IUserServices userServices,AuthService authService)
+        private readonly ILikedMovieServices likedMovieServices;
+        public UserController(IUserServices userServices,AuthService authService, ILikedMovieServices likedMovieServices)
         {
             this.userServices = userServices;
             this.authService = authService;
+            this.likedMovieServices = likedMovieServices;
         }
         private int parse(string String)
         {
-            int id = int.Parse(String);
             if (int.TryParse(String, out int userId))
             {
                 return userId;
             }
             else
-                throw new Exception();
-        }
-        [AllowAnonymous]
-        [HttpPost("/Login")]
-        public async Task<IActionResult> Login([FromBody] LoginRequest loginRequest)
-        {
-            var token = await authService.Login(loginRequest);
-            if (token == null)
-            {
-                return Unauthorized("Nieprawidłowe dane");
-            }
-            return Ok(new { Token = token });
+                throw new ArgumentException("Nieprawidłowy format identyfikatora. Wymagana liczba całkowita.", nameof(String));
         }
         [Authorize(Roles = "Admin")]
         [HttpGet]
@@ -53,17 +47,36 @@ namespace WebApplication1.Controllers
         {
             return Ok(await userServices.GetById(id));
         }
-        [AllowAnonymous]
-        [HttpPost("Register")]
-        public async Task<IActionResult> Register(UserRequest userRequest) 
-        {
-            return Ok(await userServices.Register(userRequest));
-        }
         [Authorize(Roles = "Admin")]
         [HttpGet("/{name}")]
         public async Task<IActionResult> GetBy(string name)
         {
             return Ok(await userServices.GetBy(name));
+        }
+        [Authorize(Roles = "Admin,User")]
+        [HttpGet("/Liked/id/{Id}")]
+        public async Task<IActionResult> GetById(int Id)
+        {
+            return Ok(await likedMovieServices.GetById(Id));
+        }
+        [Authorize(Roles = "Admin,User")]
+        [HttpGet("/Liked")]
+        public async Task<IActionResult> GetLikedMovies()
+        {
+            return Ok(await likedMovieServices.GetAllAsync());
+        }
+        [Authorize(Roles = "Admin,User")]
+        [HttpPost("/Liked")]
+        public async Task<IActionResult> AddLikedMovie([FromBody] LikedMovieRequest likedMovie)
+        {
+            var (movieId, response) = await likedMovieServices.Add(likedMovie);
+            return CreatedAtAction(nameof(GetById), new { id = movieId }, response);
+        }
+        [Authorize(Roles = "Admin,User")]
+        [HttpDelete("/Liked/id/{id}")]
+        public async Task<IActionResult> DeleteLikedMovie(int id)
+        {
+            return Ok(await likedMovieServices.Delete(id));
         }
         [Authorize(Roles = "Admin,User")]
         [HttpPatch("ChangePassword")]

@@ -1,6 +1,6 @@
 ﻿namespace WebApplication1.DTO.Response
 {
-    public record MovieResponse(
+    public record TvSeriesResponse(
         string Title,
         string Description,
         GenreResponse Genre,
@@ -9,7 +9,9 @@
         string? Language,
         List<ReviewResponse>? Reviews,
 
-        TimeSpan Duration,
-        bool IsCinemaRelease
+        int Seasons,
+        int Episodes,
+        string? Network,
+        string? Status
         ) :MediaResponse(Title, Description, Genre, Director, ReleaseDate, Language, Reviews);
 }

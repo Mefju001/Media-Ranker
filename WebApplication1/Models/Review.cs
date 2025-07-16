@@ -10,15 +10,15 @@ namespace WebApplication1.Models
         public int Id { get; set; }
         public required int Rating { get; set; }
         public required string Comment { get; set; }
-        public virtual int MovieId { get; set; }
-        public Movie Movie { get; set; }
-        public virtual int UserId { get; set; }
-        public User User { get; set; }
+        public int MediaId { get; set; }
+        public virtual Media Media { get; set; }
+        public int UserId { get; set; }
+        public virtual User User { get; set; }
         public void SetReview(Review review)
         {
             this.Rating = review.Rating;
             this.Comment = review.Comment;
-            this.MovieId = review.MovieId;
+            this.MediaId = review.MediaId;
             this.UserId = review.UserId;
         }
     }

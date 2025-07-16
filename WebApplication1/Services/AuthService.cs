@@ -6,7 +6,9 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
 using WebApplication1.Data;
+using WebApplication1.DTO.Mapping;
 using WebApplication1.DTO.Request;
+using WebApplication1.DTO.Response;
 using WebApplication1.Models;
 
 namespace WebApplication1.Services
@@ -22,7 +24,7 @@ namespace WebApplication1.Services
             _passwordHasher = passwordHasher;
             _configuration = config;
         }
-        public async Task<string?>Login(LoginRequest loginRequest)
+        public async Task<TokenResponse?>Login(LoginRequest loginRequest)
         {
             var user = await _context.Users
                 .Include(u=>u.UserRoles)
@@ -40,7 +42,7 @@ namespace WebApplication1.Services
             var token = GenerateJwtToken(user.Id, loginRequest.username, user.UserRoles);
             return token;
         }
-        public string GenerateJwtToken(int userId, string username,ICollection<UserRole> roles)
+        public TokenResponse GenerateJwtToken(int userId, string username,ICollection<UserRole> roles)
         {
 
             var claims = new List<Claim>
@@ -60,8 +62,9 @@ namespace WebApplication1.Services
                 claims: claims,
                 expires: DateTime.UtcNow.AddHours(2),
                 signingCredentials: creds
-                );
-            return new JwtSecurityTokenHandler().WriteToken(token);
+            );
+            var roleResponses = roles.Select(r => new RoleResponse(r.Role.role)).ToList();
+            return new TokenResponse(username, roleResponses, new JwtSecurityTokenHandler().WriteToken(token));
         }
     }
 }

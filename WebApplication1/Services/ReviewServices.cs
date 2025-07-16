@@ -1,6 +1,5 @@
 ﻿
 using Microsoft.EntityFrameworkCore;
-using System.Security.Claims;
 using WebApplication1.Data;
 using WebApplication1.DTO.Mapping;
 using WebApplication1.DTO.Request;
@@ -17,20 +16,47 @@ namespace WebApplication1.Services
         {
             _context = context;
         }
-        public async Task<(int reviewId, ReviewResponse response)> Add(int userId,int MovieId, ReviewRequest reviewRequest)
+        public async Task<(int reviewId, ReviewResponse response)> Upsert(int? reviewId, int userId, int movieId, ReviewRequest reviewRequest)
         {
-
-            var review = new Review 
+            using var transaction = await _context.Database.BeginTransactionAsync();
+            try 
             {
-                Comment = reviewRequest.Comment,
-                Rating = reviewRequest.Rating,
-                MovieId = MovieId,
-                UserId = userId
-            };
-            _context.Reviews.Add(review);
-            await _context.SaveChangesAsync();
-            var response = ReviewMapping.ToResponse(review);
-            return (review.Id, response);
+                Review? review;
+                if (reviewId is not null)
+                {
+                    review = await _context.Reviews
+                       .Include(r => r.Media)
+                       .Include(r => r.User)
+                       .FirstOrDefaultAsync(r => r.Id == reviewId);
+                    if (review is not null)
+                    {
+                        review.Rating = reviewRequest.Rating;
+                        review.Comment = reviewRequest.Comment;
+                        await _context.SaveChangesAsync();
+                        await transaction.CommitAsync();
+                        return (review.Id, ReviewMapping.ToResponse(review));
+                    }
+                }
+                review = new Review
+                {
+                    Comment = reviewRequest.Comment,
+                    Rating = reviewRequest.Rating,
+                    MediaId = movieId,
+                    UserId = userId
+                };
+                _context.Reviews.Add(review);
+                await _context.SaveChangesAsync();
+                var response = await _context.Reviews
+                    .Include(r => r.User)
+                    .Include(r => r.Media)
+                    .FirstOrDefaultAsync(r => r.Id == review.Id);
+                await transaction.CommitAsync();
+                return (review.Id,ReviewMapping.ToResponse(response));
+            }catch
+            {
+                await transaction.RollbackAsync();
+                throw;
+            }
         }
 
         public async Task<bool> Delete(int id)
@@ -49,27 +75,21 @@ namespace WebApplication1.Services
         {
             var reviews = await _context.Reviews
                 .Include(r=>r.User)
-                .Include(r=>r.Movie)
+                .Include(r=>r.Media)
                 .ToListAsync();
 
             return reviews.Select(ReviewMapping.ToResponse).ToList();
         }
 
-        public async Task<ReviewResponse?> GetById(int id)
+        public async Task<ReviewResponse> GetById(int id)
         {
-            var review = await _context.Reviews.FirstOrDefaultAsync(r => r.Id == id);
+            var review = await _context.Reviews
+                .Include(r => r.User)
+                .Include(r => r.Media)
+                .FirstOrDefaultAsync(r => r.Id == id);
             if (review != null)return ReviewMapping.ToResponse(review);
             return null;
         }
 
-        public async Task<bool> Update(ReviewRequest review, int id)
-        {
-            var fReview = _context.Reviews.FindAsync(id);
-            if (review == null) return false;
-            //review.SetReview(review);
-            await _context.SaveChangesAsync();
-            return true;
-
-        }
     }
 }
