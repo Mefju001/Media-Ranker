@@ -42,10 +42,14 @@ namespace WebApplication1.Services.Impl
                             .FirstOrDefaultAsync(m => m.Id == movieId.Value);
                     if (movie is not null)
                     {
-                        movie.title = movieRequest.Title;
+                        movie.title = movieRequest.Title
                         movie.description = movieRequest.Description;
                         movie.director = director;
                         movie.genre = genre;
+                        movie.ReleaseDate = movieRequest.ReleaseDate;
+                        movie.Language = movieRequest.Language;
+                        movie.IsCinemaRelease = movieRequest.IsCinemaRelease;
+                        movie.Duration = movieRequest.Duration;
                         await _context.SaveChangesAsync();
                         await transaction.CommitAsync();
                         return (movie.Id, MovieMapping.ToResponse(movie));

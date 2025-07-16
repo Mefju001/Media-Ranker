@@ -17,9 +17,16 @@ namespace WebApplication1.Services
             this.context = _context;
         }
 
-        public Task<bool> Delete(int id)
+        public async Task<bool> Delete(int id)
         {
-            throw new NotImplementedException();
+            var TvSeries = context.TvSeries.FirstOrDefault(x => x.Id == id);
+                if(TvSeries!=null)
+                {
+                    context.TvSeries.Remove(TvSeries);
+                    await context.SaveChangesAsync();
+                    return true;
+                }
+                return false;
         }
 
         public async Task<List<TvSeriesResponse>> GetAllAsync()
@@ -107,10 +114,77 @@ namespace WebApplication1.Services
                     .ToListAsync();
             return TvSeries.Select(x => TvSeriesMapping.ToResponse(x.TvSeries)).ToList();
         }
-
-        public Task<(int tvSeriesId, TvSeriesResponse response)> Upsert(int? tvSeriesId, TvSeriesRequest tvSeriesRequest)
+        private async Task<Director> GetOrCreateDirectorAsync(DirectorRequest directorRequest)
         {
-            throw new NotImplementedException();
+            var Director = await context.Directors.FirstOrDefaultAsync(d => d.name == directorRequest.Name && d.surname == directorRequest.Surname);
+            if (Director is not null) return Director;
+            Director = new Director { name = directorRequest.Name, surname = directorRequest.Surname };
+            context.Directors.Add(Director);
+            return Director;
+        }
+        private async Task<Genre> GetOrCreateGenreAsync(GenreRequest genreRequest)
+        {
+            var genre = await context.Genres.FirstOrDefaultAsync(g => g.name == genreRequest.name);
+            if (genre is not null) return genre;
+            genre = new Genre { name = genreRequest.name };
+            context.Genres.Add(genre);
+            return genre;
+        }
+        public async Task<(int tvSeriesId, TvSeriesResponse response)> Upsert(int? tvSeriesId, TvSeriesRequest tvSeriesRequest)
+        {
+            await using var transaction = await context.Database.BeginTransactionAsync();
+            try
+            {
+                var director = await GetOrCreateDirectorAsync(tvSeriesRequest.director);
+                var genre = await GetOrCreateGenreAsync(tvSeriesRequest.genre);
+                TvSeries? tvSeries;
+                if (tvSeriesId is not null)
+                {
+                    tvSeries = await context.TvSeries
+                            .Include(m => m.director)
+                            .Include(m => m.genre)
+                            .FirstOrDefaultAsync(m => m.Id == tvSeriesId.Value);
+                    if (tvSeries is not null)
+                    {
+                        tvSeries.title = tvSeriesRequest.title;
+                        tvSeries.description = tvSeriesRequest.description;
+                        tvSeries.director = director;
+                        tvSeries.genre = genre;
+                        tvSeries.ReleaseDate = tvSeriesRequest.ReleaseDate;
+                        tvSeries.Language = tvSeriesRequest.Language;
+                        tvSeries.Seasons = tvSeriesRequest.Seasons;
+                        tvSeries.Episodes = tvSeriesRequest.Episodes;
+                        tvSeries.Network = tvSeriesRequest.Network;
+                        tvSeries.Status = tvSeriesRequest.Status;
+                        await context.SaveChangesAsync();
+                        await transaction.CommitAsync();
+                        return (tvSeries.Id, TvSeriesMapping.ToResponse(tvSeries));
+                    }
+                }
+                tvSeries = new TvSeries
+                {
+                    title = tvSeriesRequest.title,
+                    description = tvSeriesRequest.description,
+                    director = director,
+                    genre = genre,
+                    ReleaseDate = tvSeriesRequest.ReleaseDate,
+                    Language = tvSeriesRequest.Language,
+                    Seasons = tvSeriesRequest.Seasons,
+                    Episodes = tvSeriesRequest.Episodes,
+                    Network = tvSeriesRequest.Network,
+                    Status = tvSeriesRequest.Status
+                };
+                context.TvSeries.Add(tvSeries);
+                await context.SaveChangesAsync();
+                var response = TvSeriesMapping.ToResponse(tvSeries);
+                await transaction.CommitAsync();
+                return (tvSeries.Id, response);
+            }
+            catch
+            {
+                await transaction.RollbackAsync();
+                throw;
+            }
         }
     }
 }

@@ -1,7 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using WebApplication1.DTO.Request;
-using WebApplication1.Services.Impl;
 using WebApplication1.Services.Interfaces;
 
 namespace WebApplication1.Controllers
@@ -30,18 +29,18 @@ namespace WebApplication1.Controllers
             var movies = await TvSeriesServices.GetSortAll(sort);
             return Ok(movies);
         }
-        /*[AllowAnonymous]
+        [AllowAnonymous]
         [HttpGet("FilterBy")]
-        public async Task<IActionResult> GetMovies([FromQuery] string? name, [FromQuery] string? genreName, [FromQuery] string? directorName, [FromQuery] int? movieId)
+        public async Task<IActionResult> GetMovies([FromQuery] string? name, [FromQuery] string? genreName, [FromQuery] string? directorName)
         {
-            var movies = await TvSeriesServices.GetMovies(name, genreName, directorName, movieId);
+            var movies = await TvSeriesServices.GetTvSeries(name, genreName, directorName);
             return Ok(movies);
         }
         [AllowAnonymous]
         [HttpGet("byAvarage")]
         public async Task<IActionResult> GetMoviesByAvarage()
         {
-            var movies = await TvSeriesServices.GetMoviesByAvrRating();
+            var movies = await TvSeriesServices.GetTvSeriesByAvrRating();
             return Ok(movies);
         }
         [AllowAnonymous]
@@ -53,20 +52,20 @@ namespace WebApplication1.Controllers
         }
         [Authorize(Roles = "Admin")]
         [HttpPost]
-        public async Task<IActionResult> Upsert(int? id, MovieRequest movie)
+        public async Task<IActionResult> Upsert(int? id, TvSeriesRequest tvSeriesRequest)
         {
-            var created = await TvSeriesServices.Upsert(id, movie);
+            var created = await TvSeriesServices.Upsert(id, tvSeriesRequest);
             if (id is null)
-                return CreatedAtAction(nameof(GetById), new { id = created.movieId }, created.response);
+                return CreatedAtAction(nameof(GetById), new { id = created.tvSeriesId }, created.response);
             return Ok(created.response);
         }
         [Authorize(Roles = "Admin")]
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(int id)
         {
-            var deleted = await movieServices.Delete(id);
+            var deleted = await TvSeriesServices.Delete(id);
             if (!deleted) return NotFound();
             return NoContent();
-        }*/
+        }
     }
 }
