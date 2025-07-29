@@ -1,0 +1,232 @@
+/* styles.css or app.component.css */
+
+:root {
+  --primary-color: #337ab7; /* A typical blue for links/buttons */
+  --secondary-color: #f8f8f8; /* Light background */
+  --dark-text: #333;
+  --light-text: #fff;
+  --border-color: #eee;
+  --header-bg: #222;
+  --footer-bg: #333;
+}
+
+body {
+  font-family: 'Arial', sans-serif;
+  margin: 0;
+  padding: 0;
+  background-color: var(--secondary-color);
+  color: var(--dark-text);
+}
+
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+/* Header */
+.header {
+  background-color: var(--header-bg);
+  color: var(--light-text);
+  padding: 15px 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-radius: 8px;
+  margin-bottom: 20px;
+}
+
+.logo h1 {
+  margin: 0;
+  font-size: 2.2em;
+  color: #e50914; /* Netflix red for a distinct look */
+}
+
+.main-nav ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+}
+
+.main-nav li {
+  margin-right: 20px;
+}
+
+.main-nav a {
+  color: var(--light-text);
+  text-decoration: none;
+  font-weight: bold;
+  transition: color 0.3s ease;
+}
+
+.main-nav a:hover {
+  color: var(--primary-color);
+}
+
+.user-actions input[type="text"] {
+  padding: 8px 12px;
+  border: none;
+  border-radius: 4px;
+  margin-right: 10px;
+}
+
+.user-actions button {
+  background-color: var(--primary-color);
+  color: var(--light-text);
+  border: none;
+  padding: 8px 15px;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.user-actions button:hover {
+  background-color: #286090;
+}
+
+/* Main Content */
+.main-content {
+  display: flex;
+  gap: 20px;
+}
+
+.sidebar {
+  flex: 1;
+  background-color: var(--light-text);
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.sidebar h3 {
+  color: var(--primary-color);
+  margin-top: 0;
+  margin-bottom: 15px;
+  border-bottom: 1px solid var(--border-color);
+  padding-bottom: 10px;
+}
+
+.sidebar ul {
+  list-style: none;
+  padding: 0;
+}
+
+.sidebar li {
+  margin-bottom: 10px;
+}
+
+.sidebar a {
+  color: var(--dark-text);
+  text-decoration: none;
+  transition: color 0.3s ease;
+}
+
+.sidebar a:hover {
+  color: var(--primary-color);
+}
+
+.film-listings {
+  flex: 3;
+  background-color: var(--light-text);
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.film-listings h2 {
+  color: var(--primary-color);
+  margin-top: 0;
+  margin-bottom: 20px;
+  border-bottom: 1px solid var(--border-color);
+  padding-bottom: 10px;
+}
+
+.film-card {
+  display: flex;
+  margin-bottom: 20px;
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+}
+
+.film-card img {
+  width: 150px;
+  height: 220px;
+  object-fit: cover;
+  flex-shrink: 0; /* Prevent image from shrinking */
+}
+
+.film-info {
+  padding: 15px;
+  flex-grow: 1;
+}
+
+.film-info h3 {
+  margin-top: 0;
+  margin-bottom: 8px;
+  color: var(--dark-text);
+}
+
+.film-info p {
+  margin-bottom: 5px;
+  font-size: 0.9em;
+  line-height: 1.4;
+}
+
+.film-info .rating {
+  font-weight: bold;
+  color: #e50914; /* Red for ratings */
+  margin-right: 10px;
+}
+
+.film-info .genre {
+  font-style: italic;
+  color: #666;
+}
+
+.film-info .description {
+  margin-top: 10px;
+  color: #555;
+}
+
+.film-info button {
+  background-color: var(--primary-color);
+  color: var(--light-text);
+  border: none;
+  padding: 8px 12px;
+  border-radius: 4px;
+  cursor: pointer;
+  margin-top: 10px;
+  transition: background-color 0.3s ease;
+}
+
+.film-info button:hover {
+  background-color: #286090;
+}
+
+/* Footer */
+.footer {
+  background-color: var(--footer-bg);
+  color: var(--light-text);
+  text-align: center;
+  padding: 20px;
+  margin-top: 20px;
+  border-radius: 8px;
+}
+
+.footer p {
+  margin: 0 0 10px 0;
+}
+
+.footer-links a {
+  color: var(--light-text);
+  text-decoration: none;
+  margin: 0 8px;
+  transition: color 0.3s ease;
+}
+
+.footer-links a:hover {
+  color: var(--primary-color);
+}
