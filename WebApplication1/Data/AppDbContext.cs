@@ -13,10 +13,17 @@ namespace WebApplication1.Data
         public DbSet<Review> Reviews { get; set; }
         public DbSet<User> Users { get; set; }
         public DbSet<Role> Roles { get; set; }
+        public DbSet<Token>Tokens { get; set; }
         public DbSet<UserRole> UsersRoles { get; set; }
         public DbSet<UserMovieLike>UserMovieLike { get; set; }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+            modelBuilder.Entity<Token>()
+                .HasOne(t => t.User)
+                 .WithMany()
+                 .HasForeignKey(t => t.UserId)
+                 .OnDelete(DeleteBehavior.Cascade);
+
             modelBuilder.Entity<UserMovieLike>()
                 .HasIndex(uml => new { uml.userId, uml.movieId })
                 .IsUnique();
