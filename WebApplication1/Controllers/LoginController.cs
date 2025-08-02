@@ -24,23 +24,19 @@ namespace WebApplication1.Controllers
         [HttpPost("Login")]
         public async Task<IActionResult> Login([FromBody] LoginRequest loginRequest)
         {
-            var token = await authService.Login(loginRequest);
-            if (token == null)
+            var tokens = await authService.Login(loginRequest);
+            if (tokens == null)
             {
                 return Unauthorized("Nieprawidłowe dane");
             }
-            /*Response.Cookies.Append("refreshToken", refreshToken, new CookieOptions
+            Response.Cookies.Append("refreshToken", tokens.refreshToken, new CookieOptions
             {
                 Secure = true,
                 HttpOnly = true,
                 SameSite = SameSiteMode.Lax,
                 Expires = DateTime.Now.AddDays(7)
             });
-            if (refreshToken is null)
-            {
-                throw new Exception("Refresh token is null");
-            }*/
-            return Ok(new { Message = "Zalogowano pomyślnie.", Token = token.token });
+            return Ok(new { Message = "Zalogowano pomyślnie. Przekazuje token dostępu: ", Token = tokens.accessToken });
 
         }
         [AllowAnonymous]
@@ -59,7 +55,8 @@ namespace WebApplication1.Controllers
             {
                 return Unauthorized();
             }
-            await authService.RefreshAccessToken(refreshToken);
+            var tokens = await authService.RefreshAccessToken(refreshToken);
+            Response.Cookies.Delete(refreshToken);
             return Ok();
         }
     }

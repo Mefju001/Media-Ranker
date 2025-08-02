@@ -1,24 +1,15 @@
-<<<<<<< HEAD
-ï»¿using Microsoft.AspNetCore.Identity;
-=======
-ï»¿using Azure;
-<<<<<<< HEAD
-using Azure.Core;
-=======
->>>>>>> e771017e4cbc805d3feaf371132b7f76040c1767
 using Microsoft.AspNetCore.Identity;
->>>>>>> 5f6ae51 (update loginController&AuthService)
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using System.Data;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
-using System.Threading.Tasks;
 using WebApplication1.Data;
 using WebApplication1.DTO.Mapping;
 using WebApplication1.DTO.Request;
 using WebApplication1.DTO.Response;
+using WebApplication1.Exceptions;
 using WebApplication1.Models;
 
 namespace WebApplication1.Services
@@ -34,39 +25,31 @@ namespace WebApplication1.Services
             _passwordHasher = passwordHasher;
             _configuration = config;
         }
-        public async Task<TokenResponse?>Login(LoginRequest loginRequest)
+        public async Task<TokenResponse?> Login(LoginRequest loginRequest)
         {
             var user = await _context.Users
-                .Include(u=>u.UserRoles)
-                .ThenInclude(ur=>ur.Role)
+                .Include(u => u.UserRoles)
+                .ThenInclude(ur => ur.Role)
                 .FirstOrDefaultAsync(u => u.username == loginRequest.username);
             if (user == null)
             {
                 return null;
             }
             var passwordVerification = _passwordHasher.VerifyHashedPassword(user, user.password, loginRequest.password);
-            if(passwordVerification == PasswordVerificationResult.Failed)
+            if (passwordVerification == PasswordVerificationResult.Failed)
             {
                 return null;
             }
-            var token = GenerateJwtToken(user.Id, loginRequest.username, user.UserRoles);
-<<<<<<< HEAD
-            return token;
-=======
-<<<<<<< HEAD
-            var refreshToken = GenerateJwtRefreshToken(user.Id,loginRequest.username);
-=======
-            var refreshToken = GenerateJwtRefreshToken(user.Id);
->>>>>>> e771017e4cbc805d3feaf371132b7f76040c1767
-            return (token,refreshToken);
->>>>>>> 5f6ae51 (update loginController&AuthService)
+            var accessToken = GenerateAccessToken(user.Id, loginRequest.username, user.UserRoles);
+            var refreshToken = GenerateRefreshToken(user.Id, loginRequest.username);
+            return new TokenResponse(accessToken,refreshToken);
         }
-        public TokenResponse GenerateJwtToken(int userId, string username,ICollection<UserRole> roles)
+        private string GenerateAccessToken(int id, string username, ICollection<UserRole>roles)
         {
             var jti = Guid.NewGuid().ToString();
             var claims = new List<Claim>
             {
-                new(JwtRegisteredClaimNames.Sub, userId.ToString()),
+                new(JwtRegisteredClaimNames.Sub, id.ToString()),
                 new(JwtRegisteredClaimNames.Name, username),
                 new(JwtRegisteredClaimNames.Jti,jti)
             };
@@ -83,48 +66,69 @@ namespace WebApplication1.Services
                 expires: DateTime.UtcNow.AddHours(2),
                 signingCredentials: creds
             );
-            var roleResponses = roles.Select(r => new RoleResponse(r.Role.role)).ToList();
-            return new TokenResponse(username, roleResponses, new JwtSecurityTokenHandler().WriteToken(token));
+            var accessToken = new JwtSecurityTokenHandler().WriteToken(token);
+            return accessToken;
         }
-<<<<<<< HEAD
-=======
-<<<<<<< HEAD
-        private IEnumerable<Claim> GetClaimsFromJwt(string token)
+        private ClaimsPrincipal GetClaimsFromJwt(string token)
         {
             if (string.IsNullOrEmpty(token))
             {
-                return Enumerable.Empty<Claim>();
+                return null;
             }
+            var handler = new JwtSecurityTokenHandler();
+            SecurityToken validatedToken;
+            ClaimsPrincipal principal;
             try
             {
-                var handler = new JwtSecurityTokenHandler();
+                var secretKey = _configuration["Jwt:Key"];
+                var issuer = _configuration["Jwt:Issuer"];
+                var audience = _configuration["Jwt:Audience"];
+
+                if (string.IsNullOrEmpty(secretKey) || string.IsNullOrEmpty(issuer) || string.IsNullOrEmpty(audience))
+                {
+                    throw new InvalidOperationException("Ustawienia JWT (Key, Issuer, Audience) nie zosta³y skonfigurowane w appsettings.json.");
+                }
+                var tokenValidationParameters = new TokenValidationParameters
+                {
+                    ValidateIssuerSigningKey = true,
+                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(secretKey)), // Twój tajny klucz
+                    ValidateIssuer = true,
+                    ValidIssuer = issuer,
+                    ValidateAudience = true,
+                    ValidAudience = audience,
+                    ValidateLifetime = true,
+                    ClockSkew = TimeSpan.Zero
+                };
                 if (!handler.CanReadToken(token))
                 {
-                    return Enumerable.Empty<Claim>();
+                    return null;
                 }
                 var readtoken = handler.ReadJwtToken(token);
-                return readtoken.Claims;
-            } catch (Exception ex)
+                principal = handler.ValidateToken(token, tokenValidationParameters, out validatedToken);
+                return principal;
+            }
+            catch (Exception ex)
             {
                 Console.WriteLine(ex.Message);
-                return Enumerable.Empty<Claim>();
-
+                return null;
             }
         }
-        private async Task<Boolean> ValidateRefreshToken(string refreshToken)
+        private async Task<Boolean> findRefreshTokenInDb(string refreshToken)
         {
             var claims = GetClaimsFromJwt(refreshToken);
             if (claims == null)
                 return false;
-            var jti = claims.FirstOrDefault(c=>c.Type == JwtRegisteredClaimNames.Jti);
-            if (jti==null)
+            var jti = claims.Claims.FirstOrDefault(c => c.Type == JwtRegisteredClaimNames.Jti);
+            if (jti == null)
                 return false;
-            var dbRefreshToken = await _context.Tokens.FirstOrDefaultAsync(t => t.refreshToken == refreshToken);
-            if(dbRefreshToken == null)
+            var dbRefreshToken = await _context.Tokens.FirstOrDefaultAsync(t => t.refreshToken == refreshToken&&t.Jti == jti.Value);
+            if (dbRefreshToken == null)
                 return false;
+            if (dbRefreshToken.IsRevoked == true)
+                throw new Exception("Token is revoked");
             return true;
         }
-        public string GenerateJwtRefreshToken(int userId, string username)
+        public string GenerateRefreshToken(int userId, string username)
         {
             var jti = Guid.NewGuid().ToString();
             var claims = new List<Claim>
@@ -144,36 +148,34 @@ namespace WebApplication1.Services
             );
             return new JwtSecurityTokenHandler().WriteToken(refreshToken);
         }
-        public async Task<(TokenResponse,string?refreshToken)>RefreshAccessToken(string refreshToken)
+        public async Task<TokenResponse?> RefreshAccessToken(string refreshToken)
         {
             if (string.IsNullOrEmpty(refreshToken))
             {
-                return (null,null);
+                throw new NotFoundException("Not found your user");
             }
-            var validated = ValidateRefreshToken(refreshToken);
-            if (validated != null)
+            var claims = GetClaimsFromJwt(refreshToken);
+            var username = claims.Claims.FirstOrDefault(c => c.Type == JwtRegisteredClaimNames.Name);
+            if (username == null)
+                throw new UserClaimNotFoundException("Not found your user in claims");
+            var finded = findRefreshTokenInDb(refreshToken);
+            if (finded.Result is false)
             {
-                //var accessToken = GenerateJwtToken();
-                //var refreshToken = GenerateJwtRefreshToken();
+                throw new InvalidRefreshTokenException("Your refresh token is not in db");
             }
-
-            return (null,null);
-=======
-        public string GenerateJwtRefreshToken(int userId)
-        {
-            var refreshToken = Guid.NewGuid().ToString();
-            return refreshToken;
+            var user = await _context.Users
+                .Include(u => u.UserRoles)
+                .ThenInclude(ur => ur.Role)
+                .FirstOrDefaultAsync(u => u.username == username.Value.ToString());
+            if (user == null)
+                return new TokenResponse(null, null);
+            var accessToken = GenerateAccessToken(user.Id, username.Value.ToString(), user.UserRoles);
+            var RefreshToken = GenerateRefreshToken(user.Id, username.Value.ToString());
+            return new TokenResponse(accessToken, RefreshToken);
         }
-        public async Task<TokenResponse>RefreshAccessToken(string refreshToken)
+        public async Task<TokenResponse?>registerAccount(User user)
         {
-            if (string.IsNullOrEmpty(refreshToken))
-            {
-                return null;
-            }
-
-            return null;
->>>>>>> e771017e4cbc805d3feaf371132b7f76040c1767
+            return new TokenResponse(null, null);
         }
->>>>>>> 5f6ae51 (update loginController&AuthService)
     }
 }

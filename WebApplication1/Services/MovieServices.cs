@@ -42,7 +42,7 @@ namespace WebApplication1.Services.Impl
                             .FirstOrDefaultAsync(m => m.Id == movieId.Value);
                     if (movie is not null)
                     {
-                        movie.title = movieRequest.Title
+                        movie.title = movieRequest.Title;
                         movie.description = movieRequest.Description;
                         movie.director = director;
                         movie.genre = genre;

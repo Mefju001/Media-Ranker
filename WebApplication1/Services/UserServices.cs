@@ -14,10 +14,12 @@ namespace WebApplication1.Services
     {
         private readonly IPasswordHasher<User> Hasher;
         private AppDbContext dbContext;
-        public UserServices(AppDbContext dbContext, IPasswordHasher<User> passwordHasher)
+        private readonly AuthService authService;
+        public UserServices(AppDbContext dbContext, IPasswordHasher<User> passwordHasher, AuthService authService)
         {
             this.dbContext = dbContext;
             Hasher = passwordHasher;
+            this.authService = authService;
         }
         public async Task<bool> changePassword(string newPassword, string confirmPassword, string oldPassword, int userId)
         {
@@ -70,7 +72,6 @@ namespace WebApplication1.Services
                 .ToListAsync();
             return users.Select(UserMapping.ToResponse).ToList();
         }
-
         public async Task<bool> Register(UserRequest userRequest)
         {
             bool exists = await dbContext.Users.AnyAsync(u => u.username == userRequest.username || u.email == userRequest.email);
@@ -95,6 +96,7 @@ namespace WebApplication1.Services
             };
             dbContext.UsersRoles.Add(UserRoles);
             await dbContext.SaveChangesAsync();
+            
             return true;
         }
         public async Task<UserResponse?> GetById(int id)
