@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
 using WebApplication1.DTO.Request;
 using WebApplication1.Migrations;
 using WebApplication1.Services;
@@ -37,7 +38,19 @@ namespace WebApplication1.Controllers
                 Expires = DateTime.Now.AddDays(7)
             });
             return Ok(new { Message = "Zalogowano pomyślnie. Przekazuje token dostępu: ", Token = tokens.accessToken });
-
+        }
+        [Authorize(Roles = "User")]
+        [HttpPost("Logout")]
+        public async Task<IActionResult> Logout(String accessToken)
+        {
+            var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            if (string.IsNullOrEmpty(userId))
+            {
+                return Unauthorized("Nie znaleziono ID użytkownika w tokenie.");
+            }
+            authService.Logout(accessToken);
+            Response.Cookies.Delete("refreshToken");
+            return Ok(new { Message = "wylogowano pomyślnie" });
         }
         [AllowAnonymous]
         [HttpPost("Register")]

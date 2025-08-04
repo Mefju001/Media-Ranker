@@ -1,10 +1,13 @@
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using N.EntityFrameworkCore.Extensions;
 using System.Data;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
+using System.Threading.Tasks;
 using WebApplication1.Data;
 using WebApplication1.DTO.Mapping;
 using WebApplication1.DTO.Request;
@@ -18,12 +21,15 @@ namespace WebApplication1.Services
     {
         private readonly IConfiguration _configuration;
         private readonly AppDbContext _context;
+        private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly IPasswordHasher<User> _passwordHasher;
-        public AuthService(IConfiguration config, AppDbContext context, IPasswordHasher<User> passwordHasher)
+
+        public AuthService(IConfiguration config, AppDbContext context, IPasswordHasher<User> passwordHasher, IHttpContextAccessor httpContextAccessor)
         {
             _context = context;
             _passwordHasher = passwordHasher;
             _configuration = config;
+            _httpContextAccessor = httpContextAccessor;
         }
         public async Task<TokenResponse?> Login(LoginRequest loginRequest)
         {
@@ -41,10 +47,10 @@ namespace WebApplication1.Services
                 return null;
             }
             var accessToken = GenerateAccessToken(user.Id, loginRequest.username, user.UserRoles);
-            var refreshToken = GenerateRefreshToken(user.Id, loginRequest.username);
-            return new TokenResponse(accessToken,refreshToken);
+            var refreshToken = await GenerateRefreshToken(user.Id, loginRequest.username);
+            return new TokenResponse(accessToken, refreshToken);
         }
-        private string GenerateAccessToken(int id, string username, ICollection<UserRole>roles)
+        private string GenerateAccessToken(int id, string username, ICollection<UserRole> roles)
         {
             var jti = Guid.NewGuid().ToString();
             var claims = new List<Claim>
@@ -69,7 +75,7 @@ namespace WebApplication1.Services
             var accessToken = new JwtSecurityTokenHandler().WriteToken(token);
             return accessToken;
         }
-        private ClaimsPrincipal GetClaimsFromJwt(string token)
+        private async Task<IReadOnlyList<Claim>> ValidateAndGetPrincipalFromRefreshToken(string token)
         {
             if (string.IsNullOrEmpty(token))
             {
@@ -91,21 +97,25 @@ namespace WebApplication1.Services
                 var tokenValidationParameters = new TokenValidationParameters
                 {
                     ValidateIssuerSigningKey = true,
-                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(secretKey)), // Twój tajny klucz
+                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(secretKey)),
                     ValidateIssuer = true,
                     ValidIssuer = issuer,
                     ValidateAudience = true,
                     ValidAudience = audience,
                     ValidateLifetime = true,
-                    ClockSkew = TimeSpan.Zero
+                    ClockSkew = TimeSpan.FromSeconds(5)
                 };
-                if (!handler.CanReadToken(token))
-                {
-                    return null;
-                }
-                var readtoken = handler.ReadJwtToken(token);
                 principal = handler.ValidateToken(token, tokenValidationParameters, out validatedToken);
-                return principal;
+                var jti = principal.Claims.FirstOrDefault(c => c.Type == JwtRegisteredClaimNames.Jti);
+                if (jti == null)
+                    return null;
+                var dbRefreshToken = await _context.Tokens.FirstOrDefaultAsync(t => t.Jti == jti.Value && !t.IsRevoked && t.ExpiryDate >= DateTime.UtcNow);
+                if (dbRefreshToken == null)
+                    return null;
+                dbRefreshToken.IsRevoked = true;
+                dbRefreshToken.RevokedAt = DateTime.UtcNow;
+                await _context.SaveChangesAsync();
+                return principal.Claims.ToList().AsReadOnly();
             }
             catch (Exception ex)
             {
@@ -113,22 +123,46 @@ namespace WebApplication1.Services
                 return null;
             }
         }
-        private async Task<Boolean> findRefreshTokenInDb(string refreshToken)
+        private async Task<IReadOnlyList<Claim>> ValidateAndGetPrincipalFromToken(string token)
         {
-            var claims = GetClaimsFromJwt(refreshToken);
-            if (claims == null)
-                return false;
-            var jti = claims.Claims.FirstOrDefault(c => c.Type == JwtRegisteredClaimNames.Jti);
-            if (jti == null)
-                return false;
-            var dbRefreshToken = await _context.Tokens.FirstOrDefaultAsync(t => t.refreshToken == refreshToken&&t.Jti == jti.Value);
-            if (dbRefreshToken == null)
-                return false;
-            if (dbRefreshToken.IsRevoked == true)
-                throw new Exception("Token is revoked");
-            return true;
+            if (string.IsNullOrEmpty(token))
+            {
+                return null;
+            }
+            var handler = new JwtSecurityTokenHandler();
+            SecurityToken validatedToken;
+            ClaimsPrincipal principal;
+            try
+            {
+                var secretKey = _configuration["Jwt:Key"];
+                var issuer = _configuration["Jwt:Issuer"];
+                var audience = _configuration["Jwt:Audience"];
+
+                if (string.IsNullOrEmpty(secretKey) || string.IsNullOrEmpty(issuer) || string.IsNullOrEmpty(audience))
+                {
+                    throw new InvalidOperationException("Ustawienia JWT (Key, Issuer, Audience) nie zosta³y skonfigurowane w appsettings.json.");
+                }
+                var tokenValidationParameters = new TokenValidationParameters
+                {
+                    ValidateIssuerSigningKey = true,
+                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(secretKey)),
+                    ValidateIssuer = true,
+                    ValidIssuer = issuer,
+                    ValidateAudience = true,
+                    ValidAudience = audience,
+                    ValidateLifetime = true,
+                    ClockSkew = TimeSpan.FromSeconds(5)
+                };
+                principal = handler.ValidateToken(token, tokenValidationParameters, out validatedToken);
+                return principal.Claims.ToList().AsReadOnly();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+                return null;
+            }
         }
-        public string GenerateRefreshToken(int userId, string username)
+        public async Task<string> GenerateRefreshToken(int userId, string username)
         {
             var jti = Guid.NewGuid().ToString();
             var claims = new List<Claim>
@@ -143,10 +177,28 @@ namespace WebApplication1.Services
                 issuer: _configuration["Jwt:Issuer"],
                 audience: _configuration["Jwt:Audience"],
                 claims: claims,
-                expires: DateTime.UtcNow.AddHours(2),
+                expires: DateTime.UtcNow.AddDays(7),
                 signingCredentials: creds
             );
-            return new JwtSecurityTokenHandler().WriteToken(refreshToken);
+            var refToken = new JwtSecurityTokenHandler().WriteToken(refreshToken);
+            var httpContext = _httpContextAccessor.HttpContext;
+            string? clientIp = httpContext?.Connection.RemoteIpAddress?.ToString();
+            string? userAgent = httpContext?.Request.Headers["User-Agent"].ToString();
+            var token = new Token()
+            {
+                Jti = jti,
+                refreshToken = refToken,
+                UserId = userId,
+                IssuedAt = DateTime.Now,
+                ExpiryDate = DateTime.Now.AddDays(7),
+                IsRevoked = false,
+                RevokedAt = null,
+                CreatedByIp = clientIp,
+                UserAgent = userAgent
+            };
+            _context.Tokens.Add(token);
+            await _context.SaveChangesAsync();
+            return refToken;
         }
         public async Task<TokenResponse?> RefreshAccessToken(string refreshToken)
         {
@@ -154,15 +206,8 @@ namespace WebApplication1.Services
             {
                 throw new NotFoundException("Not found your user");
             }
-            var claims = GetClaimsFromJwt(refreshToken);
-            var username = claims.Claims.FirstOrDefault(c => c.Type == JwtRegisteredClaimNames.Name);
-            if (username == null)
-                throw new UserClaimNotFoundException("Not found your user in claims");
-            var finded = findRefreshTokenInDb(refreshToken);
-            if (finded.Result is false)
-            {
-                throw new InvalidRefreshTokenException("Your refresh token is not in db");
-            }
+            var claims = await ValidateAndGetPrincipalFromRefreshToken(refreshToken);
+            var username = claims.FirstOrDefault(c => c.Type == JwtRegisteredClaimNames.Name) ?? throw new UserClaimNotFoundException("Not found your user in claims");
             var user = await _context.Users
                 .Include(u => u.UserRoles)
                 .ThenInclude(ur => ur.Role)
@@ -170,12 +215,29 @@ namespace WebApplication1.Services
             if (user == null)
                 return new TokenResponse(null, null);
             var accessToken = GenerateAccessToken(user.Id, username.Value.ToString(), user.UserRoles);
-            var RefreshToken = GenerateRefreshToken(user.Id, username.Value.ToString());
+            var RefreshToken = await GenerateRefreshToken(user.Id, username.Value.ToString());
             return new TokenResponse(accessToken, RefreshToken);
         }
-        public async Task<TokenResponse?>registerAccount(User user)
+        public async Task<TokenResponse?> registerAccount(User user)
         {
-            return new TokenResponse(null, null);
+            throw new NotImplementedException();
+        }
+        public async void Logout(string stringUserId)
+        {
+            if (!int.TryParse(stringUserId, out var userId))
+                throw new Exception("Something go wrong");
+            var userRefreshTokens = await _context.Tokens
+                .Where(t => t.UserId == userId)
+                .ToListAsync() ?? throw new NotFoundException("Not found in db");
+            if (userRefreshTokens.Any())
+            {
+                foreach (var token in userRefreshTokens)
+                {
+                    token.IsRevoked = true;
+                    token.RevokedAt = DateTime.UtcNow;
+                }
+                await _context.SaveChangesAsync();
+            }
         }
     }
 }
