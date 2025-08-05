@@ -222,7 +222,7 @@ namespace WebApplication1.Services
         {
             throw new NotImplementedException();
         }
-        public async void Logout(string stringUserId)
+        public async Task Logout(string stringUserId)
         {
             if (!int.TryParse(stringUserId, out var userId))
                 throw new Exception("Something go wrong");

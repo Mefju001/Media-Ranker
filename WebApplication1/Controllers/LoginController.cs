@@ -41,14 +41,14 @@ namespace WebApplication1.Controllers
         }
         [Authorize(Roles = "User")]
         [HttpPost("Logout")]
-        public async Task<IActionResult> Logout(String accessToken)
+        public async Task<IActionResult> Logout()
         {
             var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
             if (string.IsNullOrEmpty(userId))
             {
                 return Unauthorized("Nie znaleziono ID użytkownika w tokenie.");
             }
-            authService.Logout(accessToken);
+            await authService.Logout(userId);
             Response.Cookies.Delete("refreshToken");
             return Ok(new { Message = "wylogowano pomyślnie" });
         }
