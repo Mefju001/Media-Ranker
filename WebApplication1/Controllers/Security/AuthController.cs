@@ -3,9 +3,9 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using WebApplication1.Data;
-using WebApplication1.DTO.Request;
 using WebApplication1.Models;
 using WebApplication1.Services;
+using WebApplication1.Services.Interfaces;
 
 namespace WebApplication1.Controllers.Security
 {
@@ -14,13 +14,15 @@ namespace WebApplication1.Controllers.Security
     public class AuthController: ControllerBase
     {
         private readonly AuthService authService;
+        private readonly ITokenCleanupService tokenCleanupService;
         private readonly AppDbContext appDbContext;
         private readonly IPasswordHasher<User>passwordHasher;
-        public AuthController(AuthService authService, AppDbContext appDbContext,IPasswordHasher<User>password)
+        public AuthController(AuthService authService, AppDbContext appDbContext, IPasswordHasher<User> password, ITokenCleanupService tokenCleanupService)
         {
             this.authService = authService;
             this.appDbContext = appDbContext;
             this.passwordHasher = password;
+            this.tokenCleanupService = tokenCleanupService;
         }
 
         [HttpPost("AddRolesAndUsers")]
@@ -56,6 +58,13 @@ namespace WebApplication1.Controllers.Security
             await appDbContext.SaveChangesAsync();
 
             return Ok("Dane zostały dodane.");
+        }
+        [Authorize(Roles = "Admin")]
+        [HttpPost("clean-tokens-now")]
+        public async Task<IActionResult> CleanTokensNow()
+        {
+            await tokenCleanupService.Cleanup();
+            return Ok("Czyszczenie tokenów rozpoczęte.");
         }
     }
 }

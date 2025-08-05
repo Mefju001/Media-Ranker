@@ -1,43 +1,45 @@
-﻿
+﻿using Microsoft.Extensions.Logging;
+using WebApplication1.Data;
+using WebApplication1.Services.Interfaces;
+
 namespace WebApplication1.Services
 {
-    public class TokenCleanupService : IHostedService, IDisposable
+    public class TokenCleanupService : ITokenCleanupService
     {
         public readonly ILogger<TokenCleanupService> logger;
         public readonly IServiceProvider ServiceProvider;
-        private Timer timer;
 
-        private readonly TimeSpan _cleanupInterval = TimeSpan.FromDays(30);
-        private readonly TimeSpan _tokenRetentionTime = TimeSpan.FromDays(30);
-        public TokenCleanupService(ILogger<TokenCleanupService> logger, IServiceProvider serviceProvider, Timer timer)
+        public TokenCleanupService(IServiceProvider serviceProvider, ILogger<TokenCleanupService> logger)
         {
             this.logger = logger;
             ServiceProvider = serviceProvider;
-            this.timer = timer;
         }
 
-        public void Dispose()
+        public async Task Cleanup()
         {
-            timer?.Dispose();
-        }
+            logger.LogInformation("Zaczynamy czyszczenie bazy danych z tokenów");
+            using (var scope = ServiceProvider.CreateScope())
+            {
+                var context = scope.ServiceProvider.GetService<AppDbContext>();
 
-        public Task StartAsync(CancellationToken cancellationToken)
-        {
-            logger.LogInformation("Zaczynam czyszczenie bazy danych z tokenów nieaktywnych");
-            timer = new Timer(doWork,null,TimeSpan.FromMinutes(1),_cleanupInterval);
-            return Task.CompletedTask;
-        }
+                try
+                {
+                    var tokensToDelete = context.Tokens.Where(t => (t.IsRevoked == true) || (t.ExpiryDate < DateTime.UtcNow)).ToList();
+                    if (tokensToDelete.Any())
+                    {
+                        logger.LogInformation($"znaleziono {tokensToDelete.Count}");
+                        context.Tokens.RemoveRange(tokensToDelete);
+                        await context.SaveChangesAsync();
+                    }
+                    else
+                        logger.LogInformation("Nic nie znaleziono");
 
-        private void doWork(object? state)
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task StopAsync(CancellationToken cancellationToken)
-        {
-            logger.LogInformation("zatrzymanie czyszczenia bazy danych z tokenów nieaktywnych");
-            timer.Change(Timeout.Infinite, 0);
-            return Task.CompletedTask;
+                }
+                catch (Exception ex)
+                {
+                    logger.LogInformation("Wystapił błąd " + ex.Message);
+                }
+            }
         }
     }
 }

@@ -51,6 +51,7 @@ builder.Services.AddSwaggerGen(options =>
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+builder.Services.AddHostedService<TokenBackgroundService>();
 builder.Services.AddScoped<AuthService>();
 builder.Services.AddScoped<IPasswordHasher<User>, PasswordHasher<User>>();
 builder.Services.AddScoped<IMovieServices,MovieServices>();
@@ -58,6 +59,7 @@ builder.Services.AddScoped<IReviewServices, ReviewServices>();
 builder.Services.AddScoped<IUserServices, UserServices>();
 builder.Services.AddScoped<ILikedMovieServices, LikedMovieServices>();
 builder.Services.AddScoped<ITvSeriesServices, TvSeriesServices>();
+builder.Services.AddScoped<ITokenCleanupService, TokenCleanupService>();
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddAuthentication("Bearer")
     .AddJwtBearer("Bearer",options=>
