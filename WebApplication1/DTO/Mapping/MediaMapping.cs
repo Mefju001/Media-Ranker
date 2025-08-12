@@ -11,7 +11,6 @@ namespace WebApplication1.DTO.Mapping
                 media.title,
                 media.description,
                 GenreMapping.ToResponse(media.genre),
-                DirectorMapping.ToResponse(media.director),
                 media.ReleaseDate,
                 media.Language,
                 media.Reviews?.Select(r => ReviewMapping.ToResponse(r)).ToList() ?? new List<ReviewResponse>());

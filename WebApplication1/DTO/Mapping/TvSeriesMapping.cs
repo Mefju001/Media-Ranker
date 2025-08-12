@@ -11,7 +11,6 @@ namespace WebApplication1.DTO.Mapping
                 tvSeries.title,
                 tvSeries.description,
                 GenreMapping.ToResponse(tvSeries.genre),
-                DirectorMapping.ToResponse(tvSeries.director),
                 tvSeries.ReleaseDate,
                 tvSeries.Language,
                 tvSeries.Reviews?.Select(r => ReviewMapping.ToResponse(r)).ToList() ?? new List<ReviewResponse>(),

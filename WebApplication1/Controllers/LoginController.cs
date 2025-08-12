@@ -69,7 +69,17 @@ namespace WebApplication1.Controllers
                 return Unauthorized();
             }
             var tokens = await authService.RefreshAccessToken(refreshToken);
-            Response.Cookies.Delete(refreshToken);
+            if (tokens is null)
+            {
+                throw new Exception("Not found tokens to use");
+            }
+            Response.Cookies.Append("refreshToken", tokens.refreshToken, new CookieOptions
+            {
+                Secure = true,
+                HttpOnly = true,
+                SameSite = SameSiteMode.Lax,
+                Expires = DateTime.Now.AddDays(7)
+            });
             return Ok();
         }
     }

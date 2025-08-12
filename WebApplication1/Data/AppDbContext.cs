@@ -7,6 +7,7 @@ namespace WebApplication1.Data
         public AppDbContext(DbContextOptions<AppDbContext> options) : base(options) { }
         public DbSet<Media> Medias { get; set; }
         public DbSet<TvSeries>TvSeries { get; set; }
+        public DbSet<Game> Games { get; set; }
         public DbSet<Movie> Movies { get; set; }
         public DbSet<Genre> Genres { get; set; }
         public DbSet<Director> Directors { get; set; }
@@ -66,18 +67,14 @@ namespace WebApplication1.Data
                 .OnDelete(DeleteBehavior.Cascade);
 
             modelBuilder.Entity<Media>()
-                .HasOne(m => m.director)
-                .WithMany()
-                .HasForeignKey("directorId");
-
-            modelBuilder.Entity<Media>()
                 .HasOne(m => m.genre)
                 .WithMany()
                 .HasForeignKey("genreId");
             modelBuilder.Entity<Media>()
                 .HasDiscriminator<string>("MediaType")
                 .HasValue<Movie>("Movie")
-                .HasValue<TvSeries>("TvSeries");
+                .HasValue<TvSeries>("TvSeries")
+                .HasValue<Game>("Game");
 
             modelBuilder.Entity<Role>()
                 .Property(r => r.role)
