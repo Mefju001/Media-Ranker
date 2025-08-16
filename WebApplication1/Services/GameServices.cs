@@ -43,7 +43,7 @@ namespace WebApplication1.Services
             return GameMapping.ToResponse(game);
         }
         //editing
-        public Task<List<GameResponse>> GetGames(string? name, string? genreName)
+        public async Task<List<GameResponse>> GetGames(string? name, string? genreName)
         {
             var query = _context.Games
                 .Include(g => g.genre)
@@ -61,17 +61,42 @@ namespace WebApplication1.Services
             {
                 query = query.Where(g=>g.)
             }*/
-            return null;
+            var games = await query.ToListAsync();
+            return games.Select(GameMapping.ToResponse).ToList();
         }
 
-        public Task<List<GameResponse>> GetGamesByAvrRating()
+        public async Task<List<GameResponse>> GetGamesByAvrRating()
         {
-            throw new NotImplementedException();
+            var gamesAVR = await _context.Games
+                .Include(g => g.genre)
+                .Include(g => g.Reviews)
+                .Select(g => new
+                {
+                    Game = g,
+                    avarage = g.Reviews.Average(r=>(double?)r.Rating)??0
+                })
+                .OrderByDescending(g => g.avarage)
+                .ToListAsync();
+            return gamesAVR.Select(g=>GameMapping.ToResponse(g.Game)).ToList();
         }
 
-        public Task<List<GameResponse>> GetSortAll(string sort)
+        public async Task<List<GameResponse>> GetSortAll(string sort)
         {
-            throw new NotImplementedException();
+            sort =sort.ToLower();
+            var query = _context.Games
+                .Include(g => g.genre)
+                .Include(g => g.Reviews)
+                .AsQueryable();
+            if (!string.IsNullOrEmpty(sort) && sort.Equals("asc"))
+            {
+                query = query.OrderBy(m => m.title);
+            }
+            if (!string.IsNullOrEmpty(sort) && sort.Equals("desc"))
+            {
+                query = query.OrderByDescending(m => m.title);
+            }
+            var games = await query.ToListAsync();
+            return games.Select(GameMapping.ToResponse).ToList();
         }
 
         public Task<(int movieId, Game response)> Upsert(int? movieId, MovieRequest movie)

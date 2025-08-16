@@ -9,7 +9,7 @@ namespace WebApplication1.Services.Interfaces
         Task<List<GameResponse>> GetAllAsync();
         Task<List<GameResponse>> GetSortAll(string sort);
         Task<List<GameResponse>> GetGamesByAvrRating();
-        Task<List<GameResponse>> GetGames(string? name, string? genreName, int? movieid);
+        Task<List<GameResponse>> GetGames(string? name, string? genreName);
         Task<GameResponse?> GetById(int id);
         Task<(int movieId, Game response)> Upsert(int? movieId, MovieRequest movie);
         Task<bool> Delete(int id);

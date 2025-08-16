@@ -1,5 +1,8 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using WebApplication1.DTO.Request;
+using WebApplication1.Services.Impl;
 using WebApplication1.Services.Interfaces;
 
 namespace WebApplication1.Controllers
@@ -14,6 +17,57 @@ namespace WebApplication1.Controllers
         {
             this.gameServices = gameServices;
         }
-
+        [AllowAnonymous]
+        [HttpGet]
+        public async Task<IActionResult> GetAll()
+        {
+            var games = await gameServices.GetAllAsync();
+            return Ok(games);
+        }
+        [AllowAnonymous]
+        [HttpGet("sortBy/{sort}")]
+        public async Task<IActionResult> GetSortAll(string sort)
+        {
+            var games = await gameServices.GetSortAll(sort);
+            return Ok(games);
+        }
+        [AllowAnonymous]
+        [HttpGet("FilterBy")]
+        public async Task<IActionResult> GetMovies([FromQuery] string? name, [FromQuery] string? genreName, [FromQuery] string? directorName, [FromQuery] int? movieId)
+        {
+            var games = await gameServices.GetMovies(name, genreName, directorName, movieId);
+            return Ok(games);
+        }
+        [AllowAnonymous]
+        [HttpGet("byAvarage")]
+        public async Task<IActionResult> GetMoviesByAvarage()
+        {
+            var games = await gameServices.GetGamesByAvrRating();
+            return Ok(games);
+        }
+        [AllowAnonymous]
+        [HttpGet("id/{id}")]
+        public async Task<IActionResult> GetById(int id)
+        {
+            var games = await gameServices.GetById(id);
+            return Ok(games);
+        }
+        [Authorize(Roles = "Admin")]
+        [HttpPost]
+        public async Task<IActionResult> Upsert(int? id, GameRequest gameRequest)
+        {
+            var created = await gameServices.Upsert(id, gameRequest);
+            if (id is null)
+                return CreatedAtAction(nameof(GetById), new { id = created.movieId }, created.response);
+            return Ok(created.response);
+        }
+        [Authorize(Roles = "Admin")]
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> Delete(int id)
+        {
+            var deleted = await gameServices.Delete(id);
+            if (!deleted) return NotFound();
+            return NoContent();
+        }
     }
 }
