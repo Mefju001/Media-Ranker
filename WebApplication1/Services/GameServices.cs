@@ -98,10 +98,61 @@ namespace WebApplication1.Services
             var games = await query.ToListAsync();
             return games.Select(GameMapping.ToResponse).ToList();
         }
-
-        public Task<(int movieId, Game response)> Upsert(int? movieId, MovieRequest movie)
+        private async Task<Genre> GetOrCreateGenreAsync(GenreRequest genreRequest)
         {
-            throw new NotImplementedException();
+            var genre = await _context.Genres.FirstOrDefaultAsync(g => g.name == genreRequest.name);
+            if (genre is not null) return genre;
+            genre = new Genre { name = genreRequest.name };
+            _context.Genres.Add(genre);
+            return genre;
         }
-    }
+        public async Task<(int movieId, GameResponse response)> Upsert(int? gameId, GameRequest gameRequest)
+        {
+            await using var transaction = await _context.Database.BeginTransactionAsync();
+            try
+            {
+                var genre = await GetOrCreateGenreAsync(gameRequest.Genre);
+                Game? game;
+                if (gameId != null)
+                {
+                    game = await _context.Games
+                        .Include(g => g.genre)
+                        .Include(g => g.Reviews)
+                        .FirstOrDefaultAsync(g => g.Id == gameId);
+                    if (game != null)
+                    {
+                        game.title = gameRequest.Title;
+                        game.description = gameRequest.Description;
+                        game.genre = genre;
+                        game.Language = gameRequest.Language;
+                        game.Developer = gameRequest.Developer;
+                        game.Platform = gameRequest.Platform;
+                        game.ReleaseDate = gameRequest.ReleaseDate;
+                        await _context.SaveChangesAsync();
+                        await transaction.CommitAsync();
+                        return (game.Id, GameMapping.ToResponse(game));
+                    }
+                }
+                    game = new Game
+                    {
+                        title = gameRequest.Title,
+                        description = gameRequest.Description,
+                        genre = genre,
+                        Language = gameRequest.Language,
+                        Developer = gameRequest.Developer,
+                        Platform = gameRequest.Platform,
+                        ReleaseDate = gameRequest.ReleaseDate
+                    };
+                    _context.Games.Add(game);
+                    await _context.SaveChangesAsync();
+                    var response = GameMapping.ToResponse(game);
+                    await transaction.CommitAsync();
+                    return (game.Id,response);
+            }
+            catch
+            {
+                await transaction.RollbackAsync();
+                throw;
+            }
+        }
 }

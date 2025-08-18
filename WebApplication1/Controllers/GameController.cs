@@ -33,9 +33,9 @@ namespace WebApplication1.Controllers
         }
         [AllowAnonymous]
         [HttpGet("FilterBy")]
-        public async Task<IActionResult> GetMovies([FromQuery] string? name, [FromQuery] string? genreName, [FromQuery] string? directorName, [FromQuery] int? movieId)
+        public async Task<IActionResult> GetMovies([FromQuery] string? name, [FromQuery] string? genreName)
         {
-            var games = await gameServices.GetMovies(name, genreName, directorName, movieId);
+            var games = await gameServices.GetGames(name, genreName);
             return Ok(games);
         }
         [AllowAnonymous]

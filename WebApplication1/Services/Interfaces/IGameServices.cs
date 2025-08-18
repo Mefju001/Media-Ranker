@@ -11,7 +11,7 @@ namespace WebApplication1.Services.Interfaces
         Task<List<GameResponse>> GetGamesByAvrRating();
         Task<List<GameResponse>> GetGames(string? name, string? genreName);
         Task<GameResponse?> GetById(int id);
-        Task<(int movieId, Game response)> Upsert(int? movieId, MovieRequest movie);
+        Task<(int movieId, GameResponse response)> Upsert(int? movieId, GameRequest game);
         Task<bool> Delete(int id);
     }
 }
