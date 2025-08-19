@@ -7,6 +7,7 @@ using WebApplication1.Services.Interfaces;
 
 namespace WebApplication1.Controllers
 {
+    [AllowAnonymous]
     [Route("api/[controller]")]
     [ApiController]
     public class GameController : ControllerBase
@@ -17,35 +18,30 @@ namespace WebApplication1.Controllers
         {
             this.gameServices = gameServices;
         }
-        [AllowAnonymous]
         [HttpGet]
         public async Task<IActionResult> GetAll()
         {
             var games = await gameServices.GetAllAsync();
             return Ok(games);
         }
-        [AllowAnonymous]
         [HttpGet("sortBy/{sort}")]
         public async Task<IActionResult> GetSortAll(string sort)
         {
             var games = await gameServices.GetSortAll(sort);
             return Ok(games);
         }
-        [AllowAnonymous]
         [HttpGet("FilterBy")]
         public async Task<IActionResult> GetMovies([FromQuery] string? name, [FromQuery] string? genreName)
         {
             var games = await gameServices.GetGames(name, genreName);
             return Ok(games);
         }
-        [AllowAnonymous]
         [HttpGet("byAvarage")]
         public async Task<IActionResult> GetMoviesByAvarage()
         {
             var games = await gameServices.GetGamesByAvrRating();
             return Ok(games);
         }
-        [AllowAnonymous]
         [HttpGet("id/{id}")]
         public async Task<IActionResult> GetById(int id)
         {

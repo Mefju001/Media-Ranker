@@ -9,6 +9,7 @@ using WebApplication1.Services.Interfaces;
 
 namespace WebApplication1.Controllers.Security
 {
+    [Authorize(Roles ="Admin")]
     [ApiController]
     [Route("[controller]")]
     public class AuthController: ControllerBase
@@ -59,7 +60,6 @@ namespace WebApplication1.Controllers.Security
 
             return Ok("Dane zostały dodane.");
         }
-        [Authorize(Roles = "Admin")]
         [HttpPost("clean-tokens-now")]
         public async Task<IActionResult> CleanTokensNow()
         {

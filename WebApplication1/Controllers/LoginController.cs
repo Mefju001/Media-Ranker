@@ -8,6 +8,7 @@ using WebApplication1.Services.Interfaces;
 
 namespace WebApplication1.Controllers
 {
+    [AllowAnonymous]
     [ApiController]
     [Route("api")]
     public class LoginController:ControllerBase
@@ -20,8 +21,6 @@ namespace WebApplication1.Controllers
             this.authService = authService;
             this.userServices = userServices;
         }
-
-        [AllowAnonymous]
         [HttpPost("Login")]
         public async Task<IActionResult> Login([FromBody] LoginRequest loginRequest)
         {
@@ -59,7 +58,7 @@ namespace WebApplication1.Controllers
             return Ok(await userServices.Register(userRequest));
         }
 
-        [AllowAnonymous]
+        [Authorize(Roles =("User"))]
         [HttpPost("refreshToken")]
         public async Task<IActionResult> RefreshToken()
         {

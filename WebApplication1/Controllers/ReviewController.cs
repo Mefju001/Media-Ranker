@@ -8,6 +8,7 @@ using WebApplication1.Services.Interfaces;
 
 namespace WebApplication1.Controllers
 {
+    [Authorize(Roles = "User")]
     [ApiController]
     [Route("[controller]")]
     public class ReviewController:ControllerBase
@@ -17,6 +18,7 @@ namespace WebApplication1.Controllers
         {
             this.services = services;
         }
+        [AllowAnonymous]
         [HttpGet]
         public async Task<IActionResult>GetAll()
         {
@@ -34,7 +36,7 @@ namespace WebApplication1.Controllers
             else
                 throw new Exception();
         }
-        [Authorize(Roles = "Admin,User")]
+        [Authorize(Roles = "User")]
         [HttpPost]
         public async Task<IActionResult> Upsert(int? reviewId, int movieId, ReviewRequest reviewRequest)
         {
@@ -53,13 +55,13 @@ namespace WebApplication1.Controllers
             return Ok(response);
 
         }
-        [Authorize(Roles = "Admin,User")]
+        [Authorize(Roles = "User")]
         [HttpGet("{id}")]
         public async Task<IActionResult> GetById(int id)
         {
             return Ok(await services.GetById(id));
         }
-        [Authorize(Roles = "Admin,User")]
+        [Authorize(Roles = "User")]
         [HttpDelete]
         public async Task<IActionResult> Delete(int id)
         {

@@ -15,8 +15,8 @@ namespace WebApplication1.Services
         private readonly AppDbContext _context;
         public async Task<bool> Delete(int id)
         {
-            var games = _context.Games.FirstOrDefault(x=>x.Id == id);
-            if(games == null)
+            var games = _context.Games.FirstOrDefault(x => x.Id == id);
+            if (games == null)
                 return false;
             _context.Games.Remove(games);
             await _context.SaveChangesAsync();
@@ -37,7 +37,7 @@ namespace WebApplication1.Services
             var game = await _context.Games
                 .Include(g => g.genre)
                 .Include(g => g.Reviews)
-                .FirstOrDefaultAsync(x=>x.Id == id);
+                .FirstOrDefaultAsync(x => x.Id == id);
             if (game == null)
                 throw new NotFoundException("No game found with that name");
             return GameMapping.ToResponse(game);
@@ -53,9 +53,9 @@ namespace WebApplication1.Services
             {
                 query = query.Where(g => g.title.Contains(name));
             }
-            if(genreName != null)
+            if (genreName != null)
             {
-                query = query.Where(g=>g.genre.name.Contains(genreName));
+                query = query.Where(g => g.genre.name.Contains(genreName));
             }
             /*if (directorName != null)
             {
@@ -73,16 +73,16 @@ namespace WebApplication1.Services
                 .Select(g => new
                 {
                     Game = g,
-                    avarage = g.Reviews.Average(r=>(double?)r.Rating)??0
+                    avarage = g.Reviews.Average(r => (double?)r.Rating) ?? 0
                 })
                 .OrderByDescending(g => g.avarage)
                 .ToListAsync();
-            return gamesAVR.Select(g=>GameMapping.ToResponse(g.Game)).ToList();
+            return gamesAVR.Select(g => GameMapping.ToResponse(g.Game)).ToList();
         }
 
         public async Task<List<GameResponse>> GetSortAll(string sort)
         {
-            sort =sort.ToLower();
+            sort = sort.ToLower();
             var query = _context.Games
                 .Include(g => g.genre)
                 .Include(g => g.Reviews)
@@ -133,21 +133,21 @@ namespace WebApplication1.Services
                         return (game.Id, GameMapping.ToResponse(game));
                     }
                 }
-                    game = new Game
-                    {
-                        title = gameRequest.Title,
-                        description = gameRequest.Description,
-                        genre = genre,
-                        Language = gameRequest.Language,
-                        Developer = gameRequest.Developer,
-                        Platform = gameRequest.Platform,
-                        ReleaseDate = gameRequest.ReleaseDate
-                    };
-                    _context.Games.Add(game);
-                    await _context.SaveChangesAsync();
-                    var response = GameMapping.ToResponse(game);
-                    await transaction.CommitAsync();
-                    return (game.Id,response);
+                game = new Game
+                {
+                    title = gameRequest.Title,
+                    description = gameRequest.Description,
+                    genre = genre,
+                    Language = gameRequest.Language,
+                    Developer = gameRequest.Developer,
+                    Platform = gameRequest.Platform,
+                    ReleaseDate = gameRequest.ReleaseDate
+                };
+                _context.Games.Add(game);
+                await _context.SaveChangesAsync();
+                var response = GameMapping.ToResponse(game);
+                await transaction.CommitAsync();
+                return (game.Id, response);
             }
             catch
             {
@@ -155,4 +155,5 @@ namespace WebApplication1.Services
                 throw;
             }
         }
+    }
 }
