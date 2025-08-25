@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using WebApplication1.Data;
@@ -11,9 +12,11 @@ using WebApplication1.Data;
 namespace WebApplication1.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250819215646_updateLikedMovie")]
+    partial class updateLikedMovie
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -58,6 +61,36 @@ namespace WebApplication1.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Genres");
+                });
+
+            modelBuilder.Entity("WebApplication1.Models.LikedMedia", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("LikedDate")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<int>("mediaId")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("mediaType")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("userId")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("mediaId");
+
+                    b.HasIndex("userId", "mediaId")
+                        .IsUnique();
+
+                    b.ToTable("LikedMedias");
                 });
 
             modelBuilder.Entity("WebApplication1.Models.Media", b =>
@@ -225,33 +258,6 @@ namespace WebApplication1.Migrations
                     b.ToTable("Users");
                 });
 
-            modelBuilder.Entity("WebApplication1.Models.UserMovieLike", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
-
-                    b.Property<DateTime>("LikedDate")
-                        .HasColumnType("timestamp without time zone");
-
-                    b.Property<int>("movieId")
-                        .HasColumnType("integer");
-
-                    b.Property<int>("userId")
-                        .HasColumnType("integer");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("movieId");
-
-                    b.HasIndex("userId", "movieId")
-                        .IsUnique();
-
-                    b.ToTable("UserMovieLike");
-                });
-
             modelBuilder.Entity("WebApplication1.Models.UserRole", b =>
                 {
                     b.Property<int>("UserId")
@@ -318,6 +324,25 @@ namespace WebApplication1.Migrations
                     b.HasDiscriminator().HasValue("TvSeries");
                 });
 
+            modelBuilder.Entity("WebApplication1.Models.LikedMedia", b =>
+                {
+                    b.HasOne("WebApplication1.Models.Media", "Media")
+                        .WithMany()
+                        .HasForeignKey("mediaId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("WebApplication1.Models.User", "User")
+                        .WithMany()
+                        .HasForeignKey("userId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Media");
+
+                    b.Navigation("User");
+                });
+
             modelBuilder.Entity("WebApplication1.Models.Media", b =>
                 {
                     b.HasOne("WebApplication1.Models.Genre", "genre")
@@ -357,25 +382,6 @@ namespace WebApplication1.Migrations
                         .IsRequired();
 
                     b.Navigation("User");
-                });
-
-            modelBuilder.Entity("WebApplication1.Models.UserMovieLike", b =>
-                {
-                    b.HasOne("WebApplication1.Models.Movie", "movie")
-                        .WithMany()
-                        .HasForeignKey("movieId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("WebApplication1.Models.User", "user")
-                        .WithMany()
-                        .HasForeignKey("userId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("movie");
-
-                    b.Navigation("user");
                 });
 
             modelBuilder.Entity("WebApplication1.Models.UserRole", b =>

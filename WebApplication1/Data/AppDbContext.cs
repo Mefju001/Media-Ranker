@@ -16,7 +16,7 @@ namespace WebApplication1.Data
         public DbSet<Role> Roles { get; set; }
         public DbSet<Token>Tokens { get; set; }
         public DbSet<UserRole> UsersRoles { get; set; }
-        public DbSet<UserMovieLike>UserMovieLike { get; set; }
+        public DbSet<LikedMedia>LikedMedias { get; set; }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<Token>()
@@ -25,19 +25,19 @@ namespace WebApplication1.Data
                  .HasForeignKey(t => t.UserId)
                  .OnDelete(DeleteBehavior.Cascade);
 
-            modelBuilder.Entity<UserMovieLike>()
-                .HasIndex(uml => new { uml.userId, uml.movieId })
+            modelBuilder.Entity<LikedMedia>()
+                .HasIndex(uml => new { uml.userId, uml.mediaId })
                 .IsUnique();
 
-            modelBuilder.Entity<UserMovieLike>()
-                .HasOne(uml => uml.user)
+            modelBuilder.Entity<LikedMedia>()
+                .HasOne(uml => uml.User)
                 .WithMany()
                 .HasForeignKey(uml => uml.userId);
 
-            modelBuilder.Entity<UserMovieLike>()
-                .HasOne(uml => uml.movie)
+            modelBuilder.Entity<LikedMedia>()
+                .HasOne(uml => uml.Media)
                 .WithMany()
-                .HasForeignKey(uml => uml.movieId);
+                .HasForeignKey(uml => uml.mediaId);
 
             modelBuilder.Entity<UserRole>()
                 .HasKey(ur => new { ur.UserId, ur.RoleId });
