@@ -5,13 +5,13 @@ namespace WebApplication1.DTO.Mapping
 {
     public class LikedMovieMapping
     {
-        public static LikedMovieResponse ToResponse(UserMovieLike userMovieLike)
+        /*public static LikedMovieResponse ToResponse(LikedMedia likedMedia)
         {
             return new LikedMovieResponse(
                 user: UserMapping.ToResponse(userMovieLike.user),
                 movie: MovieMapping.ToResponse(userMovieLike.movie),
                 userMovieLike.LikedDate
             );
-        }
+        }*/
     }
 }

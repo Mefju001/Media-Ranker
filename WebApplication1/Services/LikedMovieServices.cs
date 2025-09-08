@@ -13,7 +13,27 @@ namespace WebApplication1.Services
     {
         private readonly AppDbContext AppDbContext = context;
 
-        public async Task<bool> Delete(int id)
+        public Task<(int movieId, LikedMovieResponse response)> Add(LikedMovieRequest movie)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<bool> Delete(int id)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<List<LikedMovieResponse>> GetAllAsync()
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<LikedMovieResponse?> GetById(int id)
+        {
+            throw new NotImplementedException();
+        }
+
+        /*public async Task<bool> Delete(int id)
         {
             var likedMovie = await AppDbContext.UserMovieLike.FirstOrDefaultAsync(x => x.Id == id);
             if (likedMovie != null)
@@ -70,7 +90,7 @@ namespace WebApplication1.Services
             {
                 throw new Exception("Not find user or movie");
             }
-            UserMovieLike userMovieLike = new UserMovieLike();
+            LikedMedia userMovieLike = new LikedMedia();
             userMovieLike.movie = movie;
             userMovieLike.user = user;
             AppDbContext.UserMovieLike.Add(userMovieLike);
@@ -88,6 +108,6 @@ namespace WebApplication1.Services
                             .ThenInclude(ur => ur.Role)
                     .FirstOrDefaultAsync(uml => uml.Id == userMovieLike.Id);
             return (movie.Id, LikedMovieMapping.ToResponse(response));
-        }
+        }*/
     }
 }

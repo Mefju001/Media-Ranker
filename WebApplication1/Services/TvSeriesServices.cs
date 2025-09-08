@@ -33,7 +33,6 @@ namespace WebApplication1.Services
         {
             var TvSeries = await context.TvSeries
                                 .Include(m => m.genre)
-                                .Include(m => m.director)
                                 .Include(m => m.Reviews)
                                 .ThenInclude(r => r.User)
                                 .ToListAsync();
@@ -44,7 +43,6 @@ namespace WebApplication1.Services
         {
             var TvSeries = await context.TvSeries
                 .Include(m => m.genre)
-                .Include(m => m.director)
                 .Include(m => m.Reviews)
                 .ThenInclude(r => r.User)
                 .FirstOrDefaultAsync(tv => tv.Id == id);
@@ -58,7 +56,6 @@ namespace WebApplication1.Services
             sort = sort.ToLower();
             var query = context.TvSeries
                                 .Include(m => m.genre)
-                                .Include(m => m.director)
                                 .Include(m => m.Reviews)
                                 .ThenInclude(r => r.User)
                                 .AsQueryable();
@@ -78,7 +75,6 @@ namespace WebApplication1.Services
         {
             var query = context.TvSeries
                                 .Include(m => m.genre)
-                                .Include(m => m.director)
                                 .Include(m => m.Reviews)
                                 .ThenInclude(r => r.User)
                                 .AsQueryable();
@@ -90,10 +86,6 @@ namespace WebApplication1.Services
             {
                 query = query.Where(tv => tv.genre.name.Contains(genreName));
             }
-            if (!string.IsNullOrEmpty(directorName))
-            {
-                query = query.Where(tv => tv.director.name.Contains(directorName) || tv.director.surname.Contains(directorName));
-            }
             var movies = await query.ToListAsync();
             return movies.Select(TvSeriesMapping.ToResponse).ToList();
         }
@@ -102,7 +94,6 @@ namespace WebApplication1.Services
         {
             var TvSeries = await context.TvSeries
                     .Include(m => m.genre)
-                    .Include(m => m.director)
                     .Include(m => m.Reviews)
                         .ThenInclude(r => r.User)
                     .Select(tv => new
@@ -114,14 +105,7 @@ namespace WebApplication1.Services
                     .ToListAsync();
             return TvSeries.Select(x => TvSeriesMapping.ToResponse(x.TvSeries)).ToList();
         }
-        private async Task<Director> GetOrCreateDirectorAsync(DirectorRequest directorRequest)
-        {
-            var Director = await context.Directors.FirstOrDefaultAsync(d => d.name == directorRequest.Name && d.surname == directorRequest.Surname);
-            if (Director is not null) return Director;
-            Director = new Director { name = directorRequest.Name, surname = directorRequest.Surname };
-            context.Directors.Add(Director);
-            return Director;
-        }
+
         private async Task<Genre> GetOrCreateGenreAsync(GenreRequest genreRequest)
         {
             var genre = await context.Genres.FirstOrDefaultAsync(g => g.name == genreRequest.name);
@@ -135,20 +119,17 @@ namespace WebApplication1.Services
             await using var transaction = await context.Database.BeginTransactionAsync();
             try
             {
-                var director = await GetOrCreateDirectorAsync(tvSeriesRequest.director);
                 var genre = await GetOrCreateGenreAsync(tvSeriesRequest.genre);
                 TvSeries? tvSeries;
                 if (tvSeriesId is not null)
                 {
                     tvSeries = await context.TvSeries
-                            .Include(m => m.director)
                             .Include(m => m.genre)
                             .FirstOrDefaultAsync(m => m.Id == tvSeriesId.Value);
                     if (tvSeries is not null)
                     {
                         tvSeries.title = tvSeriesRequest.title;
                         tvSeries.description = tvSeriesRequest.description;
-                        tvSeries.director = director;
                         tvSeries.genre = genre;
                         tvSeries.ReleaseDate = tvSeriesRequest.ReleaseDate;
                         tvSeries.Language = tvSeriesRequest.Language;
@@ -165,7 +146,6 @@ namespace WebApplication1.Services
                 {
                     title = tvSeriesRequest.title,
                     description = tvSeriesRequest.description,
-                    director = director,
                     genre = genre,
                     ReleaseDate = tvSeriesRequest.ReleaseDate,
                     Language = tvSeriesRequest.Language,

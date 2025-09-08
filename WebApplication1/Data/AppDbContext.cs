@@ -7,29 +7,37 @@ namespace WebApplication1.Data
         public AppDbContext(DbContextOptions<AppDbContext> options) : base(options) { }
         public DbSet<Media> Medias { get; set; }
         public DbSet<TvSeries>TvSeries { get; set; }
+        public DbSet<Game> Games { get; set; }
         public DbSet<Movie> Movies { get; set; }
         public DbSet<Genre> Genres { get; set; }
         public DbSet<Director> Directors { get; set; }
         public DbSet<Review> Reviews { get; set; }
         public DbSet<User> Users { get; set; }
         public DbSet<Role> Roles { get; set; }
+        public DbSet<Token>Tokens { get; set; }
         public DbSet<UserRole> UsersRoles { get; set; }
-        public DbSet<UserMovieLike>UserMovieLike { get; set; }
+        public DbSet<LikedMedia>LikedMedias { get; set; }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            modelBuilder.Entity<UserMovieLike>()
-                .HasIndex(uml => new { uml.userId, uml.movieId })
+            modelBuilder.Entity<Token>()
+                .HasOne(t => t.User)
+                 .WithMany()
+                 .HasForeignKey(t => t.UserId)
+                 .OnDelete(DeleteBehavior.Cascade);
+
+            modelBuilder.Entity<LikedMedia>()
+                .HasIndex(uml => new { uml.userId, uml.mediaId })
                 .IsUnique();
 
-            modelBuilder.Entity<UserMovieLike>()
-                .HasOne(uml => uml.user)
+            modelBuilder.Entity<LikedMedia>()
+                .HasOne(uml => uml.User)
                 .WithMany()
                 .HasForeignKey(uml => uml.userId);
 
-            modelBuilder.Entity<UserMovieLike>()
-                .HasOne(uml => uml.movie)
+            modelBuilder.Entity<LikedMedia>()
+                .HasOne(uml => uml.Media)
                 .WithMany()
-                .HasForeignKey(uml => uml.movieId);
+                .HasForeignKey(uml => uml.mediaId);
 
             modelBuilder.Entity<UserRole>()
                 .HasKey(ur => new { ur.UserId, ur.RoleId });
@@ -59,18 +67,14 @@ namespace WebApplication1.Data
                 .OnDelete(DeleteBehavior.Cascade);
 
             modelBuilder.Entity<Media>()
-                .HasOne(m => m.director)
-                .WithMany()
-                .HasForeignKey("directorId");
-
-            modelBuilder.Entity<Media>()
                 .HasOne(m => m.genre)
                 .WithMany()
                 .HasForeignKey("genreId");
             modelBuilder.Entity<Media>()
                 .HasDiscriminator<string>("MediaType")
                 .HasValue<Movie>("Movie")
-                .HasValue<TvSeries>("TvSeries");
+                .HasValue<TvSeries>("TvSeries")
+                .HasValue<Game>("Game");
 
             modelBuilder.Entity<Role>()
                 .Property(r => r.role)
