@@ -19,8 +19,8 @@ namespace WebApplication1.Controllers
     {
         private readonly AuthService authService;
         private readonly IUserServices userServices;
-        private readonly ILikedMovieServices likedMovieServices;
-        public UserController(IUserServices userServices,AuthService authService, ILikedMovieServices likedMovieServices)
+        private readonly ILikedMediaServices likedMovieServices;
+        public UserController(IUserServices userServices,AuthService authService, ILikedMediaServices likedMovieServices)
         {
             this.userServices = userServices;
             this.authService = authService;

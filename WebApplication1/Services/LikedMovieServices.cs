@@ -3,17 +3,16 @@ using WebApplication1.Data;
 using WebApplication1.DTO.Mapping;
 using WebApplication1.DTO.Request;
 using WebApplication1.DTO.Response;
-using WebApplication1.Migrations;
 using WebApplication1.Models;
 using WebApplication1.Services.Interfaces;
 
 namespace WebApplication1.Services
 {
-    public class LikedMovieServices(AppDbContext context):ILikedMovieServices
+    public class LikedMediaServices(AppDbContext context):ILikedMediaServices
     {
         private readonly AppDbContext AppDbContext = context;
 
-        public Task<(int movieId, LikedMovieResponse response)> Add(LikedMovieRequest movie)
+        public Task<(int movieId, LikedMediaResponse response)> Add(LikedMovieRequest movie)
         {
             throw new NotImplementedException();
         }
@@ -23,12 +22,14 @@ namespace WebApplication1.Services
             throw new NotImplementedException();
         }
 
-        public Task<List<LikedMovieResponse>> GetAllAsync()
+        public async Task<List<LikedMedia>> GetAllAsync()
         {
-            throw new NotImplementedException();
+            var LikedItem = await AppDbContext.LikedMedias
+                .ToListAsync();
+            return LikedItem.ToList();
         }
 
-        public Task<LikedMovieResponse?> GetById(int id)
+        public Task<LikedMediaResponse?> GetById(int id)
         {
             throw new NotImplementedException();
         }
