@@ -26,18 +26,28 @@ namespace WebApplication1.Data
                  .OnDelete(DeleteBehavior.Cascade);
 
             modelBuilder.Entity<LikedMedia>()
-                .HasIndex(uml => new { uml.userId, uml.mediaId })
+                .HasIndex(lm => new { lm.UserId, lm.MovieId,lm.TvSeriesId,lm.GameId })
                 .IsUnique();
 
             modelBuilder.Entity<LikedMedia>()
-                .HasOne(uml => uml.User)
+                .HasOne(lm => lm.User)
                 .WithMany()
-                .HasForeignKey(uml => uml.userId);
+                .HasForeignKey(lm => lm.UserId);
 
             modelBuilder.Entity<LikedMedia>()
-                .HasOne(uml => uml.Media)
+                .HasOne(lm => lm.TvSeries)
                 .WithMany()
-                .HasForeignKey(uml => uml.mediaId);
+                .HasForeignKey(lm => lm.TvSeriesId);
+
+            modelBuilder.Entity<LikedMedia>()
+                .HasOne(lm => lm.Movie)
+                .WithMany()
+                .HasForeignKey(lm => lm.MovieId);
+
+            modelBuilder.Entity<LikedMedia>()
+                .HasOne(lm => lm.Game)
+                .WithMany()
+                .HasForeignKey(lm => lm.GameId);
 
             modelBuilder.Entity<UserRole>()
                 .HasKey(ur => new { ur.UserId, ur.RoleId });

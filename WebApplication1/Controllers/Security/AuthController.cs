@@ -35,6 +35,14 @@ namespace WebApplication1.Controllers.Security
             await logSenderService.SendLogAsync("Information", "Nothing", "admin");
             return Ok("Dane zostały przesłane. ");
         }
+        [AllowAnonymous]
+        [HttpPost("AddedLikedMedia")]
+        public async Task<IActionResult> addLikedMedia()
+        {
+            //testing
+            await logSenderService.SendLogAsync("Information", "Nothing", "admin");
+            return Ok("Dane zostały przesłane. ");
+        }
         [HttpPost("AddRolesAndUsers")]
         public async Task<IActionResult> AddUserAndRole()
         {
