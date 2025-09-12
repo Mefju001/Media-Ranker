@@ -65,6 +65,12 @@ namespace WebApplication1.Controllers
         {
             return Ok(await likedMovieServices.GetAllAsync());
         }
+        [AllowAnonymous/*Authorize(Roles = "User")*/]
+        [HttpGet("/Liked/{id}")]
+        public async Task<IActionResult> GetLikedMoviesByUser(int id)
+        {
+            return Ok(await likedMovieServices.GetUserLikedMedia(id));
+        }
         [Authorize(Roles = "Admin,User")]
         [HttpPost("/Liked")]
         public async Task<IActionResult> AddLikedMovie([FromBody] LikedMovieRequest likedMovie)

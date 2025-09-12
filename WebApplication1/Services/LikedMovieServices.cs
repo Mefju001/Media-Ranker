@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.AspNetCore.Http.HttpResults;
+using Microsoft.EntityFrameworkCore;
 using WebApplication1.Data;
 using WebApplication1.DTO.Mapping;
 using WebApplication1.DTO.Request;
@@ -17,9 +18,19 @@ namespace WebApplication1.Services
             throw new NotImplementedException();
         }
 
-        public Task<bool> Delete(int id)
+        public async Task<bool> Delete(int userId, int mediaId)
         {
-            throw new NotImplementedException();
+            var likedItem = await AppDbContext.LikedMedias.FirstOrDefaultAsync(lm => lm.UserId == userId&&
+            (lm.GameId == mediaId||lm.MovieId == mediaId || lm.TvSeriesId == mediaId));
+            if (likedItem == null)
+            {
+                //Dodać nowy wyjatek dla pustych polubionych.
+                throw new Exception("Jest pusty");
+
+            }
+            AppDbContext.LikedMedias.Remove(likedItem);
+            await AppDbContext.SaveChangesAsync();
+            return true;
         }
 
         public async Task<List<LikedMedia>> GetAllAsync()
@@ -28,7 +39,33 @@ namespace WebApplication1.Services
                 .ToListAsync();
             return LikedItem.ToList();
         }
+        public async Task<List<Object>>GetUserLikedMedia(int userId)
+        {
+            var likedItems = await AppDbContext.LikedMedias
+                .Where(lm=>lm.UserId == userId)
+                .ToListAsync();
+            var result = new List<Object>();
 
+            foreach (var item in likedItems)
+            {
+                switch (item.Type)
+                {
+                    case "Movie":
+                        var movie = await AppDbContext.Movies.FindAsync(item.MovieId);
+                        if(movie is not null)result.Add(movie);
+                        break;
+                    case "TvSeries":
+                        var tvSeries = await AppDbContext.TvSeries.FindAsync(item.TvSeriesId);
+                        if (tvSeries is not null) result.Add(tvSeries);
+                        break;
+                    case "Games":
+                        var game = await AppDbContext.Games.FindAsync(item.GameId);
+                        if (game is not null) result.Add(game);
+                        break;
+                }
+            }
+            return result;
+        }
         public Task<LikedMediaResponse?> GetById(int id)
         {
             throw new NotImplementedException();

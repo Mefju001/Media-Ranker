@@ -13,6 +13,11 @@ namespace WebApplication1.Services
     public class GameServices : IGameServices
     {
         private readonly AppDbContext _context;
+        public GameServices(AppDbContext context)
+        {
+            _context = context;
+        }
+
         public async Task<bool> Delete(int id)
         {
             var games = _context.Games.FirstOrDefault(x => x.Id == id);

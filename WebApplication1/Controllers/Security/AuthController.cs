@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using WebApplication1.Data;
+using WebApplication1.DTO.Request;
 using WebApplication1.Models;
 using WebApplication1.Services;
 using WebApplication1.Services.Interfaces;
@@ -19,13 +20,15 @@ namespace WebApplication1.Controllers.Security
         private readonly LogSenderService logSenderService;
         private readonly AppDbContext appDbContext;
         private readonly IPasswordHasher<User>passwordHasher;
-        public AuthController(LogSenderService logSenderService,AuthService authService, AppDbContext appDbContext, IPasswordHasher<User> password, ITokenCleanupService tokenCleanupService)
+        private readonly IGameServices game;
+        public AuthController(LogSenderService logSenderService,AuthService authService, AppDbContext appDbContext, IPasswordHasher<User> password, ITokenCleanupService tokenCleanupService, IGameServices game)
         {
             this.logSenderService = logSenderService;
             this.authService = authService;
             this.appDbContext = appDbContext;
             this.passwordHasher = password;
             this.tokenCleanupService = tokenCleanupService;
+            this.game = game;
         }
         [AllowAnonymous]
         [HttpPost("SendLogs")]
@@ -40,8 +43,51 @@ namespace WebApplication1.Controllers.Security
         public async Task<IActionResult> addLikedMedia()
         {
             //testing
-            await logSenderService.SendLogAsync("Information", "Nothing", "admin");
+            /*var testLikedMedia = new LikedMedia
+            {
+                UserId = 3,
+                MovieId = 1,
+                Type = "Movie",
+                LikedDate = DateTime.UtcNow
+            };
+            appDbContext.LikedMedias.Add(testLikedMedia);*/
+            var testLikedMedia = new LikedMedia
+            {
+                UserId = 3,
+                TvSeriesId = 15,
+                Type = "Games",
+                LikedDate = DateTime.Now
+            };
+            appDbContext.LikedMedias.Add(testLikedMedia);
+            /*testLikedMedia = new LikedMedia
+            {
+                UserId = 3,
+                TvSeriesId = 5,
+                Type = "TvSeries",
+                LikedDate = DateTime.Now
+            };
+            appDbContext.LikedMedias.Add(testLikedMedia);*/
+            await appDbContext.SaveChangesAsync();
+
+            //await logSenderService.SendLogAsync("Information", "Nothing", "admin");
             return Ok("Dane zostały przesłane. ");
+        }
+        [AllowAnonymous]
+        [HttpPost("AddGame")]
+        public async Task<IActionResult> AddTestGame()
+        {
+           
+            var gameRequest = new GameRequest(
+                "Cyberpunk 2077",
+                "...",
+                new GenreRequest("Science Fiction"),
+                DateTime.Parse("2020-12-10"),
+                "polski",
+                "CD Projekt Red",
+                "PC, PlayStation 4, Xbox One, Google Stadia"
+            );
+            await game.Upsert(null,gameRequest);
+            return Ok("Dane zostały dodane.");
         }
         [HttpPost("AddRolesAndUsers")]
         public async Task<IActionResult> AddUserAndRole()

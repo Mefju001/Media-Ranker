@@ -55,6 +55,7 @@ builder.Services.AddScoped<AuthService>();
 builder.Services.AddHttpClient<LogSenderService>();
 builder.Services.AddScoped<IPasswordHasher<User>, PasswordHasher<User>>();
 builder.Services.AddScoped<IMovieServices,MovieServices>();
+builder.Services.AddScoped<IGameServices, GameServices>();
 builder.Services.AddScoped<IReviewServices, ReviewServices>();
 builder.Services.AddScoped<IUserServices, UserServices>();
 builder.Services.AddScoped<ILikedMediaServices, LikedMediaServices>();
