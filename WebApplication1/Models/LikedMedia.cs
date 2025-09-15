@@ -12,16 +12,8 @@ namespace WebApplication1.Models
         public int UserId { get; set; }
         public User User { get; set; }
 
-        public int? MovieId { get; set; }
-        public Movie? Movie { get; set; }
-
-        public int? TvSeriesId { get; set; }
-        public TvSeries? TvSeries { get; set; }
-
-        public int? GameId { get; set; }
-        public Game? Game { get; set; }
-
-        public string Type { get; set; }
+        public int MediaId { get; set; }
+        public Media Media { get; set; }
 
         public DateTime LikedDate { get; set; } = DateTime.UtcNow;
     }

@@ -50,7 +50,7 @@ namespace WebApplication1.Controllers.Security
                 Type = "Movie",
                 LikedDate = DateTime.UtcNow
             };
-            appDbContext.LikedMedias.Add(testLikedMedia);*/
+            appDbContext.LikedMedias.Add(testLikedMedia);
             var testLikedMedia = new LikedMedia
             {
                 UserId = 3,
@@ -59,7 +59,7 @@ namespace WebApplication1.Controllers.Security
                 LikedDate = DateTime.Now
             };
             appDbContext.LikedMedias.Add(testLikedMedia);
-            /*testLikedMedia = new LikedMedia
+            testLikedMedia = new LikedMedia
             {
                 UserId = 3,
                 TvSeriesId = 5,

@@ -19,12 +19,12 @@ namespace WebApplication1.Controllers
     {
         private readonly AuthService authService;
         private readonly IUserServices userServices;
-        private readonly ILikedMediaServices likedMovieServices;
+        private readonly ILikedMediaServices likedMediaServices;
         public UserController(IUserServices userServices,AuthService authService, ILikedMediaServices likedMovieServices)
         {
             this.userServices = userServices;
             this.authService = authService;
-            this.likedMovieServices = likedMovieServices;
+            this.likedMediaServices = likedMovieServices;
         }
         private int parse(string String)
         {
@@ -57,32 +57,32 @@ namespace WebApplication1.Controllers
         [HttpGet("/Liked/id/{Id}")]
         public async Task<IActionResult> GetById(int Id)
         {
-            return Ok(await likedMovieServices.GetById(Id));
+            return Ok(await likedMediaServices.GetById(Id));
         }
         [Authorize(Roles = "Admin,User")]
         [HttpGet("/Liked")]
         public async Task<IActionResult> GetLikedMovies()
         {
-            return Ok(await likedMovieServices.GetAllAsync());
+            return Ok(await likedMediaServices.GetAllAsync());
         }
         [AllowAnonymous/*Authorize(Roles = "User")*/]
         [HttpGet("/Liked/{id}")]
         public async Task<IActionResult> GetLikedMoviesByUser(int id)
         {
-            return Ok(await likedMovieServices.GetUserLikedMedia(id));
+            return Ok(await likedMediaServices.GetUserLikedMedia(id));
         }
-        [Authorize(Roles = "Admin,User")]
+        [AllowAnonymous/*Authorize(Roles = "Admin,User")*/]
         [HttpPost("/Liked")]
-        public async Task<IActionResult> AddLikedMovie([FromBody] LikedMovieRequest likedMovie)
+        public async Task<IActionResult> AddLikedMovie([FromBody] LikedMediaRequest likedMovie)
         {
-            var (movieId, response) = await likedMovieServices.Add(likedMovie);
+            var (movieId, response) = await likedMediaServices.Upsert(likedMovie);
             return CreatedAtAction(nameof(GetById), new { id = movieId }, response);
         }
         [Authorize(Roles = "Admin,User")]
         [HttpDelete("/Liked/id/{id}")]
         public async Task<IActionResult> DeleteLikedMovie(int id)
         {
-            return Ok(await likedMovieServices.Delete(id));
+            return Ok(await likedMediaServices.Delete(id));
         }
         [Authorize(Roles = "Admin,User")]
         [HttpPatch("ChangePassword")]
