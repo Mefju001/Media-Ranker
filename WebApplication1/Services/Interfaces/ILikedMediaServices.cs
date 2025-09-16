@@ -7,9 +7,9 @@ namespace WebApplication1.Services.Interfaces
     public interface ILikedMediaServices
     {
         Task<List<LikedMedia>> GetAllAsync();
-        Task<List<Object>> GetUserLikedMedia(int userId);
+        Task<List<LikedMedia>> GetUserLikedMedia(int userId);
         Task<LikedMediaResponse?> GetById(int id);
-        Task<(int? mediaId, LikedMediaResponse response)> Upsert(LikedMediaRequest media);
-        Task<bool> Delete(int id);
+        Task<LikedMediaResponse> Add(LikedMediaRequest media);
+        Task<bool> Delete(int userId, int mediaId);
     }
 }

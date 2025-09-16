@@ -75,14 +75,16 @@ namespace WebApplication1.Controllers
         [HttpPost("/Liked")]
         public async Task<IActionResult> AddLikedMovie([FromBody] LikedMediaRequest likedMovie)
         {
-            var (movieId, response) = await likedMediaServices.Upsert(likedMovie);
-            return CreatedAtAction(nameof(GetById), new { id = movieId }, response);
+            /*var (movieId, response) = await likedMediaServices.Upsert(likedMovie);
+            return CreatedAtAction(nameof(GetById), new { id = movieId }, response);*/
+            throw new NotImplementedException();
         }
         [Authorize(Roles = "Admin,User")]
         [HttpDelete("/Liked/id/{id}")]
         public async Task<IActionResult> DeleteLikedMovie(int id)
         {
-            return Ok(await likedMediaServices.Delete(id));
+           // return Ok(await likedMediaServices.Delete(id));
+           throw new NotImplementedException();
         }
         [Authorize(Roles = "Admin,User")]
         [HttpPatch("ChangePassword")]

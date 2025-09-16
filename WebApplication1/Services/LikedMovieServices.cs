@@ -13,30 +13,29 @@ namespace WebApplication1.Services
     {
         private readonly AppDbContext AppDbContext = context;
         
-
-        public async Task<(int? mediaId, LikedMediaResponse response)> Upsert(LikedMediaRequest LikedMedia)
+        public async Task<LikedMediaResponse > Add(LikedMediaRequest request)
         {
-            var media = await AppDbContext.Medias.FirstOrDefaultAsync(m=>m.Id == LikedMedia.MediaId);
-            var user = await AppDbContext.Users.FirstOrDefaultAsync(u=>u.Id == LikedMedia.UserId);
-            if (media is null||user is null) throw new Exception("Jest pusty");
-            var existingLikedMedia = await AppDbContext.LikedMedias.FirstOrDefaultAsync(lm=>lm.UserId == LikedMedia.UserId&&lm.MediaId == LikedMedia.MediaId);
+            var media = await AppDbContext.Medias.FirstOrDefaultAsync(m=>m.Id == request.MediaId);
+            var user = await AppDbContext.Users.FirstOrDefaultAsync(u=>u.Id == request.UserId);
+            if (media is null||user is null)
+                throw new Exception("Jest pusty");
+            var existingLikedMedia = await AppDbContext.LikedMedias.FirstOrDefaultAsync(lm=>lm.UserId == request.UserId&&lm.MediaId == request.MediaId);
             if(existingLikedMedia is not null) throw new Exception("istnieje takie polubienie");
             var likedMedia = new LikedMedia
             {
-                MediaId = LikedMedia.MediaId,
-                UserId = LikedMedia.UserId,
+                MediaId = request.MediaId,
+                UserId = request.UserId,
                 LikedDate = DateTime.Now,
             };
             AppDbContext.LikedMedias.Add(likedMedia);
             await AppDbContext.SaveChangesAsync();
-            var response = LikedMediaMapping.ToResponse(likedMedia);
-            return (likedMedia.Id,response);
+            return LikedMediaMapping.ToResponse(likedMedia);
         }
 
         public async Task<bool> Delete(int userId, int mediaId)
         {
             var likedItem = await AppDbContext.LikedMedias.FirstOrDefaultAsync(lm => lm.UserId == userId&&lm.MediaId == mediaId);
-            if (likedItem is not null)
+            if (likedItem is null)
             {
                 //Dodać nowy wyjatek dla pustych polubionych.
                 throw new Exception("Jest pusty");
@@ -53,40 +52,14 @@ namespace WebApplication1.Services
                 .ToListAsync();
             return LikedItem.ToList();
         }
-        public async Task<List<Object>>GetUserLikedMedia(int userId)
+        public async Task<List<LikedMedia>>GetUserLikedMedia(int userId)
         {
-            /*var likedItems = await AppDbContext.LikedMedias
+            var likedItems = await AppDbContext.LikedMedias
                 .Where(lm=>lm.UserId == userId)
                 .ToListAsync();
-            var result = new List<Object>();
-
-            foreach (var item in likedItems)
-            {
-                switch (item.Type)
-                {
-                    case "Movie":
-                        var movie = await AppDbContext.Movies.FindAsync(item.MovieId);
-                        if(movie is not null)result.Add(movie);
-                        break;
-                    case "TvSeries":
-                        var tvSeries = await AppDbContext.TvSeries.FindAsync(item.TvSeriesId);
-                        if (tvSeries is not null) result.Add(tvSeries);
-                        break;
-                    case "Games":
-                        var game = await AppDbContext.Games.FindAsync(item.GameId);
-                        if (game is not null) result.Add(game);
-                        break;
-                }
-            }
-            return result;*/
-            throw new NotImplementedException();
+           return likedItems.ToList();
         }
         public Task<LikedMediaResponse?> GetById(int id)
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task<bool> Delete(int id)
         {
             throw new NotImplementedException();
         }
