@@ -10,6 +10,9 @@ using WebApplication1.Models;
 using WebApplication1.Services;
 using WebApplication1.Services.Impl;
 using WebApplication1.Services.Interfaces;
+using WebApplication1.DTO.Mapping;
+using Microsoft.Extensions.DependencyInjection;
+using System.Reflection;
 
 var builder = WebApplication.CreateBuilder(args);
 AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
@@ -50,6 +53,11 @@ builder.Services.AddSwaggerGen(options =>
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+builder.Services.AddAutoMapper(cfg =>
+{
+    cfg.AllowNullCollections = true;
+}, Assembly.GetExecutingAssembly());
+
 builder.Services.AddHostedService<TokenBackgroundService>();
 builder.Services.AddScoped<AuthService>();
 builder.Services.AddHttpClient<LogSenderService>();

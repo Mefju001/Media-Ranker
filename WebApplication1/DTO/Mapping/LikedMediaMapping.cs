@@ -8,8 +8,10 @@ namespace WebApplication1.DTO.Mapping
         public static LikedMediaResponse ToResponse(LikedMedia likedMedia)
         {
             return new LikedMediaResponse(
-                user: UserMapping.ToResponse(likedMedia.User),
-                Media: MediaMapping.ToResponse(likedMedia.Media),
+                user: UserMapping.ToResponse(likedMedia.User)
+                ?? null,
+                Media: MediaMapping.ToResponse(likedMedia.Media)
+                ?? null,
                 likedMedia.LikedDate
             );
         }

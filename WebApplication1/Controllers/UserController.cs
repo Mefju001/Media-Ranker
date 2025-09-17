@@ -54,12 +54,6 @@ namespace WebApplication1.Controllers
             return Ok(await userServices.GetBy(name));
         }
         [Authorize(Roles = "Admin,User")]
-        [HttpGet("/Liked/id/{Id}")]
-        public async Task<IActionResult> GetById(int Id)
-        {
-            return Ok(await likedMediaServices.GetById(Id));
-        }
-        [Authorize(Roles = "Admin,User")]
         [HttpGet("/Liked")]
         public async Task<IActionResult> GetLikedMovies()
         {

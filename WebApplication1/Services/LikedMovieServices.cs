@@ -1,5 +1,4 @@
-﻿using Microsoft.AspNetCore.Http.HttpResults;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using WebApplication1.Data;
 using WebApplication1.DTO.Mapping;
 using WebApplication1.DTO.Request;
@@ -17,10 +16,11 @@ namespace WebApplication1.Services
         {
             var media = await AppDbContext.Medias.FirstOrDefaultAsync(m=>m.Id == request.MediaId);
             var user = await AppDbContext.Users.FirstOrDefaultAsync(u=>u.Id == request.UserId);
-            if (media is null||user is null)
+            if (media is null||user is null)//wyjatek
                 throw new Exception("Jest pusty");
             var existingLikedMedia = await AppDbContext.LikedMedias.FirstOrDefaultAsync(lm=>lm.UserId == request.UserId&&lm.MediaId == request.MediaId);
-            if(existingLikedMedia is not null) throw new Exception("istnieje takie polubienie");
+            if(existingLikedMedia is not null)//wyjatek 
+                throw new Exception("istnieje takie polubienie");
             var likedMedia = new LikedMedia
             {
                 MediaId = request.MediaId,
@@ -34,111 +34,31 @@ namespace WebApplication1.Services
 
         public async Task<bool> Delete(int userId, int mediaId)
         {
-            var likedItem = await AppDbContext.LikedMedias.FirstOrDefaultAsync(lm => lm.UserId == userId&&lm.MediaId == mediaId);
-            if (likedItem is null)
+            var itemToDelete = await AppDbContext.LikedMedias.FirstOrDefaultAsync(lm => lm.UserId == userId&&lm.MediaId == mediaId);
+            if (itemToDelete is null)
             {
                 //Dodać nowy wyjatek dla pustych polubionych.
                 throw new Exception("Jest pusty");
 
             }
-            AppDbContext.LikedMedias.Remove(likedItem);
+            AppDbContext.LikedMedias.Remove(itemToDelete);
             await AppDbContext.SaveChangesAsync();
             return true;
         }
 
-        public async Task<List<LikedMedia>> GetAllAsync()
+        public async Task<List<LikedMediaResponse>> GetAllAsync()
         {
-            var LikedItem = await AppDbContext.LikedMedias
+            var likedItems = await AppDbContext.LikedMedias
                 .ToListAsync();
-            return LikedItem.ToList();
+            return likedItems.Select(LikedMediaMapping.ToResponse).ToList();
         }
-        public async Task<List<LikedMedia>>GetUserLikedMedia(int userId)
+        public async Task<List<LikedMediaResponse>>GetUserLikedMedia(int userId)
         {
             var likedItems = await AppDbContext.LikedMedias
                 .Where(lm=>lm.UserId == userId)
                 .ToListAsync();
-           return likedItems.ToList();
-        }
-        public Task<LikedMediaResponse?> GetById(int id)
-        {
-            throw new NotImplementedException();
+           return likedItems.Select(LikedMediaMapping.ToResponse).ToList();
         }
 
-        /*public async Task<bool> Delete(int id)
-        {
-            var likedMovie = await AppDbContext.UserMovieLike.FirstOrDefaultAsync(x => x.Id == id);
-            if (likedMovie != null)
-            {
-                AppDbContext.UserMovieLike.Remove(likedMovie);
-                await AppDbContext.SaveChangesAsync();
-                return true;
-            }
-            return false;
-        }
-
-        public async Task<List<LikedMovieResponse>> GetAllAsync()
-        {
-            var likedMovies = await AppDbContext.UserMovieLike
-                .Include(uml => uml.movie)
-                    .ThenInclude(m => m.genre)
-                .Include(uml => uml.movie)
-                    .ThenInclude(m=>m.director)
-                .Include(uml => uml.movie)
-                    .ThenInclude(m => m.Reviews)
-                    .ThenInclude(r=>r.User)
-                .Include(uml => uml.user)
-                    .ThenInclude(u=>u.UserRoles)
-                        .ThenInclude(ur=>ur.Role)
-                .ToListAsync();
-            return likedMovies.Select(LikedMovieMapping.ToResponse).ToList();
-        }
-
-        public async Task<LikedMovieResponse?> GetById(int id)
-        {
-            var likedMovies = await AppDbContext.UserMovieLike
-                    .Include(uml => uml.movie)
-                        .ThenInclude(m => m.genre)
-                    .Include(uml => uml.movie)
-                        .ThenInclude(m => m.director)
-                    .Include(uml => uml.movie)
-                        .ThenInclude(m => m.Reviews)
-                        .ThenInclude(r => r.User)
-                    .Include(uml => uml.user)
-                        .ThenInclude(u => u.UserRoles)
-                            .ThenInclude(ur => ur.Role)
-                    .FirstOrDefaultAsync(uml=>uml.Id == id);
-            if (likedMovies == null) throw new Exception("Not found liked movie like this");
-            return LikedMovieMapping.ToResponse(likedMovies);
-        }
-
-        public async Task<(int movieId, LikedMovieResponse response)> Add(LikedMovieRequest likedMovie)
-        {
-            var existingLiked = await AppDbContext.UserMovieLike.FirstOrDefaultAsync(uml => uml.movieId == likedMovie.movieId && uml.userId == likedMovie.userId);
-            if(existingLiked is not null) throw new Exception("You liked this");
-            var user = await AppDbContext.Users.FirstOrDefaultAsync(u=>u.Id == likedMovie.userId);
-            var movie = await AppDbContext.Movies.FirstOrDefaultAsync(u => u.Id == likedMovie.movieId);
-            if(user is null|| movie is null)
-            {
-                throw new Exception("Not find user or movie");
-            }
-            LikedMedia userMovieLike = new LikedMedia();
-            userMovieLike.movie = movie;
-            userMovieLike.user = user;
-            AppDbContext.UserMovieLike.Add(userMovieLike);
-            await AppDbContext.SaveChangesAsync();
-            var response = await AppDbContext.UserMovieLike
-                    .Include(uml => uml.movie)
-                        .ThenInclude(m => m.genre)
-                    .Include(uml => uml.movie)
-                        .ThenInclude(m => m.director)
-                    .Include(uml => uml.movie)
-                        .ThenInclude(m => m.Reviews)
-                        .ThenInclude(r => r.User)
-                    .Include(uml => uml.user)
-                        .ThenInclude(u => u.UserRoles)
-                            .ThenInclude(ur => ur.Role)
-                    .FirstOrDefaultAsync(uml => uml.Id == userMovieLike.Id);
-            return (movie.Id, LikedMovieMapping.ToResponse(response));
-        }*/
     }
 }

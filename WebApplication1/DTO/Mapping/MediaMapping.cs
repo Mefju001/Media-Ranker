@@ -7,10 +7,11 @@ namespace WebApplication1.DTO.Mapping
     {
         public static MediaResponse ToResponse(Media media)
         {
+            if (media is null) return null;
             return new MediaResponse(
                 media.title,
                 media.description,
-                GenreMapping.ToResponse(media.genre)??null,
+                GenreMapping.ToResponse(media.genre)?? new GenreResponse("Nieznany"),
                 media.ReleaseDate,
                 media.Language,
                 media.Reviews?.Select(r => ReviewMapping.ToResponse(r)).ToList() ?? new List<ReviewResponse>());

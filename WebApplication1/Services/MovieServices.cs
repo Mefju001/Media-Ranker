@@ -1,3 +1,4 @@
+using AutoMapper;
 using Microsoft.EntityFrameworkCore;
 using WebApplication1.Data;
 using WebApplication1.DTO.Mapping;
@@ -6,9 +7,10 @@ using WebApplication1.DTO.Response;
 using WebApplication1.Models;
 namespace WebApplication1.Services.Impl
 {
-    public class MovieServices(AppDbContext context) : IMovieServices
+    public class MovieServices(AppDbContext context, IMapper mapper) : IMovieServices
     {
         private readonly AppDbContext _context = context;
+        private readonly IMapper mapper = mapper;
 
         private async Task<Director>GetOrCreateDirectorAsync(DirectorRequest directorRequest)
         {
@@ -102,7 +104,8 @@ namespace WebApplication1.Services.Impl
                 query = query.OrderByDescending(m => m.title);
             }
             var movies = await query.ToListAsync();
-            return movies.Select(MovieMapping.ToResponse).ToList();
+            var map = mapper.Map<List<MovieResponse>>(movies);
+            return map.ToList();
         }
         public async Task<List<MovieResponse>> GetMoviesByAvrRating()
         {
