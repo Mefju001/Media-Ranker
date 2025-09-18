@@ -10,7 +10,7 @@ namespace WebApplication1.Models
         public int Id { get; set; }
         public required string title { get; set; }
         public required string description { get; set; }
-        public int GenreId { get; set; }
+        public int genreId { get; set; }
         public virtual required Genre genre { get; set; }
         public DateTime ReleaseDate { get; set; }
         public string? Language { get; set; }

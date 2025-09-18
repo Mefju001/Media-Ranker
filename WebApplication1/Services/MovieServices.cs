@@ -12,23 +12,23 @@ namespace WebApplication1.Services.Impl
         private readonly AppDbContext _context = context;
         private readonly IMapper mapper = mapper;
 
-        private async Task<Director>GetOrCreateDirectorAsync(DirectorRequest directorRequest)
+        private async Task<Director> GetOrCreateDirectorAsync(DirectorRequest directorRequest)
         {
             var Director = await _context.Directors.FirstOrDefaultAsync(d => d.name == directorRequest.Name && d.surname == directorRequest.Surname);
-            if(Director is not null) return Director;
+            if (Director is not null) return Director;
             Director = new Director { name = directorRequest.Name, surname = directorRequest.Surname };
             _context.Directors.Add(Director);
             return Director;
         }
-        private async Task<Genre>GetOrCreateGenreAsync(GenreRequest genreRequest)
+        private async Task<Genre> GetOrCreateGenreAsync(GenreRequest genreRequest)
         {
-            var genre =  await _context.Genres.FirstOrDefaultAsync(g=>g.name==genreRequest.name);
-            if(genre is not null)return genre;
+            var genre = await _context.Genres.FirstOrDefaultAsync(g => g.name == genreRequest.name);
+            if (genre is not null) return genre;
             genre = new Genre { name = genreRequest.name };
             _context.Genres.Add(genre);
             return genre;
         }
-        public async Task<(int movieId, MovieResponse response)> Upsert(int? movieId,MovieRequest movieRequest)
+        public async Task<(int movieId, MovieResponse response)> Upsert(int? movieId, MovieRequest movieRequest)
         {
             await using var transaction = await _context.Database.BeginTransactionAsync();
             try
@@ -70,7 +70,8 @@ namespace WebApplication1.Services.Impl
                 await transaction.CommitAsync();
                 return (movie.Id, response);
             }
-            catch {
+            catch
+            {
                 await transaction.RollbackAsync();
                 throw;
             }
@@ -87,25 +88,26 @@ namespace WebApplication1.Services.Impl
             }
             return false;
         }
-        public async Task<List<MovieResponse>>GetSortAll(string  sort)
+        public async Task<List<MovieResponse>> GetSortAll(string sort)
         {
             sort = sort.ToLower();
             var query = _context.Movies
                 .Include(m => m.genre)
                 .Include(m => m.director)
                 .Include(m => m.Reviews)
+                    .ThenInclude(r => r.User)
                 .AsQueryable();
             if (!string.IsNullOrEmpty(sort) && sort.Equals("asc"))
             {
                 query = query.OrderBy(m => m.title);
             }
-            if(!string.IsNullOrEmpty(sort) && sort.Equals("desc"))
+            if (!string.IsNullOrEmpty(sort) && sort.Equals("desc"))
             {
                 query = query.OrderByDescending(m => m.title);
             }
             var movies = await query.ToListAsync();
-            var map = mapper.Map<List<MovieResponse>>(movies);
-            return map.ToList();
+            var movieResponses = mapper.Map<List<MovieResponse>>(movies);
+            return movieResponses.ToList();
         }
         public async Task<List<MovieResponse>> GetMoviesByAvrRating()
         {
@@ -120,7 +122,7 @@ namespace WebApplication1.Services.Impl
                 })
                 .OrderByDescending(x => x.avarage)
                 .ToListAsync();
-            return movies.Select(x=>MovieMapping.ToResponse(x.Movie)).ToList();
+            return movies.Select(x => MovieMapping.ToResponse(x.Movie)).ToList();
         }
         public async Task<List<MovieResponse>> GetMovies(string? name, string? genreName, string? directorName, int? movieId)
         {
@@ -135,15 +137,15 @@ namespace WebApplication1.Services.Impl
             }
             if (!string.IsNullOrEmpty(genreName))
             {
-                query = query.Where(m=>m.genre.name.Contains(genreName));
+                query = query.Where(m => m.genre.name.Contains(genreName));
             }
             if (!string.IsNullOrEmpty(directorName))
             {
-                query = query.Where(m=>m.director.name.Contains(directorName)||m.director.surname.Contains(directorName));
+                query = query.Where(m => m.director.name.Contains(directorName) || m.director.surname.Contains(directorName));
             }
             if (movieId.HasValue)
             {
-                query = query.Where(m=>m.Id == movieId.Value);
+                query = query.Where(m => m.Id == movieId.Value);
             }
             var movies = await query.ToListAsync();
             return movies.Select(MovieMapping.ToResponse).ToList();
@@ -165,12 +167,12 @@ namespace WebApplication1.Services.Impl
                 .Include(m => m.genre)
                 .Include(m => m.director)
                 .Include(m => m.Reviews)
-                .ThenInclude(r => r.User)
+                    .ThenInclude(r => r.User)
                 .ToListAsync();
 
 
-
-            var MovieResponse = movies.Select(MovieMapping.ToResponse).ToList();
+            var MovieResponse = mapper.Map<List<MovieResponse>>(movies);
+            //var MovieResponse = movies.Select(MovieMapping.ToResponse).ToList();
             return (MovieResponse);
         }
     }
