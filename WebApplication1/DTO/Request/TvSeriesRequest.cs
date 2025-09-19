@@ -1,6 +1,4 @@
-﻿using WebApplication1.Models;
-
-namespace WebApplication1.DTO.Request
+﻿namespace WebApplication1.DTO.Request
 {
     public record TvSeriesRequest(
         string title,

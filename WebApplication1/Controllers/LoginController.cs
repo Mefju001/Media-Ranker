@@ -2,16 +2,15 @@
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
 using WebApplication1.DTO.Request;
-using WebApplication1.Migrations;
+using WebApplication1.Interfaces;
 using WebApplication1.Services;
-using WebApplication1.Services.Interfaces;
 
 namespace WebApplication1.Controllers
 {
     [AllowAnonymous]
     [ApiController]
     [Route("api")]
-    public class LoginController:ControllerBase
+    public class LoginController : ControllerBase
     {
         private readonly IUserServices userServices;
         private readonly AuthService authService;
@@ -58,12 +57,12 @@ namespace WebApplication1.Controllers
             return Ok(await userServices.Register(userRequest));
         }
 
-        [Authorize(Roles =("User"))]
+        [Authorize(Roles = ("User"))]
         [HttpPost("refreshToken")]
         public async Task<IActionResult> RefreshToken()
         {
             var refreshToken = Request.Cookies["refreshToken"];
-            if(refreshToken is null)
+            if (refreshToken is null)
             {
                 return Unauthorized();
             }

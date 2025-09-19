@@ -1,11 +1,6 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using WebApplication1.DTO.Mapping;
 using WebApplication1.DTO.Request;
-using WebApplication1.DTO.Response;
-using WebApplication1.Models;
-using WebApplication1.Services.Impl;
-using WebApplication1.Services.Interfaces;
 
 namespace WebApplication1.Controllers
 {
@@ -33,7 +28,7 @@ namespace WebApplication1.Controllers
             return Ok(movies);
         }
         [HttpGet("FilterBy")]
-        public async Task<IActionResult>GetMovies([FromQuery] string?name, [FromQuery] string? genreName, [FromQuery] string? directorName, [FromQuery]int? movieId)
+        public async Task<IActionResult> GetMovies([FromQuery] string? name, [FromQuery] string? genreName, [FromQuery] string? directorName, [FromQuery] int? movieId)
         {
             var movies = await movieServices.GetMovies(name, genreName, directorName, movieId);
             return Ok(movies);
@@ -45,17 +40,17 @@ namespace WebApplication1.Controllers
             return Ok(movies);
         }
         [HttpGet("id/{id}")]
-        public async Task<IActionResult>GetById(int id)
+        public async Task<IActionResult> GetById(int id)
         {
             var movie = await movieServices.GetById(id);
             return Ok(movie);
         }
         [Authorize(Roles = "Admin")]
         [HttpPost]
-        public async Task<IActionResult> Upsert(int? id,MovieRequest movie)
+        public async Task<IActionResult> Upsert(int? id, MovieRequest movie)
         {
-            var created = await movieServices.Upsert(id,movie);
-            if(id is null)
+            var created = await movieServices.Upsert(id, movie);
+            if (id is null)
                 return CreatedAtAction(nameof(GetById), new { id = created.movieId }, created.response);
             return Ok(created.response);
         }

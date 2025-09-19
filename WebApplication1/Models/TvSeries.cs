@@ -1,8 +1,6 @@
-﻿using System;
-
-namespace WebApplication1.Models
+﻿namespace WebApplication1.Models
 {
-    public class TvSeries:Media
+    public class TvSeries : Media
     {
         public int Seasons { get; set; }
         public int Episodes { get; set; }

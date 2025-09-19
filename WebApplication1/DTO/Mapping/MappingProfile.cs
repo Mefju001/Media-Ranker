@@ -4,7 +4,7 @@ using WebApplication1.Models;
 
 namespace WebApplication1.DTO.Mapping
 {
-    public class MappingProfile: Profile
+    public class MappingProfile : Profile
     {
         public MappingProfile()
         {

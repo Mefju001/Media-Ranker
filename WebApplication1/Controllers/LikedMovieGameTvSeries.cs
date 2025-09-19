@@ -1,10 +1,10 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using WebApplication1.Services.Interfaces;
+using WebApplication1.Interfaces;
 
 namespace WebApplication1.Controllers
 {
-    [Authorize(Roles ="User")]
+    [Authorize(Roles = "User")]
     [ApiController]
     [Route("Api/Liked")]
     public class LikedMovieGameTvSeries : ControllerBase

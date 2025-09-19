@@ -1,7 +1,7 @@
 ﻿using WebApplication1.DTO.Request;
 using WebApplication1.DTO.Response;
 
-namespace WebApplication1.Services.Interfaces
+namespace WebApplication1.Interfaces
 {
     public interface ITvSeriesServices
     {

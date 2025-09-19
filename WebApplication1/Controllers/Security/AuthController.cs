@@ -4,24 +4,24 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using WebApplication1.Data;
 using WebApplication1.DTO.Request;
+using WebApplication1.Interfaces;
 using WebApplication1.Models;
 using WebApplication1.Services;
-using WebApplication1.Services.Interfaces;
 
 namespace WebApplication1.Controllers.Security
 {
-    [Authorize(Roles ="Admin")]
+    [Authorize(Roles = "Admin")]
     [ApiController]
     [Route("[controller]")]
-    public class AuthController: ControllerBase
+    public class AuthController : ControllerBase
     {
         private readonly AuthService authService;
         private readonly ITokenCleanupService tokenCleanupService;
         private readonly LogSenderService logSenderService;
         private readonly AppDbContext appDbContext;
-        private readonly IPasswordHasher<User>passwordHasher;
+        private readonly IPasswordHasher<User> passwordHasher;
         private readonly IGameServices game;
-        public AuthController(LogSenderService logSenderService,AuthService authService, AppDbContext appDbContext, IPasswordHasher<User> password, ITokenCleanupService tokenCleanupService, IGameServices game)
+        public AuthController(LogSenderService logSenderService, AuthService authService, AppDbContext appDbContext, IPasswordHasher<User> password, ITokenCleanupService tokenCleanupService, IGameServices game)
         {
             this.logSenderService = logSenderService;
             this.authService = authService;
@@ -76,7 +76,7 @@ namespace WebApplication1.Controllers.Security
         [HttpPost("AddGame")]
         public async Task<IActionResult> AddTestGame()
         {
-           
+
             var gameRequest = new GameRequest(
                 "Cyberpunk 2077",
                 "...",
@@ -86,13 +86,13 @@ namespace WebApplication1.Controllers.Security
                 "CD Projekt Red",
                 "PC, PlayStation 4, Xbox One, Google Stadia"
             );
-            await game.Upsert(null,gameRequest);
+            await game.Upsert(null, gameRequest);
             return Ok("Dane zostały dodane.");
         }
         [HttpPost("AddRolesAndUsers")]
         public async Task<IActionResult> AddUserAndRole()
         {
-            var User = new User { username = "Mati",password = passwordHasher.HashPassword(null,"Starwars2"),name = "Mateusz",surname = "Jureczko",email = "jureczkomateusz@wp.pl"};
+            var User = new User { username = "Mati", password = passwordHasher.HashPassword(null, "Starwars2"), name = "Mateusz", surname = "Jureczko", email = "jureczkomateusz@wp.pl" };
             var Role = new Role { role = ERole.User };
 
             appDbContext.Users.Add(User);

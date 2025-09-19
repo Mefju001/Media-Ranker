@@ -14,8 +14,8 @@ namespace WebApplication1.DTO.Mapping
                 user.name,
                 user.surname,
                 user.email,
-                user.UserRoles.Select(ur => RoleMapping.ToResponse(ur.Role)).ToList()??new List<RoleResponse>(),
-                user.Reviews.Select(r => ReviewMapping.ToResponse(r)).ToList()??new List<ReviewResponse>());
+                user.UserRoles.Select(ur => RoleMapping.ToResponse(ur.Role)).ToList() ?? new List<RoleResponse>(),
+                user.Reviews.Select(r => ReviewMapping.ToResponse(r)).ToList() ?? new List<ReviewResponse>());
 
         }
     }

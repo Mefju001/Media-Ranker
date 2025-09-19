@@ -1,17 +1,15 @@
 ﻿using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
 using WebApplication1.DTO.Request;
-using WebApplication1.Models;
-using WebApplication1.Services.Interfaces;
+using WebApplication1.Interfaces;
 
 namespace WebApplication1.Controllers
 {
     [Authorize(Roles = "User")]
     [ApiController]
     [Route("[controller]")]
-    public class ReviewController:ControllerBase
+    public class ReviewController : ControllerBase
     {
         private readonly IReviewServices services;
         public ReviewController(IReviewServices services)
@@ -20,7 +18,7 @@ namespace WebApplication1.Controllers
         }
         [AllowAnonymous]
         [HttpGet]
-        public async Task<IActionResult>GetAll()
+        public async Task<IActionResult> GetAll()
         {
             var reviews = await services.GetAllAsync();
             return Ok(reviews);
@@ -46,7 +44,7 @@ namespace WebApplication1.Controllers
                 return Unauthorized();
             }
             int userId = parse(stringUserId);
-            var (id, response) = await services.Upsert(reviewId,userId, movieId, reviewRequest);
+            var (id, response) = await services.Upsert(reviewId, userId, movieId, reviewRequest);
             if (reviewId is null)
             {
                 return CreatedAtAction(nameof(GetById), new { id }, response);
@@ -66,7 +64,7 @@ namespace WebApplication1.Controllers
         public async Task<IActionResult> Delete(int id)
         {
             var deletedReview = await services.Delete(id);
-            if(!deletedReview)return NotFound();
+            if (!deletedReview) return NotFound();
             return NoContent();
         }
 

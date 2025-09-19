@@ -7,7 +7,7 @@ namespace WebApplication1.Data
         public AppDbContext() { }
         public AppDbContext(DbContextOptions<AppDbContext> options) : base(options) { }
         public DbSet<Media> Medias { get; set; }
-        public DbSet<TvSeries>TvSeries { get; set; }
+        public DbSet<TvSeries> TvSeries { get; set; }
         public DbSet<Game> Games { get; set; }
         public DbSet<Movie> Movies { get; set; }
         public DbSet<Genre> Genres { get; set; }
@@ -15,9 +15,9 @@ namespace WebApplication1.Data
         public DbSet<Review> Reviews { get; set; }
         public DbSet<User> Users { get; set; }
         public DbSet<Role> Roles { get; set; }
-        public DbSet<Token>Tokens { get; set; }
+        public DbSet<Token> Tokens { get; set; }
         public DbSet<UserRole> UsersRoles { get; set; }
-        public DbSet<LikedMedia>LikedMedias { get; set; }
+        public DbSet<LikedMedia> LikedMedias { get; set; }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<Token>()
@@ -27,7 +27,7 @@ namespace WebApplication1.Data
                  .OnDelete(DeleteBehavior.Cascade);
 
             modelBuilder.Entity<LikedMedia>()
-                .HasIndex(lm => new { lm.UserId, lm.MediaId})
+                .HasIndex(lm => new { lm.UserId, lm.MediaId })
                 .IsUnique();
 
             modelBuilder.Entity<LikedMedia>()

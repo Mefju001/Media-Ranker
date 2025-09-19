@@ -4,33 +4,34 @@ using WebApplication1.Data;
 using WebApplication1.DTO.Mapping;
 using WebApplication1.DTO.Request;
 using WebApplication1.DTO.Response;
+using WebApplication1.Interfaces;
 using WebApplication1.Models;
 namespace WebApplication1.Services.Impl
 {
-    public class MovieServices(AppDbContext context, IMapper mapper) : IMovieServices
+    public class MovieServices( IMapper mapper, IUnitOfWork unitOfWork) : IMovieServices
     {
-        private readonly AppDbContext _context = context;
+        private readonly IUnitOfWork _unitOfWork = unitOfWork;
         private readonly IMapper mapper = mapper;
 
         private async Task<Director> GetOrCreateDirectorAsync(DirectorRequest directorRequest)
         {
-            var Director = await _context.Directors.FirstOrDefaultAsync(d => d.name == directorRequest.Name && d.surname == directorRequest.Surname);
+            var Director = await _unitOfWork.Directors.FirstOrDefaultAsync(d => d.name == directorRequest.Name && d.surname == directorRequest.Surname);
             if (Director is not null) return Director;
             Director = new Director { name = directorRequest.Name, surname = directorRequest.Surname };
-            _context.Directors.Add(Director);
+            _unitOfWork.Directors.Add(Director);
             return Director;
         }
         private async Task<Genre> GetOrCreateGenreAsync(GenreRequest genreRequest)
         {
-            var genre = await _context.Genres.FirstOrDefaultAsync(g => g.name == genreRequest.name);
+            var genre = await _unitOfWork.Genres.FirstOrDefaultAsync(g => g.name == genreRequest.name);
             if (genre is not null) return genre;
             genre = new Genre { name = genreRequest.name };
-            _context.Genres.Add(genre);
+            _unitOfWork.Genres.Add(genre);
             return genre;
         }
         public async Task<(int movieId, MovieResponse response)> Upsert(int? movieId, MovieRequest movieRequest)
         {
-            await using var transaction = await _context.Database.BeginTransactionAsync();
+            await using var transaction = await _unitOfWork.BeginTransactionAsync();
             try
             {
                 var director = await GetOrCreateDirectorAsync(movieRequest.Director);
@@ -38,7 +39,7 @@ namespace WebApplication1.Services.Impl
                 Movie? movie;
                 if (movieId is not null)
                 {
-                    movie = await _context.Movies
+                    movie = await _unitOfWork.Movies
                             .Include(m => m.director)
                             .Include(m => m.genre)
                             .FirstOrDefaultAsync(m => m.Id == movieId.Value);
@@ -52,7 +53,7 @@ namespace WebApplication1.Services.Impl
                         movie.Language = movieRequest.Language;
                         movie.IsCinemaRelease = movieRequest.IsCinemaRelease;
                         movie.Duration = movieRequest.Duration;
-                        await _context.SaveChangesAsync();
+                        await _unitOfWork.CompleteAsync();
                         await transaction.CommitAsync();
                         return (movie.Id, MovieMapping.ToResponse(movie));
                     }
@@ -64,9 +65,10 @@ namespace WebApplication1.Services.Impl
                     director = director,
                     genre = genre
                 };
-                _context.Movies.Add(movie);
-                await _context.SaveChangesAsync();
-                var response = MovieMapping.ToResponse(movie);
+                _unitOfWork.Movies.Add(movie);
+                await _unitOfWork.CompleteAsync();
+                //var response = MovieMapping.ToResponse(movie);
+                var response = mapper.Map<MovieResponse>(movie);
                 await transaction.CommitAsync();
                 return (movie.Id, response);
             }
@@ -79,11 +81,11 @@ namespace WebApplication1.Services.Impl
 
         public async Task<bool> Delete(int id)
         {
-            var movie = _context.Movies.FirstOrDefault(x => x.Id == id);
+            var movie = _unitOfWork.Movies.FirstOrDefault(x => x.Id == id);
             if (movie != null)
             {
-                _context.Movies.Remove(movie);
-                await _context.SaveChangesAsync();
+                _unitOfWork.Movies.Remove(movie);
+                await _unitOfWork.CompleteAsync();
                 return true;
             }
             return false;
@@ -91,7 +93,7 @@ namespace WebApplication1.Services.Impl
         public async Task<List<MovieResponse>> GetSortAll(string sort)
         {
             sort = sort.ToLower();
-            var query = _context.Movies
+            var query = _unitOfWork.Movies
                 .Include(m => m.genre)
                 .Include(m => m.director)
                 .Include(m => m.Reviews)
@@ -111,7 +113,7 @@ namespace WebApplication1.Services.Impl
         }
         public async Task<List<MovieResponse>> GetMoviesByAvrRating()
         {
-            var movies = await _context.Movies
+            var movies = await _unitOfWork.Movies
                 .Include(m => m.genre)
                 .Include(m => m.director)
                 .Include(m => m.Reviews)
@@ -126,7 +128,7 @@ namespace WebApplication1.Services.Impl
         }
         public async Task<List<MovieResponse>> GetMovies(string? name, string? genreName, string? directorName, int? movieId)
         {
-            var query = _context.Movies
+            var query = _unitOfWork.Movies
                 .Include(m => m.genre)
                 .Include(m => m.director)
                 .Include(m => m.Reviews)
@@ -152,7 +154,7 @@ namespace WebApplication1.Services.Impl
         }
         public async Task<MovieResponse?> GetById(int id)
         {
-            var movie = await _context.Movies
+            var movie = await _unitOfWork.Movies
                 .Include(m => m.genre)
                 .Include(m => m.director)
                 .Include(m => m.Reviews)
@@ -163,7 +165,7 @@ namespace WebApplication1.Services.Impl
         }
         public async Task<List<MovieResponse>> GetAllAsync()
         {
-            var movies = await _context.Movies
+            var movies = await _unitOfWork.Movies
                 .Include(m => m.genre)
                 .Include(m => m.director)
                 .Include(m => m.Reviews)

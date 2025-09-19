@@ -1,13 +1,13 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using WebApplication1.DTO.Request;
-using WebApplication1.Services.Interfaces;
+using WebApplication1.Interfaces;
 
 namespace WebApplication1.Controllers
 {
     [ApiController]
     [Route("[controller]")]
-    public class TvSeriesController:ControllerBase
+    public class TvSeriesController : ControllerBase
     {
         private readonly ITvSeriesServices TvSeriesServices;
 

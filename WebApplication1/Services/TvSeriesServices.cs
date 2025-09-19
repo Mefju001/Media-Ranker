@@ -1,15 +1,14 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using Microsoft.IdentityModel.Tokens;
 using WebApplication1.Data;
 using WebApplication1.DTO.Mapping;
 using WebApplication1.DTO.Request;
 using WebApplication1.DTO.Response;
+using WebApplication1.Interfaces;
 using WebApplication1.Models;
-using WebApplication1.Services.Interfaces;
 
 namespace WebApplication1.Services
 {
-    public class TvSeriesServices:ITvSeriesServices
+    public class TvSeriesServices : ITvSeriesServices
     {
         private readonly AppDbContext context;
         public TvSeriesServices(AppDbContext _context)
@@ -20,13 +19,13 @@ namespace WebApplication1.Services
         public async Task<bool> Delete(int id)
         {
             var TvSeries = context.TvSeries.FirstOrDefault(x => x.Id == id);
-                if(TvSeries!=null)
-                {
-                    context.TvSeries.Remove(TvSeries);
-                    await context.SaveChangesAsync();
-                    return true;
-                }
-                return false;
+            if (TvSeries != null)
+            {
+                context.TvSeries.Remove(TvSeries);
+                await context.SaveChangesAsync();
+                return true;
+            }
+            return false;
         }
 
         public async Task<List<TvSeriesResponse>> GetAllAsync()
@@ -59,11 +58,11 @@ namespace WebApplication1.Services
                                 .Include(m => m.Reviews)
                                 .ThenInclude(r => r.User)
                                 .AsQueryable();
-            if(!string.IsNullOrEmpty(sort)&&sort =="asc")
+            if (!string.IsNullOrEmpty(sort) && sort == "asc")
             {
                 query = query.OrderBy(tv => tv.title);
             }
-            if(!string.IsNullOrEmpty(sort) && sort == "desc")
+            if (!string.IsNullOrEmpty(sort) && sort == "desc")
             {
                 query = query.OrderByDescending(tv => tv.title);
             }
@@ -78,7 +77,7 @@ namespace WebApplication1.Services
                                 .Include(m => m.Reviews)
                                 .ThenInclude(r => r.User)
                                 .AsQueryable();
-            if(!string.IsNullOrEmpty(name))
+            if (!string.IsNullOrEmpty(name))
             {
                 query = query.Where(tv => tv.title.Contains(name));
             }
@@ -99,9 +98,9 @@ namespace WebApplication1.Services
                     .Select(tv => new
                     {
                         TvSeries = tv,
-                        avarage = tv.Reviews.Average(r=>(double?)r.Rating)??0
+                        avarage = tv.Reviews.Average(r => (double?)r.Rating) ?? 0
                     })
-                    .OrderByDescending(x=>x.avarage)
+                    .OrderByDescending(x => x.avarage)
                     .ToListAsync();
             return TvSeries.Select(x => TvSeriesMapping.ToResponse(x.TvSeries)).ToList();
         }

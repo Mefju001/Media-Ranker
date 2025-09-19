@@ -1,26 +1,21 @@
-﻿using Azure;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http.HttpResults;
+﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using System.ComponentModel.DataAnnotations;
 using System.Security.Claims;
 using WebApplication1.DTO.Request;
-using WebApplication1.DTO.Response;
-using WebApplication1.Models;
+using WebApplication1.Interfaces;
 using WebApplication1.Services;
-using WebApplication1.Services.Interfaces;
 
 namespace WebApplication1.Controllers
 {
     [Authorize(Roles = "User")]
     [ApiController]
     [Route("[controller]")]
-    public class UserController:ControllerBase
+    public class UserController : ControllerBase
     {
         private readonly AuthService authService;
         private readonly IUserServices userServices;
         private readonly ILikedMediaServices likedMediaServices;
-        public UserController(IUserServices userServices,AuthService authService, ILikedMediaServices likedMovieServices)
+        public UserController(IUserServices userServices, AuthService authService, ILikedMediaServices likedMovieServices)
         {
             this.userServices = userServices;
             this.authService = authService;
@@ -77,12 +72,12 @@ namespace WebApplication1.Controllers
         [HttpDelete("/Liked/id/{id}")]
         public async Task<IActionResult> DeleteLikedMovie(int id)
         {
-           // return Ok(await likedMediaServices.Delete(id));
-           throw new NotImplementedException();
+            // return Ok(await likedMediaServices.Delete(id));
+            throw new NotImplementedException();
         }
         [Authorize(Roles = "Admin,User")]
         [HttpPatch("ChangePassword")]
-        public async Task<IActionResult>ChangePassword(string newPassword, string confirmPassword, string oldPassword)
+        public async Task<IActionResult> ChangePassword(string newPassword, string confirmPassword, string oldPassword)
         {
             var stringUserId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
             if (stringUserId == null)
@@ -90,7 +85,7 @@ namespace WebApplication1.Controllers
                 return Unauthorized();
             }
             int userId = parse(stringUserId);
-            return Ok(await userServices.changePassword(newPassword,confirmPassword,oldPassword,userId));
+            return Ok(await userServices.changePassword(newPassword, confirmPassword, oldPassword, userId));
         }
         [Authorize(Roles = "Admin,User")]
         [HttpPatch("/ChangeDetails")]

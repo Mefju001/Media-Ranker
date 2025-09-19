@@ -1,6 +1,4 @@
-﻿
-using WebApplication1.Data;
-using WebApplication1.Services.Interfaces;
+﻿using WebApplication1.Interfaces;
 
 namespace WebApplication1.Services
 {
@@ -23,13 +21,13 @@ namespace WebApplication1.Services
         public Task StartAsync(CancellationToken cancellationToken)
         {
             logger.LogInformation("Zaczynam czyszczenie bazy danych z tokenów nieaktywnych");
-            timer = new Timer(DoWork, null,TimeSpan.FromMinutes(1),_cleanupInterval);
+            timer = new Timer(DoWork, null, TimeSpan.FromMinutes(1), _cleanupInterval);
             return Task.CompletedTask;
         }
         private void DoWork(object? state)
         {
             logger.LogInformation("Zaczynamy czyszczenie bazy danych z tokenów");
-            using(var scope = ServiceProvider.CreateScope())
+            using (var scope = ServiceProvider.CreateScope())
             {
                 var cleanupService = scope.ServiceProvider.GetRequiredService<ITokenCleanupService>();
                 cleanupService.Cleanup().Wait();

@@ -12,5 +12,5 @@
         int Episodes,
         string? Network,
         string? Status
-        ) :MediaResponse(Title, Description, Genre, ReleaseDate, Language, Reviews);
+        ) : MediaResponse(Title, Description, Genre, ReleaseDate, Language, Reviews);
 }

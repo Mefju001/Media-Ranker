@@ -1,6 +1,5 @@
-﻿using Microsoft.Extensions.Logging;
-using WebApplication1.Data;
-using WebApplication1.Services.Interfaces;
+﻿using WebApplication1.Data;
+using WebApplication1.Interfaces;
 
 namespace WebApplication1.Services
 {

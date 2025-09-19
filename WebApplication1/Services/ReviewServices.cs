@@ -4,8 +4,8 @@ using WebApplication1.Data;
 using WebApplication1.DTO.Mapping;
 using WebApplication1.DTO.Request;
 using WebApplication1.DTO.Response;
+using WebApplication1.Interfaces;
 using WebApplication1.Models;
-using WebApplication1.Services.Interfaces;
 
 namespace WebApplication1.Services
 {
@@ -19,7 +19,7 @@ namespace WebApplication1.Services
         public async Task<(int reviewId, ReviewResponse response)> Upsert(int? reviewId, int userId, int movieId, ReviewRequest reviewRequest)
         {
             using var transaction = await _context.Database.BeginTransactionAsync();
-            try 
+            try
             {
                 Review? review;
                 if (reviewId is not null)
@@ -51,8 +51,9 @@ namespace WebApplication1.Services
                     .Include(r => r.Media)
                     .FirstOrDefaultAsync(r => r.Id == review.Id);
                 await transaction.CommitAsync();
-                return (review.Id,ReviewMapping.ToResponse(response));
-            }catch
+                return (review.Id, ReviewMapping.ToResponse(response));
+            }
+            catch
             {
                 await transaction.RollbackAsync();
                 throw;
@@ -74,8 +75,8 @@ namespace WebApplication1.Services
         public async Task<List<ReviewResponse>> GetAllAsync()
         {
             var reviews = await _context.Reviews
-                .Include(r=>r.User)
-                .Include(r=>r.Media)
+                .Include(r => r.User)
+                .Include(r => r.Media)
                 .ToListAsync();
 
             return reviews.Select(ReviewMapping.ToResponse).ToList();
@@ -87,7 +88,7 @@ namespace WebApplication1.Services
                 .Include(r => r.User)
                 .Include(r => r.Media)
                 .FirstOrDefaultAsync(r => r.Id == id);
-            if (review != null)return ReviewMapping.ToResponse(review);
+            if (review != null) return ReviewMapping.ToResponse(review);
             return null;
         }
 

@@ -10,6 +10,6 @@ namespace WebApplication1.DTO.Mapping
             if (genre == null) return null;
             return new GenreResponse(
                 genre.name);
-                }
+        }
     }
 }
