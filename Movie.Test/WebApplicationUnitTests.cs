@@ -7,7 +7,7 @@ using WebApplication1.DTO.Request;
 using WebApplication1.Models;
 using WebApplication1.Services;
 
-namespace Movie.Test
+namespace MovieTest
 {
     public class WebApplicationUnitTests
     {

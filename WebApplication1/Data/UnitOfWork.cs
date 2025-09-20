@@ -29,7 +29,7 @@ namespace WebApplication1.Data
         {
             return await context.SaveChangesAsync();
         }
-        
+
         public void Dispose()
         {
             context.Dispose();
@@ -39,5 +39,14 @@ namespace WebApplication1.Data
         {
             return context.Database.BeginTransactionAsync();
         }
+        public Task<Movie?> GetByIdAsync(int id)
+            => context.Movies.FirstOrDefaultAsync(m => m.Id == id);
+        public Task<List<Movie>> GetAllAsync()
+        => context.Movies.Include(m => m.genre)
+                .Include(m => m.director)
+                .Include(m => m.Reviews)
+                    .ThenInclude(r => r.User)
+                .ToListAsync();
+
     }
 }

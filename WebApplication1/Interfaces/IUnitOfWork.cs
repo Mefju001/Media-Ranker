@@ -20,5 +20,7 @@ namespace WebApplication1.Interfaces
         DbSet<LikedMedia> LikedMedias { get; }
         Task<IDbContextTransaction> BeginTransactionAsync();
         Task<int> CompleteAsync();
+        Task<Movie?> GetByIdAsync(int id);
+        Task<List<Movie>> GetAllAsync();
     }
 }

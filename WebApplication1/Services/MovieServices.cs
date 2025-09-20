@@ -154,27 +154,22 @@ namespace WebApplication1.Services.Impl
         }
         public async Task<MovieResponse?> GetById(int id)
         {
-            var movie = await _unitOfWork.Movies
+            /*var movie = await _unitOfWork.Movies
                 .Include(m => m.genre)
                 .Include(m => m.director)
                 .Include(m => m.Reviews)
-                .FirstOrDefaultAsync(m => m.Id == id);
+                .FirstOrDefaultAsync(m => m.Id == id);*/
+            var movie = await _unitOfWork.GetByIdAsync(id);
             if (movie == null)
                 return null;
             return MovieMapping.ToResponse(movie);
         }
         public async Task<List<MovieResponse>> GetAllAsync()
         {
-            var movies = await _unitOfWork.Movies
-                .Include(m => m.genre)
-                .Include(m => m.director)
-                .Include(m => m.Reviews)
-                    .ThenInclude(r => r.User)
-                .ToListAsync();
+            var movies = await _unitOfWork.GetAllAsync();
 
-
-            var MovieResponse = mapper.Map<List<MovieResponse>>(movies);
-            //var MovieResponse = movies.Select(MovieMapping.ToResponse).ToList();
+            //var MovieResponse = mapper.Map<List<MovieResponse>>(movies);
+            var MovieResponse = movies.Select(MovieMapping.ToResponse).ToList();
             return (MovieResponse);
         }
     }
