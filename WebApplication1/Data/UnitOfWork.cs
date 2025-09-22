@@ -47,6 +47,9 @@ namespace WebApplication1.Data
                 .Include(m => m.Reviews)
                     .ThenInclude(r => r.User)
                 .ToListAsync();
-
+        public void Add(Movie movie)
+        {
+            context.Movies.Add(movie);
+        }
     }
 }

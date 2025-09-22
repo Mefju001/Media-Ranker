@@ -1,3 +1,4 @@
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.OpenApi.Models;
 using System.Reflection;
 using System.Text.Json.Serialization;
@@ -18,10 +19,7 @@ builder.Services.AddSwaggerConfiguration(builder.Configuration);
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
-builder.Services.AddAutoMapper(cfg =>
-{
-    cfg.AllowNullCollections = true;
-}, Assembly.GetExecutingAssembly());
+
 
 
 builder.Services.AddHttpContextAccessor();

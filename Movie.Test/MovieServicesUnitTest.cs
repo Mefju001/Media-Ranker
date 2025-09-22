@@ -1,6 +1,7 @@
-﻿using AutoMapper;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
+using Microsoft.EntityFrameworkCore.Storage;
+using Microsoft.Extensions.Logging;
 using Moq;
 using System.Linq;
 using System.Linq.Expressions;
@@ -16,73 +17,89 @@ namespace MovieTest
 {
     public class MovieServicesUnitTest
     {
-        private readonly Mock<IMapper> _mapperMock;
+        private readonly AppDbContext _context;
         private readonly Mock<IUnitOfWork> _unitOfWorkMock;
-
-        //private readonly MovieServices _movieServices;
+        private readonly MovieServices _movieServices;
 
         public MovieServicesUnitTest()
         {
-            _mapperMock = new Mock<IMapper>();
             _unitOfWorkMock = new Mock<IUnitOfWork>();
+
         }
-        /*[Fact]
-        public async Task Upsert_UpdatesExistingMovie_WhenIdIsProvided()
+        private AppDbContext GetInMemoryDbContext()
         {
-            var movieDbSetMock = new Mock<DbSet<WebApplication1.Models.Movie>>();
-            var directorDbSetMock = new Mock<DbSet<Director>>();
-            var genreDbSetMock = new Mock<DbSet<Genre>>();
-            var director = new Director()
-            {
-                name = "TestName",
-                surname = "TestName"
-            };
-            var genre = new Genre()
-            {
-                name = "TestName"
-            };
-            var movies = new List<WebApplication1.Models.Movie>
-            {
-                new WebApplication1.Models.Movie {
-                    Id = 1,
-                    title = "Inception",
-                    description = "...",
-                    director = director,
-                    genre = genre
-                }
-            }.AsQueryable();
-            // Zasymuluj zachowanie DbSet
-            movieDbSetMock.As<IQueryable<WebApplication1.Models.Movie>>().Setup(m => m.Provider).Returns(movies.Provider);
-            movieDbSetMock.As<IQueryable<WebApplication1.Models.Movie>>().Setup(m => m.Expression).Returns(movies.Expression);
-            movieDbSetMock.As<IQueryable<WebApplication1.Models.Movie>>().Setup(m => m.ElementType).Returns(movies.ElementType);
-            movieDbSetMock.As<IQueryable<WebApplication1.Models.Movie>>().Setup(m => m.GetEnumerator()).Returns(movies.GetEnumerator());
+            var options = new DbContextOptionsBuilder<AppDbContext>()
+                .UseInMemoryDatabase(databaseName: Guid.NewGuid().ToString()) // unikalna baza na test
+                .Options;
+                var context = new AppDbContext(options);
+                return context;
+        }
+        [Fact]
+        public async Task Upsert_AddMovie()
+        {
+            var testRequest = new MovieRequest(
+                    "Inception",
+                    "Great movie",
+                    new GenreRequest("Action"),
+                    new DirectorRequest("John", "Doe"),
+                    DateTime.Now,
+                    "English",
+                    new TimeSpan(2, 28, 0),
+                    true
+                );
+            var context = GetInMemoryDbContext();
+            var unitOfWorkMock = new Mock<UnitOfWork>(context);
 
-            // Zmockuj zachowanie FirstOrDefaultAsync, aby zwracał pojedynczy obiekt
-            _dbContextMock.Setup(db => db.Movies).Returns(movieDbSetMock.Object);
+            var movieService = new MovieServices(unitOfWorkMock.Object);
 
-            // Ustawienie mocka dla DbContext
-            _dbContextMock.Setup(db => db.Movies).Returns(movieDbSetMock.Object);
-            _dbContextMock.Setup(db => db.Directors).Returns(directorDbSetMock.Object);
-            _dbContextMock.Setup(db => db.Genres).Returns(genreDbSetMock.Object);
+            var result = await movieService.Upsert(null, testRequest);
 
-            var movieRequest = new MovieRequest(
-                Title: "New Title",
-                Description: "Some description",
-                Genre: new GenreRequest("New Genre"),
-                Director: new DirectorRequest("John", "Doe"),
-                ReleaseDate: DateTime.Now,
-                Language: "English",
-                Duration: new TimeSpan(1, 30, 0),
-                IsCinemaRelease: true
-            );
+            Assert.NotNull(result.response);
+            Assert.Equal("Inception", result.response.Title);
+        }
+        [Fact]
+        public async Task AddMovie()
+        {
+            var testRequest = new MovieRequest(
+                    "Inception",
+                    "Great movie",
+                    new GenreRequest("Action"),
+                    new DirectorRequest("John", "Doe"),
+                    DateTime.Now,
+                    "English",
+                    new TimeSpan(2, 28, 0),
+                    true
+                );
+            var context = GetInMemoryDbContext();
+            var unitOfWorkMock = new Mock<UnitOfWork>(context);
+            unitOfWorkMock.Setup(u => u.Directors.FirstOrDefaultAsync(
+                It.IsAny<Expression<Func<Director, bool>>>(), It.IsAny<CancellationToken>()))
+                .ReturnsAsync((Director)null); // brak istniejącego reżysera
+
+            unitOfWorkMock.Setup(u => u.Genres.FirstOrDefaultAsync(
+                It.IsAny<Expression<Func<Genre, bool>>>(), It.IsAny<CancellationToken>()))
+                .ReturnsAsync((Genre)null); // brak istniejącego gatunku
+
+            // Mockujemy Add i CompleteAsync
+            unitOfWorkMock.Setup(u => u.Movies.Add(It.IsAny<Movie>()));
+            unitOfWorkMock.Setup(u => u.CompleteAsync()).ReturnsAsync(1);
+
+            // Mockujemy transaction
+            
+            var movieService = new MovieServices(unitOfWorkMock.Object);
+
             // Act
-           // var result = await _movieServices.Upsert(1, movieRequest);
+            var result = await movieService.Upsert(null, testRequest);
 
             // Assert
-           // Assert.Equal("New Title", result.response.Title);
-            _dbContextMock.Verify(db => db.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Once);
-            // Assert.Equal(2, result.C);
-        }*/
+            Assert.NotNull(result.response);
+            Assert.Equal("Inception", result.response.Title);
+            Assert.Equal("Great movie", result.response.Description);
+
+            // Sprawdzamy, czy Add i CompleteAsync były wywołane
+            unitOfWorkMock.Verify(u => u.Movies.Add(It.IsAny<Movie>()), Times.Once);
+            unitOfWorkMock.Verify(u => u.CompleteAsync(), Times.Once);
+        }
         [Fact]
         public async Task GetAllAsync_ReturnsAllMovies()
         {
@@ -127,7 +144,7 @@ namespace MovieTest
             };
 
             _unitOfWorkMock.Setup(u => u.GetAllAsync()).ReturnsAsync(movies);
-            var movieService = new MovieServices(_mapperMock.Object, _unitOfWorkMock.Object);
+            var movieService = new MovieServices(_unitOfWorkMock.Object);
 
             // Act
             var result = await movieService.GetAllAsync();
@@ -152,7 +169,7 @@ namespace MovieTest
                 IsCinemaRelease = true
             };
             _unitOfWorkMock.Setup(u=>u.GetByIdAsync(1)).ReturnsAsync(movie);
-            var mockServices = new MovieServices(_mapperMock.Object,_unitOfWorkMock.Object);
+            var mockServices = new MovieServices(_unitOfWorkMock.Object);
             var result = await mockServices.GetById(1);
             Assert.NotNull(result);
             Assert.Equal("New Title", result.Title);
@@ -162,7 +179,7 @@ namespace MovieTest
         public async Task GetMovieByIdAsync_WhenMovieDoesNotExist_ReturnsNull()
         {
             _unitOfWorkMock.Setup(u => u.GetByIdAsync(It.IsAny<int>())).ReturnsAsync((Movie?)null);
-            var mockServices = new MovieServices(_mapperMock.Object,_unitOfWorkMock.Object);
+            var mockServices = new MovieServices(_unitOfWorkMock.Object);
             var result = await mockServices.GetById(42);
             Assert.Null(result);
         }

@@ -22,5 +22,6 @@ namespace WebApplication1.Interfaces
         Task<int> CompleteAsync();
         Task<Movie?> GetByIdAsync(int id);
         Task<List<Movie>> GetAllAsync();
+        void Add(Movie movie);
     }
 }

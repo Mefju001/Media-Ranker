@@ -1,4 +1,3 @@
-using AutoMapper;
 using Microsoft.EntityFrameworkCore;
 using WebApplication1.Data;
 using WebApplication1.DTO.Mapping;
@@ -8,10 +7,9 @@ using WebApplication1.Interfaces;
 using WebApplication1.Models;
 namespace WebApplication1.Services.Impl
 {
-    public class MovieServices( IMapper mapper, IUnitOfWork unitOfWork) : IMovieServices
+    public class MovieServices(IUnitOfWork unitOfWork) : IMovieServices
     {
         private readonly IUnitOfWork _unitOfWork = unitOfWork;
-        private readonly IMapper mapper = mapper;
 
         private async Task<Director> GetOrCreateDirectorAsync(DirectorRequest directorRequest)
         {
@@ -31,7 +29,7 @@ namespace WebApplication1.Services.Impl
         }
         public async Task<(int movieId, MovieResponse response)> Upsert(int? movieId, MovieRequest movieRequest)
         {
-            await using var transaction = await _unitOfWork.BeginTransactionAsync();
+           // await using var transaction = await _unitOfWork.BeginTransactionAsync();
             try
             {
                 var director = await GetOrCreateDirectorAsync(movieRequest.Director);
@@ -54,7 +52,7 @@ namespace WebApplication1.Services.Impl
                         movie.IsCinemaRelease = movieRequest.IsCinemaRelease;
                         movie.Duration = movieRequest.Duration;
                         await _unitOfWork.CompleteAsync();
-                        await transaction.CommitAsync();
+                        //await transaction.CommitAsync();
                         return (movie.Id, MovieMapping.ToResponse(movie));
                     }
                 }
@@ -65,16 +63,15 @@ namespace WebApplication1.Services.Impl
                     director = director,
                     genre = genre
                 };
-                _unitOfWork.Movies.Add(movie);
+                _unitOfWork.Add(movie);
                 await _unitOfWork.CompleteAsync();
-                //var response = MovieMapping.ToResponse(movie);
-                var response = mapper.Map<MovieResponse>(movie);
-                await transaction.CommitAsync();
+                var response = MovieMapping.ToResponse(movie);
+                //await transaction.CommitAsync();
                 return (movie.Id, response);
             }
             catch
             {
-                await transaction.RollbackAsync();
+                //await transaction.RollbackAsync();
                 throw;
             }
         }
@@ -108,8 +105,8 @@ namespace WebApplication1.Services.Impl
                 query = query.OrderByDescending(m => m.title);
             }
             var movies = await query.ToListAsync();
-            var movieResponses = mapper.Map<List<MovieResponse>>(movies);
-            return movieResponses.ToList();
+            var movieResponses = movies.Select(MovieMapping.ToResponse).ToList();
+            return movieResponses;
         }
         public async Task<List<MovieResponse>> GetMoviesByAvrRating()
         {
@@ -162,7 +159,9 @@ namespace WebApplication1.Services.Impl
             var movie = await _unitOfWork.GetByIdAsync(id);
             if (movie == null)
                 return null;
-            return MovieMapping.ToResponse(movie);
+            var MovieResponse = MovieMapping.ToResponse(movie);
+
+            return MovieResponse;
         }
         public async Task<List<MovieResponse>> GetAllAsync()
         {
