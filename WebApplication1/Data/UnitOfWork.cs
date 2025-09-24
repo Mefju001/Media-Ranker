@@ -8,7 +8,6 @@ namespace WebApplication1.Data
     public class UnitOfWork : IUnitOfWork
     {
         private readonly AppDbContext context;
-
         public DbSet<Media> Medias => context.Medias;
         public DbSet<TvSeries> TvSeries => context.TvSeries;
         public DbSet<Game> Games => context.Games;
@@ -21,10 +20,8 @@ namespace WebApplication1.Data
         public DbSet<Token> Tokens => context.Tokens;
         public DbSet<UserRole> UsersRoles => context.UsersRoles;
         public DbSet<LikedMedia> LikedMedias => context.LikedMedias;
-        public UnitOfWork(AppDbContext context)
-        {
-            this.context = context;
-        }
+
+        public UnitOfWork(AppDbContext context) => this.context = context;
         public async Task<int> CompleteAsync()
         {
             return await context.SaveChangesAsync();

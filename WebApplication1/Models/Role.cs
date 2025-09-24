@@ -9,6 +9,6 @@ namespace WebApplication1.Models
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int Id { set; get; }
         public ERole role { set; get; }
-        public ICollection<UserRole> UserRoles { get; set; } = new List<UserRole>();
+        public virtual ICollection<UserRole> UserRoles { get; set; } = new List<UserRole>();
     }
 }

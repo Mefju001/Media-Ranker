@@ -13,8 +13,10 @@ namespace WebApplication1.Extensions
         public static IServiceCollection AddAppServices(this IServiceCollection services, IConfiguration config)
         {
             services.AddDbContext<AppDbContext>(options =>
-                options.UseNpgsql(config.GetConnectionString("DefaultConnection")));
-
+            {
+                options.UseLazyLoadingProxies().UseNpgsql(config.GetConnectionString("DefaultConnection"));
+            });
+               
             services.AddHostedService<TokenBackgroundService>();
             services.AddScoped<AuthService>();
             services.AddHttpClient<LogSenderService>();

@@ -74,24 +74,21 @@ namespace MovieTest
             var unitOfWorkMock = new Mock<UnitOfWork>(context);
             unitOfWorkMock.Setup(u => u.Directors.FirstOrDefaultAsync(
                 It.IsAny<Expression<Func<Director, bool>>>(), It.IsAny<CancellationToken>()))
-                .ReturnsAsync((Director)null); // brak istniejącego reżysera
+                .ReturnsAsync((Director)null);
 
             unitOfWorkMock.Setup(u => u.Genres.FirstOrDefaultAsync(
                 It.IsAny<Expression<Func<Genre, bool>>>(), It.IsAny<CancellationToken>()))
-                .ReturnsAsync((Genre)null); // brak istniejącego gatunku
+                .ReturnsAsync((Genre)null);
 
-            // Mockujemy Add i CompleteAsync
+            
             unitOfWorkMock.Setup(u => u.Movies.Add(It.IsAny<Movie>()));
             unitOfWorkMock.Setup(u => u.CompleteAsync()).ReturnsAsync(1);
 
-            // Mockujemy transaction
             
             var movieService = new MovieServices(unitOfWorkMock.Object);
 
-            // Act
             var result = await movieService.Upsert(null, testRequest);
 
-            // Assert
             Assert.NotNull(result.response);
             Assert.Equal("Inception", result.response.Title);
             Assert.Equal("Great movie", result.response.Description);

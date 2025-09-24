@@ -10,10 +10,10 @@ namespace WebApplication1.Models
         public int Id { get; set; }
 
         public int UserId { get; set; }
-        public User User { get; set; }
+        public virtual User User { get; set; }
 
         public int MediaId { get; set; }
-        public Media Media { get; set; }
+        public virtual Media Media { get; set; }
 
         public DateTime LikedDate { get; set; } = DateTime.UtcNow;
     }
