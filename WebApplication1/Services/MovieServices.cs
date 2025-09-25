@@ -13,33 +13,31 @@ namespace WebApplication1.Services.Impl
 
         private async Task<Director> GetOrCreateDirectorAsync(DirectorRequest directorRequest)
         {
-            var Director = await _unitOfWork.Directors.FirstOrDefaultAsync(d => d.name == directorRequest.Name && d.surname == directorRequest.Surname);
+            var Director = await _unitOfWork.GenDirectors.FirstOrDefaultAsync(d => d.name == directorRequest.Name && d.surname == directorRequest.Surname);
             if (Director is not null) return Director;
             Director = new Director { name = directorRequest.Name, surname = directorRequest.Surname };
-            _unitOfWork.Directors.Add(Director);
+            await _unitOfWork.GenDirectors.AddAsync(Director);
             return Director;
         }
         private async Task<Genre> GetOrCreateGenreAsync(GenreRequest genreRequest)
         {
-            var genre = await _unitOfWork.Genres.FirstOrDefaultAsync(g => g.name == genreRequest.name);
-            if (genre is not null) return genre;
+            var genre = await _unitOfWork.GenGenre.FirstOrDefaultAsync(g => g.name == genreRequest.name);
+            if (genre !=null) return genre;
             genre = new Genre { name = genreRequest.name };
-            _unitOfWork.Genres.Add(genre);
+            await _unitOfWork.GenGenre.AddAsync(genre);
             return genre;
         }
         public async Task<(int movieId, MovieResponse response)> Upsert(int? movieId, MovieRequest movieRequest)
         {
-           await using var transaction = await _unitOfWork.BeginTransactionAsync();
+          await using var transaction = await _unitOfWork.BeginTransactionAsync();
             try
             {
                 var director = await GetOrCreateDirectorAsync(movieRequest.Director);
                 var genre = await GetOrCreateGenreAsync(movieRequest.Genre);
                 Movie? movie;
-                if (movieId is not null)
+                if (movieId.HasValue)
                 {
-                    movie = await _unitOfWork.Movies
-                            .Include(m => m.director)
-                            .Include(m => m.genre)
+                    movie = await _unitOfWork.GenMovies
                             .FirstOrDefaultAsync(m => m.Id == movieId.Value);
                     if (movie is not null)
                     {
@@ -52,7 +50,7 @@ namespace WebApplication1.Services.Impl
                         movie.IsCinemaRelease = movieRequest.IsCinemaRelease;
                         movie.Duration = movieRequest.Duration;
                         await _unitOfWork.CompleteAsync();
-                        //await transaction.CommitAsync();
+                        await transaction.CommitAsync();
                         return (movie.Id, MovieMapping.ToResponse(movie));
                     }
                 }
@@ -63,7 +61,7 @@ namespace WebApplication1.Services.Impl
                     director = director,
                     genre = genre
                 };
-                await _unitOfWork.Movies.AddAsync(movie);
+                await _unitOfWork.GenMovies.AddAsync(movie);
                 await _unitOfWork.CompleteAsync();
                 var response = MovieMapping.ToResponse(movie);
                 await transaction.CommitAsync();
@@ -71,7 +69,7 @@ namespace WebApplication1.Services.Impl
             }
             catch
             {
-                await transaction.RollbackAsync();
+               await transaction.RollbackAsync();
                 throw;
             }
         }
@@ -150,10 +148,10 @@ namespace WebApplication1.Services.Impl
         }
         public async Task<MovieResponse?> GetById(int id)
         {
-            var movie = await _unitOfWork.Movies
-                .Include(m => m.genre)
+            var movie = await _unitOfWork.GenMovies
+                /*.Include(m => m.genre)
                 .Include(m => m.director)
-                .Include(m => m.Reviews)
+                .Include(m => m.Reviews)*/
                 .FirstOrDefaultAsync(m => m.Id == id);
             if (movie == null)
                 return null;
@@ -163,10 +161,10 @@ namespace WebApplication1.Services.Impl
         }
         public async Task<List<MovieResponse>> GetAllAsync()
         {
-            var movies = await _unitOfWork.Movies
-                .Include(m=>m.genre)
+            var movies = await _unitOfWork.GenMovies.GetAllAsync();
+                /*.Include(m=>m.genre)
                 .Include(m=>m.director)
-                .ToListAsync();
+                .ToListAsync();*/
 
             var MovieResponse = movies.Select(MovieMapping.ToResponse).ToList();
             return (MovieResponse);

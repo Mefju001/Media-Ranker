@@ -8,6 +8,19 @@ namespace WebApplication1.Data
     public class UnitOfWork : IUnitOfWork
     {
         private readonly AppDbContext context;
+        public IGenericRepository<Movie> GenMovies { get; }
+        public IGenericRepository<Director> GenDirectors { get; }
+        public IGenericRepository<Genre> GenGenres{ get; }
+        public IGenericRepository<Media> GenMedias { get; }
+        public IGenericRepository<Game> GenGames { get; }
+        public IGenericRepository<TvSeries>GenTvSeries { get; }
+        public IGenericRepository<Review>GenReviews { get; }
+        public IGenericRepository<User> GenUsers {  get; }
+        public IGenericRepository<Role> GenRoles { get; }
+        public IGenericRepository<Token> GenTokens { get; }
+        public IGenericRepository<UserRole> GenUsersRoles { get; }
+        public IGenericRepository<LikedMedia> GenLikedMedias { get; }
+
         public DbSet<Media> Medias => context.Medias;
         public DbSet<TvSeries> TvSeries => context.TvSeries;
         public DbSet<Game> Games => context.Games;

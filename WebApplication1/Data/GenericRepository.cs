@@ -1,4 +1,5 @@
-﻿using System.Linq.Expressions;
+﻿using Microsoft.EntityFrameworkCore;
+using System.Linq.Expressions;
 using WebApplication1.Interfaces;
 
 namespace WebApplication1.Data
@@ -10,30 +11,33 @@ namespace WebApplication1.Data
         {
             _context = context;
         }
-
         public async Task AddAsync(T entity)
         {
             await _context.Set<T>().AddAsync(entity);
         }
 
-        public Task DeleteAsync(T entity)
+        public void Delete(T entity)
         {
-            throw new NotImplementedException();
+            _context.Set<T>().Remove(entity);
         }
 
-        public Task<bool> ExistsAsync(int id)
+        public async Task<bool> ExistsAsync(int id)
         {
-            throw new NotImplementedException();
+            var entity = await _context.Set<T>().FindAsync(id);
+            return entity != null;
         }
 
-        public Task<IEnumerable<T>> FindAsync(Expression<Func<T, bool>> predicate)
+        public async Task<IEnumerable<T>> FindAsync(Expression<Func<T, bool>> predicate)
         {
-            throw new NotImplementedException();
+            return await _context.Set<T>().Where(predicate).ToListAsync();
         }
-
-        public Task<IEnumerable<T>> GetAllAsync()
+        public async Task<T?> FirstOrDefaultAsync(Expression<Func<T, bool>> predicate)
         {
-            throw new NotImplementedException();
+            return await _context.Set<T>().FirstOrDefaultAsync(predicate);
+        }
+        public async Task<IEnumerable<T>> GetAllAsync()
+        {
+            return await _context.Set<T>().ToListAsync();
         }
 
         public async Task<T?> GetByIdAsync(int id)
@@ -41,9 +45,10 @@ namespace WebApplication1.Data
             return await _context.Set<T>().FindAsync(id);
         }
 
-        public Task UpdateAsync(T entity)
+        public void Update(T entity)
         {
-            throw new NotImplementedException();
+            _context.Set<T>().Update(entity);
         }
+
     }
 }
