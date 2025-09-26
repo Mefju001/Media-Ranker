@@ -7,7 +7,7 @@ using WebApplication1.Data;
 using WebApplication1.DTO.Request;
 using WebApplication1.Interfaces;
 using WebApplication1.Models;
-using WebApplication1.Services.Impl;
+using WebApplication1.Services;
 
 namespace MovieTest
 {
@@ -78,7 +78,7 @@ namespace MovieTest
             GenRepoMock.Setup(r => r.FirstOrDefaultAsync(It.IsAny<Expression<Func<Genre, bool>>>()))
                        .ReturnsAsync(null as Genre);
 
-            unitOfWorkMock.Setup(u=>u.GenGenre).Returns(GenRepoMock.Object);
+            unitOfWorkMock.Setup(u=>u.GenGenres).Returns(GenRepoMock.Object);
             unitOfWorkMock.Setup(u => u.GenMovies).Returns(MovieRepoMock.Object);
             unitOfWorkMock.Setup(u => u.GenDirectors).Returns(DirRepoMock.Object);
 
@@ -127,7 +127,7 @@ namespace MovieTest
 
 
             MovieRepoMock.Setup(u => u.GetAllAsync()).ReturnsAsync(movies);
-            unitOfWorkMock.Setup(u => u.GenMovies).Returns(MovieRepoMock.Object);
+            unitOfWorkMock.Setup(u => u.Movies).Returns(MovieRepoMock.Object);
             var movieService = new MovieServices(unitOfWorkMock.Object);
 
             // Act
@@ -153,7 +153,7 @@ namespace MovieTest
             };
             var MovieRepoMock = new Mock<IGenericRepository<Movie>>();
             MovieRepoMock.Setup(u=>u.FirstOrDefaultAsync(It.IsAny<Expression<Func<Movie,bool>>>())).ReturnsAsync(movie);
-            unitOfWorkMock.Setup(u => u.GenMovies).Returns(MovieRepoMock.Object);
+            unitOfWorkMock.Setup(u => u.Movies).Returns(MovieRepoMock.Object);
             var mockServices = new MovieServices(unitOfWorkMock.Object);
             var result = await mockServices.GetById(movie.Id);
             Assert.NotNull(result);
@@ -166,7 +166,7 @@ namespace MovieTest
         {
             var MovieRepoMock = new Mock<IGenericRepository<Movie>>();
             MovieRepoMock.Setup(u => u.FirstOrDefaultAsync(It.IsAny<Expression<Func<Movie,bool>>>())).ReturnsAsync((Movie?)null);
-            unitOfWorkMock.Setup(u => u.GenMovies).Returns(MovieRepoMock.Object);
+            unitOfWorkMock.Setup(u => u.Movies).Returns(MovieRepoMock.Object);
             var mockServices = new MovieServices(unitOfWorkMock.Object);
             var result = await mockServices.GetById(42);
             Assert.Null(result);

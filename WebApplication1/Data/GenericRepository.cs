@@ -1,10 +1,12 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Query;
 using System.Linq.Expressions;
+using System.Threading.Tasks;
 using WebApplication1.Interfaces;
 
 namespace WebApplication1.Data
 {
-    public class GenericRepository<T>:IGenericRepository<T> where T : class
+    public class GenericRepository<T> : IGenericRepository<T> where T : class
     {
         private readonly AppDbContext _context;
         public GenericRepository(AppDbContext context)
@@ -49,6 +51,5 @@ namespace WebApplication1.Data
         {
             _context.Set<T>().Update(entity);
         }
-
     }
 }

@@ -16,7 +16,7 @@ namespace WebApplication1.Extensions
             {
                 options.UseLazyLoadingProxies().UseNpgsql(config.GetConnectionString("DefaultConnection"));
             });
-               
+
             services.AddHostedService<TokenBackgroundService>();
             services.AddScoped<AuthService>();
             services.AddHttpClient<LogSenderService>();
