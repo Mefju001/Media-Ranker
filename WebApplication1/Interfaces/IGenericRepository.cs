@@ -12,6 +12,6 @@ namespace WebApplication1.Interfaces
         Task<bool> ExistsAsync(int id);
         Task<IEnumerable<T>> FindAsync(Expression<Func<T, bool>> predicate);
         Task<T?> FirstOrDefaultAsync(Expression<Func<T, bool>> predicate);
-        
+        IQueryable<T> AsQueryable();
     }
 }

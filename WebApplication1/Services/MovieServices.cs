@@ -86,12 +86,11 @@ namespace WebApplication1.Services
         public async Task<List<MovieResponse>> GetSortAll(string sort)
         {
             sort = sort.ToLower();
-            var query = _unitOfWork.Movies
+            IQueryable<Movie> query = _unitOfWork.Movies.AsQueryable()
                 .Include(m => m.genre)
                 .Include(m => m.director)
                 .Include(m => m.Reviews)
-                    .ThenInclude(r => r.User)
-                .AsQueryable();
+                    .ThenInclude(r => r.User);
             if (!string.IsNullOrEmpty(sort) && sort.Equals("asc"))
             {
                 query = query.OrderBy(m => m.title);
@@ -106,10 +105,11 @@ namespace WebApplication1.Services
         }
         public async Task<List<MovieResponse>> GetMoviesByAvrRating()
         {
-            var movies = await _unitOfWork.Movies
-                /*.Include(m => m.genre)
+            var moviesQuery = _unitOfWork.Movies.AsQueryable();
+            var results = await moviesQuery
+                .Include(m => m.genre)
                 .Include(m => m.director)
-                .Include(m => m.Reviews)*/
+                .Include(m => m.Reviews)
                 .Select(m => new
                 {
                     Movie = m,
@@ -117,54 +117,63 @@ namespace WebApplication1.Services
                 })
                 .OrderByDescending(x => x.avarage)
                 .ToListAsync();
-            return movies.Select(x => MovieMapping.ToResponse(x.Movie)).ToList();
+            return results.Select(x => MovieMapping.ToResponse(x.Movie)).ToList();
         }
         public async Task<List<MovieResponse>> GetMovies(string? name, string? genreName, string? directorName, int? movieId)
         {
-            var query = _unitOfWork.Movies
+            var query = _unitOfWork.Movies.AsQueryable();
+            if (!string.IsNullOrEmpty(name))
+            {
+                query = query
                 .Include(m => m.genre)
                 .Include(m => m.director)
                 .Include(m => m.Reviews)
-                .AsQueryable();
-            if (!string.IsNullOrEmpty(name))
-            {
-                query = query.Where(m => m.title.Contains(name));
+                .Where(m => m.title.Contains(name));
             }
             if (!string.IsNullOrEmpty(genreName))
             {
-                query = query.Where(m => m.genre.name.Contains(genreName));
+                query = query
+                    .Include(m => m.genre)
+                    .Include(m => m.director)
+                    .Include(m => m.Reviews)
+                    .Where(m => m.genre.name.Contains(genreName));
             }
             if (!string.IsNullOrEmpty(directorName))
             {
-                query = query.Where(m => m.director.name.Contains(directorName) || m.director.surname.Contains(directorName));
+                query = query
+                    .Include(m => m.genre)
+                    .Include(m => m.director)
+                    .Include(m => m.Reviews)
+                    .Where(m => m.director.name.Contains(directorName) || m.director.surname.Contains(directorName));
             }
             if (movieId.HasValue)
             {
-                query = query.Where(m => m.Id == movieId.Value);
+                query = query
+                    .Include(m => m.genre)
+                    .Include(m => m.director)
+                    .Include(m => m.Reviews)
+                    .Where(m => m.Id == movieId.Value);
             }
             var movies = await query.ToListAsync();
             return movies.Select(MovieMapping.ToResponse).ToList();
         }
         public async Task<MovieResponse?> GetById(int id)
         {
-            var movie = await _unitOfWork.Movies
-                /*.Include(m => m.genre)
+            var movieQuery =  _unitOfWork.Movies.AsQueryable();
+            var result = await movieQuery
+                .Include(m => m.genre)
                 .Include(m => m.director)
-                .Include(m => m.Reviews)*/
+                .Include(m => m.Reviews)
                 .FirstOrDefaultAsync(m => m.Id == id);
-            if (movie == null)
+            if (result == null)
                 return null;
-            var MovieResponse = MovieMapping.ToResponse(movie);
+            var MovieResponse = MovieMapping.ToResponse(result);
 
             return MovieResponse;
         }
         public async Task<List<MovieResponse>> GetAllAsync()
         {
             var movies = await _unitOfWork.Movies.GetAllAsync();
-            /*.Include(m=>m.genre)
-            .Include(m=>m.director)
-            .ToListAsync();*/
-
             var MovieResponse = movies.Select(MovieMapping.ToResponse).ToList();
             return (MovieResponse);
         }

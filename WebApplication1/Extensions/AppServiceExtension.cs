@@ -4,7 +4,6 @@ using WebApplication1.Data;
 using WebApplication1.Interfaces;
 using WebApplication1.Models;
 using WebApplication1.Services;
-using WebApplication1.Services.Impl;
 
 namespace WebApplication1.Extensions
 {

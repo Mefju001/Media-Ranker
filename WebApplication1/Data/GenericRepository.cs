@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata.Conventions;
 using Microsoft.EntityFrameworkCore.Query;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
@@ -16,6 +17,11 @@ namespace WebApplication1.Data
         public async Task AddAsync(T entity)
         {
             await _context.Set<T>().AddAsync(entity);
+        }
+
+        public IQueryable<T> AsQueryable()
+        {
+            return _context.Set<T>().AsQueryable();
         }
 
         public void Delete(T entity)
