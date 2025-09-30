@@ -11,7 +11,7 @@ namespace WebApplication1.Models
         public required string title { get; set; }
         public required string description { get; set; }
         public int genreId { get; set; }
-        public virtual required Genre genre { get; set; }
+        public virtual Genre genre { get; set; }
         public DateTime ReleaseDate { get; set; }
         public string? Language { get; set; }
         public virtual ICollection<Review> Reviews { get; set; } = new List<Review>();

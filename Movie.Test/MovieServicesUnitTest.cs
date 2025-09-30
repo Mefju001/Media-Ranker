@@ -2,7 +2,9 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Storage;
 using Moq;
+using System.IO;
 using System.Linq.Expressions;
+using WebApplication1.Builder.Interfaces;
 using WebApplication1.Data;
 using WebApplication1.DTO.Request;
 using WebApplication1.Interfaces;
@@ -52,8 +54,8 @@ namespace MovieTest
                 );
             var context = GetSqliteInMemoryContext();
             var unitOfWorkMock = new UnitOfWork(context);
-
-            var movieService = new MovieServices(unitOfWorkMock);
+            var builderMock = new Mock<IMovieBuilder>();
+            var movieService = new MovieServices(unitOfWorkMock, builderMock.Object);
 
             var result = await movieService.Upsert(null, testRequest);
 
@@ -78,14 +80,30 @@ namespace MovieTest
             GenRepoMock.Setup(r => r.FirstOrDefaultAsync(It.IsAny<Expression<Func<Genre, bool>>>()))
                        .ReturnsAsync(null as Genre);
 
-            unitOfWorkMock.Setup(u=>u.GenGenres).Returns(GenRepoMock.Object);
-            unitOfWorkMock.Setup(u => u.GenMovies).Returns(MovieRepoMock.Object);
-            unitOfWorkMock.Setup(u => u.GenDirectors).Returns(DirRepoMock.Object);
+            unitOfWorkMock.Setup(u=>u.Genres).Returns(GenRepoMock.Object);
+            unitOfWorkMock.Setup(u => u.Movies).Returns(MovieRepoMock.Object);
+            unitOfWorkMock.Setup(u => u.Directors).Returns(DirRepoMock.Object);
 
             unitOfWorkMock.Setup(u => u.BeginTransactionAsync()).ReturnsAsync(transactionMock.Object);
             unitOfWorkMock.Setup(u => u.CompleteAsync()).ReturnsAsync(1);
-
-            var movieServicesMock = new MovieServices(unitOfWorkMock.Object);
+            var builderMock = new Mock<IMovieBuilder>();
+            var movie = new Movie
+            {
+                title = "Inception",
+                description = "Great movie",
+                genre = new Genre{ name = "Action" },
+                director = new Director { name = "John", surname = "Doe" },
+                ReleaseDate = DateTime.Now,
+                Language =  "English",
+                Duration = new TimeSpan(2, 28, 0),
+                IsCinemaRelease = true
+            };
+            builderMock.Setup(b => b.CreateNew(It.IsAny<string>(), It.IsAny<string>())).Returns(builderMock.Object);
+            builderMock.Setup(b => b.WithOptionals(It.IsAny<DateTime>(), It.IsAny<string>(), It.IsAny<TimeSpan>(), It.IsAny<bool>())).Returns(builderMock.Object);
+            builderMock.Setup(b => b.WithGenre(It.IsAny<Genre>())).Returns(builderMock.Object);
+            builderMock.Setup(b => b.WithDirector(It.IsAny<Director>())).Returns(builderMock.Object);
+            builderMock.Setup(b => b.Build()).Returns(movie);
+            var movieServicesMock = new MovieServices(unitOfWorkMock.Object, builderMock.Object);
 
             var result = await movieServicesMock.Upsert(null, testRequest);
 
@@ -128,7 +146,8 @@ namespace MovieTest
 
             MovieRepoMock.Setup(u => u.GetAllAsync()).ReturnsAsync(movies);
             unitOfWorkMock.Setup(u => u.Movies).Returns(MovieRepoMock.Object);
-            var movieService = new MovieServices(unitOfWorkMock.Object);
+            var builderMock = new Mock<IMovieBuilder>();
+            var movieService = new MovieServices(unitOfWorkMock.Object, builderMock.Object);
 
             // Act
             var result = await movieService.GetAllAsync();
@@ -154,7 +173,8 @@ namespace MovieTest
             var MovieRepoMock = new Mock<IGenericRepository<Movie>>();
             MovieRepoMock.Setup(u=>u.FirstOrDefaultAsync(It.IsAny<Expression<Func<Movie,bool>>>())).ReturnsAsync(movie);
             unitOfWorkMock.Setup(u => u.Movies).Returns(MovieRepoMock.Object);
-            var mockServices = new MovieServices(unitOfWorkMock.Object);
+            var builderMock = new Mock<IMovieBuilder>();
+            var mockServices = new MovieServices(unitOfWorkMock.Object, builderMock.Object);
             var result = await mockServices.GetById(movie.Id);
             Assert.NotNull(result);
             Assert.Equal("New Title", result.Title);
@@ -167,7 +187,9 @@ namespace MovieTest
             var MovieRepoMock = new Mock<IGenericRepository<Movie>>();
             MovieRepoMock.Setup(u => u.FirstOrDefaultAsync(It.IsAny<Expression<Func<Movie,bool>>>())).ReturnsAsync((Movie?)null);
             unitOfWorkMock.Setup(u => u.Movies).Returns(MovieRepoMock.Object);
-            var mockServices = new MovieServices(unitOfWorkMock.Object);
+            var builderMock = new Mock<IMovieBuilder>();
+
+            var mockServices = new MovieServices(unitOfWorkMock.Object, builderMock.Object);
             var result = await mockServices.GetById(42);
             Assert.Null(result);
         }

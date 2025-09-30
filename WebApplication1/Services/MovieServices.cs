@@ -1,4 +1,5 @@
 using Microsoft.EntityFrameworkCore;
+using WebApplication1.Builder.Interfaces;
 using WebApplication1.DTO.Mapping;
 using WebApplication1.DTO.Request;
 using WebApplication1.DTO.Response;
@@ -6,9 +7,10 @@ using WebApplication1.Interfaces;
 using WebApplication1.Models;
 namespace WebApplication1.Services
 {
-    public class MovieServices(IUnitOfWork unitOfWork) : IMovieServices
+    public class MovieServices(IUnitOfWork unitOfWork,IMovieBuilder builder) : IMovieServices
     {
         private readonly IUnitOfWork _unitOfWork = unitOfWork;
+        private readonly IMovieBuilder movieBuilder = builder;
 
         private async Task<Director> GetOrCreateDirectorAsync(DirectorRequest directorRequest)
         {
@@ -53,13 +55,12 @@ namespace WebApplication1.Services
                         return (movie.Id, MovieMapping.ToResponse(movie));
                     }
                 }
-                movie = new Movie
-                {
-                    title = movieRequest.Title,
-                    description = movieRequest.Description,
-                    director = director,
-                    genre = genre
-                };
+                movie = movieBuilder
+                    .CreateNew(movieRequest.Title, movieRequest.Description)
+                    .WithOptionals(movieRequest.ReleaseDate, movieRequest.Language, movieRequest.Duration, movieRequest.IsCinemaRelease)
+                    .WithGenre(genre)
+                    .WithDirector(director)
+                    .Build();
                 await _unitOfWork.Movies.AddAsync(movie);
                 await _unitOfWork.CompleteAsync();
                 var response = MovieMapping.ToResponse(movie);

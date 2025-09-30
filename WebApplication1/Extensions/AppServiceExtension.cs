@@ -1,5 +1,7 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using WebApplication1.Builder;
+using WebApplication1.Builder.Interfaces;
 using WebApplication1.Data;
 using WebApplication1.Interfaces;
 using WebApplication1.Models;
@@ -20,6 +22,7 @@ namespace WebApplication1.Extensions
             services.AddScoped<AuthService>();
             services.AddHttpClient<LogSenderService>();
             services.AddScoped<IPasswordHasher<User>, PasswordHasher<User>>();
+            services.AddScoped<IMovieBuilder,MovieBuilder>();
             services.AddScoped<IMovieServices, MovieServices>();
             services.AddScoped<IUnitOfWork, UnitOfWork>();
             services.AddScoped<IGameServices, GameServices>();
