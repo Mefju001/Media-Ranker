@@ -42,26 +42,24 @@ namespace WebApplication1.Services
                             .FirstOrDefaultAsync(m => m.Id == movieId.Value);
                     if (movie is not null)
                     {
-                        movie.title = movieRequest.Title;
-                        movie.description = movieRequest.Description;
-                        movie.director = director;
-                        movie.genre = genre;
-                        movie.ReleaseDate = movieRequest.ReleaseDate;
-                        movie.Language = movieRequest.Language;
-                        movie.IsCinemaRelease = movieRequest.IsCinemaRelease;
-                        movie.Duration = movieRequest.Duration;
-                        await _unitOfWork.CompleteAsync();
-                        await transaction.CommitAsync();
-                        return (movie.Id, MovieMapping.ToResponse(movie));
+                        MovieMapping.UpdateEntity(movie,movieRequest,director,genre);
                     }
                 }
-                movie = movieBuilder
-                    .CreateNew(movieRequest.Title, movieRequest.Description)
-                    .WithOptionals(movieRequest.ReleaseDate, movieRequest.Language, movieRequest.Duration, movieRequest.IsCinemaRelease)
-                    .WithGenre(genre)
-                    .WithDirector(director)
-                    .Build();
-                await _unitOfWork.Movies.AddAsync(movie);
+                else
+                {
+                    movie = movieBuilder
+                        .CreateNew(movieRequest.Title, movieRequest.Description)
+                        .WithTechnicalDetails
+                        (movieRequest.Duration, 
+                         movieRequest.Language, 
+                         movieRequest.IsCinemaRelease, 
+                         movieRequest.ReleaseDate)
+                        .WithGenre(genre)
+                        .WithDirector(director)
+                        .Build();
+                    await _unitOfWork.Movies.AddAsync(movie);
+                }
+                    
                 await _unitOfWork.CompleteAsync();
                 var response = MovieMapping.ToResponse(movie);
                 await transaction.CommitAsync();

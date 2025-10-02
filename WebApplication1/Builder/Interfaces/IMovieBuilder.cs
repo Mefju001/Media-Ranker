@@ -5,7 +5,11 @@ namespace WebApplication1.Builder.Interfaces
     public interface IMovieBuilder
     {
         IMovieBuilder CreateNew(string title, string description);
-        IMovieBuilder WithOptionals(DateTime? ReleaseDate,string? Language, TimeSpan? Duration,bool? IsCinemaRelease);
+        IMovieBuilder WithTechnicalDetails(
+            TimeSpan? duration,
+            string? language,
+            bool? isCinemaRelease,
+            DateTime? releaseDate);
         IMovieBuilder WithDirector(Director director);
         IMovieBuilder WithGenre(Genre Genre);
         IMovieBuilder WithDefaultReview(Review review);

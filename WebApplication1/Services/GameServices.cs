@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using WebApplication1.Builder.Interfaces;
 using WebApplication1.Data;
 using WebApplication1.DTO.Mapping;
 using WebApplication1.DTO.Request;
@@ -11,19 +12,22 @@ namespace WebApplication1.Services
 {
     public class GameServices : IGameServices
     {
-        private readonly AppDbContext _context;
-        public GameServices(AppDbContext context)
+        private readonly UnitOfWork _unitOfWork;
+        private readonly IGameBuilder gameBuilder;
+
+        public GameServices(UnitOfWork unitOfWork, IGameBuilder gameBuilder)
         {
-            _context = context;
+            _unitOfWork = unitOfWork;
+            this.gameBuilder = gameBuilder;
         }
 
         public async Task<bool> Delete(int id)
         {
-            var games = _context.Games.FirstOrDefault(x => x.Id == id);
+            var games = await _unitOfWork.Games.FirstOrDefaultAsync(x => x.Id == id);
             if (games == null)
                 return false;
-            _context.Games.Remove(games);
-            await _context.SaveChangesAsync();
+            _unitOfWork.Games.Delete(games);
+            await _unitOfWork.CompleteAsync();
             return true;
         }
 
@@ -117,7 +121,7 @@ namespace WebApplication1.Services
             {
                 var genre = await GetOrCreateGenreAsync(gameRequest.Genre);
                 Game? game;
-                if (gameId != null)
+                if (gameId.HasValue)
                 {
                     game = await _context.Games
                         .Include(g => g.genre)
@@ -137,16 +141,11 @@ namespace WebApplication1.Services
                         return (game.Id, GameMapping.ToResponse(game));
                     }
                 }
-                game = new Game
-                {
-                    title = gameRequest.Title,
-                    description = gameRequest.Description,
-                    genre = genre,
-                    Language = gameRequest.Language,
-                    Developer = gameRequest.Developer,
-                    Platform = gameRequest.Platform,
-                    ReleaseDate = gameRequest.ReleaseDate
-                };
+                game = gameBuilder
+                    .CreateNew(gameRequest.Title, gameRequest.Description, gameRequest.Platform)
+                    .WithGenre(genre)
+                    .WithTechnicalDetails(gameRequest.ReleaseDate, gameRequest.Language, gameRequest.Developer)
+                    .Build();
                 _context.Games.Add(game);
                 await _context.SaveChangesAsync();
                 var response = GameMapping.ToResponse(game);

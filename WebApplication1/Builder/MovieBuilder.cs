@@ -48,12 +48,12 @@ namespace WebApplication1.Builder
             return this;
         }
 
-        public IMovieBuilder WithOptionals(DateTime? ReleaseDate, string? Language, TimeSpan? Duration, bool? IsCinemaRelease)
+        public IMovieBuilder WithTechnicalDetails(TimeSpan? duration, string? language, bool? isCinemaRelease, DateTime? releaseDate)
         {
-            _movie.ReleaseDate = ReleaseDate ?? DateTime.MinValue;
-            _movie.Language = Language ?? string.Empty;
-            _movie.Duration = Duration ?? TimeSpan.Zero;
-            _movie.IsCinemaRelease = IsCinemaRelease ?? false;
+            _movie.ReleaseDate = releaseDate ?? DateTime.MinValue;
+            _movie.Language = language ?? string.Empty;
+            _movie.Duration = duration ?? TimeSpan.Zero;
+            _movie.IsCinemaRelease = isCinemaRelease ?? false;
 
             return this;
 

@@ -1,4 +1,5 @@
-﻿using WebApplication1.DTO.Response;
+﻿using WebApplication1.DTO.Request;
+using WebApplication1.DTO.Response;
 using WebApplication1.Models;
 
 namespace WebApplication1.DTO.Mapping
@@ -17,6 +18,10 @@ namespace WebApplication1.DTO.Mapping
                 game.Developer,
                 game.Platform
                 );
+        }
+        public static void UpdateEntity(int gameId, GameRequest request, Genre genre)
+        {
+
         }
     }
 }
