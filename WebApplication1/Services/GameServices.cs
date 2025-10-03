@@ -12,10 +12,10 @@ namespace WebApplication1.Services
 {
     public class GameServices : IGameServices
     {
-        private readonly UnitOfWork _unitOfWork;
+        private readonly IUnitOfWork _unitOfWork;
         private readonly IGameBuilder gameBuilder;
 
-        public GameServices(UnitOfWork unitOfWork, IGameBuilder gameBuilder)
+        public GameServices(IUnitOfWork unitOfWork, IGameBuilder gameBuilder)
         {
             _unitOfWork = unitOfWork;
             this.gameBuilder = gameBuilder;
@@ -33,7 +33,7 @@ namespace WebApplication1.Services
 
         public async Task<List<GameResponse>> GetAllAsync()
         {
-            var games = await _context.Games
+            var games = await _unitOfWork.Games.AsQueryable()
                 .Include(g => g.genre)
                 .Include(g => g.Reviews)
                 .ToListAsync();
@@ -42,7 +42,7 @@ namespace WebApplication1.Services
 
         public async Task<GameResponse?> GetById(int id)
         {
-            var game = await _context.Games
+            var game = await _unitOfWork.Games.AsQueryable()
                 .Include(g => g.genre)
                 .Include(g => g.Reviews)
                 .FirstOrDefaultAsync(x => x.Id == id);
@@ -53,7 +53,7 @@ namespace WebApplication1.Services
         //editing
         public async Task<List<GameResponse>> GetGames(string? name, string? genreName)
         {
-            var query = _context.Games
+            var query = _unitOfWork.Games.AsQueryable()
                 .Include(g => g.genre)
                 .Include(g => g.Reviews)
                 .AsQueryable();
@@ -75,7 +75,7 @@ namespace WebApplication1.Services
 
         public async Task<List<GameResponse>> GetGamesByAvrRating()
         {
-            var gamesAVR = await _context.Games
+            var gamesAVR = await _unitOfWork.Games.AsQueryable()
                 .Include(g => g.genre)
                 .Include(g => g.Reviews)
                 .Select(g => new
@@ -91,7 +91,7 @@ namespace WebApplication1.Services
         public async Task<List<GameResponse>> GetSortAll(string sort)
         {
             sort = sort.ToLower();
-            var query = _context.Games
+            var query = _unitOfWork.Games.AsQueryable()
                 .Include(g => g.genre)
                 .Include(g => g.Reviews)
                 .AsQueryable();
@@ -108,22 +108,22 @@ namespace WebApplication1.Services
         }
         private async Task<Genre> GetOrCreateGenreAsync(GenreRequest genreRequest)
         {
-            var genre = await _context.Genres.FirstOrDefaultAsync(g => g.name == genreRequest.name);
+            var genre = await _unitOfWork.Genres.FirstOrDefaultAsync(g => g.name == genreRequest.name);
             if (genre is not null) return genre;
             genre = new Genre { name = genreRequest.name };
-            _context.Genres.Add(genre);
+            await _unitOfWork.Genres.AddAsync(genre);
             return genre;
         }
         public async Task<(int movieId, GameResponse response)> Upsert(int? gameId, GameRequest gameRequest)
         {
-            await using var transaction = await _context.Database.BeginTransactionAsync();
+            await using var transaction = await _unitOfWork.BeginTransactionAsync();
             try
             {
                 var genre = await GetOrCreateGenreAsync(gameRequest.Genre);
                 Game? game;
                 if (gameId.HasValue)
                 {
-                    game = await _context.Games
+                    game = await _unitOfWork.Games.AsQueryable()
                         .Include(g => g.genre)
                         .Include(g => g.Reviews)
                         .FirstOrDefaultAsync(g => g.Id == gameId);
@@ -136,7 +136,7 @@ namespace WebApplication1.Services
                         game.Developer = gameRequest.Developer;
                         game.Platform = gameRequest.Platform;
                         game.ReleaseDate = gameRequest.ReleaseDate;
-                        await _context.SaveChangesAsync();
+                        await _unitOfWork.CompleteAsync();
                         await transaction.CommitAsync();
                         return (game.Id, GameMapping.ToResponse(game));
                     }
@@ -146,8 +146,8 @@ namespace WebApplication1.Services
                     .WithGenre(genre)
                     .WithTechnicalDetails(gameRequest.ReleaseDate, gameRequest.Language, gameRequest.Developer)
                     .Build();
-                _context.Games.Add(game);
-                await _context.SaveChangesAsync();
+                await _unitOfWork.Games.AddAsync(game);
+                await _unitOfWork.CompleteAsync();
                 var response = GameMapping.ToResponse(game);
                 await transaction.CommitAsync();
                 return (game.Id, response);

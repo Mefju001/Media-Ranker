@@ -4,7 +4,6 @@
         string title,
         string description,
         GenreRequest genre,
-        DirectorRequest director,
         DateTime ReleaseDate,
         string Language,
         int Seasons,

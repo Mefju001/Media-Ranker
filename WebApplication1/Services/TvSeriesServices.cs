@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using WebApplication1.Builder.Interfaces;
 using WebApplication1.Data;
 using WebApplication1.DTO.Mapping;
 using WebApplication1.DTO.Request;
@@ -10,19 +11,21 @@ namespace WebApplication1.Services
 {
     public class TvSeriesServices : ITvSeriesServices
     {
-        private readonly AppDbContext context;
-        public TvSeriesServices(AppDbContext _context)
+        private readonly IUnitOfWork unitOfWork;
+        private readonly ITvSeriesBuilder builder;
+        public TvSeriesServices(IUnitOfWork _unitOfWork, ITvSeriesBuilder builder)
         {
-            this.context = _context;
+            unitOfWork = _unitOfWork;
+            this.builder = builder;
         }
 
         public async Task<bool> Delete(int id)
         {
-            var TvSeries = context.TvSeries.FirstOrDefault(x => x.Id == id);
+            var TvSeries = await unitOfWork.TvSeries.FirstOrDefaultAsync(x => x.Id == id);
             if (TvSeries != null)
             {
-                context.TvSeries.Remove(TvSeries);
-                await context.SaveChangesAsync();
+                 unitOfWork.TvSeries.Delete(TvSeries);
+                await unitOfWork.CompleteAsync();
                 return true;
             }
             return false;
@@ -30,7 +33,7 @@ namespace WebApplication1.Services
 
         public async Task<List<TvSeriesResponse>> GetAllAsync()
         {
-            var TvSeries = await context.TvSeries
+            var TvSeries = await unitOfWork.TvSeries.AsQueryable()
                                 .Include(m => m.genre)
                                 .Include(m => m.Reviews)
                                 .ThenInclude(r => r.User)
@@ -40,7 +43,7 @@ namespace WebApplication1.Services
 
         public async Task<TvSeriesResponse> GetById(int id)
         {
-            var TvSeries = await context.TvSeries
+            var TvSeries = await unitOfWork.TvSeries.AsQueryable()
                 .Include(m => m.genre)
                 .Include(m => m.Reviews)
                 .ThenInclude(r => r.User)
@@ -53,7 +56,7 @@ namespace WebApplication1.Services
         public async Task<List<TvSeriesResponse>> GetSortAll(string sort)
         {
             sort = sort.ToLower();
-            var query = context.TvSeries
+            var query = unitOfWork.TvSeries.AsQueryable()
                                 .Include(m => m.genre)
                                 .Include(m => m.Reviews)
                                 .ThenInclude(r => r.User)
@@ -72,7 +75,7 @@ namespace WebApplication1.Services
 
         public async Task<List<TvSeriesResponse>> GetTvSeries(string? name, string? genreName, string? directorName)
         {
-            var query = context.TvSeries
+            var query = unitOfWork.TvSeries.AsQueryable()
                                 .Include(m => m.genre)
                                 .Include(m => m.Reviews)
                                 .ThenInclude(r => r.User)
@@ -91,7 +94,7 @@ namespace WebApplication1.Services
 
         public async Task<List<TvSeriesResponse>> GetTvSeriesByAvrRating()
         {
-            var TvSeries = await context.TvSeries
+            var TvSeries = await unitOfWork.TvSeries.AsQueryable()
                     .Include(m => m.genre)
                     .Include(m => m.Reviews)
                         .ThenInclude(r => r.User)
@@ -107,22 +110,22 @@ namespace WebApplication1.Services
 
         private async Task<Genre> GetOrCreateGenreAsync(GenreRequest genreRequest)
         {
-            var genre = await context.Genres.FirstOrDefaultAsync(g => g.name == genreRequest.name);
+            var genre = await unitOfWork.Genres.FirstOrDefaultAsync(g => g.name == genreRequest.name);
             if (genre is not null) return genre;
             genre = new Genre { name = genreRequest.name };
-            context.Genres.Add(genre);
+            await unitOfWork.Genres.AddAsync(genre);
             return genre;
         }
         public async Task<(int tvSeriesId, TvSeriesResponse response)> Upsert(int? tvSeriesId, TvSeriesRequest tvSeriesRequest)
         {
-            await using var transaction = await context.Database.BeginTransactionAsync();
+            await using var transaction = await unitOfWork.BeginTransactionAsync();
             try
             {
                 var genre = await GetOrCreateGenreAsync(tvSeriesRequest.genre);
                 TvSeries? tvSeries;
                 if (tvSeriesId is not null)
                 {
-                    tvSeries = await context.TvSeries
+                    tvSeries = await unitOfWork.TvSeries.AsQueryable()
                             .Include(m => m.genre)
                             .FirstOrDefaultAsync(m => m.Id == tvSeriesId.Value);
                     if (tvSeries is not null)
@@ -136,25 +139,20 @@ namespace WebApplication1.Services
                         tvSeries.Episodes = tvSeriesRequest.Episodes;
                         tvSeries.Network = tvSeriesRequest.Network;
                         tvSeries.Status = tvSeriesRequest.Status;
-                        await context.SaveChangesAsync();
+                        await unitOfWork.CompleteAsync();
                         await transaction.CommitAsync();
                         return (tvSeries.Id, TvSeriesMapping.ToResponse(tvSeries));
                     }
                 }
-                tvSeries = new TvSeries
-                {
-                    title = tvSeriesRequest.title,
-                    description = tvSeriesRequest.description,
-                    genre = genre,
-                    ReleaseDate = tvSeriesRequest.ReleaseDate,
-                    Language = tvSeriesRequest.Language,
-                    Seasons = tvSeriesRequest.Seasons,
-                    Episodes = tvSeriesRequest.Episodes,
-                    Network = tvSeriesRequest.Network,
-                    Status = tvSeriesRequest.Status
-                };
-                context.TvSeries.Add(tvSeries);
-                await context.SaveChangesAsync();
+                tvSeries = builder.CreateNew(tvSeriesRequest.title, tvSeriesRequest.description)
+                    .WithGenre(genre)
+                    .WithMetadata(tvSeriesRequest.Seasons,
+                    tvSeriesRequest.Episodes,
+                    tvSeriesRequest.Network,
+                    tvSeriesRequest.Status)
+                    .Build();
+                await unitOfWork.TvSeries.AddAsync(tvSeries);
+                await unitOfWork.CompleteAsync();
                 var response = TvSeriesMapping.ToResponse(tvSeries);
                 await transaction.CommitAsync();
                 return (tvSeries.Id, response);

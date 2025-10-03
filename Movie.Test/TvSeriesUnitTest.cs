@@ -15,64 +15,63 @@ using WebApplication1.Services;
 
 namespace MovieTest
 {
-    public class GameServicesUnitTest
+    public class TvSeriesUnitTest
     {
         private readonly AppDbContext _context;
         private readonly Mock<IUnitOfWork> unitOfWorkMock;
         private readonly MovieServices _movieServices;
 
-        public GameServicesUnitTest()
+        public TvSeriesUnitTest()
         {
-            unitOfWorkMock = new Mock<IUnitOfWork>();
-
+            this.unitOfWorkMock = new Mock<IUnitOfWork>();
         }
         [Fact]
         public async Task Upsert_AddMovie2()
         {
-            var testRequest = new GameRequest(
-                "Inception","Great movie",new GenreRequest( "Action" ),DateTime.Now,
-                "English",null, "Ps5"
+            var testRequest = new TvSeriesRequest(
+                "Inception", "Great movie", new GenreRequest("Action"), DateTime.Now,
+                "English", 1,12, "Netflix","Completed"
             );
 
             var GenRepoMock = new Mock<IGenericRepository<Genre>>();
-            var GameRepoMock = new Mock<IGenericRepository<Game>>();
+            var TvSeriesRepoMock = new Mock<IGenericRepository<TvSeries>>();
             var transactionMock = new Mock<IDbContextTransaction>();
 
             GenRepoMock.Setup(r => r.FirstOrDefaultAsync(It.IsAny<Expression<Func<Genre, bool>>>()))
                        .ReturnsAsync(null as Genre);
 
             unitOfWorkMock.Setup(u => u.Genres).Returns(GenRepoMock.Object);
-            unitOfWorkMock.Setup(u => u.Games).Returns(GameRepoMock.Object);
+            unitOfWorkMock.Setup(u => u.TvSeries).Returns(TvSeriesRepoMock.Object);
 
             unitOfWorkMock.Setup(u => u.BeginTransactionAsync()).ReturnsAsync(transactionMock.Object);
             unitOfWorkMock.Setup(u => u.CompleteAsync()).ReturnsAsync(1);
-            var builderMock = new Mock<IGameBuilder>();
-            var game = new Game
+            var builderMock = new Mock<ITvSeriesBuilder>();
+            var tvSeries = new TvSeries
             {
                 title = "Inception",
                 description = "Great movie",
-                Platform = "...",
                 genre = new Genre { name = "Action" },
                 ReleaseDate = DateTime.Now,
                 Language = "English",
+                Seasons = 1,
+                Episodes = 12,
+                Network = "Netflix",
+                Status = "Completed"
             };
-            builderMock.Setup(b => b.CreateNew(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>())).Returns(builderMock.Object);
-            builderMock.Setup(b => b.WithTechnicalDetails(It.IsAny<DateTime>(), It.IsAny<string>(), It.IsAny<string>())).Returns(builderMock.Object);
+            builderMock.Setup(b => b.CreateNew(It.IsAny<string>(), It.IsAny<string>())).Returns(builderMock.Object);
+            builderMock.Setup(b => b.WithMetadata(It.IsAny<int>(), It.IsAny<int>(), It.IsAny<string>(), It.IsAny<string>())).Returns(builderMock.Object);
             builderMock.Setup(b => b.WithGenre(It.IsAny<Genre>())).Returns(builderMock.Object);
-            builderMock.Setup(b => b.Build()).Returns(game);
-            var movieServicesMock = new GameServices(unitOfWorkMock.Object, builderMock.Object);
+            builderMock.Setup(b => b.Build()).Returns(tvSeries);
+            var movieServicesMock = new TvSeriesServices(unitOfWorkMock.Object, builderMock.Object);
 
             var result = await movieServicesMock.Upsert(null, testRequest);
 
-            // 1. Sprawdzamy, czy wszystkie elementy zostały dodane do bazy (nowe Genre, Director i Movie)
             GenRepoMock.Verify(r => r.AddAsync(It.IsAny<Genre>()), Times.Once);
-            GameRepoMock.Verify(r => r.AddAsync(It.IsAny<Game>()), Times.Once);
+            TvSeriesRepoMock.Verify(r => r.AddAsync(It.IsAny<TvSeries>()), Times.Once);
 
-            // 2. Sprawdzamy, czy zapisano zmiany i zatwierdzono transakcję
             unitOfWorkMock.Verify(u => u.CompleteAsync(), Times.AtLeastOnce);
             transactionMock.Verify(t => t.CommitAsync(It.IsAny<CancellationToken>()), Times.Once);
 
-            // 3. Weryfikacja wyniku (tylko dla pewności)
             Assert.NotNull(result.response);
             Assert.Equal("Inception", result.response.Title);
         }

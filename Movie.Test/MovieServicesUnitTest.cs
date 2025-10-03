@@ -86,7 +86,7 @@ namespace MovieTest
                 IsCinemaRelease = true
             };
             builderMock.Setup(b => b.CreateNew(It.IsAny<string>(), It.IsAny<string>())).Returns(builderMock.Object);
-            builderMock.Setup(b => b.WithOptionals(It.IsAny<DateTime>(), It.IsAny<string>(), It.IsAny<TimeSpan>(), It.IsAny<bool>())).Returns(builderMock.Object);
+           // builderMock.Setup(b => b.WithOptionals(It.IsAny<DateTime>(), It.IsAny<string>(), It.IsAny<TimeSpan>(), It.IsAny<bool>())).Returns(builderMock.Object);
             builderMock.Setup(b => b.WithGenre(It.IsAny<Genre>())).Returns(builderMock.Object);
             builderMock.Setup(b => b.WithDirector(It.IsAny<Director>())).Returns(builderMock.Object);
             builderMock.Setup(b => b.Build()).Returns(movie);
@@ -144,7 +144,7 @@ namespace MovieTest
                 IsCinemaRelease = true
             };
             builderMock.Setup(b => b.CreateNew(It.IsAny<string>(), It.IsAny<string>())).Returns(builderMock.Object);
-            builderMock.Setup(b => b.WithTechnicalDetails(It.IsAny<DateTime>(), It.IsAny<string>(), It.IsAny<TimeSpan>(), It.IsAny<bool>())).Returns(builderMock.Object);
+            //builderMock.Setup(b => b.WithTechnicalDetails(It.IsAny<DateTime>(), It.IsAny<string>(), It.IsAny<TimeSpan>(), It.IsAny<bool>())).Returns(builderMock.Object);
             builderMock.Setup(b => b.WithGenre(It.IsAny<Genre>())).Returns(builderMock.Object);
             builderMock.Setup(b => b.WithDirector(It.IsAny<Director>())).Returns(builderMock.Object);
             builderMock.Setup(b => b.Build()).Returns(movie);
