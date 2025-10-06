@@ -129,24 +129,17 @@ namespace WebApplication1.Services
                         .FirstOrDefaultAsync(g => g.Id == gameId);
                     if (game != null)
                     {
-                        game.title = gameRequest.Title;
-                        game.description = gameRequest.Description;
-                        game.genre = genre;
-                        game.Language = gameRequest.Language;
-                        game.Developer = gameRequest.Developer;
-                        game.Platform = gameRequest.Platform;
-                        game.ReleaseDate = gameRequest.ReleaseDate;
-                        await _unitOfWork.CompleteAsync();
-                        await transaction.CommitAsync();
-                        return (game.Id, GameMapping.ToResponse(game));
+                        GameMapping.UpdateEntity(game,gameRequest,genre);
                     }
                 }
-                game = gameBuilder
-                    .CreateNew(gameRequest.Title, gameRequest.Description, gameRequest.Platform)
-                    .WithGenre(genre)
-                    .WithTechnicalDetails(gameRequest.ReleaseDate, gameRequest.Language, gameRequest.Developer)
-                    .Build();
+                else {
+                    game = gameBuilder
+                        .CreateNew(gameRequest.Title, gameRequest.Description, gameRequest.Platform)
+                        .WithGenre(genre)
+                        .WithTechnicalDetails(gameRequest.ReleaseDate, gameRequest.Language, gameRequest.Developer)
+                        .Build();
                 await _unitOfWork.Games.AddAsync(game);
+                }
                 await _unitOfWork.CompleteAsync();
                 var response = GameMapping.ToResponse(game);
                 await transaction.CommitAsync();

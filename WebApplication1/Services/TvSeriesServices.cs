@@ -130,28 +130,21 @@ namespace WebApplication1.Services
                             .FirstOrDefaultAsync(m => m.Id == tvSeriesId.Value);
                     if (tvSeries is not null)
                     {
-                        tvSeries.title = tvSeriesRequest.title;
-                        tvSeries.description = tvSeriesRequest.description;
-                        tvSeries.genre = genre;
-                        tvSeries.ReleaseDate = tvSeriesRequest.ReleaseDate;
-                        tvSeries.Language = tvSeriesRequest.Language;
-                        tvSeries.Seasons = tvSeriesRequest.Seasons;
-                        tvSeries.Episodes = tvSeriesRequest.Episodes;
-                        tvSeries.Network = tvSeriesRequest.Network;
-                        tvSeries.Status = tvSeriesRequest.Status;
-                        await unitOfWork.CompleteAsync();
-                        await transaction.CommitAsync();
-                        return (tvSeries.Id, TvSeriesMapping.ToResponse(tvSeries));
+                        TvSeriesMapping.UpdateEntity(tvSeries, tvSeriesRequest, genre);
                     }
                 }
-                tvSeries = builder.CreateNew(tvSeriesRequest.title, tvSeriesRequest.description)
-                    .WithGenre(genre)
-                    .WithMetadata(tvSeriesRequest.Seasons,
-                    tvSeriesRequest.Episodes,
-                    tvSeriesRequest.Network,
-                    tvSeriesRequest.Status)
-                    .Build();
-                await unitOfWork.TvSeries.AddAsync(tvSeries);
+                else
+                {
+                    tvSeries = builder.CreateNew(tvSeriesRequest.title, tvSeriesRequest.description)
+                        .WithGenre(genre)
+                        .WithMetadata
+                        (tvSeriesRequest.Seasons,
+                        tvSeriesRequest.Episodes,
+                        tvSeriesRequest.Network,
+                        tvSeriesRequest.Status)
+                        .Build();
+                    await unitOfWork.TvSeries.AddAsync(tvSeries);
+                }
                 await unitOfWork.CompleteAsync();
                 var response = TvSeriesMapping.ToResponse(tvSeries);
                 await transaction.CommitAsync();

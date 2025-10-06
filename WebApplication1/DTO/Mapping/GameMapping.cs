@@ -1,4 +1,5 @@
-﻿using WebApplication1.DTO.Request;
+﻿using System.IO;
+using WebApplication1.DTO.Request;
 using WebApplication1.DTO.Response;
 using WebApplication1.Models;
 
@@ -19,9 +20,15 @@ namespace WebApplication1.DTO.Mapping
                 game.Platform
                 );
         }
-        public static void UpdateEntity(int gameId, GameRequest request, Genre genre)
+        public static void UpdateEntity(Game game ,GameRequest gameRequest, Genre genre)
         {
-
+            game.title = gameRequest.Title;
+            game.description = gameRequest.Description;
+            game.genre = genre;
+            game.Language = gameRequest.Language;
+            game.Developer = gameRequest.Developer;
+            game.Platform = gameRequest.Platform;
+            game.ReleaseDate = gameRequest.ReleaseDate;
         }
     }
 }

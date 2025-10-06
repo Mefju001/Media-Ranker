@@ -1,4 +1,6 @@
-﻿using WebApplication1.DTO.Response;
+﻿using System.IO;
+using WebApplication1.DTO.Request;
+using WebApplication1.DTO.Response;
 using WebApplication1.Models;
 
 namespace WebApplication1.DTO.Mapping
@@ -18,6 +20,18 @@ namespace WebApplication1.DTO.Mapping
                 tvSeries.Episodes,
                 tvSeries.Network,
                 tvSeries.Status);
+        }
+        public static void UpdateEntity(TvSeries tvSeries,TvSeriesRequest tvSeriesRequest,Genre genre)
+        {
+            tvSeries.title = tvSeriesRequest.title;
+            tvSeries.description = tvSeriesRequest.description;
+            tvSeries.genre = genre;
+            tvSeries.ReleaseDate = tvSeriesRequest.ReleaseDate;
+            tvSeries.Language = tvSeriesRequest.Language;
+            tvSeries.Seasons = tvSeriesRequest.Seasons;
+            tvSeries.Episodes = tvSeriesRequest.Episodes;
+            tvSeries.Network = tvSeriesRequest.Network;
+            tvSeries.Status = tvSeriesRequest.Status;
         }
     }
 }
