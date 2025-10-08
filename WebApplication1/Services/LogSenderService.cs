@@ -16,7 +16,7 @@ namespace WebApplication1.Services
         public async Task SendLogAsync(string Level, string Message, string Source)
         {
             var logApiUrl = _configuration["LoggingApi:Url"];
-            var logEntry = new LogSender(Level, Message, Source);
+            var logEntry = new LogNotification(Level, Message, Source);
             var jsonContent = new StringContent(
                 JsonSerializer.Serialize(logEntry),
                 System.Text.Encoding.UTF8, "application/json");

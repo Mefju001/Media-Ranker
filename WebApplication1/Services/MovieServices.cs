@@ -1,3 +1,4 @@
+using MediatR;
 using Microsoft.EntityFrameworkCore;
 using WebApplication1.Builder.Interfaces;
 using WebApplication1.DTO.Mapping;
@@ -7,9 +8,10 @@ using WebApplication1.Interfaces;
 using WebApplication1.Models;
 namespace WebApplication1.Services
 {
-    public class MovieServices(IUnitOfWork unitOfWork,IMovieBuilder builder) : IMovieServices
+    public class MovieServices(IUnitOfWork unitOfWork,IMovieBuilder builder,IMediator mediator) : IMovieServices
     {
         private readonly IUnitOfWork _unitOfWork = unitOfWork;
+        private readonly IMediator _mediator = mediator;
         private readonly IMovieBuilder movieBuilder = builder;
 
         private async Task<Director> GetOrCreateDirectorAsync(DirectorRequest directorRequest)
@@ -63,6 +65,7 @@ namespace WebApplication1.Services
                 await _unitOfWork.CompleteAsync();
                 var response = MovieMapping.ToResponse(movie);
                 await transaction.CommitAsync();
+                await _mediator.Publish(new LogNotification("Information", "Nowy film zosta³ dodany.", nameof(MovieServices)));
                 return (movie.Id, response);
             }
             catch
