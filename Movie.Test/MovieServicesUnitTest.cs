@@ -1,4 +1,5 @@
-﻿using Microsoft.Data.Sqlite;
+﻿using MediatR;
+using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Storage;
 using Moq;
@@ -90,7 +91,8 @@ namespace MovieTest
             builderMock.Setup(b => b.WithGenre(It.IsAny<Genre>())).Returns(builderMock.Object);
             builderMock.Setup(b => b.WithDirector(It.IsAny<Director>())).Returns(builderMock.Object);
             builderMock.Setup(b => b.Build()).Returns(movie);
-            var movieServicesMock = new MovieServices(unitOfWorkMock.Object, builderMock.Object);
+            var MediatorMock = new Mock<IMediator>();
+            var movieServicesMock = new MovieServices(unitOfWorkMock.Object, builderMock.Object, MediatorMock.Object);
 
             var result = await movieServicesMock.Upsert(1, testRequest);
 
@@ -144,11 +146,12 @@ namespace MovieTest
                 IsCinemaRelease = true
             };
             builderMock.Setup(b => b.CreateNew(It.IsAny<string>(), It.IsAny<string>())).Returns(builderMock.Object);
-            //builderMock.Setup(b => b.WithTechnicalDetails(It.IsAny<DateTime>(), It.IsAny<string>(), It.IsAny<TimeSpan>(), It.IsAny<bool>())).Returns(builderMock.Object);
+            builderMock.Setup(b => b.WithTechnicalDetails(It.IsAny<TimeSpan>(), It.IsAny<string>(), It.IsAny<bool>(), It.IsAny<DateTime>())).Returns(builderMock.Object);
             builderMock.Setup(b => b.WithGenre(It.IsAny<Genre>())).Returns(builderMock.Object);
             builderMock.Setup(b => b.WithDirector(It.IsAny<Director>())).Returns(builderMock.Object);
             builderMock.Setup(b => b.Build()).Returns(movie);
-            var movieServicesMock = new MovieServices(unitOfWorkMock.Object, builderMock.Object);
+            var MediatorMock = new Mock<IMediator>();
+            var movieServicesMock = new MovieServices(unitOfWorkMock.Object, builderMock.Object,MediatorMock.Object);
 
             var result = await movieServicesMock.Upsert(null, testRequest);
 
@@ -192,7 +195,8 @@ namespace MovieTest
             MovieRepoMock.Setup(u => u.GetAllAsync()).ReturnsAsync(movies);
             unitOfWorkMock.Setup(u => u.Movies).Returns(MovieRepoMock.Object);
             var builderMock = new Mock<IMovieBuilder>();
-            var movieService = new MovieServices(unitOfWorkMock.Object, builderMock.Object);
+            var MediatorMock = new Mock<IMediator>();
+            var movieService = new MovieServices(unitOfWorkMock.Object, builderMock.Object, MediatorMock.Object);
 
             // Act
             var result = await movieService.GetAllAsync();
@@ -219,7 +223,8 @@ namespace MovieTest
             MovieRepoMock.Setup(u=>u.FirstOrDefaultAsync(It.IsAny<Expression<Func<Movie,bool>>>())).ReturnsAsync(movie);
             unitOfWorkMock.Setup(u => u.Movies).Returns(MovieRepoMock.Object);
             var builderMock = new Mock<IMovieBuilder>();
-            var mockServices = new MovieServices(unitOfWorkMock.Object, builderMock.Object);
+            var MediatorMock = new Mock<IMediator>();
+            var mockServices = new MovieServices(unitOfWorkMock.Object, builderMock.Object, MediatorMock.Object);
             var result = await mockServices.GetById(movie.Id);
             Assert.NotNull(result);
             Assert.Equal("New Title", result.Title);
@@ -233,8 +238,8 @@ namespace MovieTest
             MovieRepoMock.Setup(u => u.FirstOrDefaultAsync(It.IsAny<Expression<Func<Movie,bool>>>())).ReturnsAsync((Movie?)null);
             unitOfWorkMock.Setup(u => u.Movies).Returns(MovieRepoMock.Object);
             var builderMock = new Mock<IMovieBuilder>();
-
-            var mockServices = new MovieServices(unitOfWorkMock.Object, builderMock.Object);
+            var MediatorMock = new Mock<IMediator>();
+            var mockServices = new MovieServices(unitOfWorkMock.Object, builderMock.Object, MediatorMock.Object);
             var result = await mockServices.GetById(42);
             Assert.Null(result);
         }
