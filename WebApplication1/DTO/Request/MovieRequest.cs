@@ -5,7 +5,7 @@ namespace WebApplication1.DTO.Request
         string Description,
         GenreRequest Genre,
         DirectorRequest Director,
-        DateTime ReleaseDate,
+        DateTime? ReleaseDate,
         string Language,
         TimeSpan Duration,
         bool IsCinemaRelease
