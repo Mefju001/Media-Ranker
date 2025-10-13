@@ -28,7 +28,7 @@ namespace WebApplication1.DTO.Mapping
             game.Language = gameRequest.Language;
             game.Developer = gameRequest.Developer;
             game.Platform = gameRequest.Platform;
-            game.ReleaseDate = gameRequest.ReleaseDate;
+            game.ReleaseDate = gameRequest.ReleaseDate.Value;
         }
     }
 }

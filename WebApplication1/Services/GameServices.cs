@@ -4,6 +4,7 @@ using WebApplication1.Data;
 using WebApplication1.DTO.Mapping;
 using WebApplication1.DTO.Request;
 using WebApplication1.DTO.Response;
+using WebApplication1.DTO.Validator;
 using WebApplication1.Exceptions;
 using WebApplication1.Interfaces;
 using WebApplication1.Models;
@@ -14,6 +15,7 @@ namespace WebApplication1.Services
     {
         private readonly IUnitOfWork _unitOfWork;
         private readonly IGameBuilder gameBuilder;
+
 
         public GameServices(IUnitOfWork unitOfWork, IGameBuilder gameBuilder)
         {

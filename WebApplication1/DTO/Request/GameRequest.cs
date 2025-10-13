@@ -7,7 +7,7 @@ namespace WebApplication1.DTO.Request
         string Title,
         string Description,
         GenreRequest Genre,
-        DateTime ReleaseDate,
+        DateTime? ReleaseDate,
         string Language,
         string? Developer,
         EPlatform Platform

@@ -1,9 +1,12 @@
-﻿using MediatR;
+﻿using FluentValidation;
+using MediatR;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using System.Reflection;
 using WebApplication1.Builder;
 using WebApplication1.Builder.Interfaces;
 using WebApplication1.Data;
+using WebApplication1.DTO.Validator;
 using WebApplication1.Interfaces;
 using WebApplication1.Models;
 using WebApplication1.Observer;
@@ -27,7 +30,9 @@ namespace WebApplication1.Extensions
             services.AddScoped<IMovieBuilder,MovieBuilder>();
             services.AddScoped<IGameBuilder, GameBuilder>();
             services.AddScoped<ITvSeriesBuilder, TvSeriesBuilder>();
-            services.AddMediatR(cfg => cfg.RegisterServicesFromAssemblies(typeof(ApiLogSenderObserver).Assembly));
+            services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(typeof(Program).Assembly));
+            services.AddValidatorsFromAssembly(typeof(Program).Assembly);
+            services.AddTransient(typeof(IPipelineBehavior<,>), typeof(ValidationBehavior<,>));
             services.AddScoped<IMovieServices, MovieServices>();
             services.AddScoped<IUnitOfWork, UnitOfWork>();
             services.AddScoped<IGameServices, GameServices>();
