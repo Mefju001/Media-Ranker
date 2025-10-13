@@ -1,4 +1,6 @@
-﻿namespace WebApplication1.DTO.Request
+﻿using WebApplication1.Models;
+
+namespace WebApplication1.DTO.Request
 {
     public record GameRequest
         (
@@ -8,6 +10,6 @@
         DateTime ReleaseDate,
         string Language,
         string? Developer,
-        string Platform
+        EPlatform Platform
         );
 }

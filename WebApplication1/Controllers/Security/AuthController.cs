@@ -72,23 +72,6 @@ namespace WebApplication1.Controllers.Security
             //await logSenderService.SendLogAsync("Information", "Nothing", "admin");
             return Ok("Dane zostały przesłane. ");
         }
-        [AllowAnonymous]
-        [HttpPost("AddGame")]
-        public async Task<IActionResult> AddTestGame()
-        {
-
-            var gameRequest = new GameRequest(
-                "Cyberpunk 2077",
-                "...",
-                new GenreRequest("Science Fiction"),
-                DateTime.Parse("2020-12-10"),
-                "polski",
-                "CD Projekt Red",
-                "PC, PlayStation 4, Xbox One, Google Stadia"
-            );
-            await game.Upsert(null, gameRequest);
-            return Ok("Dane zostały dodane.");
-        }
         [HttpPost("AddRolesAndUsers")]
         public async Task<IActionResult> AddUserAndRole()
         {

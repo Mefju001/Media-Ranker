@@ -24,7 +24,7 @@ namespace WebApplication1.DTO.Mapping
             movie.description = movieRequest.Description;
             movie.director = director;
             movie.genre = genre;
-            movie.ReleaseDate = movieRequest.ReleaseDate;
+            movie.ReleaseDate = movieRequest.ReleaseDate.Value;
             movie.Language = movieRequest.Language;
             movie.IsCinemaRelease = movieRequest.IsCinemaRelease;
             movie.Duration = movieRequest.Duration;

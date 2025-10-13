@@ -15,7 +15,7 @@ namespace WebApplication1.Builder
             return game;
         }
 
-        public IGameBuilder CreateNew(string title, string description, string platform)
+        public IGameBuilder CreateNew(string title, string description, EPlatform platform)
         {
             game = new Game 
             { title = title, 
