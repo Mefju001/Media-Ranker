@@ -1,5 +1,6 @@
 ﻿using FluentValidation;
 using WebApplication1.DTO.Request;
+using WebApplication1.Models;
 
 namespace WebApplication1.DTO.Validator
 {
@@ -20,7 +21,7 @@ namespace WebApplication1.DTO.Validator
             RuleFor(Request => Request.ReleaseDate)
                     .NotEmpty()
                     .LessThanOrEqualTo(DateTime.UtcNow)
-                    .When(Request => Request.Status == "Finished" || Request.Status == "Released");
+                    .When(Request => Request.Status == EStatus.Completed || Request.Status == EStatus.Continuing);
             RuleFor(Request => Request.Language)
                     .NotEmpty().WithMessage("Language name should have text.")
                     .MaximumLength(250).WithMessage("Only 250 characters are allowed.");

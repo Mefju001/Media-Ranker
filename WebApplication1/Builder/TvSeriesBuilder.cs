@@ -38,12 +38,12 @@ namespace WebApplication1.Builder
             return this;
         }
 
-        public ITvSeriesBuilder WithMetadata(int? seasons, int? episodes, string? network, string? status)
+        public ITvSeriesBuilder WithMetadata(int? seasons, int? episodes, string? network, EStatus? status)
         {
             tvSeries.Seasons = seasons ?? 0;
             tvSeries.Episodes = episodes ?? 0;
             tvSeries.Network = network ?? string.Empty;
-            tvSeries.Status = status ?? string.Empty;
+            tvSeries.Status = status ?? EStatus.Unknown;
             return this;
         }
     }

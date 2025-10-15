@@ -9,7 +9,7 @@ namespace WebApplication1.Builder.Interfaces
             int? seasons,
             int? episodes,
             string? network,
-            string? status);
+            EStatus? status);
         ITvSeriesBuilder WithGenre(Genre Genre);
         ITvSeriesBuilder WithDefaultReview(Review review);
         TvSeries Build();

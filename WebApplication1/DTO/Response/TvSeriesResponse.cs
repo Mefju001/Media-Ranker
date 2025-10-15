@@ -1,4 +1,6 @@
-﻿namespace WebApplication1.DTO.Response
+﻿using WebApplication1.Models;
+
+namespace WebApplication1.DTO.Response
 {
     public record TvSeriesResponse(
         string Title,
@@ -11,6 +13,6 @@
         int Seasons,
         int Episodes,
         string? Network,
-        string? Status
+        EStatus Status
         ) : MediaResponse(Title, Description, Genre, ReleaseDate, Language, Reviews);
 }
