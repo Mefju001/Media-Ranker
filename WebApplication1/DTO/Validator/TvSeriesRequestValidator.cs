@@ -22,6 +22,10 @@ namespace WebApplication1.DTO.Validator
                     .NotEmpty()
                     .LessThanOrEqualTo(DateTime.UtcNow)
                     .When(Request => Request.Status == EStatus.Completed || Request.Status == EStatus.Continuing);
+            RuleFor(Request => Request.ReleaseDate)
+                .NotEmpty()
+                .GreaterThan(DateTime.UtcNow)
+                .When(Request => Request.Status == EStatus.Upcoming);
             RuleFor(Request => Request.Language)
                     .NotEmpty().WithMessage("Language name should have text.")
                     .MaximumLength(250).WithMessage("Only 250 characters are allowed.");

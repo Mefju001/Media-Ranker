@@ -24,8 +24,8 @@ namespace WebApplication1.Extensions
                         ValidateAudience = true,
                         ValidateLifetime = true,
                         ValidateIssuerSigningKey = true,
-                        ValidIssuer = config["Issuer"],
-                        ValidAudience = config["Audience"],
+                        ValidIssuer = config["Jwt:Issuer"],
+                        ValidAudience = config["Jwt:Audience"],
                         IssuerSigningKey = new SymmetricSecurityKey(
                                 Encoding.UTF8.GetBytes(key)
                                 )

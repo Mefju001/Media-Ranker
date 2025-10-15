@@ -21,7 +21,7 @@ builder.Services.AddSwaggerGen();
 
 
 builder.Services.AddHttpContextAccessor();
-builder.Services.AddAuthorization();
+
 
 var app = builder.Build();
 
@@ -35,6 +35,9 @@ if (app.Environment.IsDevelopment())
 
 //app.UseHttpsRedirection();
 app.UseAuthentication();
+
+// 2. AUTORYZACJA (Authorization) sprawdza role i polityki (wymaga wyniku Authentication)
+app.UseAuthorization();
 app.UseMiddleware<GlobalExceptionHandlerMiddleware>();
 app.MapControllers();
 
