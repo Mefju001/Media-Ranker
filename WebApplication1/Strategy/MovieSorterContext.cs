@@ -9,7 +9,7 @@ namespace WebApplication1.Strategy
         public MovieSorterContext(IEnumerable<ISortingStrategy<Movie>> strategies)
         {
             this.strategies = strategies.ToDictionary(
-                s => s.GetType().Name.ToLower(),
+                s => s.Key,
                 s => s);
         }
         public IQueryable<Movie> Sort(IQueryable<Movie> query, string sortKey)

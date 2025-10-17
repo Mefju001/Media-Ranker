@@ -6,13 +6,15 @@ using WebApplication1.DTO.Request;
 using WebApplication1.DTO.Response;
 using WebApplication1.Interfaces;
 using WebApplication1.Models;
+using WebApplication1.Strategy;
 namespace WebApplication1.Services
 {
-    public class MovieServices(IUnitOfWork unitOfWork,IMovieBuilder builder,IMediator mediator) : IMovieServices
+    public class MovieServices(IUnitOfWork unitOfWork, IMovieBuilder builder, IMediator mediator, MovieQueryHandler handler) : IMovieServices
     {
         private readonly IUnitOfWork _unitOfWork = unitOfWork;
         private readonly IMediator _mediator = mediator;
         private readonly IMovieBuilder movieBuilder = builder;
+        private readonly MovieQueryHandler handler = handler;
 
         private async Task<Director> GetOrCreateDirectorAsync(DirectorRequest directorRequest)
         {
@@ -44,7 +46,7 @@ namespace WebApplication1.Services
                             .FirstOrDefaultAsync(m => m.Id == movieId.Value);
                     if (movie is not null)
                     {
-                        MovieMapping.UpdateEntity(movie,movieRequest,director,genre);
+                        MovieMapping.UpdateEntity(movie, movieRequest, director, genre);
                     }
                 }
                 else
@@ -52,16 +54,16 @@ namespace WebApplication1.Services
                     movie = movieBuilder
                         .CreateNew(movieRequest.Title, movieRequest.Description)
                         .WithTechnicalDetails
-                        (movieRequest.Duration, 
-                         movieRequest.Language, 
-                         movieRequest.IsCinemaRelease, 
+                        (movieRequest.Duration,
+                         movieRequest.Language,
+                         movieRequest.IsCinemaRelease,
                          movieRequest.ReleaseDate)
                         .WithGenre(genre)
                         .WithDirector(director)
                         .Build();
                     await _unitOfWork.Movies.AddAsync(movie);
                 }
-                    
+
                 await _unitOfWork.CompleteAsync();
                 var response = MovieMapping.ToResponse(movie);
                 await transaction.CommitAsync();
@@ -95,7 +97,8 @@ namespace WebApplication1.Services
                     .ThenInclude(r => r.User);
             if (!string.IsNullOrEmpty(sort) && sort.Equals("asc"))
             {
-                query = query.OrderBy(m => m.title);
+                //query = query.OrderBy(m => m.title);
+                query = handler.Handle("title", "ascending");
             }
             if (!string.IsNullOrEmpty(sort) && sort.Equals("desc"))
             {
@@ -161,7 +164,7 @@ namespace WebApplication1.Services
         }
         public async Task<MovieResponse?> GetById(int id)
         {
-            var movieQuery =  _unitOfWork.Movies.AsQueryable();
+            var movieQuery = _unitOfWork.Movies.AsQueryable();
             var result = await movieQuery
                 .Include(m => m.genre)
                 .Include(m => m.director)
