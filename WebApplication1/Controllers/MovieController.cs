@@ -21,10 +21,10 @@ namespace WebApplication1.Controllers
             var movies = await movieServices.GetAllAsync();
             return Ok(movies);
         }
-        [HttpGet("sortBy/{sort}")]
-        public async Task<IActionResult> GetSortAll(string sort)
+        [HttpGet("sortBy/{sortByField}/{sortByDirection}")]
+        public async Task<IActionResult> GetSortAll(string sortByField, string sortByDirection)
         {
-            var movies = await movieServices.GetSortAll(sort);
+            var movies = await movieServices.GetSortAll(sortByField,sortByDirection);
             return Ok(movies);
         }
         [HttpGet("FilterBy")]

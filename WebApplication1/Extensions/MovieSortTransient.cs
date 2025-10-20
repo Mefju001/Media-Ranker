@@ -14,15 +14,11 @@ namespace WebApplication1.Extensions
             services.AddScoped<MovieSorterContext>();
             services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
             services.AddTransient<ISortingStrategy<Movie>, DynamicSortingStrategy<Movie>>(provider =>
-                new DynamicSortingStrategy<Movie>("titleascending",m => m.title, false)); // false = ASC
-
-            // Strategia B: Sortowanie po Ocenie (malejąco)
-            /*services.AddTransient<ISortingStrategy<Movie>, DynamicSortingStrategy<Movie>>(provider =>
-                new DynamicSortingStrategy<Movie>(m => m., true)); // true = DESC*/
-
-            // Strategia C: Sortowanie po Dacie (rosnąco)
+                new DynamicSortingStrategy<Movie>("title",m => m.title));
+            services.AddTransient<ISortingStrategy<Movie>,DynamicSortingStrategy<Movie>>(provider =>
+                new DynamicSortingStrategy<Movie>("genre",m=>m.genre.name));
             services.AddTransient<ISortingStrategy<Movie>, DynamicSortingStrategy<Movie>>(provider =>
-                new DynamicSortingStrategy<Movie>("releaseascending", m => m.ReleaseDate, false));
+                 new DynamicSortingStrategy<Movie>("releaseDate", m => m.ReleaseDate));
             return services;
         }
     }

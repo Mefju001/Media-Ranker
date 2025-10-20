@@ -15,11 +15,10 @@ namespace WebApplication1.Strategy
             _repository = repository;
             _sorterContext = sorterContext;
         }
-        public IQueryable<Movie>Handle(string SortByfield,string SortByDirector)
+        public IQueryable<Movie>Handle(string SortByfield,bool SortByDirector)
         {
-            var sortkey = SortByfield+SortByDirector;
             IQueryable<Movie> query = _repository.AsQueryable();
-            query = _sorterContext.Sort(query, sortkey);
+            query = _sorterContext.Sort(query, SortByfield,SortByDirector);
             return query.AsQueryable();
         }
     }

@@ -12,12 +12,12 @@ namespace WebApplication1.Strategy
                 s => s.Key,
                 s => s);
         }
-        public IQueryable<Movie> Sort(IQueryable<Movie> query, string sortKey)
+        public IQueryable<Movie> Sort(IQueryable<Movie> query, string SortByfield, bool SortByDirector)
         {
-            if(string.IsNullOrEmpty(sortKey))return query;
-            if (strategies.TryGetValue(sortKey.ToLower(), out var strategy))
+            if(string.IsNullOrEmpty(SortByfield))return query;
+            if (strategies.TryGetValue(SortByfield.ToLower(), out var strategy))
             {
-                return strategy.ApplySort(query);
+                return strategy.ApplySort(query,SortByDirector);
             }
             return query;
         }

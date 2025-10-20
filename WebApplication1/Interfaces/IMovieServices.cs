@@ -4,7 +4,7 @@ using WebApplication1.DTO.Response;
 public interface IMovieServices
 {
     Task<List<MovieResponse>> GetAllAsync();
-    Task<List<MovieResponse>> GetSortAll(string sort);
+    Task<List<MovieResponse>> GetSortAll(string sortByField, string sortByDirection);
     Task<List<MovieResponse>> GetMoviesByAvrRating();
     Task<List<MovieResponse>> GetMovies(string? name, string? genreId, string? directorId, int? movieid);
     Task<MovieResponse?> GetById(int id);

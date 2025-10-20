@@ -87,23 +87,21 @@ namespace WebApplication1.Services
             return true;
 
         }
-        public async Task<List<MovieResponse>> GetSortAll(string sort)
+        public async Task<List<MovieResponse>> GetSortAll(string sortByField, string sortByDirection)
         {
-            sort = sort.ToLower();
+            sortByDirection = sortByDirection.ToLower();
+            sortByField = sortByField.ToLower();
             IQueryable<Movie> query = _unitOfWork.Movies.AsQueryable()
                 .Include(m => m.genre)
                 .Include(m => m.director)
                 .Include(m => m.Reviews)
                     .ThenInclude(r => r.User);
-            if (!string.IsNullOrEmpty(sort) && sort.Equals("asc"))
-            {
-                //query = query.OrderBy(m => m.title);
-                query = handler.Handle("title", "ascending");
+            if(!string.IsNullOrEmpty(sortByDirection)||!string.IsNullOrEmpty(sortByField))
+            { 
+                bool isDesceding = sortByDirection.Equals("desc",StringComparison.OrdinalIgnoreCase);
+                query = handler.Handle(sortByField, isDesceding);
             }
-            if (!string.IsNullOrEmpty(sort) && sort.Equals("desc"))
-            {
-                query = query.OrderByDescending(m => m.title);
-            }
+
             var movies = await query.ToListAsync();
             var movieResponses = movies.Select(MovieMapping.ToResponse).ToList();
             return movieResponses;

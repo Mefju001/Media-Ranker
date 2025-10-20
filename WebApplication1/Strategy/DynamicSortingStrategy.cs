@@ -9,15 +9,13 @@ namespace WebApplication1.Strategy
     {
         public string Key { get; }
         private readonly Expression<Func<T, object>> sortExpression;
-        private readonly bool isDescending;
-        public DynamicSortingStrategy(string key,Expression<Func<T, object>> sortExpression, bool isDescending)
+        public DynamicSortingStrategy(string key,Expression<Func<T, object>> sortExpression)
         {
             Key = key.ToLower();
             this.sortExpression = sortExpression;
-            this.isDescending = isDescending;
         }
 
-        public IQueryable<T> ApplySort(IQueryable<T> query)
+        public IQueryable<T> ApplySort(IQueryable<T> query, bool isDescending)
         {
             if (isDescending)
                 return query.OrderByDescending(sortExpression);
