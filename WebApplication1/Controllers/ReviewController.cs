@@ -2,7 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
 using WebApplication1.DTO.Request;
-using WebApplication1.Interfaces;
+using WebApplication1.Services.Interfaces;
 
 namespace WebApplication1.Controllers
 {

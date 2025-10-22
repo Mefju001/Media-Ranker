@@ -1,4 +1,4 @@
-﻿namespace WebApplication1.Interfaces
+﻿namespace WebApplication1.Services.Interfaces
 {
     public interface ITokenCleanupService
     {

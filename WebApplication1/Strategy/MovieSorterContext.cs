@@ -12,7 +12,7 @@ namespace WebApplication1.Strategy
                 s => s.Key,
                 s => s);
         }
-        public IQueryable<Movie> Sort(IQueryable<Movie> query, string SortByfield, bool SortByDirector)
+        public IQueryable<Movie> Sort(IQueryable<Movie> query, string? SortByfield, bool SortByDirector)
         {
             if(string.IsNullOrEmpty(SortByfield))return query;
             if (strategies.TryGetValue(SortByfield.ToLower(), out var strategy))

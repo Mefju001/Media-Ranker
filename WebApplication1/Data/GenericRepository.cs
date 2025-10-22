@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore.Metadata.Conventions;
 using Microsoft.EntityFrameworkCore.Query;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
-using WebApplication1.Interfaces;
+using WebApplication1.Services.Interfaces;
 
 namespace WebApplication1.Data
 {

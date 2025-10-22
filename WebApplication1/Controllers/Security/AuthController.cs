@@ -4,9 +4,9 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using WebApplication1.Data;
 using WebApplication1.DTO.Request;
-using WebApplication1.Interfaces;
 using WebApplication1.Models;
 using WebApplication1.Services;
+using WebApplication1.Services.Interfaces;
 
 namespace WebApplication1.Controllers.Security
 {

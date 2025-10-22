@@ -7,10 +7,11 @@ using WebApplication1.Builder;
 using WebApplication1.Builder.Interfaces;
 using WebApplication1.Data;
 using WebApplication1.DTO.Validator;
-using WebApplication1.Interfaces;
 using WebApplication1.Models;
 using WebApplication1.Observer;
 using WebApplication1.Services;
+using WebApplication1.Services.Interfaces;
+using WebApplication1.Strategy;
 
 namespace WebApplication1.Extensions
 {
@@ -22,7 +23,9 @@ namespace WebApplication1.Extensions
             {
                 options.UseLazyLoadingProxies().UseNpgsql(config.GetConnectionString("DefaultConnection"));
             });
-
+            services.AddTransient<MovieQueryHandler>();
+            services.AddScoped<MovieSorterContext>();
+            services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
             services.AddHostedService<TokenBackgroundService>();
             services.AddScoped<AuthService>();
             services.AddHttpClient<LogSenderService>();

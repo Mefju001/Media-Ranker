@@ -4,9 +4,10 @@ using WebApplication1.Builder.Interfaces;
 using WebApplication1.DTO.Mapping;
 using WebApplication1.DTO.Request;
 using WebApplication1.DTO.Response;
-using WebApplication1.Interfaces;
 using WebApplication1.Models;
+using WebApplication1.Services.Interfaces;
 using WebApplication1.Strategy;
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 namespace WebApplication1.Services
 {
     public class MovieServices(IUnitOfWork unitOfWork, IMovieBuilder builder, IMediator mediator, MovieQueryHandler handler) : IMovieServices
@@ -106,21 +107,31 @@ namespace WebApplication1.Services
             var movieResponses = movies.Select(MovieMapping.ToResponse).ToList();
             return movieResponses;
         }
-        public async Task<List<MovieResponse>> GetMoviesByAvrRating()
+        public async Task<List<MovieAVGResponse>> GetMoviesByAvrRating(string sortByDirection)
         {
             var moviesQuery = _unitOfWork.Movies.AsQueryable();
-            var results = await moviesQuery
+            /*var results = moviesQuery
                 .Include(m => m.genre)
                 .Include(m => m.director)
-                .Include(m => m.Reviews)
-                .Select(m => new
-                {
-                    Movie = m,
-                    avarage = m.Reviews.Average(r => (double?)r.Rating) ?? 0
-                })
-                .OrderByDescending(x => x.avarage)
-                .ToListAsync();
-            return results.Select(x => MovieMapping.ToResponse(x.Movie)).ToList();
+                .Include(m => m.Reviews);
+            .Select(m => new
+            {
+                Movie = m,
+                avarage = m.Reviews.Average(r => (double?)r.Rating) ?? 0
+            })
+            .OrderByDescending(x => x.avarage)
+            .ToListAsync();*/
+            IQueryable<Movie> query = _unitOfWork.Movies.AsQueryable()
+            .Include(m => m.genre)
+            .Include(m => m.director)
+            .Include(m => m.Reviews)
+                .ThenInclude(r => r.User);
+            if (!string.IsNullOrEmpty(sortByDirection))
+            {
+                bool isDesceding = sortByDirection.Equals("desc", StringComparison.OrdinalIgnoreCase);
+                query = handler.Handle(null,isDesceding);
+            }
+            return query.Select(x => MovieAVGMapping.ToResponse(x.,x.avarage)).ToList();
         }
         public async Task<List<MovieResponse>> GetMovies(string? name, string? genreName, string? directorName, int? movieId)
         {
