@@ -7,15 +7,14 @@ using WebApplication1.DTO.Response;
 using WebApplication1.Models;
 using WebApplication1.Services.Interfaces;
 using WebApplication1.Strategy;
-using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 namespace WebApplication1.Services
 {
-    public class MovieServices(IUnitOfWork unitOfWork, IMovieBuilder builder, IMediator mediator, MovieQueryHandler handler) : IMovieServices
+    public class MovieServices(IUnitOfWork unitOfWork, IMovieBuilder builder, IMediator mediator, QueryHandler<Movie> handler) : IMovieServices
     {
         private readonly IUnitOfWork _unitOfWork = unitOfWork;
         private readonly IMediator _mediator = mediator;
         private readonly IMovieBuilder movieBuilder = builder;
-        private readonly MovieQueryHandler handler = handler;
+        private readonly QueryHandler<Movie> handler = handler;
 
         private async Task<Director> GetOrCreateDirectorAsync(DirectorRequest directorRequest)
         {
@@ -109,29 +108,46 @@ namespace WebApplication1.Services
         }
         public async Task<List<MovieAVGResponse>> GetMoviesByAvrRating(string sortByDirection)
         {
-            var moviesQuery = _unitOfWork.Movies.AsQueryable();
-            /*var results = moviesQuery
+            /*var moviesQuery = _unitOfWork.Movies.AsQueryable();
+            var results = moviesQuery
                 .Include(m => m.genre)
                 .Include(m => m.director)
-                .Include(m => m.Reviews);
+                .Include(m => m.Reviews)
             .Select(m => new
             {
                 Movie = m,
                 avarage = m.Reviews.Average(r => (double?)r.Rating) ?? 0
             })
             .OrderByDescending(x => x.avarage)
-            .ToListAsync();*/
+            .ToListAsync();
             IQueryable<Movie> query = _unitOfWork.Movies.AsQueryable()
             .Include(m => m.genre)
             .Include(m => m.director)
             .Include(m => m.Reviews)
-                .ThenInclude(r => r.User);
+                .ThenInclude(r => r.User);*/
             if (!string.IsNullOrEmpty(sortByDirection))
             {
                 bool isDesceding = sortByDirection.Equals("desc", StringComparison.OrdinalIgnoreCase);
-                query = handler.Handle(null,isDesceding);
+                IQueryable<Movie> query = _unitOfWork.Movies.AsQueryable()
+                .Include(m => m.genre)
+                .Include(m => m.director)
+                .Include(m => m.Reviews)
+                    .ThenInclude(r => r.User);
+                query = handler.Handle("average",isDesceding);
+                var results = await query
+                    .Include(m => m.genre)
+                    .Include(m => m.director)
+                    .Include(m => m.Reviews)
+                    .Select(m => new
+                    {
+                        Movie = m,
+                        avarage = m.Reviews.Average(r => (double?)r.Rating) ?? 0
+                    })
+                    .OrderByDescending(x => x.avarage)
+                    .ToListAsync();
+                return results.Select(x => MovieAVGMapping.ToResponse(x.Movie,x.avarage)).ToList();
             }
-            return query.Select(x => MovieAVGMapping.ToResponse(x.,x.avarage)).ToList();
+            throw new Exception("Wywali³ sie");
         }
         public async Task<List<MovieResponse>> GetMovies(string? name, string? genreName, string? directorName, int? movieId)
         {

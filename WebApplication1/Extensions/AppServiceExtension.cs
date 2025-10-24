@@ -23,8 +23,10 @@ namespace WebApplication1.Extensions
             {
                 options.UseLazyLoadingProxies().UseNpgsql(config.GetConnectionString("DefaultConnection"));
             });
-            services.AddTransient<MovieQueryHandler>();
-            services.AddScoped<MovieSorterContext>();
+            services.AddTransient<QueryHandler<Movie>>();
+            services.AddTransient<QueryHandler<Game>>();
+            services.AddScoped<SorterContext<Movie>>();
+            services.AddScoped<SorterContext<Game>>();
             services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
             services.AddHostedService<TokenBackgroundService>();
             services.AddScoped<AuthService>();

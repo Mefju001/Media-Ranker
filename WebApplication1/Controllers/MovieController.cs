@@ -4,7 +4,7 @@ using WebApplication1.DTO.Request;
 
 namespace WebApplication1.Controllers
 {
-    [AllowAnonymous]
+    [Authorize]
     [ApiController]
     [Route("[controller]")]
     public class MovieController : ControllerBase
@@ -15,30 +15,35 @@ namespace WebApplication1.Controllers
         {
             movieServices = Movservices;
         }
+        [AllowAnonymous]
         [HttpGet]
         public async Task<IActionResult> GetAll()
         {
             var movies = await movieServices.GetAllAsync();
             return Ok(movies);
         }
+        [AllowAnonymous]
         [HttpGet("sortBy/{sortByField}/{sortByDirection}")]
         public async Task<IActionResult> GetSortAll(string sortByField, string sortByDirection)
         {
             var movies = await movieServices.GetSortAll(sortByField,sortByDirection);
             return Ok(movies);
         }
+        [AllowAnonymous]
         [HttpGet("FilterBy")]
         public async Task<IActionResult> GetMovies([FromQuery] string? name, [FromQuery] string? genreName, [FromQuery] string? directorName, [FromQuery] int? movieId)
         {
             var movies = await movieServices.GetMovies(name, genreName, directorName, movieId);
             return Ok(movies);
         }
+        [AllowAnonymous]
         [HttpGet("byAvarage")]
-        public async Task<IActionResult> GetMoviesByAvarage()
+        public async Task<IActionResult> GetMoviesByAvarage(string sortByDirection)
         {
-            var movies = await movieServices.GetMoviesByAvrRating();
+            var movies = await movieServices.GetMoviesByAvrRating(sortByDirection);
             return Ok(movies);
         }
+        [AllowAnonymous]
         [HttpGet("id/{id}")]
         public async Task<IActionResult> GetById(int id)
         {

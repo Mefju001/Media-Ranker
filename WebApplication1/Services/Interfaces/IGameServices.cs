@@ -6,7 +6,7 @@ namespace WebApplication1.Services.Interfaces
     public interface IGameServices
     {
         Task<List<GameResponse>> GetAllAsync();
-        Task<List<GameResponse>> GetSortAll(string sort);
+        Task<List<GameResponse>> GetSortAll(string isDesceding,string sortByField);
         Task<List<GameResponse>> GetGamesByAvrRating();
         Task<List<GameResponse>> GetGames(string? name, string? genreName);
         Task<GameResponse?> GetById(int id);

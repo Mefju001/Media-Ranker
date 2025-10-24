@@ -6,8 +6,10 @@ using WebApplication1.DTO.Request;
 using WebApplication1.DTO.Response;
 using WebApplication1.DTO.Validator;
 using WebApplication1.Exceptions;
+using WebApplication1.Extensions;
 using WebApplication1.Models;
 using WebApplication1.Services.Interfaces;
+using WebApplication1.Strategy;
 
 namespace WebApplication1.Services
 {
@@ -15,12 +17,14 @@ namespace WebApplication1.Services
     {
         private readonly IUnitOfWork _unitOfWork;
         private readonly IGameBuilder gameBuilder;
+        private readonly QueryHandler<Game> handler;
 
 
-        public GameServices(IUnitOfWork unitOfWork, IGameBuilder gameBuilder)
+        public GameServices(IUnitOfWork unitOfWork, IGameBuilder gameBuilder, QueryHandler<Game>handler)
         {
             _unitOfWork = unitOfWork;
             this.gameBuilder = gameBuilder;
+            this.handler = handler;
         }
 
         public async Task<bool> Delete(int id)
@@ -90,23 +94,31 @@ namespace WebApplication1.Services
             return gamesAVR.Select(g => GameMapping.ToResponse(g.Game)).ToList();
         }
 
-        public async Task<List<GameResponse>> GetSortAll(string sort)
+        public async Task<List<GameResponse>> GetSortAll(string sortByDirection,string sortByField)
         {
-            sort = sort.ToLower();
+            
             var query = _unitOfWork.Games.AsQueryable()
                 .Include(g => g.genre)
                 .Include(g => g.Reviews)
                 .AsQueryable();
-            if (!string.IsNullOrEmpty(sort) && sort.Equals("asc"))
+            if (!string.IsNullOrEmpty(sortByField) || !string.IsNullOrEmpty(sortByDirection))
+            {
+                bool isDesceding = sortByDirection.Equals("desc",StringComparison.OrdinalIgnoreCase);
+                query = handler.Handle(sortByField, isDesceding);
+                var games = await query.ToListAsync();
+                return games.Select(GameMapping.ToResponse).ToList();
+            }
+            /*if (!string.IsNullOrEmpty(sortByDirection) && sortByDirection.Equals("asc"))
             {
                 query = query.OrderBy(m => m.title);
             }
-            if (!string.IsNullOrEmpty(sort) && sort.Equals("desc"))
+            if (!string.IsNullOrEmpty(sortByDirection) && sortByDirection.Equals("desc"))
             {
                 query = query.OrderByDescending(m => m.title);
             }
             var games = await query.ToListAsync();
-            return games.Select(GameMapping.ToResponse).ToList();
+            return games.Select(GameMapping.ToResponse).ToList();*/
+            throw new NotImplementedException();
         }
         private async Task<Genre> GetOrCreateGenreAsync(GenreRequest genreRequest)
         {

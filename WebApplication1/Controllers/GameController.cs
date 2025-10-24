@@ -22,10 +22,10 @@ namespace WebApplication1.Controllers
             var games = await gameServices.GetAllAsync();
             return Ok(games);
         }
-        [HttpGet("sortBy/{sort}")]
-        public async Task<IActionResult> GetSortAll(string sort)
+        [HttpGet("sortBy/{sortByField}/{isDesceding}")]
+        public async Task<IActionResult> GetSortAll(string isDesceding,string sortByField)
         {
-            var games = await gameServices.GetSortAll(sort);
+            var games = await gameServices.GetSortAll(isDesceding, sortByField);
             return Ok(games);
         }
         [HttpGet("FilterBy")]
