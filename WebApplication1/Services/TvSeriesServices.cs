@@ -6,6 +6,7 @@ using WebApplication1.DTO.Request;
 using WebApplication1.DTO.Response;
 using WebApplication1.Models;
 using WebApplication1.Services.Interfaces;
+using WebApplication1.Strategy;
 
 namespace WebApplication1.Services
 {
@@ -13,10 +14,13 @@ namespace WebApplication1.Services
     {
         private readonly IUnitOfWork unitOfWork;
         private readonly ITvSeriesBuilder builder;
-        public TvSeriesServices(IUnitOfWork _unitOfWork, ITvSeriesBuilder builder)
+        private readonly QueryHandler<TvSeries> handler;
+        private readonly TvSeriesAVGMapping tvSeriesAVGMapping;
+        public TvSeriesServices(IUnitOfWork _unitOfWork, ITvSeriesBuilder builder,QueryHandler<TvSeries>handler)
         {
             unitOfWork = _unitOfWork;
             this.builder = builder;
+            this.handler = handler;
         }
 
         public async Task<bool> Delete(int id)
@@ -53,9 +57,22 @@ namespace WebApplication1.Services
             return TvSeriesMapping.ToResponse(TvSeries);
         }
 
-        public async Task<List<TvSeriesResponse>> GetSortAll(string sort)
+        public async Task<List<TvSeriesResponse>> GetSortAll(string sortDirection,string sortByfield)
         {
-            sort = sort.ToLower();
+            var query = unitOfWork.TvSeries.AsQueryable()
+                                .Include(m => m.genre)
+                                .Include(m => m.Reviews)
+                                .ThenInclude(r => r.User)
+                                .AsQueryable();
+            if(string.IsNullOrEmpty(sortByfield)||string.IsNullOrEmpty(sortDirection))
+            {
+                var isDesceding = sortDirection.Equals("desc",StringComparison.OrdinalIgnoreCase);
+                query = handler.Handle(sortByfield, isDesceding);
+                var TvSeries = query.ToList();
+                return TvSeries.Select(x => TvSeriesMapping.ToResponse(x)).ToList();
+            }
+            throw new NullReferenceException();
+            /*sort = sort.ToLower();
             var query = unitOfWork.TvSeries.AsQueryable()
                                 .Include(m => m.genre)
                                 .Include(m => m.Reviews)
@@ -70,7 +87,7 @@ namespace WebApplication1.Services
                 query = query.OrderByDescending(tv => tv.title);
             }
             var TvSeries = await query.ToListAsync();
-            return TvSeries.Select(TvSeriesMapping.ToResponse).ToList();
+            return TvSeries.Select(TvSeriesMapping.ToResponse).ToList();*/
         }
 
         public async Task<List<TvSeriesResponse>> GetTvSeries(string? name, string? genreName, string? directorName)

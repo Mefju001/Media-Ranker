@@ -6,7 +6,7 @@ namespace WebApplication1.Services.Interfaces
     public interface ITvSeriesServices
     {
         Task<List<TvSeriesResponse>> GetAllAsync();
-        Task<List<TvSeriesResponse>> GetSortAll(string sort);
+        Task<List<TvSeriesResponse>> GetSortAll(string sortDirection, string sortByfield);
         Task<List<TvSeriesResponse>> GetTvSeriesByAvrRating();
         Task<List<TvSeriesResponse>> GetTvSeries(string? name, string? genreName, string? directorName);
         Task<TvSeriesResponse> GetById(int id);
