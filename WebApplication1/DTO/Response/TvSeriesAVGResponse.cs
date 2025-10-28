@@ -15,5 +15,12 @@ namespace WebApplication1.DTO.Response
         string? Network,
         EStatus Status,
         double Avarage
-        ) : MediaResponse(Title, Description, Genre, ReleaseDate, Language, Reviews);
+        ) : MediaResponse(Title, Description, Genre, ReleaseDate, Language, Reviews)
+    {
+        public TvSeriesAVGResponse(TvSeriesResponse tvSeries, double avg) : this(tvSeries.Title,
+            tvSeries.Description, tvSeries.Genre, tvSeries.ReleaseDate, tvSeries.Language,
+            tvSeries.Reviews, tvSeries.Seasons, tvSeries.Episodes, tvSeries.Network,
+            tvSeries.Status, avg)
+        { }
+    }
 }

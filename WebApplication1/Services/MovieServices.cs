@@ -145,7 +145,7 @@ namespace WebApplication1.Services
                     })
                     .OrderByDescending(x => x.avarage)
                     .ToListAsync();
-                return results.Select(x => MovieAVGMapping.ToResponse(x.Movie,x.avarage)).ToList();
+                return results.Select(x => MovieMapping.ToAVGResponse(x.Movie,x.avarage)).ToList();
             }
             throw new Exception("Wywali³ sie");
         }

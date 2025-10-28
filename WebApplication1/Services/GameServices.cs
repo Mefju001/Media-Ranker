@@ -43,7 +43,7 @@ namespace WebApplication1.Services
                 .Include(g => g.genre)
                 .Include(g => g.Reviews)
                 .ToListAsync();
-            return games.Select(GameMapping.ToResponse).ToList();
+            return games.Select(GameMapping.ToGameResponse).ToList();
         }
 
         public async Task<GameResponse?> GetById(int id)
@@ -54,7 +54,7 @@ namespace WebApplication1.Services
                 .FirstOrDefaultAsync(x => x.Id == id);
             if (game == null)
                 throw new NotFoundException("No game found with that name");
-            return GameMapping.ToResponse(game);
+            return GameMapping.ToGameResponse(game);
         }
         //editing
         public async Task<List<GameResponse>> GetGames(string? name, string? genreName)
@@ -76,7 +76,7 @@ namespace WebApplication1.Services
                 query = query.Where(g=>g.)
             }*/
             var games = await query.ToListAsync();
-            return games.Select(GameMapping.ToResponse).ToList();
+            return games.Select(GameMapping.ToGameResponse).ToList();
         }
 
         public async Task<List<GameResponse>> GetGamesByAvrRating()
@@ -91,7 +91,7 @@ namespace WebApplication1.Services
                 })
                 .OrderByDescending(g => g.avarage)
                 .ToListAsync();
-            return gamesAVR.Select(g => GameMapping.ToResponse(g.Game)).ToList();
+            return gamesAVR.Select(g => GameMapping.ToGameResponse(g.Game)).ToList();
         }
 
         public async Task<List<GameResponse>> GetSortAll(string sortByDirection,string sortByField)
@@ -106,18 +106,8 @@ namespace WebApplication1.Services
                 bool isDesceding = sortByDirection.Equals("desc",StringComparison.OrdinalIgnoreCase);
                 query = handler.Handle(sortByField, isDesceding);
                 var games = await query.ToListAsync();
-                return games.Select(GameMapping.ToResponse).ToList();
+                return games.Select(GameMapping.ToGameResponse).ToList();
             }
-            /*if (!string.IsNullOrEmpty(sortByDirection) && sortByDirection.Equals("asc"))
-            {
-                query = query.OrderBy(m => m.title);
-            }
-            if (!string.IsNullOrEmpty(sortByDirection) && sortByDirection.Equals("desc"))
-            {
-                query = query.OrderByDescending(m => m.title);
-            }
-            var games = await query.ToListAsync();
-            return games.Select(GameMapping.ToResponse).ToList();*/
             throw new NotImplementedException();
         }
         private async Task<Genre> GetOrCreateGenreAsync(GenreRequest genreRequest)
@@ -155,7 +145,7 @@ namespace WebApplication1.Services
                 await _unitOfWork.Games.AddAsync(game);
                 }
                 await _unitOfWork.CompleteAsync();
-                var response = GameMapping.ToResponse(game);
+                var response = GameMapping.ToGameResponse(game);
                 await transaction.CommitAsync();
                 return (game.Id, response);
             }

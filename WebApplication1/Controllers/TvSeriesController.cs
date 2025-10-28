@@ -24,9 +24,9 @@ namespace WebApplication1.Controllers
         }
         [AllowAnonymous]
         [HttpGet("sortBy/{sort}")]
-        public async Task<IActionResult> GetSortAll(string sort)
+        public async Task<IActionResult> GetSortAll(string sortDirection, string sortByField)
         {
-            var movies = await TvSeriesServices.GetSortAll(sort);
+            var movies = await TvSeriesServices.GetSortAll(sortDirection,sortByField);
             return Ok(movies);
         }
         [AllowAnonymous]

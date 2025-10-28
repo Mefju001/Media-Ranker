@@ -7,7 +7,7 @@ namespace WebApplication1.DTO.Mapping
 {
     public static class GameMapping
     {
-        public static GameResponse ToResponse(Game game)
+        public static GameResponse ToGameResponse(Game game)
         {
             return new GameResponse(
                 game.title,
@@ -18,6 +18,20 @@ namespace WebApplication1.DTO.Mapping
                 game.Reviews?.Select(r => ReviewMapping.ToResponse(r)).ToList() ?? new List<ReviewResponse>(),
                 game.Developer,
                 game.Platform
+                );
+        }
+        public static GameAvgResponse toGameAvgResponse(Game game,double average)
+        {
+            return new GameAvgResponse(
+                game.title,
+                game.description,
+                GenreMapping.ToResponse(game.genre),
+                game.ReleaseDate,
+                game.Language,
+                game.Reviews?.Select(r => ReviewMapping.ToResponse(r)).ToList() ?? new List<ReviewResponse>(),
+                game.Developer,
+                game.Platform,
+                average
                 );
         }
         public static void UpdateEntity(Game game ,GameRequest gameRequest, Genre genre)

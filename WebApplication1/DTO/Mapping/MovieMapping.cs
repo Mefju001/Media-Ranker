@@ -18,6 +18,11 @@ namespace WebApplication1.DTO.Mapping
                 movie.Duration,
                 movie.IsCinemaRelease);
         }
+        public static MovieAVGResponse ToAVGResponse(Movie movie,double avg)
+        {
+            var movieResponse= ToResponse(movie);
+            return new MovieAVGResponse(movieResponse, avg);
+        }
         public static void UpdateEntity(Movie movie,MovieRequest movieRequest,Director director,Genre genre)
         {
             movie.title = movieRequest.Title;

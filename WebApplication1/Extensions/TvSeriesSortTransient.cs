@@ -12,6 +12,10 @@ namespace WebApplication1.Extensions
                 new DynamicSortingStrategy<TvSeries>("title", tv => tv.title));
             services.AddTransient<ISortingStrategy<TvSeries>, DynamicSortingStrategy<TvSeries>>(provider =>
                 new DynamicSortingStrategy<TvSeries>("genre", tv => tv.genre.name));
+            services.AddTransient<ISortingStrategy<TvSeries>, DynamicSortingStrategy<TvSeries>>(provider =>
+                new DynamicSortingStrategy<TvSeries>("releaseDate", tv=>tv.ReleaseDate));
+            services.AddTransient<ISortingStrategy<TvSeries>, DynamicSortingStrategy<TvSeries>>(provider =>
+                 new DynamicSortingStrategy<TvSeries>("avarage",tv=>tv.Reviews.Average(x=>(double?)x.Rating)??0));
             return services;
         }
     }
