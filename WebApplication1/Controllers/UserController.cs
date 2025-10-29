@@ -62,7 +62,7 @@ namespace WebApplication1.Controllers
         }
         [AllowAnonymous/*Authorize(Roles = "Admin,User")*/]
         [HttpPost("/Liked")]
-        public async Task<IActionResult> AddLikedMovie([FromBody] LikedMediaRequest likedMovie)
+        public /*async*/ Task<IActionResult> AddLikedMovie([FromBody] LikedMediaRequest likedMovie)
         {
             /*var (movieId, response) = await likedMediaServices.Upsert(likedMovie);
             return CreatedAtAction(nameof(GetById), new { id = movieId }, response);*/
@@ -70,7 +70,7 @@ namespace WebApplication1.Controllers
         }
         [Authorize(Roles = "Admin,User")]
         [HttpDelete("/Liked/id/{id}")]
-        public async Task<IActionResult> DeleteLikedMovie(int id)
+        public /*async*/ Task<IActionResult> DeleteLikedMovie(int id)
         {
             // return Ok(await likedMediaServices.Delete(id));
             throw new NotImplementedException();

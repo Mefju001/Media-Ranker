@@ -4,6 +4,7 @@ using WebApplication1.Data;
 using WebApplication1.DTO.Mapping;
 using WebApplication1.DTO.Request;
 using WebApplication1.DTO.Response;
+using WebApplication1.Exceptions;
 using WebApplication1.Models;
 using WebApplication1.Services.Interfaces;
 using WebApplication1.Strategy;
@@ -15,7 +16,6 @@ namespace WebApplication1.Services
         private readonly IUnitOfWork unitOfWork;
         private readonly ITvSeriesBuilder builder;
         private readonly QueryHandler<TvSeries> handler;
-        private readonly TvSeriesAVGMapping tvSeriesAVGMapping;
         public TvSeriesServices(IUnitOfWork _unitOfWork, ITvSeriesBuilder builder,QueryHandler<TvSeries>handler)
         {
             unitOfWork = _unitOfWork;
@@ -42,7 +42,7 @@ namespace WebApplication1.Services
                                 .Include(m => m.Reviews)
                                 .ThenInclude(r => r.User)
                                 .ToListAsync();
-            return TvSeries.Select(TvSeriesMapping.ToResponse).ToList();
+            return TvSeries.Select(TvSeriesMapping.ToTvSeriesResponse).ToList();
         }
 
         public async Task<TvSeriesResponse> GetById(int id)
@@ -53,8 +53,8 @@ namespace WebApplication1.Services
                 .ThenInclude(r => r.User)
                 .FirstOrDefaultAsync(tv => tv.Id == id);
             if (TvSeries == null)
-                return null;
-            return TvSeriesMapping.ToResponse(TvSeries);
+                throw new NotFoundException("Not found");
+            return TvSeriesMapping.ToTvSeriesResponse(TvSeries);
         }
 
         public async Task<List<TvSeriesResponse>> GetSortAll(string sortDirection,string sortByfield)
@@ -68,26 +68,10 @@ namespace WebApplication1.Services
             {
                 var isDesceding = sortDirection.Equals("desc",StringComparison.OrdinalIgnoreCase);
                 query = handler.Handle(sortByfield, isDesceding);
-                var TvSeries = query.ToList();
-                return TvSeries.Select(x => TvSeriesMapping.ToResponse(x)).ToList();
+                var TvSeries = await query.ToListAsync();
+                return TvSeries.Select(x => TvSeriesMapping.ToTvSeriesResponse(x)).ToList();
             }
             throw new NullReferenceException();
-            /*sort = sort.ToLower();
-            var query = unitOfWork.TvSeries.AsQueryable()
-                                .Include(m => m.genre)
-                                .Include(m => m.Reviews)
-                                .ThenInclude(r => r.User)
-                                .AsQueryable();
-            if (!string.IsNullOrEmpty(sort) && sort == "asc")
-            {
-                query = query.OrderBy(tv => tv.title);
-            }
-            if (!string.IsNullOrEmpty(sort) && sort == "desc")
-            {
-                query = query.OrderByDescending(tv => tv.title);
-            }
-            var TvSeries = await query.ToListAsync();
-            return TvSeries.Select(TvSeriesMapping.ToResponse).ToList();*/
         }
 
         public async Task<List<TvSeriesResponse>> GetTvSeries(string? name, string? genreName, string? directorName)
@@ -106,10 +90,10 @@ namespace WebApplication1.Services
                 query = query.Where(tv => tv.genre.name.Contains(genreName));
             }
             var movies = await query.ToListAsync();
-            return movies.Select(TvSeriesMapping.ToResponse).ToList();
+            return movies.Select(TvSeriesMapping.ToTvSeriesResponse).ToList();
         }
-
-        public async Task<List<TvSeriesResponse>> GetTvSeriesByAvrRating()
+        //modif
+        public async Task<List<TvSeriesAVGResponse>> GetTvSeriesByAvrRating()
         {
             var TvSeries = await unitOfWork.TvSeries.AsQueryable()
                     .Include(m => m.genre)
@@ -122,7 +106,7 @@ namespace WebApplication1.Services
                     })
                     .OrderByDescending(x => x.avarage)
                     .ToListAsync();
-            return TvSeries.Select(x => TvSeriesMapping.ToResponse(x.TvSeries)).ToList();
+            return TvSeries.Select(x => TvSeriesMapping.ToTvSeriesAVGResponse(x.TvSeries,x.avarage)).ToList();
         }
 
         private async Task<Genre> GetOrCreateGenreAsync(GenreRequest genreRequest)
@@ -163,7 +147,8 @@ namespace WebApplication1.Services
                     await unitOfWork.TvSeries.AddAsync(tvSeries);
                 }
                 await unitOfWork.CompleteAsync();
-                var response = TvSeriesMapping.ToResponse(tvSeries);
+                if (tvSeries is null) throw new ArgumentNullException(nameof(tvSeries));
+                var response = TvSeriesMapping.ToTvSeriesResponse(tvSeries);
                 await transaction.CommitAsync();
                 return (tvSeries.Id, response);
             }

@@ -145,6 +145,7 @@ namespace WebApplication1.Services
                 await _unitOfWork.Games.AddAsync(game);
                 }
                 await _unitOfWork.CompleteAsync();
+                if(game is null)throw new ArgumentNullException(nameof(game));
                 var response = GameMapping.ToGameResponse(game);
                 await transaction.CommitAsync();
                 return (game.Id, response);

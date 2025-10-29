@@ -23,6 +23,7 @@ namespace WebApplication1.Services
 
                 try
                 {
+                    if(context is null)throw new ArgumentNullException(nameof(context));
                     var tokensToDelete = context.Tokens.Where(t => (t.IsRevoked == true) || (t.ExpiryDate < DateTime.UtcNow)).ToList();
                     if (tokensToDelete.Any())
                     {

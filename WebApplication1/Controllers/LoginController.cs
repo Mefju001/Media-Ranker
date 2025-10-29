@@ -7,7 +7,7 @@ using WebApplication1.Services.Interfaces;
 
 namespace WebApplication1.Controllers
 {
-    [AllowAnonymous]
+    [Authorize]
     [ApiController]
     [Route("api")]
     public class LoginController : ControllerBase

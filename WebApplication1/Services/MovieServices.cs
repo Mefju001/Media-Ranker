@@ -65,7 +65,8 @@ namespace WebApplication1.Services
                 }
 
                 await _unitOfWork.CompleteAsync();
-                var response = MovieMapping.ToResponse(movie);
+                if(movie is null)throw new ArgumentNullException(nameof(movie));
+                var response = MovieMapping.ToMovieResponse(movie);
                 await transaction.CommitAsync();
                 await _mediator.Publish(new LogNotification("Information", "Nowy film zosta³ dodany.", nameof(MovieServices)));
                 return (movie.Id, response);
@@ -103,7 +104,7 @@ namespace WebApplication1.Services
             }
 
             var movies = await query.ToListAsync();
-            var movieResponses = movies.Select(MovieMapping.ToResponse).ToList();
+            var movieResponses = movies.Select(MovieMapping.ToMovieResponse).ToList();
             return movieResponses;
         }
         public async Task<List<MovieAVGResponse>> GetMoviesByAvrRating(string sortByDirection)
@@ -145,7 +146,7 @@ namespace WebApplication1.Services
                     })
                     .OrderByDescending(x => x.avarage)
                     .ToListAsync();
-                return results.Select(x => MovieMapping.ToAVGResponse(x.Movie,x.avarage)).ToList();
+                return results.Select(x => MovieMapping.ToMovieAVGResponse(x.Movie,x.avarage)).ToList();
             }
             throw new Exception("Wywali³ sie");
         }
@@ -185,7 +186,7 @@ namespace WebApplication1.Services
                     .Where(m => m.Id == movieId.Value);
             }
             var movies = await query.ToListAsync();
-            return movies.Select(MovieMapping.ToResponse).ToList();
+            return movies.Select(MovieMapping.ToMovieResponse).ToList();
         }
         public async Task<MovieResponse?> GetById(int id)
         {
@@ -197,14 +198,14 @@ namespace WebApplication1.Services
                 .FirstOrDefaultAsync(m => m.Id == id);
             if (result == null)
                 return null;
-            var MovieResponse = MovieMapping.ToResponse(result);
+            var MovieResponse = MovieMapping.ToMovieResponse(result);
 
             return MovieResponse;
         }
         public async Task<List<MovieResponse>> GetAllAsync()
         {
             var movies = await _unitOfWork.Movies.GetAllAsync();
-            var MovieResponse = movies.Select(MovieMapping.ToResponse).ToList();
+            var MovieResponse = movies.Select(MovieMapping.ToMovieResponse).ToList();
             return (MovieResponse);
         }
     }

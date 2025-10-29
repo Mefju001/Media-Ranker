@@ -7,7 +7,7 @@ namespace WebApplication1.DTO.Mapping
     {
         public static MediaResponse ToResponse(Media media)
         {
-            if (media is null) return null;
+            if (media is null) throw new NullReferenceException("Media is null");
             return new MediaResponse(
                 media.title,
                 media.description,

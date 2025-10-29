@@ -5,7 +5,7 @@ using WebApplication1.Services.Interfaces;
 
 namespace WebApplication1.Controllers
 {
-    [AllowAnonymous]
+    [Authorize]
     [Route("api/[controller]")]
     [ApiController]
     public class GameController : ControllerBase

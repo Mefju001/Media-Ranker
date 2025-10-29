@@ -7,7 +7,7 @@ namespace WebApplication1.DTO.Mapping
 {
     public class TvSeriesMapping
     {
-        public static TvSeriesResponse ToResponse(TvSeries tvSeries)
+        public static TvSeriesResponse ToTvSeriesResponse(TvSeries tvSeries)
         {
             return new TvSeriesResponse(
                 tvSeries.title,
@@ -20,6 +20,11 @@ namespace WebApplication1.DTO.Mapping
                 tvSeries.Episodes,
                 tvSeries.Network,
                 tvSeries.Status);
+        }
+        public static TvSeriesAVGResponse ToTvSeriesAVGResponse(TvSeries tvSeries, double avg)
+        {
+            var tvSeriesResponse = ToTvSeriesResponse(tvSeries);
+            return new TvSeriesAVGResponse(tvSeriesResponse, avg);
         }
         public static void UpdateEntity(TvSeries tvSeries,TvSeriesRequest tvSeriesRequest,Genre genre)
         {

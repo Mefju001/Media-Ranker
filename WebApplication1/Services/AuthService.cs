@@ -121,6 +121,7 @@ namespace WebApplication1.Services
         }
         private async Task<IReadOnlyList<Claim>> ValidateAndGetPrincipalFromToken(string token)
         {
+            await Task.Run();
             if (string.IsNullOrEmpty(token))
             {
                 return null;
@@ -209,12 +210,12 @@ namespace WebApplication1.Services
                 .ThenInclude(ur => ur.Role)
                 .FirstOrDefaultAsync(u => u.username == username.Value.ToString());
             if (user == null)
-                return new TokenResponse(null, null);
+                throw new ArgumentNullException(nameof(user));
             var accessToken = GenerateAccessToken(user.Id, username.Value.ToString(), user.UserRoles);
             var RefreshToken = await GenerateRefreshToken(user.Id, username.Value.ToString());
             return new TokenResponse(accessToken, RefreshToken);
         }
-        public async Task<TokenResponse?> registerAccount(User user)
+        public /*async*/ Task<TokenResponse?> registerAccount(User user)
         {
             throw new NotImplementedException();
         }

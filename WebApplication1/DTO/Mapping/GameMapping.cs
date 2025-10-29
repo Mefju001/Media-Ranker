@@ -22,17 +22,10 @@ namespace WebApplication1.DTO.Mapping
         }
         public static GameAvgResponse toGameAvgResponse(Game game,double average)
         {
+            var gameResponse = ToGameResponse(game);
             return new GameAvgResponse(
-                game.title,
-                game.description,
-                GenreMapping.ToResponse(game.genre),
-                game.ReleaseDate,
-                game.Language,
-                game.Reviews?.Select(r => ReviewMapping.ToResponse(r)).ToList() ?? new List<ReviewResponse>(),
-                game.Developer,
-                game.Platform,
-                average
-                );
+                gameResponse,
+                average);
         }
         public static void UpdateEntity(Game game ,GameRequest gameRequest, Genre genre)
         {
@@ -42,7 +35,7 @@ namespace WebApplication1.DTO.Mapping
             game.Language = gameRequest.Language;
             game.Developer = gameRequest.Developer;
             game.Platform = gameRequest.Platform;
-            game.ReleaseDate = gameRequest.ReleaseDate.Value;
+            game.ReleaseDate = gameRequest.ReleaseDate!.Value;
         }
     }
 }

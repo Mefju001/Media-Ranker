@@ -5,7 +5,7 @@ namespace WebApplication1.DTO.Mapping
 {
     public static class MovieMapping
     {
-        public static MovieResponse ToResponse(Movie movie)
+        public static MovieResponse ToMovieResponse(Movie movie)
         {
             return new MovieResponse(
                 movie.title,
@@ -18,9 +18,9 @@ namespace WebApplication1.DTO.Mapping
                 movie.Duration,
                 movie.IsCinemaRelease);
         }
-        public static MovieAVGResponse ToAVGResponse(Movie movie,double avg)
+        public static MovieAVGResponse ToMovieAVGResponse(Movie movie,double avg)
         {
-            var movieResponse= ToResponse(movie);
+            var movieResponse= ToMovieResponse(movie);
             return new MovieAVGResponse(movieResponse, avg);
         }
         public static void UpdateEntity(Movie movie,MovieRequest movieRequest,Director director,Genre genre)
@@ -29,7 +29,7 @@ namespace WebApplication1.DTO.Mapping
             movie.description = movieRequest.Description;
             movie.director = director;
             movie.genre = genre;
-            movie.ReleaseDate = movieRequest.ReleaseDate.Value;
+            movie.ReleaseDate = movieRequest.ReleaseDate!.Value;
             movie.Language = movieRequest.Language;
             movie.IsCinemaRelease = movieRequest.IsCinemaRelease;
             movie.Duration = movieRequest.Duration;
