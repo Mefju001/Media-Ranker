@@ -6,8 +6,8 @@ using WebApplication1.DTO.Request;
 using WebApplication1.DTO.Response;
 using WebApplication1.Exceptions;
 using WebApplication1.Models;
+using WebApplication1.QueryHandler;
 using WebApplication1.Services.Interfaces;
-using WebApplication1.Strategy;
 
 namespace WebApplication1.Services
 {

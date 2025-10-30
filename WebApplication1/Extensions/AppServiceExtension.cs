@@ -9,6 +9,7 @@ using WebApplication1.Data;
 using WebApplication1.DTO.Validator;
 using WebApplication1.Models;
 using WebApplication1.Observer;
+using WebApplication1.QueryHandler;
 using WebApplication1.Services;
 using WebApplication1.Services.Interfaces;
 using WebApplication1.Strategy;

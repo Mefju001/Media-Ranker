@@ -2,8 +2,9 @@
 using WebApplication1.Data;
 using WebApplication1.Models;
 using WebApplication1.Services.Interfaces;
+using WebApplication1.Strategy;
 
-namespace WebApplication1.Strategy
+namespace WebApplication1.QueryHandler
 {
     public class QueryHandler<T>where T:class
     {
