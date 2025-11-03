@@ -17,10 +17,10 @@ namespace WebApplication1.Services
     {
         private readonly IUnitOfWork _unitOfWork;
         private readonly IGameBuilder gameBuilder;
-        private readonly QueryHandler<Game> handler;
+        private readonly QueryServices<Game> handler;
 
 
-        public GameServices(IUnitOfWork unitOfWork, IGameBuilder gameBuilder, QueryHandler<Game>handler)
+        public GameServices(IUnitOfWork unitOfWork, IGameBuilder gameBuilder, QueryServices<Game>handler)
         {
             _unitOfWork = unitOfWork;
             this.gameBuilder = gameBuilder;

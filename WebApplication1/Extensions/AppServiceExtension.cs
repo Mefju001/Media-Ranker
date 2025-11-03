@@ -24,9 +24,9 @@ namespace WebApplication1.Extensions
             {
                 options.UseLazyLoadingProxies().UseNpgsql(config.GetConnectionString("DefaultConnection"));
             });
-            services.AddTransient<QueryHandler<TvSeries>>();
-            services.AddTransient<QueryHandler<Movie>>();
-            services.AddTransient<QueryHandler<Game>>();
+            services.AddTransient<QueryServices<TvSeries>>();
+            services.AddTransient<QueryServices<Movie>>();
+            services.AddTransient<QueryServices<Game>>();
             services.AddScoped<SorterContext<TvSeries>>();
             services.AddScoped<SorterContext<Movie>>();
             services.AddScoped<SorterContext<Game>>();

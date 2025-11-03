@@ -15,8 +15,8 @@ namespace WebApplication1.Services
     {
         private readonly IUnitOfWork unitOfWork;
         private readonly ITvSeriesBuilder builder;
-        private readonly QueryHandler<TvSeries> handler;
-        public TvSeriesServices(IUnitOfWork _unitOfWork, ITvSeriesBuilder builder,QueryHandler<TvSeries>handler)
+        private readonly QueryServices<TvSeries> handler;
+        public TvSeriesServices(IUnitOfWork _unitOfWork, ITvSeriesBuilder builder,QueryServices<TvSeries>handler)
         {
             unitOfWork = _unitOfWork;
             this.builder = builder;
