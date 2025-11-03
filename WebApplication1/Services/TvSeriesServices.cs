@@ -67,7 +67,7 @@ namespace WebApplication1.Services
             if(string.IsNullOrEmpty(sortByfield)||string.IsNullOrEmpty(sortDirection))
             {
                 var isDesceding = sortDirection.Equals("desc",StringComparison.OrdinalIgnoreCase);
-                query = handler.Handle(sortByfield, isDesceding);
+                //query = handler.Handle(sortByfield, isDesceding);
                 var TvSeries = await query.ToListAsync();
                 return TvSeries.Select(x => TvSeriesMapping.ToTvSeriesResponse(x)).ToList();
             }

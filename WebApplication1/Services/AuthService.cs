@@ -121,7 +121,6 @@ namespace WebApplication1.Services
         }
         private async Task<IReadOnlyList<Claim>> ValidateAndGetPrincipalFromToken(string token)
         {
-            await Task.Run();
             if (string.IsNullOrEmpty(token))
             {
                 return null;

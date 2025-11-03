@@ -104,7 +104,7 @@ namespace WebApplication1.Services
             if (!string.IsNullOrEmpty(sortByField) || !string.IsNullOrEmpty(sortByDirection))
             {
                 bool isDesceding = sortByDirection.Equals("desc",StringComparison.OrdinalIgnoreCase);
-                query = handler.Handle(sortByField, isDesceding);
+                //query = handler.Handle(sortByField, isDesceding);
                 var games = await query.ToListAsync();
                 return games.Select(GameMapping.ToGameResponse).ToList();
             }

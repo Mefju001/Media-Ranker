@@ -6,15 +6,16 @@ using WebApplication1.DTO.Request;
 using WebApplication1.DTO.Response;
 using WebApplication1.Models;
 using WebApplication1.QueryHandler;
+using WebApplication1.QueryHandler.Query;
 using WebApplication1.Services.Interfaces;
 namespace WebApplication1.Services
 {
-    public class MovieServices(IUnitOfWork unitOfWork, IMovieBuilder builder, IMediator mediator, QueryHandler<Movie> handler) : IMovieServices
+    public class MovieServices(IUnitOfWork unitOfWork, IMovieBuilder builder, IMediator mediator, MovieQueryHandler handler) : IMovieServices
     {
         private readonly IUnitOfWork _unitOfWork = unitOfWork;
         private readonly IMediator _mediator = mediator;
         private readonly IMovieBuilder movieBuilder = builder;
-        private readonly QueryHandler<Movie> handler = handler;
+        private readonly MovieQueryHandler handler = handler;
 
         private async Task<Director> GetOrCreateDirectorAsync(DirectorRequest directorRequest)
         {
@@ -90,6 +91,7 @@ namespace WebApplication1.Services
         }
         public async Task<List<MovieResponse>> GetSortAll(string sortByField, string sortByDirection)
         {
+            List<Movie> movies = new List<Movie>();
             sortByDirection = sortByDirection.ToLower();
             sortByField = sortByField.ToLower();
             IQueryable<Movie> query = _unitOfWork.Movies.AsQueryable()
@@ -100,10 +102,10 @@ namespace WebApplication1.Services
             if(!string.IsNullOrEmpty(sortByDirection)||!string.IsNullOrEmpty(sortByField))
             { 
                 bool isDesceding = sortByDirection.Equals("desc",StringComparison.OrdinalIgnoreCase);
-                query = handler.Handle(sortByField, isDesceding);
+                var queries = new MoviesQuery();
+                queries.SortByField = sortByField;queries.IsDescending = isDesceding;
+                movies = handler.Handle(queries, new CancellationToken()).Result;
             }
-
-            var movies = await query.ToListAsync();
             var movieResponses = movies.Select(MovieMapping.ToMovieResponse).ToList();
             return movieResponses;
         }
@@ -134,7 +136,7 @@ namespace WebApplication1.Services
                 .Include(m => m.director)
                 .Include(m => m.Reviews)
                     .ThenInclude(r => r.User);
-                query = handler.Handle("average",isDesceding);
+                //query = handler.Handle("average",isDesceding);
                 var results = await query
                     .Include(m => m.genre)
                     .Include(m => m.director)
