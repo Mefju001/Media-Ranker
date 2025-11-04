@@ -10,6 +10,10 @@ namespace WebApplication1.QueryHandler.Query
         public string? TitleSearch { get; set; }
         public double? MinRating { get; set; }
         public int? ReleaseYear { get; set; }
+        public string? genreName { get; set; }
+        public string? DirectorName { get; set; }
+        public string? DirectorSurname { get; set; }
+
 
         // PARAMETRY SORTOWANIA (Dla Wzorca Strategia)
 

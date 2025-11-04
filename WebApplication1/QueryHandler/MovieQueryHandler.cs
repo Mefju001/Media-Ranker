@@ -24,17 +24,14 @@ namespace WebApplication1.QueryHandler
 
         public async Task<List<Movie>> Handle(MoviesQuery request,CancellationToken cancellationToken)
         {
-            IQueryable<Movie> query = queryServices.StartQuery(); 
-            if (!string.IsNullOrEmpty(request.TitleSearch))
-            {
-                var predicate = BuildPredicate(request);
-                query = queryServices.Filter(query,predicate);
-            }
+            IQueryable<Movie> query = queryServices.StartQuery();
+            var predicate = BuildPredicate(request);
+            query = queryServices.Filter(query, predicate);
             if (!string.IsNullOrEmpty(request.SortByField) || request.IsDescending)
             {
                 query = queryServices.Sort(query, request.SortByField, request.IsDescending);
             }
-            return await query.ToListAsync();
+            return await query.ToListAsync(cancellationToken);
         }
         private Expression<Func<Movie, bool>> BuildPredicate(MoviesQuery query) {
             var finalPredicate = PredicateBuilder.True<Movie>();
@@ -42,11 +39,15 @@ namespace WebApplication1.QueryHandler
             {
                 finalPredicate = finalPredicate.And(m=>m.title.Contains(query.TitleSearch));
             }
-            if(!double.IsNaN(query.MinRating.Value))
+            if(!string.IsNullOrEmpty(query.genreName))
+            {
+                finalPredicate = finalPredicate.And(m=>m.genre.name.Contains(query.genreName));
+            }
+            if(query.MinRating.HasValue)
             {
                 finalPredicate = finalPredicate.And(m => m.Reviews.Average(x => (double?)x.Rating)>=query.MinRating.Value);
             }
-            if (query.ReleaseYear is not null)
+            if (query.ReleaseYear.HasValue)
             {
                 finalPredicate = finalPredicate.And(m => m.ReleaseDate.Year == query.ReleaseYear);
             }

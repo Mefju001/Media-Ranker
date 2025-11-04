@@ -104,7 +104,8 @@ namespace WebApplication1.Services
                 bool isDesceding = sortByDirection.Equals("desc",StringComparison.OrdinalIgnoreCase);
                 var queries = new MoviesQuery();
                 queries.SortByField = sortByField;queries.IsDescending = isDesceding;
-                movies = handler.Handle(queries, new CancellationToken()).Result;
+                movies = await _mediator.Send(queries);
+                
             }
             var movieResponses = movies.Select(MovieMapping.ToMovieResponse).ToList();
             return movieResponses;
@@ -136,7 +137,7 @@ namespace WebApplication1.Services
                 .Include(m => m.director)
                 .Include(m => m.Reviews)
                     .ThenInclude(r => r.User);
-                //query = handler.Handle("average",isDesceding);
+                //query = _mediator.
                 var results = await query
                     .Include(m => m.genre)
                     .Include(m => m.director)
@@ -152,56 +153,11 @@ namespace WebApplication1.Services
             }
             throw new Exception("Wywali³ sie");
         }
-        public async Task<List<MovieResponse>> GetMovies(string? name, string? genreName, string? directorName, int? movieId)
+        public async Task<List<MovieResponse>> GetMovies(MoviesQuery moviesQuery)
         {
             var query = _unitOfWork.Movies.AsQueryable();
-            if (!string.IsNullOrEmpty(name))
-            {
-                query = query
-                .Include(m => m.genre)
-                .Include(m => m.director)
-                .Include(m => m.Reviews)
-                .Where(m => m.title.Contains(name));
-            }
-            if (!string.IsNullOrEmpty(genreName))
-            {
-                query = query
-                    .Include(m => m.genre)
-                    .Include(m => m.director)
-                    .Include(m => m.Reviews)
-                    .Where(m => m.genre.name.Contains(genreName));
-            }
-            if (!string.IsNullOrEmpty(directorName))
-            {
-                query = query
-                    .Include(m => m.genre)
-                    .Include(m => m.director)
-                    .Include(m => m.Reviews)
-                    .Where(m => m.director.name.Contains(directorName) || m.director.surname.Contains(directorName));
-            }
-            if (movieId.HasValue)
-            {
-                query = query
-                    .Include(m => m.genre)
-                    .Include(m => m.director)
-                    .Include(m => m.Reviews)
-                    .Where(m => m.Id == movieId.Value);
-            }
-            var movies = await query.ToListAsync();
-            return movies.Select(MovieMapping.ToMovieResponse).ToList();
-        }
-        public async Task<MovieResponse?> GetById(int id)
-        {
-            var movieQuery = _unitOfWork.Movies.AsQueryable();
-            var result = await movieQuery
-                .Include(m => m.genre)
-                .Include(m => m.director)
-                .Include(m => m.Reviews)
-                .FirstOrDefaultAsync(m => m.Id == id);
-            if (result == null)
-                return null;
-            var MovieResponse = MovieMapping.ToMovieResponse(result);
-
+            var results = await _mediator.Send(moviesQuery);
+            var MovieResponse = results.Select(MovieMapping.ToMovieResponse).ToList();
             return MovieResponse;
         }
         public async Task<List<MovieResponse>> GetAllAsync()
@@ -209,6 +165,11 @@ namespace WebApplication1.Services
             var movies = await _unitOfWork.Movies.GetAllAsync();
             var MovieResponse = movies.Select(MovieMapping.ToMovieResponse).ToList();
             return (MovieResponse);
+        }
+
+        public Task<MovieResponse?> GetById(int id)
+        {
+            throw new NotImplementedException();
         }
     }
 }

@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using WebApplication1.DTO.Request;
+using WebApplication1.QueryHandler.Query;
 
 namespace WebApplication1.Controllers
 {
@@ -31,9 +32,9 @@ namespace WebApplication1.Controllers
         }
         [AllowAnonymous]
         [HttpGet("FilterBy")]
-        public async Task<IActionResult> GetMovies([FromQuery] string? name, [FromQuery] string? genreName, [FromQuery] string? directorName, [FromQuery] int? movieId)
+        public async Task<IActionResult> GetMovies([FromQuery] MoviesQuery moviesQuery)
         {
-            var movies = await movieServices.GetMovies(name, genreName, directorName, movieId);
+            var movies = await movieServices.GetMovies(moviesQuery);
             return Ok(movies);
         }
         [AllowAnonymous]
