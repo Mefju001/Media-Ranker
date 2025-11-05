@@ -1,6 +1,6 @@
 ﻿using MediatR;
 using System.Text.Json;
-using WebApplication1.DTO.Request;
+using WebApplication1.DTO.Notification;
 
 namespace WebApplication1.Observer
 {

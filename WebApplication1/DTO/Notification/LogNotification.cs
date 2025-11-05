@@ -1,6 +1,6 @@
 ﻿using MediatR;
 
-namespace WebApplication1.DTO.Request
+namespace WebApplication1.DTO.Notification
 {
     public class LogNotification:INotification
     {

@@ -3,6 +3,8 @@ using MediatR;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using System.Reflection;
+using WebApplication1.BackgroundService;
+using WebApplication1.BackgroundService.Interfaces;
 using WebApplication1.Builder;
 using WebApplication1.Builder.Interfaces;
 using WebApplication1.Data;
@@ -26,6 +28,7 @@ namespace WebApplication1.Extensions
             {
                 options.UseLazyLoadingProxies().UseNpgsql(config.GetConnectionString("DefaultConnection"));
             });
+            services.AddSingleton<IBackgroundTaskQueue, BackgroundTaskQueue>();
             services.AddTransient<MovieQueryHandler>();
             services.AddTransient<QueryServices<TvSeries>>();
             services.AddTransient<QueryServices<Movie>>();
