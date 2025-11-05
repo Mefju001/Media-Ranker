@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using System.Linq;
 using System.Linq.Expressions;
 using WebApplication1.Data;
+using WebApplication1.DTO.Mapping;
 using WebApplication1.DTO.Response;
 using WebApplication1.Models;
 using WebApplication1.QueryHandler.Query;
@@ -12,7 +13,7 @@ using WebApplication1.Strategy;
 
 namespace WebApplication1.QueryHandler
 {
-    public class MovieQueryHandler:IRequestHandler<MoviesQuery,List<Movie>>
+    public class MovieQueryHandler:IRequestHandler<MoviesQuery,List<MovieResponse>>
     {
         private readonly QueryServices<Movie> queryServices;
 
@@ -22,16 +23,20 @@ namespace WebApplication1.QueryHandler
         }
 
 
-        public async Task<List<Movie>> Handle(MoviesQuery request,CancellationToken cancellationToken)
+        public async Task<List<MovieResponse>> Handle(MoviesQuery request,CancellationToken cancellationToken)
         {
-            IQueryable<Movie> query = queryServices.StartQuery();
+            IQueryable<Movie> query = queryServices.StartQuery()
+                    .Include(m => m.genre)
+                    .Include(m => m.director)      // MUSISZ DODAĆ TO
+                    .Include(m => m.Reviews);
             var predicate = BuildPredicate(request);
             query = queryServices.Filter(query, predicate);
             if (!string.IsNullOrEmpty(request.SortByField) || request.IsDescending)
             {
                 query = queryServices.Sort(query, request.SortByField, request.IsDescending);
             }
-            return await query.ToListAsync(cancellationToken);
+            var Response = query.Select(m=>MovieMapping.ToMovieResponse(m)).ToListAsync(cancellationToken);
+            return await Response;
         }
         private Expression<Func<Movie, bool>> BuildPredicate(MoviesQuery query) {
             var finalPredicate = PredicateBuilder.True<Movie>();

@@ -8,7 +8,7 @@
         DateTime ReleaseDate,
         string? Language,
         List<ReviewResponse>? Reviews,
-
+        MediaStatsResponse MediaStats,
         TimeSpan Duration,
         bool IsCinemaRelease
         ) : MediaResponse(Title, Description, Genre, ReleaseDate, Language, Reviews);

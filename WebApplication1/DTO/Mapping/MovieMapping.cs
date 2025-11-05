@@ -15,6 +15,7 @@ namespace WebApplication1.DTO.Mapping
                 movie.ReleaseDate,
                 movie.Language,
                 movie.Reviews?.Select(r => ReviewMapping.ToResponse(r)).ToList() ?? new List<ReviewResponse>(),
+                MediaStatsMapping.ToResponse(movie.Stats) ?? new MediaStatsResponse(0, 0, null),
                 movie.Duration,
                 movie.IsCinemaRelease);
         }

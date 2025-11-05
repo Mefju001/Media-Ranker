@@ -91,7 +91,7 @@ namespace WebApplication1.Services
         }
         public async Task<List<MovieResponse>> GetSortAll(string sortByField, string sortByDirection)
         {
-            List<Movie> movies = new List<Movie>();
+            List<MovieResponse> movies = new List<MovieResponse>();
             sortByDirection = sortByDirection.ToLower();
             sortByField = sortByField.ToLower();
             IQueryable<Movie> query = _unitOfWork.Movies.AsQueryable()
@@ -107,8 +107,8 @@ namespace WebApplication1.Services
                 movies = await _mediator.Send(queries);
                 
             }
-            var movieResponses = movies.Select(MovieMapping.ToMovieResponse).ToList();
-            return movieResponses;
+            //var movieResponses = movies.Select(MovieMapping.ToMovieResponse).ToList();
+            return movies;
         }
         public async Task<List<MovieAVGResponse>> GetMoviesByAvrRating(string sortByDirection)
         {
@@ -155,10 +155,11 @@ namespace WebApplication1.Services
         }
         public async Task<List<MovieResponse>> GetMovies(MoviesQuery moviesQuery)
         {
+            throw new NotImplementedException();/*
             var query = _unitOfWork.Movies.AsQueryable();
             var results = await _mediator.Send(moviesQuery);
             var MovieResponse = results.Select(MovieMapping.ToMovieResponse).ToList();
-            return MovieResponse;
+            return MovieResponse;*/
         }
         public async Task<List<MovieResponse>> GetAllAsync()
         {
