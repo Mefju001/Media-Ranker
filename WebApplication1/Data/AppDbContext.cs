@@ -17,8 +17,18 @@ namespace WebApplication1.Data
         public DbSet<Token> Tokens { get; set; }
         public DbSet<UserRole> UsersRoles { get; set; }
         public DbSet<LikedMedia> LikedMedias { get; set; }
+        public DbSet<MediaStats> MediaStats { get; set; }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+            modelBuilder.Entity<MediaStats>()
+                .HasKey(ms => ms.MediaId);
+
+            modelBuilder.Entity<MediaStats>()
+                .HasOne(ms => ms.Media)
+                .WithOne(m => m.Stats)
+                .HasForeignKey<MediaStats>(ms => ms.MediaId)
+                .IsRequired()
+                .OnDelete(DeleteBehavior.Cascade);
             modelBuilder.Entity<Token>()
                 .HasOne(t => t.User)
                  .WithMany()

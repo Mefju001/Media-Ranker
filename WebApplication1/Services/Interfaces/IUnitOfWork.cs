@@ -19,6 +19,7 @@ namespace WebApplication1.Services.Interfaces
         IGenericRepository<Token> Tokens { get; }
         IGenericRepository<UserRole> UsersRoles { get; }
         IGenericRepository<LikedMedia> LikedMedias { get; }
+        IGenericRepository<MediaStats> MediaStats { get; }
 
 
         Task<IDbContextTransaction> BeginTransactionAsync();

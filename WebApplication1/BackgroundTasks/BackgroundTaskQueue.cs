@@ -6,6 +6,7 @@ namespace WebApplication1.BackgroundService
 {
     public class BackgroundTaskQueue :IBackgroundTaskQueue
     {
+        private readonly int capacity = 100;
         public readonly ILogger<BackgroundTaskQueue> logger;
         private readonly Channel<Func<CancellationToken, ValueTask>> queue;
         public BackgroundTaskQueue(ILogger<BackgroundTaskQueue> logger,int capacity)

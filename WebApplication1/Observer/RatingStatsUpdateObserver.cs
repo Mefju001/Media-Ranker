@@ -4,7 +4,7 @@ using WebApplication1.DTO.Notification;
 
 namespace WebApplication1.Observer
 {
-    public class QueueRatingUpdateObserver : INotificationHandler<ReviewChangedNotification>
+    public class RatingStatsUpdateObserver : INotificationHandler<ReviewChangedNotification>
     {
         private readonly IBackgroundTaskQueue backgroundTaskQueue;
         public Task Handle(ReviewChangedNotification notification, CancellationToken cancellationToken)

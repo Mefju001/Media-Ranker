@@ -8,6 +8,7 @@ namespace WebApplication1.Data
     public class UnitOfWork : IUnitOfWork
     {
         private readonly AppDbContext context;
+        public IGenericRepository<MediaStats> MediaStats { get; }
         public IGenericRepository<Movie> Movies { get; }
         public IGenericRepository<Director> Directors { get; }
         public IGenericRepository<Genre> Genres { get; }
@@ -24,6 +25,7 @@ namespace WebApplication1.Data
         public UnitOfWork(AppDbContext context)
         {
             this.context = context;
+            MediaStats = new GenericRepository<MediaStats>(context);
             Movies = new GenericRepository<Movie>(context);
             Directors = new GenericRepository<Director>(context);
             Genres = new GenericRepository<Genre>(context);

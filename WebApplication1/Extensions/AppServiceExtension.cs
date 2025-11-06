@@ -5,6 +5,7 @@ using Microsoft.EntityFrameworkCore;
 using System.Reflection;
 using WebApplication1.BackgroundService;
 using WebApplication1.BackgroundService.Interfaces;
+using WebApplication1.BackgroundTasks.Service;
 using WebApplication1.Builder;
 using WebApplication1.Builder.Interfaces;
 using WebApplication1.Data;
@@ -28,7 +29,10 @@ namespace WebApplication1.Extensions
             {
                 options.UseLazyLoadingProxies().UseNpgsql(config.GetConnectionString("DefaultConnection"));
             });
-            services.AddSingleton<IBackgroundTaskQueue, BackgroundTaskQueue>();
+            services.AddSingleton<IBackgroundTaskQueue>(provider => {
+                var logger = provider.GetRequiredService<ILogger<BackgroundTaskQueue>>();
+                return new BackgroundTaskQueue(logger, 100);
+            });
             services.AddTransient<MovieQueryHandler>();
             services.AddTransient<QueryServices<TvSeries>>();
             services.AddTransient<QueryServices<Movie>>();
@@ -55,6 +59,7 @@ namespace WebApplication1.Extensions
             services.AddScoped<ILikedMediaServices, LikedMediaServices>();
             services.AddScoped<ITvSeriesServices, TvSeriesServices>();
             services.AddScoped<ITokenCleanupService, TokenCleanupService>();
+            services.AddScoped<IStatsUpdateService, StatsUpdateService>();
 
             return services;
         }
