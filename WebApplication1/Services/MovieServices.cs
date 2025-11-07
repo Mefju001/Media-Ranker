@@ -90,77 +90,11 @@ namespace WebApplication1.Services
             return true;
 
         }
-        public async Task<List<MovieResponse>> GetSortAll(string sortByField, string sortByDirection)
+        public async Task<List<MovieResponse>> GetMoviesByCriteriaAsync(MoviesQuery moviesQuery)
         {
-            List<MovieResponse> movies = new List<MovieResponse>();
-            sortByDirection = sortByDirection.ToLower();
-            sortByField = sortByField.ToLower();
-            IQueryable<Movie> query = _unitOfWork.Movies.AsQueryable()
-                .Include(m => m.genre)
-                .Include(m => m.director)
-                .Include(m => m.Reviews)
-                    .ThenInclude(r => r.User);
-            if(!string.IsNullOrEmpty(sortByDirection)||!string.IsNullOrEmpty(sortByField))
-            { 
-                bool isDesceding = sortByDirection.Equals("desc",StringComparison.OrdinalIgnoreCase);
-                var queries = new MoviesQuery();
-                queries.SortByField = sortByField;queries.IsDescending = isDesceding;
-                movies = await _mediator.Send(queries);
-                
-            }
-            //var movieResponses = movies.Select(MovieMapping.ToMovieResponse).ToList();
-            return movies;
-        }
-        public async Task<List<MovieAVGResponse>> GetMoviesByAvrRating(string sortByDirection)
-        {
-            /*var moviesQuery = _unitOfWork.Movies.AsQueryable();
-            var results = moviesQuery
-                .Include(m => m.genre)
-                .Include(m => m.director)
-                .Include(m => m.Reviews)
-            .Select(m => new
-            {
-                Movie = m,
-                avarage = m.Reviews.Average(r => (double?)r.Rating) ?? 0
-            })
-            .OrderByDescending(x => x.avarage)
-            .ToListAsync();
-            IQueryable<Movie> query = _unitOfWork.Movies.AsQueryable()
-            .Include(m => m.genre)
-            .Include(m => m.director)
-            .Include(m => m.Reviews)
-                .ThenInclude(r => r.User);*/
-            if (!string.IsNullOrEmpty(sortByDirection))
-            {
-                bool isDesceding = sortByDirection.Equals("desc", StringComparison.OrdinalIgnoreCase);
-                IQueryable<Movie> query = _unitOfWork.Movies.AsQueryable()
-                .Include(m => m.genre)
-                .Include(m => m.director)
-                .Include(m => m.Reviews)
-                    .ThenInclude(r => r.User);
-                //query = _mediator.
-                var results = await query
-                    .Include(m => m.genre)
-                    .Include(m => m.director)
-                    .Include(m => m.Reviews)
-                    .Select(m => new
-                    {
-                        Movie = m,
-                        avarage = m.Reviews.Average(r => (double?)r.Rating) ?? 0
-                    })
-                    .OrderByDescending(x => x.avarage)
-                    .ToListAsync();
-                return results.Select(x => MovieMapping.ToMovieAVGResponse(x.Movie,x.avarage)).ToList();
-            }
-            throw new Exception("Wywali³ sie");
-        }
-        public async Task<List<MovieResponse>> GetMovies(MoviesQuery moviesQuery)
-        {
-            throw new NotImplementedException();/*
             var query = _unitOfWork.Movies.AsQueryable();
-            var results = await _mediator.Send(moviesQuery);
-            var MovieResponse = results.Select(MovieMapping.ToMovieResponse).ToList();
-            return MovieResponse;*/
+            var MovieResponses = await _mediator.Send(moviesQuery);
+            return MovieResponses;
         }
         public async Task<List<MovieResponse>> GetAllAsync()
         {
@@ -175,9 +109,11 @@ namespace WebApplication1.Services
             var stats = await _unitOfWork.MediaStats.GetByIdAsync(1);
             return stats;
         }
-        public Task<MovieResponse?> GetById(int id)
+        public async Task<MovieResponse?> GetById(int id)
         {
-            throw new NotImplementedException();
+            var movie = await _unitOfWork.Movies.GetByIdAsync(id);
+            ArgumentNullException.ThrowIfNull(movie, nameof(id));
+            return MovieMapping.ToMovieResponse(movie);
         }
     }
 }

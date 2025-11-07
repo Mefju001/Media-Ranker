@@ -25,13 +25,6 @@ namespace WebApplication1.Controllers
             return Ok(movies);
         }
         [AllowAnonymous]
-        [HttpGet("sortBy/{sortByField}/{sortByDirection}")]
-        public async Task<IActionResult> GetSortAll(string sortByField, string sortByDirection)
-        {
-            var movies = await movieServices.GetSortAll(sortByField,sortByDirection);
-            return Ok(movies);
-        }
-        [AllowAnonymous]
         [HttpGet("test")]
         public async Task<IActionResult> test()
         {
@@ -42,14 +35,7 @@ namespace WebApplication1.Controllers
         [HttpGet("FilterBy")]
         public async Task<IActionResult> GetMovies([FromQuery] MoviesQuery moviesQuery)
         {
-            var movies = await movieServices.GetMovies(moviesQuery);
-            return Ok(movies);
-        }
-        [AllowAnonymous]
-        [HttpGet("byAvarage")]
-        public async Task<IActionResult> GetMoviesByAvarage(string sortByDirection)
-        {
-            var movies = await movieServices.GetMoviesByAvrRating(sortByDirection);
+            var movies = await movieServices.GetMoviesByCriteriaAsync(moviesQuery);
             return Ok(movies);
         }
         [AllowAnonymous]

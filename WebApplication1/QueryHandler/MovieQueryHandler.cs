@@ -25,18 +25,16 @@ namespace WebApplication1.QueryHandler
 
         public async Task<List<MovieResponse>> Handle(MoviesQuery request,CancellationToken cancellationToken)
         {
-            IQueryable<Movie> query = queryServices.StartQuery()
-                    .Include(m => m.genre)
-                    .Include(m => m.director)      // MUSISZ DODAĆ TO
-                    .Include(m => m.Reviews);
+            IQueryable<Movie> query = queryServices.StartQuery();
             var predicate = BuildPredicate(request);
             query = queryServices.Filter(query, predicate);
             if (!string.IsNullOrEmpty(request.SortByField) || request.IsDescending)
             {
                 query = queryServices.Sort(query, request.SortByField, request.IsDescending);
             }
-            var Response = query.Select(m=>MovieMapping.ToMovieResponse(m)).ToListAsync(cancellationToken);
-            return await Response;
+            var movies = await query.ToListAsync(cancellationToken);
+            var Response = movies.Select(m => MovieMapping.ToMovieResponse(m)).ToList();
+            return Response;
         }
         private Expression<Func<Movie, bool>> BuildPredicate(MoviesQuery query) {
             var finalPredicate = PredicateBuilder.True<Movie>();
