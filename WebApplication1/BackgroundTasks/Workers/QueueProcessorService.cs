@@ -1,4 +1,5 @@
 ﻿
+using WebApplication1.BackgroundService.Interfaces;
 using WebApplication1.Services.Interfaces;
 using Host = Microsoft.Extensions.Hosting;
 
@@ -6,28 +7,37 @@ namespace WebApplication1.BackgroundTasks.Service
 {
     public class QueueProcessorService: Host.BackgroundService
     {
-        public readonly ILogger<QueueProcessorService> logger;
-        public readonly IServiceProvider ServiceProvider;
+        private readonly ILogger<QueueProcessorService> logger;
+        private readonly IServiceProvider ServiceProvider;
+        private readonly IBackgroundTaskQueue backgroundTaskQueue;
 
-        public QueueProcessorService(ILogger<QueueProcessorService> logger, IServiceProvider serviceProvider)
+        public QueueProcessorService(ILogger<QueueProcessorService> logger, IServiceProvider serviceProvider,IBackgroundTaskQueue backgroundTaskQueue)
         {
             this.logger = logger;
             ServiceProvider = serviceProvider;
+            this.backgroundTaskQueue = backgroundTaskQueue;
         }
 
-        protected override Task ExecuteAsync(CancellationToken stoppingToken)
+        protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
-            throw new NotImplementedException();
-        }
-
-        private void DoWork(object? state)
-        {
-            using (var scope = ServiceProvider.CreateScope())
+            while (!stoppingToken.IsCancellationRequested)
             {
-                var statsUpdateSerivce = scope.ServiceProvider.GetRequiredService<IStatsUpdateService>();
-                //statsUpdateSerivce.update.wait();
+                try
+                {
+                    var workItem = await backgroundTaskQueue.DequeueAsync(stoppingToken);
+                    using var scope = ServiceProvider.CreateScope();
+                    await workItem(stoppingToken);
+                }
+                catch (OperationCanceledException)
+                {
+                    logger.LogInformation("End");
+                    break;
+                }
+                catch (Exception ex)
+                {
+                    logger.LogError("Fail "+ex.ToString());
+                }
             }
-            throw new NotImplementedException();
         }
     }
 }

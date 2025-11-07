@@ -168,7 +168,13 @@ namespace WebApplication1.Services
             var MovieResponse = movies.Select(MovieMapping.ToMovieResponse).ToList();
             return (MovieResponse);
         }
-
+        public async Task<MediaStats> testForReviews()
+        {
+            await _mediator.Publish(new ReviewChangedNotification() { mediaId = 1 });
+            await Task.Delay(TimeSpan.FromSeconds(5));
+            var stats = await _unitOfWork.MediaStats.GetByIdAsync(1);
+            return stats;
+        }
         public Task<MovieResponse?> GetById(int id)
         {
             throw new NotImplementedException();

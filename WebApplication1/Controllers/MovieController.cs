@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using WebApplication1.DTO.Request;
+using WebApplication1.Models;
 using WebApplication1.QueryHandler.Query;
 
 namespace WebApplication1.Controllers
@@ -29,6 +30,13 @@ namespace WebApplication1.Controllers
         {
             var movies = await movieServices.GetSortAll(sortByField,sortByDirection);
             return Ok(movies);
+        }
+        [AllowAnonymous]
+        [HttpGet("test")]
+        public async Task<IActionResult> test()
+        {
+            var test = movieServices.testForReviews();
+            return Ok(await test);
         }
         [AllowAnonymous]
         [HttpGet("FilterBy")]

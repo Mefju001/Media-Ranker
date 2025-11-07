@@ -41,6 +41,7 @@ namespace WebApplication1.Extensions
             services.AddScoped<SorterContext<Movie>>();
             services.AddScoped<SorterContext<Game>>();
             services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
+            services.AddHostedService<QueueProcessorService>();
             services.AddHostedService<TokenBackgroundService>();
             services.AddScoped<AuthService>();
             services.AddHttpClient<LogSenderService>();

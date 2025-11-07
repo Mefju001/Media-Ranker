@@ -26,6 +26,10 @@
     <PackageReference Include="System.Text.Json" Version="9.0.9" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="BackgroundTasks\Handler\" />
+  </ItemGroup>
+
   <ProjectExtensions><VisualStudio><UserProperties appsettings_1json__JsonSchema="" /></VisualStudio></ProjectExtensions>
 
 </Project>
