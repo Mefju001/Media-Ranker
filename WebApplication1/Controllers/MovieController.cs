@@ -33,7 +33,7 @@ namespace WebApplication1.Controllers
         }
         [AllowAnonymous]
         [HttpGet("FilterBy")]
-        public async Task<IActionResult> GetMovies([FromQuery] MoviesQuery moviesQuery)
+        public async Task<IActionResult> GetMovies([FromQuery] MovieQuery moviesQuery)
         {
             var movies = await movieServices.GetMoviesByCriteriaAsync(moviesQuery);
             return Ok(movies);

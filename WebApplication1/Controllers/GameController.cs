@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using WebApplication1.DTO.Request;
+using WebApplication1.QueryHandler.Query;
 using WebApplication1.Services.Interfaces;
 
 namespace WebApplication1.Controllers
@@ -16,6 +17,8 @@ namespace WebApplication1.Controllers
         {
             this.gameServices = gameServices;
         }
+        [AllowAnonymous]
+
         [HttpGet]
         public async Task<IActionResult> GetAll()
         {
@@ -28,10 +31,11 @@ namespace WebApplication1.Controllers
             var games = await gameServices.GetSortAll(isDesceding, sortByField);
             return Ok(games);
         }
+        [AllowAnonymous]
         [HttpGet("FilterBy")]
-        public async Task<IActionResult> GetMovies([FromQuery] string? name, [FromQuery] string? genreName)
+        public async Task<IActionResult> GetMovies([FromQuery] GameQuery gameQuery)
         {
-            var games = await gameServices.GetGames(name, genreName);
+            var games = await gameServices.GetGamesByCriteriaAsync(gameQuery);
             return Ok(games);
         }
         [HttpGet("byAvarage")]

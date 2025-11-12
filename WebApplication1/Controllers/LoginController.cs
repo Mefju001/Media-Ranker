@@ -20,6 +20,7 @@ namespace WebApplication1.Controllers
             this.authService = authService;
             this.userServices = userServices;
         }
+        [AllowAnonymous]
         [HttpPost("Login")]
         public async Task<IActionResult> Login([FromBody] LoginRequest loginRequest)
         {

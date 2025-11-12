@@ -4,7 +4,7 @@ using WebApplication1.Models;
 
 namespace WebApplication1.QueryHandler.Query
 {
-    public class MoviesQuery:IRequest<List<MovieResponse>>
+    public class MovieQuery:IRequest<List<MovieResponse>>
     {
         // PARAMETRY FILTROWANIA (Dla Wzorca Specyfikacja)
 

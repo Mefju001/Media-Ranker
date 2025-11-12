@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using MediatR;
+using Microsoft.EntityFrameworkCore;
 using WebApplication1.Builder.Interfaces;
 using WebApplication1.Data;
 using WebApplication1.DTO.Mapping;
@@ -9,23 +10,17 @@ using WebApplication1.Exceptions;
 using WebApplication1.Extensions;
 using WebApplication1.Models;
 using WebApplication1.QueryHandler;
+using WebApplication1.QueryHandler.Query;
 using WebApplication1.Services.Interfaces;
 
 namespace WebApplication1.Services
 {
-    public class GameServices : IGameServices
+    public class GameServices(IUnitOfWork unitOfWork, IGameBuilder gameBuilder, QueryServices<Game> handler, IMediator mediator) : IGameServices
     {
-        private readonly IUnitOfWork _unitOfWork;
-        private readonly IGameBuilder gameBuilder;
-        private readonly QueryServices<Game> handler;
-
-
-        public GameServices(IUnitOfWork unitOfWork, IGameBuilder gameBuilder, QueryServices<Game>handler)
-        {
-            _unitOfWork = unitOfWork;
-            this.gameBuilder = gameBuilder;
-            this.handler = handler;
-        }
+        private readonly IUnitOfWork _unitOfWork = unitOfWork;
+        private readonly IGameBuilder gameBuilder = gameBuilder;
+        private readonly QueryServices<Game> handler = handler;
+        private readonly IMediator mediator = mediator;
 
         public async Task<bool> Delete(int id)
         {
@@ -56,10 +51,12 @@ namespace WebApplication1.Services
                 throw new NotFoundException("No game found with that name");
             return GameMapping.ToGameResponse(game);
         }
-        //editing
-        public async Task<List<GameResponse>> GetGames(string? name, string? genreName)
+        public async Task<List<GameResponse>> GetGamesByCriteriaAsync(GameQuery gameQuery)
         {
-            var query = _unitOfWork.Games.AsQueryable()
+            var query = _unitOfWork.Games.AsQueryable();
+            var games = await mediator.Send(gameQuery);
+            return games;
+            /*var query = _unitOfWork.Games.AsQueryable()
                 .Include(g => g.genre)
                 .Include(g => g.Reviews)
                 .AsQueryable();
@@ -71,12 +68,12 @@ namespace WebApplication1.Services
             {
                 query = query.Where(g => g.genre.name.Contains(genreName));
             }
-            /*if (directorName != null)
+            if (directorName != null)
             {
                 query = query.Where(g=>g.)
-            }*/
+            }
             var games = await query.ToListAsync();
-            return games.Select(GameMapping.ToGameResponse).ToList();
+            return games.Select(GameMapping.ToGameResponse).ToList();*/
         }
 
         public async Task<List<GameResponse>> GetGamesByAvrRating()

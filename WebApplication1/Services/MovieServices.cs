@@ -90,7 +90,7 @@ namespace WebApplication1.Services
             return true;
 
         }
-        public async Task<List<MovieResponse>> GetMoviesByCriteriaAsync(MoviesQuery moviesQuery)
+        public async Task<List<MovieResponse>> GetMoviesByCriteriaAsync(MovieQuery moviesQuery)
         {
             var query = _unitOfWork.Movies.AsQueryable();
             var MovieResponses = await _mediator.Send(moviesQuery);

@@ -13,7 +13,7 @@ using WebApplication1.Strategy;
 
 namespace WebApplication1.QueryHandler
 {
-    public class MovieQueryHandler:IRequestHandler<MoviesQuery,List<MovieResponse>>
+    public class MovieQueryHandler:IRequestHandler<MovieQuery,List<MovieResponse>>
     {
         private readonly QueryServices<Movie> queryServices;
 
@@ -23,7 +23,7 @@ namespace WebApplication1.QueryHandler
         }
 
 
-        public async Task<List<MovieResponse>> Handle(MoviesQuery request,CancellationToken cancellationToken)
+        public async Task<List<MovieResponse>> Handle(MovieQuery request,CancellationToken cancellationToken)
         {
             IQueryable<Movie> query = queryServices.StartQuery();
             var predicate = BuildPredicate(request);
@@ -36,7 +36,7 @@ namespace WebApplication1.QueryHandler
             var Response = movies.Select(m => MovieMapping.ToMovieResponse(m)).ToList();
             return Response;
         }
-        private Expression<Func<Movie, bool>> BuildPredicate(MoviesQuery query) {
+        private Expression<Func<Movie, bool>> BuildPredicate(MovieQuery query) {
             var finalPredicate = PredicateBuilder.True<Movie>();
             if (!string.IsNullOrEmpty(query.TitleSearch))
             {
