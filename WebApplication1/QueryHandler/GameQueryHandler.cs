@@ -21,13 +21,13 @@ namespace WebApplication1.QueryHandler
             var query = gameServices.StartQuery();
             var predicate = buildPredicate(request);
             query = gameServices.Filter(query, predicate);
-            if (!string.IsNullOrEmpty(request.sortByField) || request.IsDescending)
+            if (!string.IsNullOrEmpty(request.sortByField) || request.IsDescending || request.isAVG)
             {
                 query = gameServices.Sort(query, request.sortByField, request.IsDescending);
             }
 
             var games = await query.ToListAsync(cancellationToken);
-            return games.Select(x=>GameMapping.ToGameResponse(x)).ToList();
+            return games.Select(x=>GameMapping.ToGameResponse(x)).ToList(); 
         }
         private Expression<Func<Game, bool>> buildPredicate(GameQuery gameQuery)
         {
@@ -40,14 +40,14 @@ namespace WebApplication1.QueryHandler
             {
                 finalPredicate = finalPredicate.And(m => m.genre.name.Contains(gameQuery.genreName));
             }
-            /*if (query.MinRating.HasValue)
+            if (!string.IsNullOrEmpty(gameQuery.platform))
             {
-                finalPredicate = finalPredicate.And(m => m.Reviews.Average(x => (double?)x.Rating) >= query.MinRating.Value);
+                finalPredicate = finalPredicate.And(m => m.Platform.ToString().Contains(gameQuery.platform));
             }
-            if (query.ReleaseYear.HasValue)
+            if (!string.IsNullOrEmpty(gameQuery.developer))
             {
-                finalPredicate = finalPredicate.And(m => m.ReleaseDate.Year == query.ReleaseYear);
-            }*/
+                finalPredicate = finalPredicate.And(m => m.Developer.Contains(gameQuery.developer);
+            }
             return finalPredicate;
         
         }

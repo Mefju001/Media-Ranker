@@ -25,23 +25,11 @@ namespace WebApplication1.Controllers
             var games = await gameServices.GetAllAsync();
             return Ok(games);
         }
-        [HttpGet("sortBy/{sortByField}/{isDesceding}")]
-        public async Task<IActionResult> GetSortAll(string isDesceding,string sortByField)
-        {
-            var games = await gameServices.GetSortAll(isDesceding, sortByField);
-            return Ok(games);
-        }
         [AllowAnonymous]
         [HttpGet("FilterBy")]
         public async Task<IActionResult> GetMovies([FromQuery] GameQuery gameQuery)
         {
             var games = await gameServices.GetGamesByCriteriaAsync(gameQuery);
-            return Ok(games);
-        }
-        [HttpGet("byAvarage")]
-        public async Task<IActionResult> GetMoviesByAvarage()
-        {
-            var games = await gameServices.GetGamesByAvrRating();
             return Ok(games);
         }
         [HttpGet("id/{id}")]

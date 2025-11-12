@@ -56,56 +56,6 @@ namespace WebApplication1.Services
             var query = _unitOfWork.Games.AsQueryable();
             var games = await mediator.Send(gameQuery);
             return games;
-            /*var query = _unitOfWork.Games.AsQueryable()
-                .Include(g => g.genre)
-                .Include(g => g.Reviews)
-                .AsQueryable();
-            if (name != null)
-            {
-                query = query.Where(g => g.title.Contains(name));
-            }
-            if (genreName != null)
-            {
-                query = query.Where(g => g.genre.name.Contains(genreName));
-            }
-            if (directorName != null)
-            {
-                query = query.Where(g=>g.)
-            }
-            var games = await query.ToListAsync();
-            return games.Select(GameMapping.ToGameResponse).ToList();*/
-        }
-
-        public async Task<List<GameResponse>> GetGamesByAvrRating()
-        {
-            var gamesAVR = await _unitOfWork.Games.AsQueryable()
-                .Include(g => g.genre)
-                .Include(g => g.Reviews)
-                .Select(g => new
-                {
-                    Game = g,
-                    avarage = g.Reviews.Average(r => (double?)r.Rating) ?? 0
-                })
-                .OrderByDescending(g => g.avarage)
-                .ToListAsync();
-            return gamesAVR.Select(g => GameMapping.ToGameResponse(g.Game)).ToList();
-        }
-
-        public async Task<List<GameResponse>> GetSortAll(string sortByDirection,string sortByField)
-        {
-            
-            var query = _unitOfWork.Games.AsQueryable()
-                .Include(g => g.genre)
-                .Include(g => g.Reviews)
-                .AsQueryable();
-            if (!string.IsNullOrEmpty(sortByField) || !string.IsNullOrEmpty(sortByDirection))
-            {
-                bool isDesceding = sortByDirection.Equals("desc",StringComparison.OrdinalIgnoreCase);
-                //query = handler.Handle(sortByField, isDesceding);
-                var games = await query.ToListAsync();
-                return games.Select(GameMapping.ToGameResponse).ToList();
-            }
-            throw new NotImplementedException();
         }
         private async Task<Genre> GetOrCreateGenreAsync(GenreRequest genreRequest)
         {

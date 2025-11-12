@@ -7,8 +7,13 @@ namespace WebApplication1.QueryHandler.Query
     {
         public string? title { get; set; }
         public string? genreName { get; set; }
+        public string? platform { get; set; }
+        public string? developer {  get; set; }
+        public DateTime? releaseDate { get; set; }
+        public bool isAvgFiltr {  get; set; }
 
         public string? sortByField { get; set; }
         public bool IsDescending { get; set; }
+        public bool isAVG { get; set; }
     }
 }
