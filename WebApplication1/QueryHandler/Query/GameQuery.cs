@@ -14,6 +14,5 @@ namespace WebApplication1.QueryHandler.Query
 
         public string? sortByField { get; set; }
         public bool IsDescending { get; set; }
-        public bool isAVG { get; set; }
     }
 }
