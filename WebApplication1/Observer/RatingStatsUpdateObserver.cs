@@ -9,10 +9,11 @@ namespace WebApplication1.Observer
     {
         private readonly IBackgroundTaskQueue backgroundTaskQueue;
         public readonly IServiceProvider ServiceProvider;
+        private readonly IServiceScopeFactory serviceScopeFactory;
 
-
-        public RatingStatsUpdateObserver(IBackgroundTaskQueue backgroundTaskQueue, IServiceProvider serviceProvider)
+        public RatingStatsUpdateObserver(IServiceScopeFactory factory, IBackgroundTaskQueue backgroundTaskQueue, IServiceProvider serviceProvider)
         {
+            serviceScopeFactory = factory;
             this.backgroundTaskQueue = backgroundTaskQueue;
             this.ServiceProvider = serviceProvider;
         }
@@ -21,7 +22,7 @@ namespace WebApplication1.Observer
         {
             ValueTask value = backgroundTaskQueue.QueueBackgroundWorkItemAsync(async (token) =>
             {
-                using (var scope = ServiceProvider.CreateScope())
+                using (var scope = serviceScopeFactory.CreateScope())
                 {
                     var updateService = scope.ServiceProvider.GetRequiredService<IStatsUpdateService>();
                     await updateService.update(notification.mediaId, token);

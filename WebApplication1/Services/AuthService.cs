@@ -1,3 +1,4 @@
+using MediatR;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
@@ -6,6 +7,7 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
 using WebApplication1.Data;
+using WebApplication1.DTO.Notification;
 using WebApplication1.DTO.Request;
 using WebApplication1.DTO.Response;
 using WebApplication1.Exceptions;
@@ -19,9 +21,11 @@ namespace WebApplication1.Services
         private readonly AppDbContext _context;
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly IPasswordHasher<User> _passwordHasher;
+        private readonly IMediator mediator;
 
-        public AuthService(IConfiguration config, AppDbContext context, IPasswordHasher<User> passwordHasher, IHttpContextAccessor httpContextAccessor)
+        public AuthService(IMediator mediator ,IConfiguration config, AppDbContext context, IPasswordHasher<User> passwordHasher, IHttpContextAccessor httpContextAccessor)
         {
+            this.mediator = mediator;
             _context = context;
             _passwordHasher = passwordHasher;
             _configuration = config;
@@ -234,6 +238,17 @@ namespace WebApplication1.Services
                 }
                 await _context.SaveChangesAsync();
             }
+        }
+        public async Task<List<Media>> updateStatsForEntity()
+        {
+            var medias = await _context.Medias.ToListAsync();
+            foreach(var media in medias)
+            {
+                await mediator.Publish(new ReviewChangedNotification() { mediaId = media.Id });
+            }
+            await Task.Delay(TimeSpan.FromSeconds(5));
+            medias = await _context.Medias.ToListAsync();
+            return medias;
         }
     }
 }

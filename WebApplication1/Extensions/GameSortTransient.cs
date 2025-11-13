@@ -15,7 +15,7 @@ namespace WebApplication1.Extensions
             services.AddTransient<ISortingStrategy<Game>, DynamicSortingStrategy<Game>>(provider=>
                 new DynamicSortingStrategy<Game>("releaseDate",g=>g.ReleaseDate));
             services.AddTransient<ISortingStrategy<Game>, DynamicSortingStrategy<Game>>(provider =>
-                new DynamicSortingStrategy<Game>("average", g => g.Reviews.Average(x=>(double?)x.Rating)??0));
+                new DynamicSortingStrategy<Game>("average", g => g.Stats.AverageRating??0));
             return services;
         }
     }

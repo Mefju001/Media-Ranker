@@ -15,7 +15,7 @@ namespace WebApplication1.Extensions
             services.AddTransient<ISortingStrategy<Movie>, DynamicSortingStrategy<Movie>>(provider =>
                  new DynamicSortingStrategy<Movie>("releaseDate", m => m.ReleaseDate));
            services.AddTransient<ISortingStrategy<Movie>, DynamicSortingStrategy<Movie>>(provider =>
-                 new DynamicSortingStrategy<Movie>("average", m => m.Reviews.Average(x => (double?)x.Rating) ?? 0));
+                 new DynamicSortingStrategy<Movie>("average", m => m.Stats.AverageRating ?? 0));
             return services;
         }
     }

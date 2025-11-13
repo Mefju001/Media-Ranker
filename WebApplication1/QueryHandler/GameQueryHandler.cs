@@ -2,13 +2,10 @@
 using Microsoft.EntityFrameworkCore;
 using System.Linq.Expressions;
 using WebApplication1.DTO.Mapping;
-using WebApplication1.DTO.Request;
 using WebApplication1.DTO.Response;
 using WebApplication1.Models;
 using WebApplication1.QueryHandler.Query;
-using WebApplication1.Services;
 using WebApplication1.Specification;
-using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 
 namespace WebApplication1.QueryHandler
 {
@@ -46,7 +43,7 @@ namespace WebApplication1.QueryHandler
             }
             if (!string.IsNullOrEmpty(gameQuery.developer))
             {
-                finalPredicate = finalPredicate.And(m => m.Developer.Contains(gameQuery.developer);
+                finalPredicate = finalPredicate.And(m => m.Developer.Contains(gameQuery.developer));
             }
             return finalPredicate;
         

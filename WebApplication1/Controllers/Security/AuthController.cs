@@ -44,5 +44,13 @@ namespace WebApplication1.Controllers.Security
             await tokenCleanupService.Cleanup();
             return Ok("Czyszczenie tokenów rozpoczęte.");
         }
+        [AllowAnonymous]
+        [HttpGet("updateStats")]
+        public async Task<IActionResult>updateStats()
+        {
+            var result = await authService.updateStatsForEntity();
+            return Ok(result+ " done");
+        }
+
     }
 }
