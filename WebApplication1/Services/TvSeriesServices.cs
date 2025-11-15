@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using MediatR;
+using Microsoft.EntityFrameworkCore;
 using WebApplication1.Builder.Interfaces;
 using WebApplication1.Data;
 using WebApplication1.DTO.Mapping;
@@ -7,20 +8,25 @@ using WebApplication1.DTO.Response;
 using WebApplication1.Exceptions;
 using WebApplication1.Models;
 using WebApplication1.QueryHandler;
+using WebApplication1.QueryHandler.Query;
 using WebApplication1.Services.Interfaces;
 
 namespace WebApplication1.Services
 {
     public class TvSeriesServices : ITvSeriesServices
     {
+        private readonly IMediator mediatR;
         private readonly IUnitOfWork unitOfWork;
         private readonly ITvSeriesBuilder builder;
         private readonly QueryServices<TvSeries> handler;
-        public TvSeriesServices(IUnitOfWork _unitOfWork, ITvSeriesBuilder builder,QueryServices<TvSeries>handler)
+        private readonly IReferenceDataService referenceDataService;
+        public TvSeriesServices(IMediator mediatR, IUnitOfWork _unitOfWork, ITvSeriesBuilder builder, QueryServices<TvSeries> handler, IReferenceDataService referenceDataService)
         {
             unitOfWork = _unitOfWork;
             this.builder = builder;
             this.handler = handler;
+            this.referenceDataService = referenceDataService;
+            this.mediatR = mediatR;
         }
 
         public async Task<bool> Delete(int id)
@@ -74,23 +80,10 @@ namespace WebApplication1.Services
             throw new NullReferenceException();
         }
 
-        public async Task<List<TvSeriesResponse>> GetTvSeries(string? name, string? genreName, string? directorName)
+        public async Task<List<TvSeriesResponse>> GetMoviesByCriteriaAsync(TvSeriesQuery tvSeriesQuery)
         {
-            var query = unitOfWork.TvSeries.AsQueryable()
-                                .Include(m => m.genre)
-                                .Include(m => m.Reviews)
-                                .ThenInclude(r => r.User)
-                                .AsQueryable();
-            if (!string.IsNullOrEmpty(name))
-            {
-                query = query.Where(tv => tv.title.Contains(name));
-            }
-            if (!string.IsNullOrEmpty(genreName))
-            {
-                query = query.Where(tv => tv.genre.name.Contains(genreName));
-            }
-            var movies = await query.ToListAsync();
-            return movies.Select(TvSeriesMapping.ToTvSeriesResponse).ToList();
+            var movies = await mediatR.Send(tvSeriesQuery);
+            return movies;
         }
         //modif
         public async Task<List<TvSeriesAVGResponse>> GetTvSeriesByAvrRating()
@@ -108,21 +101,12 @@ namespace WebApplication1.Services
                     .ToListAsync();
             return TvSeries.Select(x => TvSeriesMapping.ToTvSeriesAVGResponse(x.TvSeries,x.avarage)).ToList();
         }
-
-        private async Task<Genre> GetOrCreateGenreAsync(GenreRequest genreRequest)
-        {
-            var genre = await unitOfWork.Genres.FirstOrDefaultAsync(g => g.name == genreRequest.name);
-            if (genre is not null) return genre;
-            genre = new Genre { name = genreRequest.name };
-            await unitOfWork.Genres.AddAsync(genre);
-            return genre;
-        }
         public async Task<(int tvSeriesId, TvSeriesResponse response)> Upsert(int? tvSeriesId, TvSeriesRequest tvSeriesRequest)
         {
             await using var transaction = await unitOfWork.BeginTransactionAsync();
             try
             {
-                var genre = await GetOrCreateGenreAsync(tvSeriesRequest.genre);
+                var genre = await referenceDataService.GetOrCreateGenreAsync(tvSeriesRequest.genre);
                 TvSeries? tvSeries;
                 if (tvSeriesId is not null)
                 {

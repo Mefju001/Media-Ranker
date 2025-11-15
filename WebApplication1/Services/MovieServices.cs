@@ -11,36 +11,21 @@ using WebApplication1.QueryHandler.Query;
 using WebApplication1.Services.Interfaces;
 namespace WebApplication1.Services
 {
-    public class MovieServices(IUnitOfWork unitOfWork, IMovieBuilder builder, IMediator mediator, MovieQueryHandler handler) : IMovieServices
+    public class MovieServices(IReferenceDataService referenceDataService, IUnitOfWork unitOfWork, IMovieBuilder builder, IMediator mediator, MovieQueryHandler handler) : IMovieServices
     {
         private readonly IUnitOfWork _unitOfWork = unitOfWork;
         private readonly IMediator _mediator = mediator;
         private readonly IMovieBuilder movieBuilder = builder;
         private readonly MovieQueryHandler handler = handler;
+        private readonly IReferenceDataService referenceDataService = referenceDataService;
 
-        private async Task<Director> GetOrCreateDirectorAsync(DirectorRequest directorRequest)
-        {
-            var Director = await _unitOfWork.Directors.FirstOrDefaultAsync(d => d.name == directorRequest.Name && d.surname == directorRequest.Surname);
-            if (Director is not null) return Director;
-            Director = new Director { name = directorRequest.Name, surname = directorRequest.Surname };
-            await _unitOfWork.Directors.AddAsync(Director);
-            return Director;
-        }
-        private async Task<Genre> GetOrCreateGenreAsync(GenreRequest genreRequest)
-        {
-            var genre = await _unitOfWork.Genres.FirstOrDefaultAsync(g => g.name == genreRequest.name);
-            if (genre != null) return genre;
-            genre = new Genre { name = genreRequest.name };
-            await _unitOfWork.Genres.AddAsync(genre);
-            return genre;
-        }
         public async Task<(int movieId, MovieResponse response)> Upsert(int? movieId, MovieRequest movieRequest)
         {
             await using var transaction = await _unitOfWork.BeginTransactionAsync();
             try
             {
-                var director = await GetOrCreateDirectorAsync(movieRequest.Director);
-                var genre = await GetOrCreateGenreAsync(movieRequest.Genre);
+                var director = await referenceDataService.GetOrCreateDirectorAsync(movieRequest.Director);
+                var genre = await referenceDataService.GetOrCreateGenreAsync(movieRequest.Genre);
                 Movie? movie;
                 if (movieId.HasValue)
                 {

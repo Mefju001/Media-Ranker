@@ -15,12 +15,13 @@ using WebApplication1.Services.Interfaces;
 
 namespace WebApplication1.Services
 {
-    public class GameServices(IUnitOfWork unitOfWork, IGameBuilder gameBuilder, QueryServices<Game> handler, IMediator mediator) : IGameServices
+    public class GameServices(IReferenceDataService reference, IUnitOfWork unitOfWork, IGameBuilder gameBuilder, QueryServices<Game> handler, IMediator mediator) : IGameServices
     {
         private readonly IUnitOfWork _unitOfWork = unitOfWork;
         private readonly IGameBuilder gameBuilder = gameBuilder;
         private readonly QueryServices<Game> handler = handler;
         private readonly IMediator mediator = mediator;
+        private readonly IReferenceDataService referenceDataService = reference;
 
         public async Task<bool> Delete(int id)
         {
@@ -57,20 +58,12 @@ namespace WebApplication1.Services
             var games = await mediator.Send(gameQuery);
             return games;
         }
-        private async Task<Genre> GetOrCreateGenreAsync(GenreRequest genreRequest)
-        {
-            var genre = await _unitOfWork.Genres.FirstOrDefaultAsync(g => g.name == genreRequest.name);
-            if (genre is not null) return genre;
-            genre = new Genre { name = genreRequest.name };
-            await _unitOfWork.Genres.AddAsync(genre);
-            return genre;
-        }
         public async Task<(int movieId, GameResponse response)> Upsert(int? gameId, GameRequest gameRequest)
         {
             await using var transaction = await _unitOfWork.BeginTransactionAsync();
             try
             {
-                var genre = await GetOrCreateGenreAsync(gameRequest.Genre);
+                var genre = await referenceDataService.GetOrCreateGenreAsync(gameRequest.Genre);
                 Game? game;
                 if (gameId.HasValue)
                 {
