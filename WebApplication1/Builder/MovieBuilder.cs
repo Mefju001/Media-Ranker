@@ -16,7 +16,7 @@ namespace WebApplication1.Builder
             return _movie;
         }
 
-        public IMovieBuilder CreateNew(string title,string description)
+        public IMovieBuilder CreateNew(string title, string description)
         {
             _movie = new Movie
             {

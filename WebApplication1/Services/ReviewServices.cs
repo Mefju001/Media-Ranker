@@ -34,7 +34,7 @@ namespace WebApplication1.Services
                         review.Comment = reviewRequest.Comment;
                         await _context.SaveChangesAsync();
                         await transaction.CommitAsync();
-                        return (review.Id, ReviewMapping.ToResponse(review));
+                        return (review.Id, ReviewMapper.ToResponse(review));
                     }
                 }
                 review = new Review
@@ -51,7 +51,7 @@ namespace WebApplication1.Services
                     .Include(r => r.Media)
                     .FirstOrDefaultAsync(r => r.Id == review.Id);
                 await transaction.CommitAsync();
-                return (review.Id, ReviewMapping.ToResponse(response));
+                return (review.Id, ReviewMapper.ToResponse(response));
             }
             catch
             {
@@ -79,7 +79,7 @@ namespace WebApplication1.Services
                 .Include(r => r.Media)
                 .ToListAsync();
 
-            return reviews.Select(ReviewMapping.ToResponse).ToList();
+            return reviews.Select(ReviewMapper.ToResponse).ToList();
         }
 
         public async Task<ReviewResponse> GetById(int id)
@@ -88,7 +88,7 @@ namespace WebApplication1.Services
                 .Include(r => r.User)
                 .Include(r => r.Media)
                 .FirstOrDefaultAsync(r => r.Id == id);
-            if (review != null) return ReviewMapping.ToResponse(review);
+            if (review != null) return ReviewMapper.ToResponse(review);
             return null;
         }
 

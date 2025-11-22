@@ -3,7 +3,7 @@ using WebApplication1.Models;
 
 namespace WebApplication1.DTO.Mapping
 {
-    public class GenreMapping
+    public class GenreMapper
     {
         public static GenreResponse? ToResponse(Genre genre)
         {

@@ -1,12 +1,13 @@
 using System.Text.Json.Serialization;
 using WebApplication1.Controllers;
 using WebApplication1.Extensions;
-using Microsoft.OpenApi.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
 builder.Services.AddAppServices(builder.Configuration);
 builder.Services.AddMovieTransit(builder.Configuration);
+builder.Services.AddGameTransit(builder.Configuration);
+builder.Services.AddTvSeriesTransit(builder.Configuration);
 builder.Services.AddIdentityServices(builder.Configuration);
 builder.Services.AddControllers()
     .AddJsonOptions(options =>
@@ -26,7 +27,7 @@ builder.Services.AddHttpContextAccessor();
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
+
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
@@ -34,10 +35,7 @@ if (app.Environment.IsDevelopment())
     app.UseDeveloperExceptionPage();
 }
 
-//app.UseHttpsRedirection();
 app.UseAuthentication();
-
-// 2. AUTORYZACJA (Authorization) sprawdza role i polityki (wymaga wyniku Authentication)
 app.UseAuthorization();
 app.UseMiddleware<GlobalExceptionHandlerMiddleware>();
 app.MapControllers();

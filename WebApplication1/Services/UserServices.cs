@@ -69,7 +69,7 @@ namespace WebApplication1.Services
                 .Include(u => u.Reviews)
                 .ThenInclude(r => r.Media)
                 .ToListAsync();
-            return users.Select(UserMapping.ToResponse).ToList();
+            return users.Select(UserMapper.ToResponse).ToList();
         }
         public async Task<bool> Register(UserRequest userRequest)
         {
@@ -107,7 +107,7 @@ namespace WebApplication1.Services
                     .ThenInclude(r => r.Media)
                 .FirstOrDefaultAsync(u => u.Id == id);
             if (user is null) return null;
-            return UserMapping.ToResponse(user);
+            return UserMapper.ToResponse(user);
         }
         public async Task<List<UserResponse>> GetBy(string name)
         {
@@ -123,7 +123,7 @@ namespace WebApplication1.Services
                         u.email == name)
                 .ToListAsync();
             if (!User.Any()) return new List<UserResponse>();
-            return User.Select(UserMapping.ToResponse).ToList();
+            return User.Select(UserMapper.ToResponse).ToList();
         }
     }
 }

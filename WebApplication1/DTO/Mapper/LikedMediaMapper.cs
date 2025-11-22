@@ -3,14 +3,14 @@ using WebApplication1.Models;
 
 namespace WebApplication1.DTO.Mapping
 {
-    public class LikedMediaMapping
+    public class LikedMediaMapper
     {
         public static LikedMediaResponse ToResponse(LikedMedia likedMedia)
         {
             return new LikedMediaResponse(
-                user: UserMapping.ToResponse(likedMedia.User)
+                user: UserMapper.ToResponse(likedMedia.User)
                 ?? null,
-                Media: MediaMapping.ToResponse(likedMedia.Media)
+                Media: MediaMapper.ToResponse(likedMedia.Media)
                 ?? null,
                 likedMedia.LikedDate
             );

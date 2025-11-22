@@ -29,7 +29,7 @@ namespace WebApplication1.Services
             };
             AppDbContext.LikedMedias.Add(likedMedia);
             await AppDbContext.SaveChangesAsync();
-            return LikedMediaMapping.ToResponse(likedMedia);
+            return LikedMediaMapper.ToResponse(likedMedia);
         }
 
         public async Task<bool> Delete(int userId, int mediaId)
@@ -50,14 +50,14 @@ namespace WebApplication1.Services
         {
             var likedItems = await AppDbContext.LikedMedias
                 .ToListAsync();
-            return likedItems.Select(LikedMediaMapping.ToResponse).ToList();
+            return likedItems.Select(LikedMediaMapper.ToResponse).ToList();
         }
         public async Task<List<LikedMediaResponse>> GetUserLikedMedia(int userId)
         {
             var likedItems = await AppDbContext.LikedMedias
                 .Where(lm => lm.UserId == userId)
                 .ToListAsync();
-            return likedItems.Select(LikedMediaMapping.ToResponse).ToList();
+            return likedItems.Select(LikedMediaMapper.ToResponse).ToList();
         }
 
     }

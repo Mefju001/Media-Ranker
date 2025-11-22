@@ -3,7 +3,7 @@ using WebApplication1.Models;
 
 namespace WebApplication1.DTO.Mapping
 {
-    public static class RoleMapping
+    public static class RoleMapper
     {
         public static RoleResponse ToResponse(Role role)
         {

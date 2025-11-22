@@ -4,7 +4,7 @@ using WebApplication1.Models;
 
 namespace WebApplication1.DTO.Validator
 {
-    public class GameRequestValidator:AbstractValidator<GameRequest>
+    public class GameRequestValidator : AbstractValidator<GameRequest>
     {
 
         public GameRequestValidator()

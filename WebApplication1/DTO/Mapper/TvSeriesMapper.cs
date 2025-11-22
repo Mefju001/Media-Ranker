@@ -1,21 +1,20 @@
-﻿using System.IO;
-using WebApplication1.DTO.Request;
+﻿using WebApplication1.DTO.Request;
 using WebApplication1.DTO.Response;
 using WebApplication1.Models;
 
 namespace WebApplication1.DTO.Mapping
 {
-    public class TvSeriesMapping
+    public class TvSeriesMapper
     {
         public static TvSeriesResponse ToTvSeriesResponse(TvSeries tvSeries)
         {
             return new TvSeriesResponse(
                 tvSeries.title,
                 tvSeries.description,
-                GenreMapping.ToResponse(tvSeries.genre),
+                GenreMapper.ToResponse(tvSeries.genre),
                 tvSeries.ReleaseDate,
                 tvSeries.Language,
-                tvSeries.Reviews?.Select(r => ReviewMapping.ToResponse(r)).ToList() ?? new List<ReviewResponse>(),
+                tvSeries.Reviews?.Select(r => ReviewMapper.ToResponse(r)).ToList() ?? new List<ReviewResponse>(),
                 tvSeries.Seasons,
                 tvSeries.Episodes,
                 tvSeries.Network,
@@ -26,7 +25,7 @@ namespace WebApplication1.DTO.Mapping
             var tvSeriesResponse = ToTvSeriesResponse(tvSeries);
             return new TvSeriesAVGResponse(tvSeriesResponse, avg);
         }
-        public static void UpdateEntity(TvSeries tvSeries,TvSeriesRequest tvSeriesRequest,Genre genre)
+        public static void UpdateEntity(TvSeries tvSeries, TvSeriesRequest tvSeriesRequest, Genre genre)
         {
             tvSeries.title = tvSeriesRequest.title;
             tvSeries.description = tvSeriesRequest.description;

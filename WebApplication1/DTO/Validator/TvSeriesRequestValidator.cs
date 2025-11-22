@@ -4,7 +4,7 @@ using WebApplication1.Models;
 
 namespace WebApplication1.DTO.Validator
 {
-    public class TvSeriesRequestValidator:AbstractValidator<TvSeriesRequest>
+    public class TvSeriesRequestValidator : AbstractValidator<TvSeriesRequest>
     {
         public TvSeriesRequestValidator()
         {
@@ -17,7 +17,7 @@ namespace WebApplication1.DTO.Validator
             RuleFor(Request => Request.genre.name)
                     .NotEmpty().WithMessage("Genre name should have text.")
                     .MaximumLength(200).WithMessage("Only 200 characters are allowed.");
-           //edycja
+            //edycja
             RuleFor(Request => Request.ReleaseDate)
                     .NotEmpty()
                     .LessThanOrEqualTo(DateTime.UtcNow)
@@ -32,7 +32,7 @@ namespace WebApplication1.DTO.Validator
             RuleFor(Request => Request.Seasons)
                 .NotEmpty()
                 .GreaterThanOrEqualTo(1).WithMessage("Seasons must start with one.");
-            RuleFor(Request=>Request.Episodes)
+            RuleFor(Request => Request.Episodes)
                 .NotEmpty()
                 .GreaterThanOrEqualTo(1).WithMessage("Episodes must start with one.");
             RuleFor(Request => Request.Network)

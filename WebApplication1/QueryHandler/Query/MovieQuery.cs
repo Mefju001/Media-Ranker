@@ -1,10 +1,9 @@
 ﻿using MediatR;
 using WebApplication1.DTO.Response;
-using WebApplication1.Models;
 
 namespace WebApplication1.QueryHandler.Query
 {
-    public class MovieQuery:IRequest<List<MovieResponse>>
+    public class MovieQuery : IRequest<List<MovieResponse>>
     {
         // PARAMETRY FILTROWANIA (Dla Wzorca Specyfikacja)
 

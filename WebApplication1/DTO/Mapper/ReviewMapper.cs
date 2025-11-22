@@ -3,7 +3,7 @@ using WebApplication1.Models;
 
 namespace WebApplication1.DTO.Mapping
 {
-    public static class ReviewMapping
+    public static class ReviewMapper
     {
         public static ReviewResponse ToResponse(Review review)
         {

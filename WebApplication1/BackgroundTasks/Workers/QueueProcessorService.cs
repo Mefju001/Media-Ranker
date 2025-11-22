@@ -1,17 +1,16 @@
 ﻿
 using WebApplication1.BackgroundService.Interfaces;
-using WebApplication1.Services.Interfaces;
 using Host = Microsoft.Extensions.Hosting;
 
 namespace WebApplication1.BackgroundTasks.Service
 {
-    public class QueueProcessorService: Host.BackgroundService
+    public class QueueProcessorService : Host.BackgroundService
     {
         private readonly ILogger<QueueProcessorService> logger;
         private readonly IServiceProvider ServiceProvider;
         private readonly IBackgroundTaskQueue backgroundTaskQueue;
 
-        public QueueProcessorService(ILogger<QueueProcessorService> logger, IServiceProvider serviceProvider,IBackgroundTaskQueue backgroundTaskQueue)
+        public QueueProcessorService(ILogger<QueueProcessorService> logger, IServiceProvider serviceProvider, IBackgroundTaskQueue backgroundTaskQueue)
         {
             this.logger = logger;
             ServiceProvider = serviceProvider;
@@ -35,7 +34,7 @@ namespace WebApplication1.BackgroundTasks.Service
                 }
                 catch (Exception ex)
                 {
-                    logger.LogError("Fail "+ex.ToString());
+                    logger.LogError("Fail " + ex.ToString());
                 }
             }
         }

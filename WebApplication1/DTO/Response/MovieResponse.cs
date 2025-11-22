@@ -1,6 +1,7 @@
 ﻿namespace WebApplication1.DTO.Response
 {
     public record MovieResponse(
+        int id,
         string Title,
         string Description,
         GenreResponse Genre,

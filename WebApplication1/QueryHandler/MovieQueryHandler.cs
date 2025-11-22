@@ -1,19 +1,15 @@
 ﻿using MediatR;
 using Microsoft.EntityFrameworkCore;
-using System.Linq;
 using System.Linq.Expressions;
-using WebApplication1.Data;
 using WebApplication1.DTO.Mapping;
 using WebApplication1.DTO.Response;
 using WebApplication1.Models;
 using WebApplication1.QueryHandler.Query;
-using WebApplication1.Services.Interfaces;
 using WebApplication1.Specification;
-using WebApplication1.Strategy;
 
 namespace WebApplication1.QueryHandler
 {
-    public class MovieQueryHandler:IRequestHandler<MovieQuery,List<MovieResponse>>
+    public class MovieQueryHandler : IRequestHandler<MovieQuery, List<MovieResponse>>
     {
         private readonly QueryServices<Movie> queryServices;
 
@@ -23,7 +19,7 @@ namespace WebApplication1.QueryHandler
         }
 
 
-        public async Task<List<MovieResponse>> Handle(MovieQuery request,CancellationToken cancellationToken)
+        public async Task<List<MovieResponse>> Handle(MovieQuery request, CancellationToken cancellationToken)
         {
             IQueryable<Movie> query = queryServices.StartQuery();
             var predicate = BuildPredicate(request);
@@ -33,22 +29,23 @@ namespace WebApplication1.QueryHandler
                 query = queryServices.Sort(query, request.SortByField, request.IsDescending);
             }
             var movies = await query.ToListAsync(cancellationToken);
-            var Response = movies.Select(m => MovieMapping.ToMovieResponse(m)).ToList();
+            var Response = movies.Select(m => MovieMapper.ToMovieResponse(m)).ToList();
             return Response;
         }
-        private Expression<Func<Movie, bool>> BuildPredicate(MovieQuery query) {
+        private Expression<Func<Movie, bool>> BuildPredicate(MovieQuery query)
+        {
             var finalPredicate = PredicateBuilder.True<Movie>();
             if (!string.IsNullOrEmpty(query.TitleSearch))
             {
-                finalPredicate = finalPredicate.And(m=>m.title.Contains(query.TitleSearch));
+                finalPredicate = finalPredicate.And(m => m.title.Contains(query.TitleSearch));
             }
-            if(!string.IsNullOrEmpty(query.genreName))
+            if (!string.IsNullOrEmpty(query.genreName))
             {
-                finalPredicate = finalPredicate.And(m=>m.genre.name.Contains(query.genreName));
+                finalPredicate = finalPredicate.And(m => m.genre.name.Contains(query.genreName));
             }
-            if(query.MinRating.HasValue)
+            if (query.MinRating.HasValue)
             {
-                finalPredicate = finalPredicate.And(m => m.Reviews.Average(x => (double?)x.Rating)>=query.MinRating.Value);
+                finalPredicate = finalPredicate.And(m => m.Reviews.Average(x => (double?)x.Rating) >= query.MinRating.Value);
             }
             if (query.ReleaseYear.HasValue)
             {

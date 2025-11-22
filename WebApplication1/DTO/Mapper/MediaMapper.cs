@@ -3,7 +3,7 @@ using WebApplication1.Models;
 
 namespace WebApplication1.DTO.Mapping
 {
-    public class MediaMapping
+    public class MediaMapper
     {
         public static MediaResponse ToResponse(Media media)
         {
@@ -11,10 +11,10 @@ namespace WebApplication1.DTO.Mapping
             return new MediaResponse(
                 media.title,
                 media.description,
-                GenreMapping.ToResponse(media.genre) ?? new GenreResponse("Nieznany"),
+                GenreMapper.ToResponse(media.genre) ?? new GenreResponse("Nieznany"),
                 media.ReleaseDate,
                 media.Language,
-                media.Reviews?.Select(r => ReviewMapping.ToResponse(r)).ToList() ?? new List<ReviewResponse>());
+                media.Reviews?.Select(r => ReviewMapper.ToResponse(r)).ToList() ?? new List<ReviewResponse>());
         }
     }
 }

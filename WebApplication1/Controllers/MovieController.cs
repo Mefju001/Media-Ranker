@@ -1,7 +1,6 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using WebApplication1.DTO.Request;
-using WebApplication1.Models;
 using WebApplication1.QueryHandler.Query;
 
 namespace WebApplication1.Controllers
@@ -25,13 +24,6 @@ namespace WebApplication1.Controllers
             return Ok(movies);
         }
         [AllowAnonymous]
-        [HttpGet("test")]
-        public async Task<IActionResult> test()
-        {
-            var test = movieServices.testForReviews();
-            return Ok(await test);
-        }
-        [AllowAnonymous]
         [HttpGet("FilterBy")]
         public async Task<IActionResult> GetMovies([FromQuery] MovieQuery moviesQuery)
         {
@@ -47,15 +39,20 @@ namespace WebApplication1.Controllers
         }
         [Authorize(Roles = "Admin")]
         [HttpPost]
-        public async Task<IActionResult> Upsert(int? id, MovieRequest movie)
+        public async Task<IActionResult> AddMovie(MovieRequest movie)
         {
-            var created = await movieServices.Upsert(id, movie);
-            if (id is null)
-                return CreatedAtAction(nameof(GetById), new { id = created.movieId }, created.response);
-            return Ok(created.response);
+            var created = await movieServices.Upsert(null, movie);
+            return CreatedAtAction(nameof(GetById), new { id = created.id }, created);
         }
         [Authorize(Roles = "Admin")]
-        [HttpDelete("{id}")]
+        [HttpPut("updateById/{id}")]
+        public async Task<IActionResult> UpdateMovie(int id,MovieRequest movie)
+        {
+            var updated = await movieServices.Upsert(id, movie);
+            return Ok(updated);
+        }
+        [Authorize(Roles = "Admin")]
+        [HttpDelete("deleteById/{id}")]
         public async Task<IActionResult> Delete(int id)
         {
             var deleted = await movieServices.Delete(id);

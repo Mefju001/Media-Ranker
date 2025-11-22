@@ -8,7 +8,6 @@ public interface IMovieServices
     Task<List<MovieResponse>> GetAllAsync();
     Task<List<MovieResponse>> GetMoviesByCriteriaAsync(MovieQuery moviesQuery);
     Task<MovieResponse?> GetById(int id);
-    Task<(int movieId, MovieResponse response)> Upsert(int? movieId, MovieRequest movie);
+    Task<MovieResponse> Upsert(int? movieId, MovieRequest movie);
     Task<bool> Delete(int id);
-    Task<MediaStats> testForReviews();
 }

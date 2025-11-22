@@ -4,11 +4,11 @@ using WebApplication1.DTO.Notification;
 
 namespace WebApplication1.Observer
 {
-    public class ApiLogSenderObserver:INotificationHandler<LogNotification>
+    public class ApiLogSenderObserver : INotificationHandler<LogNotification>
     {
         private readonly HttpClient _httpClient;
         private readonly string _logApiUrl;
-        public ApiLogSenderObserver(HttpClient httpClient,IConfiguration configuration)
+        public ApiLogSenderObserver(HttpClient httpClient, IConfiguration configuration)
         {
             _httpClient = httpClient;
             _logApiUrl = configuration["LoggingApi:Url"];
@@ -25,7 +25,7 @@ namespace WebApplication1.Observer
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"[Awaryjny log]: "+ex.ToString());
+                Console.WriteLine($"[Awaryjny log]: " + ex.ToString());
             }
         }
     }

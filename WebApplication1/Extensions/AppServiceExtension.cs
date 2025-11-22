@@ -2,21 +2,16 @@
 using MediatR;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using System.Reflection;
 using WebApplication1.BackgroundService;
 using WebApplication1.BackgroundService.Interfaces;
 using WebApplication1.BackgroundTasks.Service;
 using WebApplication1.Builder;
 using WebApplication1.Builder.Interfaces;
 using WebApplication1.Data;
-using WebApplication1.DTO.Validator;
 using WebApplication1.Models;
-using WebApplication1.Observer;
 using WebApplication1.QueryHandler;
 using WebApplication1.Services;
 using WebApplication1.Services.Interfaces;
-using WebApplication1.Specification;
-using WebApplication1.Specification.Interfaces;
 using WebApplication1.Strategy;
 
 namespace WebApplication1.Extensions
@@ -29,9 +24,10 @@ namespace WebApplication1.Extensions
             {
                 options.UseLazyLoadingProxies().UseNpgsql(config.GetConnectionString("DefaultConnection"));
             });
-            services.AddSingleton<IBackgroundTaskQueue>(provider => {
+            services.AddSingleton<IBackgroundTaskQueue>(provider =>
+            {
                 var logger = provider.GetRequiredService<ILogger<BackgroundTaskQueue>>();
-                return new BackgroundTaskQueue(logger, 100);
+                return new BackgroundTaskQueue(logger);
             });
             services.AddTransient<MovieQueryHandler>();
             services.AddTransient<QueryServices<TvSeries>>();
@@ -40,13 +36,14 @@ namespace WebApplication1.Extensions
             services.AddScoped<SorterContext<TvSeries>>();
             services.AddScoped<SorterContext<Movie>>();
             services.AddScoped<SorterContext<Game>>();
+            services.AddScoped<IReferenceDataService, ReferenceDataService>();
             services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
             services.AddHostedService<QueueProcessorService>();
             services.AddHostedService<TokenBackgroundService>();
             services.AddScoped<AuthService>();
             services.AddHttpClient<LogSenderService>();
             services.AddScoped<IPasswordHasher<User>, PasswordHasher<User>>();
-            services.AddScoped<IMovieBuilder,MovieBuilder>();
+            services.AddScoped<IMovieBuilder, MovieBuilder>();
             services.AddScoped<IGameBuilder, GameBuilder>();
             services.AddScoped<ITvSeriesBuilder, TvSeriesBuilder>();
             services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(typeof(Program).Assembly));

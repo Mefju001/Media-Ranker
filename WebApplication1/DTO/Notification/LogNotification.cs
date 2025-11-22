@@ -2,7 +2,7 @@
 
 namespace WebApplication1.DTO.Notification
 {
-    public class LogNotification:INotification
+    public class LogNotification : INotification
     {
         public string Level { get; }
         public string Message { get; }

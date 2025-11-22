@@ -15,8 +15,9 @@ namespace WebApplication1.DTO.Response
         double Average
         ) : MediaResponse(Title, Description, Genre, ReleaseDate, Language, Reviews)
     {
-        public GameAvgResponse(GameResponse game, double avg) : this(game.Title, 
-            game.Description, game.Genre, game.ReleaseDate, game.Language, game.Reviews, 
-            game.Developer, game.Platform, avg) { }
+        public GameAvgResponse(GameResponse game, double avg) : this(game.Title,
+            game.Description, game.Genre, game.ReleaseDate, game.Language, game.Reviews,
+            game.Developer, game.Platform, avg)
+        { }
     }
 }

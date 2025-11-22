@@ -18,7 +18,6 @@ namespace WebApplication1.Controllers
             this.gameServices = gameServices;
         }
         [AllowAnonymous]
-
         [HttpGet]
         public async Task<IActionResult> GetAll()
         {
@@ -27,7 +26,7 @@ namespace WebApplication1.Controllers
         }
         [AllowAnonymous]
         [HttpGet("FilterBy")]
-        public async Task<IActionResult> GetMovies([FromQuery] GameQuery gameQuery)
+        public async Task<IActionResult> GetGames([FromQuery] GameQuery gameQuery)
         {
             var games = await gameServices.GetGamesByCriteriaAsync(gameQuery);
             return Ok(games);
@@ -40,12 +39,17 @@ namespace WebApplication1.Controllers
         }
         [Authorize(Roles = "Admin")]
         [HttpPost]
-        public async Task<IActionResult> Upsert(int? id, GameRequest gameRequest)
+        public async Task<IActionResult> AddGame(GameRequest gameRequest)
         {
-            var created = await gameServices.Upsert(id, gameRequest);
-            if (id is null)
-                return CreatedAtAction(nameof(GetById), new { id = created.movieId }, created.response);
-            return Ok(created.response);
+            var created = await gameServices.Upsert(null, gameRequest);
+            return CreatedAtAction(nameof(GetById), new { id = created.movieId },created.response);
+        }
+        [Authorize(Roles = "Admin")]
+        [HttpPut("UpdateGameById/{id}")]
+        public async Task<IActionResult> UpdateGame(int id, GameRequest gameRequest)
+        {
+            var updated = await gameServices.Upsert(id, gameRequest);
+            return Ok(updated.response);
         }
         [Authorize(Roles = "Admin")]
         [HttpDelete("{id}")]

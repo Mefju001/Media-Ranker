@@ -18,14 +18,14 @@ namespace WebApplication1.Services
                 .Include(x => x.Stats)
                 .SingleOrDefaultAsync(m => m.Id == mediaId, cancellationToken);
             if (media == null) return;
-            if(media.Stats == null)
+            if (media.Stats == null)
             {
                 media.Stats = new MediaStats() { Media = media };
                 await _unitOfWork.MediaStats.AddAsync(media.Stats);
             }
             int reviewCount = media.Reviews.Count();
-            double? averageRating = reviewCount>0 ? media.Reviews.Average(x =>(double?) x.Rating):null;
-            
+            double? averageRating = reviewCount > 0 ? media.Reviews.Average(x => (double?)x.Rating) : null;
+
             media.Stats.ReviewCount = reviewCount;
             media.Stats.AverageRating = averageRating;
             media.Stats.LastCalculated = DateTime.UtcNow;

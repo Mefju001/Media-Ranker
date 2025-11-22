@@ -1,13 +1,10 @@
 ﻿using MediatR;
 using Microsoft.EntityFrameworkCore;
 using WebApplication1.Builder.Interfaces;
-using WebApplication1.Data;
 using WebApplication1.DTO.Mapping;
 using WebApplication1.DTO.Request;
 using WebApplication1.DTO.Response;
-using WebApplication1.DTO.Validator;
 using WebApplication1.Exceptions;
-using WebApplication1.Extensions;
 using WebApplication1.Models;
 using WebApplication1.QueryHandler;
 using WebApplication1.QueryHandler.Query;
@@ -39,7 +36,7 @@ namespace WebApplication1.Services
                 .Include(g => g.genre)
                 .Include(g => g.Reviews)
                 .ToListAsync();
-            return games.Select(GameMapping.ToGameResponse).ToList();
+            return games.Select(GameMapper.ToGameResponse).ToList();
         }
 
         public async Task<GameResponse?> GetById(int id)
@@ -50,7 +47,7 @@ namespace WebApplication1.Services
                 .FirstOrDefaultAsync(x => x.Id == id);
             if (game == null)
                 throw new NotFoundException("No game found with that name");
-            return GameMapping.ToGameResponse(game);
+            return GameMapper.ToGameResponse(game);
         }
         public async Task<List<GameResponse>> GetGamesByCriteriaAsync(GameQuery gameQuery)
         {
@@ -73,20 +70,21 @@ namespace WebApplication1.Services
                         .FirstOrDefaultAsync(g => g.Id == gameId);
                     if (game != null)
                     {
-                        GameMapping.UpdateEntity(game,gameRequest,genre);
+                        GameMapper.UpdateEntity(game, gameRequest, genre);
                     }
                 }
-                else {
+                else
+                {
                     game = gameBuilder
                         .CreateNew(gameRequest.Title, gameRequest.Description, gameRequest.Platform)
                         .WithGenre(genre)
                         .WithTechnicalDetails(gameRequest.ReleaseDate, gameRequest.Language, gameRequest.Developer)
                         .Build();
-                await _unitOfWork.Games.AddAsync(game);
+                    await _unitOfWork.Games.AddAsync(game);
                 }
                 await _unitOfWork.CompleteAsync();
-                if(game is null)throw new ArgumentNullException(nameof(game));
-                var response = GameMapping.ToGameResponse(game);
+                if (game is null) throw new ArgumentNullException(nameof(game));
+                var response = GameMapper.ToGameResponse(game);
                 await transaction.CommitAsync();
                 return (game.Id, response);
             }

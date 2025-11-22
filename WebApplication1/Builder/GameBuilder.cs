@@ -17,11 +17,12 @@ namespace WebApplication1.Builder
 
         public IGameBuilder CreateNew(string title, string description, EPlatform platform)
         {
-            game = new Game 
-            { title = title, 
-              description = description, 
-              Platform = platform,
-              Reviews = new List<Review>()
+            game = new Game
+            {
+                title = title,
+                description = description,
+                Platform = platform,
+                Reviews = new List<Review>()
             };
             return this;
         }

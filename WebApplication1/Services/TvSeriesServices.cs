@@ -1,13 +1,11 @@
 ﻿using MediatR;
 using Microsoft.EntityFrameworkCore;
 using WebApplication1.Builder.Interfaces;
-using WebApplication1.Data;
 using WebApplication1.DTO.Mapping;
 using WebApplication1.DTO.Request;
 using WebApplication1.DTO.Response;
 using WebApplication1.Exceptions;
 using WebApplication1.Models;
-using WebApplication1.QueryHandler;
 using WebApplication1.QueryHandler.Query;
 using WebApplication1.Services.Interfaces;
 
@@ -18,13 +16,11 @@ namespace WebApplication1.Services
         private readonly IMediator mediatR;
         private readonly IUnitOfWork unitOfWork;
         private readonly ITvSeriesBuilder builder;
-        private readonly QueryServices<TvSeries> handler;
         private readonly IReferenceDataService referenceDataService;
-        public TvSeriesServices(IMediator mediatR, IUnitOfWork _unitOfWork, ITvSeriesBuilder builder, QueryServices<TvSeries> handler, IReferenceDataService referenceDataService)
+        public TvSeriesServices(IMediator mediatR, IUnitOfWork _unitOfWork, ITvSeriesBuilder builder, IReferenceDataService referenceDataService)
         {
             unitOfWork = _unitOfWork;
             this.builder = builder;
-            this.handler = handler;
             this.referenceDataService = referenceDataService;
             this.mediatR = mediatR;
         }
@@ -34,7 +30,7 @@ namespace WebApplication1.Services
             var TvSeries = await unitOfWork.TvSeries.FirstOrDefaultAsync(x => x.Id == id);
             if (TvSeries != null)
             {
-                 unitOfWork.TvSeries.Delete(TvSeries);
+                unitOfWork.TvSeries.Delete(TvSeries);
                 await unitOfWork.CompleteAsync();
                 return true;
             }
@@ -48,7 +44,7 @@ namespace WebApplication1.Services
                                 .Include(m => m.Reviews)
                                 .ThenInclude(r => r.User)
                                 .ToListAsync();
-            return TvSeries.Select(TvSeriesMapping.ToTvSeriesResponse).ToList();
+            return TvSeries.Select(TvSeriesMapper.ToTvSeriesResponse).ToList();
         }
 
         public async Task<TvSeriesResponse> GetById(int id)
@@ -60,25 +56,10 @@ namespace WebApplication1.Services
                 .FirstOrDefaultAsync(tv => tv.Id == id);
             if (TvSeries == null)
                 throw new NotFoundException("Not found");
-            return TvSeriesMapping.ToTvSeriesResponse(TvSeries);
+            return TvSeriesMapper.ToTvSeriesResponse(TvSeries);
         }
 
-        public async Task<List<TvSeriesResponse>> GetSortAll(string sortDirection,string sortByfield)
-        {
-            var query = unitOfWork.TvSeries.AsQueryable()
-                                .Include(m => m.genre)
-                                .Include(m => m.Reviews)
-                                .ThenInclude(r => r.User)
-                                .AsQueryable();
-            if(string.IsNullOrEmpty(sortByfield)||string.IsNullOrEmpty(sortDirection))
-            {
-                var isDesceding = sortDirection.Equals("desc",StringComparison.OrdinalIgnoreCase);
-                //query = handler.Handle(sortByfield, isDesceding);
-                var TvSeries = await query.ToListAsync();
-                return TvSeries.Select(x => TvSeriesMapping.ToTvSeriesResponse(x)).ToList();
-            }
-            throw new NullReferenceException();
-        }
+
 
         public async Task<List<TvSeriesResponse>> GetMoviesByCriteriaAsync(TvSeriesQuery tvSeriesQuery)
         {
@@ -99,7 +80,7 @@ namespace WebApplication1.Services
                     })
                     .OrderByDescending(x => x.avarage)
                     .ToListAsync();
-            return TvSeries.Select(x => TvSeriesMapping.ToTvSeriesAVGResponse(x.TvSeries,x.avarage)).ToList();
+            return TvSeries.Select(x => TvSeriesMapper.ToTvSeriesAVGResponse(x.TvSeries, x.avarage)).ToList();
         }
         public async Task<(int tvSeriesId, TvSeriesResponse response)> Upsert(int? tvSeriesId, TvSeriesRequest tvSeriesRequest)
         {
@@ -115,7 +96,7 @@ namespace WebApplication1.Services
                             .FirstOrDefaultAsync(m => m.Id == tvSeriesId.Value);
                     if (tvSeries is not null)
                     {
-                        TvSeriesMapping.UpdateEntity(tvSeries, tvSeriesRequest, genre);
+                        TvSeriesMapper.UpdateEntity(tvSeries, tvSeriesRequest, genre);
                     }
                 }
                 else
@@ -132,7 +113,7 @@ namespace WebApplication1.Services
                 }
                 await unitOfWork.CompleteAsync();
                 if (tvSeries is null) throw new ArgumentNullException(nameof(tvSeries));
-                var response = TvSeriesMapping.ToTvSeriesResponse(tvSeries);
+                var response = TvSeriesMapper.ToTvSeriesResponse(tvSeries);
                 await transaction.CommitAsync();
                 return (tvSeries.Id, response);
             }

@@ -13,15 +13,15 @@ namespace WebApplication1.Migrations
             migrationBuilder.DropColumn(
                 name: "GenreId",
                 table: "Medias");
-        migrationBuilder.Sql(
-            @"ALTER TABLE ""Medias""
+            migrationBuilder.Sql(
+                @"ALTER TABLE ""Medias""
               ALTER COLUMN ""Platform"" TYPE integer USING CASE 
                 WHEN ""Platform"" = 'PC' THEN 1
                 WHEN ""Platform"" = 'Playstation' THEN 2
                 WHEN ""Platform"" = 'Xbox' THEN 3
                 ELSE 0 -- Wartość domyślna dla nieznanych/nulli, jeśli są
               END;"
-        );
+            );
 
         }
 

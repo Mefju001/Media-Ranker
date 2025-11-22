@@ -1,33 +1,32 @@
-﻿using System.IO;
-using WebApplication1.DTO.Request;
+﻿using WebApplication1.DTO.Request;
 using WebApplication1.DTO.Response;
 using WebApplication1.Models;
 
 namespace WebApplication1.DTO.Mapping
 {
-    public static class GameMapping
+    public static class GameMapper
     {
         public static GameResponse ToGameResponse(Game game)
         {
             return new GameResponse(
                 game.title,
                 game.description,
-                GenreMapping.ToResponse(game.genre),
+                GenreMapper.ToResponse(game.genre),
                 game.ReleaseDate,
                 game.Language,
-                game.Reviews?.Select(r => ReviewMapping.ToResponse(r)).ToList() ?? new List<ReviewResponse>(),
+                game.Reviews?.Select(r => ReviewMapper.ToResponse(r)).ToList() ?? new List<ReviewResponse>(),
                 game.Developer,
                 game.Platform
                 );
         }
-        public static GameAvgResponse toGameAvgResponse(Game game,double average)
+        public static GameAvgResponse toGameAvgResponse(Game game, double average)
         {
             var gameResponse = ToGameResponse(game);
             return new GameAvgResponse(
                 gameResponse,
                 average);
         }
-        public static void UpdateEntity(Game game ,GameRequest gameRequest, Genre genre)
+        public static void UpdateEntity(Game game, GameRequest gameRequest, Genre genre)
         {
             game.title = gameRequest.Title;
             game.description = gameRequest.Description;

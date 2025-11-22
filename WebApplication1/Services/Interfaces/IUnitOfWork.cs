@@ -1,6 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Storage;
-using WebApplication1.Data;
+﻿using Microsoft.EntityFrameworkCore.Storage;
 using WebApplication1.Models;
 
 namespace WebApplication1.Services.Interfaces

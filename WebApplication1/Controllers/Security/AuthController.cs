@@ -1,9 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using WebApplication1.Data;
-using WebApplication1.DTO.Request;
 using WebApplication1.Models;
 using WebApplication1.Services;
 using WebApplication1.Services.Interfaces;
@@ -30,7 +28,7 @@ namespace WebApplication1.Controllers.Security
             this.tokenCleanupService = tokenCleanupService;
             this.game = game;
         }
-        
+
         [HttpPost("SendLogs")]
         public async Task<IActionResult> SendLogs()
         {
@@ -44,13 +42,5 @@ namespace WebApplication1.Controllers.Security
             await tokenCleanupService.Cleanup();
             return Ok("Czyszczenie tokenów rozpoczęte.");
         }
-        [AllowAnonymous]
-        [HttpGet("updateStats")]
-        public async Task<IActionResult>updateStats()
-        {
-            var result = await authService.updateStatsForEntity();
-            return Ok(result+ " done");
-        }
-
     }
 }

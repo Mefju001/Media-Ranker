@@ -4,12 +4,12 @@ using WebApplication1.Services.Interfaces;
 
 namespace WebApplication1.Services
 {
-    public class ReferenceDataService:IReferenceDataService
+    public class ReferenceDataService : IReferenceDataService
     {
         private IUnitOfWork _unitOfWork;
         public ReferenceDataService(IUnitOfWork unitOfWork)
         {
-            _unitOfWork = unitOfWork; 
+            _unitOfWork = unitOfWork;
         }
         public async Task<Director> GetOrCreateDirectorAsync(DirectorRequest directorRequest)
         {

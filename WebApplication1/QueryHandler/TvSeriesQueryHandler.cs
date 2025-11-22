@@ -14,7 +14,7 @@ namespace WebApplication1.QueryHandler
         {
             var query = queryServices.StartQuery();
             var predicate = buildPredicate(request);
-            if(!string.IsNullOrEmpty(request.sortByField)||request.isDescending)
+            if (!string.IsNullOrEmpty(request.sortByField) || request.isDescending)
             {
                 query = queryServices.Sort(query, request.sortByField, request.isDescending);
             }
@@ -23,23 +23,23 @@ namespace WebApplication1.QueryHandler
         private Expression<Func<TvSeries, bool>> buildPredicate(TvSeriesQuery query)
         {
             var predicate = PredicateBuilder.True<TvSeries>();
-            if(!string.IsNullOrEmpty(query.title))
+            if (!string.IsNullOrEmpty(query.title))
             {
                 predicate = predicate.And(tv => tv.title.Contains(query.title));
             }
-            if(!string.IsNullOrEmpty(query.genreName))
+            if (!string.IsNullOrEmpty(query.genreName))
             {
                 predicate = predicate.And(tv => tv.genre.name.Contains(query.genreName));
             }
-            if(!string.IsNullOrEmpty(query.network))
+            if (!string.IsNullOrEmpty(query.network))
             {
                 predicate = predicate.And(tv => tv.Network.Contains(query.network));
             }
-            if(query.seasons.HasValue)
+            if (query.seasons.HasValue)
             {
                 predicate = predicate.And(tv => tv.Seasons >= query.seasons);
             }
-            if(query.episodes.HasValue)
+            if (query.episodes.HasValue)
             {
                 predicate = predicate.And(tv => tv.Episodes >= query.episodes);
             }

@@ -9,7 +9,7 @@ using WebApplication1.Specification;
 
 namespace WebApplication1.QueryHandler
 {
-    public class GameQueryHandler(QueryServices<Game>queryServices):IRequestHandler<GameQuery, List<GameResponse>>
+    public class GameQueryHandler(QueryServices<Game> queryServices) : IRequestHandler<GameQuery, List<GameResponse>>
     {
         private readonly QueryServices<Game> gameServices = queryServices;
 
@@ -18,13 +18,13 @@ namespace WebApplication1.QueryHandler
             var query = gameServices.StartQuery();
             var predicate = buildPredicate(request);
             query = gameServices.Filter(query, predicate);
-            if (!string.IsNullOrEmpty(request.sortByField) || request.IsDescending || request.isAVG)
+            if (!string.IsNullOrEmpty(request.sortByField) || request.IsDescending)
             {
                 query = gameServices.Sort(query, request.sortByField, request.IsDescending);
             }
 
             var games = await query.ToListAsync(cancellationToken);
-            return games.Select(x=>GameMapping.ToGameResponse(x)).ToList(); 
+            return games.Select(x => GameMapper.ToGameResponse(x)).ToList();
         }
         private Expression<Func<Game, bool>> buildPredicate(GameQuery gameQuery)
         {
@@ -46,7 +46,7 @@ namespace WebApplication1.QueryHandler
                 finalPredicate = finalPredicate.And(m => m.Developer.Contains(gameQuery.developer));
             }
             return finalPredicate;
-        
+
         }
     }
 }

@@ -3,7 +3,7 @@ using WebApplication1.Models;
 
 namespace WebApplication1.DTO.Mapping
 {
-    public static class MediaStatsMapping
+    public static class MediaStatsMapper
     {
         public static MediaStatsResponse ToResponse(MediaStats mediaStats)
         {
@@ -11,7 +11,7 @@ namespace WebApplication1.DTO.Mapping
             {
                 return null;
             }
-            return new MediaStatsResponse(mediaStats.AverageRating,mediaStats.ReviewCount,mediaStats.LastCalculated);
+            return new MediaStatsResponse(mediaStats.AverageRating, mediaStats.ReviewCount, mediaStats.LastCalculated);
         }
     }
 }

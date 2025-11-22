@@ -3,7 +3,7 @@ using WebApplication1.Models;
 
 namespace WebApplication1.DTO.Mapping
 {
-    public static class UserMapping
+    public static class UserMapper
     {
         public static UserResponse ToResponse(User user)
         {
@@ -14,8 +14,8 @@ namespace WebApplication1.DTO.Mapping
                 user.name,
                 user.surname,
                 user.email,
-                user.UserRoles.Select(ur => RoleMapping.ToResponse(ur.Role)).ToList() ?? new List<RoleResponse>(),
-                user.Reviews.Select(r => ReviewMapping.ToResponse(r)).ToList() ?? new List<ReviewResponse>());
+                user.UserRoles.Select(ur => RoleMapper.ToResponse(ur.Role)).ToList() ?? new List<RoleResponse>(),
+                user.Reviews.Select(r => ReviewMapper.ToResponse(r)).ToList() ?? new List<ReviewResponse>());
 
         }
     }

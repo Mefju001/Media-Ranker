@@ -1,6 +1,4 @@
-﻿using WebApplication1.Models;
-
-namespace WebApplication1.DTO.Response
+﻿namespace WebApplication1.DTO.Response
 {
     public record MovieAVGResponse
         (string Title,
@@ -19,6 +17,7 @@ namespace WebApplication1.DTO.Response
         public MovieAVGResponse(MovieResponse movie, double avg) : this(
             movie.Title, movie.Description, movie.Genre, movie.Director, movie.ReleaseDate,
             movie.Language, movie.Reviews, movie.Duration, movie.IsCinemaRelease, avg
-            ) { }
+            )
+        { }
     }
 }

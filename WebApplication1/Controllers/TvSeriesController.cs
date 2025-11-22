@@ -1,10 +1,12 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using WebApplication1.DTO.Request;
+using WebApplication1.QueryHandler.Query;
 using WebApplication1.Services.Interfaces;
 
 namespace WebApplication1.Controllers
 {
+    [Authorize]
     [ApiController]
     [Route("[controller]")]
     public class TvSeriesController : ControllerBase
@@ -23,24 +25,10 @@ namespace WebApplication1.Controllers
             return Ok(movies);
         }
         [AllowAnonymous]
-        [HttpGet("sortBy/{sort}")]
-        public async Task<IActionResult> GetSortAll(string sortDirection, string sortByField)
-        {
-            var movies = await TvSeriesServices.GetSortAll(sortDirection, sortByField);
-            return Ok(movies);
-        }
-        [AllowAnonymous]
         [HttpGet("FilterBy")]
-        public async Task<IActionResult> GetMovies([FromQuery] string? name, [FromQuery] string? genreName, [FromQuery] string? directorName)
+        public async Task<IActionResult> GetTvSeries([FromQuery] TvSeriesQuery tvSeriesQuery)
         {
-            var movies = await TvSeriesServices.GetTvSeries(name, genreName, directorName);
-            return Ok(movies);
-        }
-        [AllowAnonymous]
-        [HttpGet("byAvarage")]
-        public async Task<IActionResult> GetMoviesByAvarage()
-        {
-            var movies = await TvSeriesServices.GetTvSeriesByAvrRating();
+            var movies = await TvSeriesServices.GetMoviesByCriteriaAsync(tvSeriesQuery);
             return Ok(movies);
         }
         [AllowAnonymous]
@@ -52,12 +40,17 @@ namespace WebApplication1.Controllers
         }
         [Authorize(Roles = "Admin")]
         [HttpPost]
-        public async Task<IActionResult> Upsert(int? id, TvSeriesRequest tvSeriesRequest)
+        public async Task<IActionResult> AddTvSeries(TvSeriesRequest tvSeriesRequest)
         {
-            var created = await TvSeriesServices.Upsert(id, tvSeriesRequest);
-            if (id is null)
-                return CreatedAtAction(nameof(GetById), new { id = created.tvSeriesId }, created.response);
-            return Ok(created.response);
+            var created = await TvSeriesServices.Upsert(null, tvSeriesRequest);
+            return CreatedAtAction(nameof(GetById), new { id = created.tvSeriesId }, created.response);
+        }
+        [Authorize(Roles = "Admin")]
+        [HttpPut("UpdateById/{id}")]
+        public async Task<IActionResult> UpdateTvSeries(int id,TvSeriesRequest tvSeriesRequest)
+        {
+            var updated = await TvSeriesServices.Upsert(id,tvSeriesRequest);
+            return Ok(updated);
         }
         [Authorize(Roles = "Admin")]
         [HttpDelete("{id}")]
