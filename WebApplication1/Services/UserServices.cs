@@ -1,8 +1,6 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using WebApplication1.Data;
-using WebApplication1.Data.Models;
-using WebApplication1.Domain.Models;
 using WebApplication1.DTO.Mapper;
 using WebApplication1.DTO.Request;
 using WebApplication1.DTO.Response;

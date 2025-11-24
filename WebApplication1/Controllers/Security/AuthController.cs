@@ -42,7 +42,7 @@ namespace WebApplication1.Controllers.Security
             await tokenCleanupService.Cleanup();
             return Ok("Czyszczenie tokenów rozpoczęte.");
         }
-        [Authorize(Roles = ("User"),("Admin"))]
+        [Authorize(Roles = ("User,Admin"))]
         [HttpPost("refreshToken")]
         public async Task<IActionResult> RefreshToken()
         {
