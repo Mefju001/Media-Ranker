@@ -1,6 +1,6 @@
 # 🎮 Media Ranker(ASP.NET Core + PostgreSQL)
 
-A simple movie and review application built using ASP.NET Core Web API, leveraging Entity Framework Core and PostgreSQL as the database. This project is dedicated to learning C#, EF Core fundamentals, and building a robust REST API.
+A simple application that has a similar function to Filmweb built using ASP.NET Core Web API, leveraging Entity Framework Core and PostgreSQL as the database. This project is dedicated to learning C#, EF Core fundamentals, and building a robust REST API.
 
 ---
 ## Configuration & Setup
@@ -57,7 +57,7 @@ dotnet ef database update
 
 ## Features
 * User registration & login with JWT authentication
-* View, filter with predicate anad dynamic sort for data
+* View, filter with predicate anad dynamic sort for data like games, movies and tv series
 * User can add review to entities
 ---
 
