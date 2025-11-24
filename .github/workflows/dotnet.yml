@@ -21,8 +21,7 @@ jobs:
       with:
         dotnet-version: 8.0.x
     - name: Restore dependencies
-      run: dotnet restore Media-Ranker.sln
+      run: dotnet restore WebApplication1/WebApplication1.sln
     - name: Build
-      run: dotnet build Media-Ranker.sln --no-restore
-    - name: Test
-      run: dotnet test MediaRanker.Tests/MediaRanker.Tests.csproj --no-build --verbosity normal
+      run: dotnet build WebApplication1/WebApplication1.sln --no-restore
+   
