@@ -1,12 +1,10 @@
-﻿using System;
-
-namespace WebApplication1.Models
+﻿namespace WebApplication1.Models
 {
-    public class TvSeries:Media
+    public class TvSeries : Media
     {
         public int Seasons { get; set; }
         public int Episodes { get; set; }
         public string? Network { get; set; }
-        public string? Status { get; set; }
+        public EStatus Status { get; set; }
     }
 }

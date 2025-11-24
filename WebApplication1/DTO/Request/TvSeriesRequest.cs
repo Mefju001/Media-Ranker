@@ -6,13 +6,12 @@ namespace WebApplication1.DTO.Request
         string title,
         string description,
         GenreRequest genre,
-        DirectorRequest director,
         DateTime ReleaseDate,
         string Language,
         int Seasons,
         int Episodes,
         string Network,
-        string Status
+        EStatus Status
         )
     {
     }

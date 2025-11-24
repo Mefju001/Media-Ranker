@@ -14,8 +14,8 @@ namespace WebApplication1.Models
         public required string name { get; set; }
         public required string surname { get; set; }
         public required string email { get; set; }
-        public ICollection<UserRole> UserRoles { get; set; } = new List<UserRole>();
-        public ICollection<Review> Reviews { get; set; } = new List<Review>();
+        public virtual ICollection<UserRole> UserRoles { get; set; } = new List<UserRole>();
+        public virtual ICollection<Review> Reviews { get; set; } = new List<Review>();
         public void setUser(UserDetailsRequest userDetailsRequest)
         {
             name = userDetailsRequest.name;

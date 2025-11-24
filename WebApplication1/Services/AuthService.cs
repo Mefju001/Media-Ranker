@@ -1,15 +1,12 @@
-using Microsoft.AspNetCore.Http;
+using MediatR;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
-using N.EntityFrameworkCore.Extensions;
 using System.Data;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
-using System.Threading.Tasks;
 using WebApplication1.Data;
-using WebApplication1.DTO.Mapping;
 using WebApplication1.DTO.Request;
 using WebApplication1.DTO.Response;
 using WebApplication1.Exceptions;
@@ -23,9 +20,11 @@ namespace WebApplication1.Services
         private readonly AppDbContext _context;
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly IPasswordHasher<User> _passwordHasher;
+        private readonly IMediator mediator;
 
-        public AuthService(IConfiguration config, AppDbContext context, IPasswordHasher<User> passwordHasher, IHttpContextAccessor httpContextAccessor)
+        public AuthService(IMediator mediator, IConfiguration config, AppDbContext context, IPasswordHasher<User> passwordHasher, IHttpContextAccessor httpContextAccessor)
         {
+            this.mediator = mediator;
             _context = context;
             _passwordHasher = passwordHasher;
             _configuration = config;
@@ -213,12 +212,12 @@ namespace WebApplication1.Services
                 .ThenInclude(ur => ur.Role)
                 .FirstOrDefaultAsync(u => u.username == username.Value.ToString());
             if (user == null)
-                return new TokenResponse(null, null);
+                throw new ArgumentNullException(nameof(user));
             var accessToken = GenerateAccessToken(user.Id, username.Value.ToString(), user.UserRoles);
             var RefreshToken = await GenerateRefreshToken(user.Id, username.Value.ToString());
             return new TokenResponse(accessToken, RefreshToken);
         }
-        public async Task<TokenResponse?> registerAccount(User user)
+        public /*async*/ Task<TokenResponse?> registerAccount(User user)
         {
             throw new NotImplementedException();
         }

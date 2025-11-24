@@ -1,4 +1,4 @@
 ﻿namespace WebApplication1.DTO.Request
 {
-    public record LoginRequest(string username,string password);
+    public record LoginRequest(string username, string password);
 }

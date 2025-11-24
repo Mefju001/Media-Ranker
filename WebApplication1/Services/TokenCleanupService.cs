@@ -1,5 +1,4 @@
-﻿using Microsoft.Extensions.Logging;
-using WebApplication1.Data;
+﻿using WebApplication1.Data;
 using WebApplication1.Services.Interfaces;
 
 namespace WebApplication1.Services
@@ -24,6 +23,7 @@ namespace WebApplication1.Services
 
                 try
                 {
+                    if (context is null) throw new ArgumentNullException(nameof(context));
                     var tokensToDelete = context.Tokens.Where(t => (t.IsRevoked == true) || (t.ExpiryDate < DateTime.UtcNow)).ToList();
                     if (tokensToDelete.Any())
                     {

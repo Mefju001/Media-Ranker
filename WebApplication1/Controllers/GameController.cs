@@ -1,13 +1,12 @@
 ﻿using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using WebApplication1.DTO.Request;
-using WebApplication1.Services.Impl;
+using WebApplication1.QueryHandler.Query;
 using WebApplication1.Services.Interfaces;
 
 namespace WebApplication1.Controllers
 {
-    [AllowAnonymous]
+    [Authorize]
     [Route("api/[controller]")]
     [ApiController]
     public class GameController : ControllerBase
@@ -18,31 +17,21 @@ namespace WebApplication1.Controllers
         {
             this.gameServices = gameServices;
         }
+        [AllowAnonymous]
         [HttpGet]
         public async Task<IActionResult> GetAll()
         {
             var games = await gameServices.GetAllAsync();
             return Ok(games);
         }
-        [HttpGet("sortBy/{sort}")]
-        public async Task<IActionResult> GetSortAll(string sort)
-        {
-            var games = await gameServices.GetSortAll(sort);
-            return Ok(games);
-        }
+        [AllowAnonymous]
         [HttpGet("FilterBy")]
-        public async Task<IActionResult> GetMovies([FromQuery] string? name, [FromQuery] string? genreName)
+        public async Task<IActionResult> GetGames([FromQuery] GameQuery gameQuery)
         {
-            var games = await gameServices.GetGames(name, genreName);
+            var games = await gameServices.GetGamesByCriteriaAsync(gameQuery);
             return Ok(games);
         }
-        [HttpGet("byAvarage")]
-        public async Task<IActionResult> GetMoviesByAvarage()
-        {
-            var games = await gameServices.GetGamesByAvrRating();
-            return Ok(games);
-        }
-        [HttpGet("id/{id}")]
+        [HttpGet("FindById/{id}")]
         public async Task<IActionResult> GetById(int id)
         {
             var games = await gameServices.GetById(id);
@@ -50,15 +39,20 @@ namespace WebApplication1.Controllers
         }
         [Authorize(Roles = "Admin")]
         [HttpPost]
-        public async Task<IActionResult> Upsert(int? id, GameRequest gameRequest)
+        public async Task<IActionResult> AddGame(GameRequest gameRequest)
         {
-            var created = await gameServices.Upsert(id, gameRequest);
-            if (id is null)
-                return CreatedAtAction(nameof(GetById), new { id = created.movieId }, created.response);
-            return Ok(created.response);
+            var created = await gameServices.Upsert(null, gameRequest);
+            return CreatedAtAction(nameof(GetById), new { id = created.id },created);
         }
         [Authorize(Roles = "Admin")]
-        [HttpDelete("{id}")]
+        [HttpPut("UpdateGameById/{id}")]
+        public async Task<IActionResult> UpdateGame(int id, GameRequest gameRequest)
+        {
+            var updated = await gameServices.Upsert(id, gameRequest);
+            return Ok(updated);
+        }
+        [Authorize(Roles = "Admin")]
+        [HttpDelete("DeleteById/{id}")]
         public async Task<IActionResult> Delete(int id)
         {
             var deleted = await gameServices.Delete(id);

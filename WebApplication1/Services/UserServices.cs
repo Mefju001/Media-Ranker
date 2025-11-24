@@ -1,8 +1,7 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.IdentityModel.Tokens;
 using WebApplication1.Data;
-using WebApplication1.DTO.Mapping;
+using WebApplication1.DTO.Mapper;
 using WebApplication1.DTO.Request;
 using WebApplication1.DTO.Response;
 using WebApplication1.Models;
@@ -29,7 +28,7 @@ namespace WebApplication1.Services
                 if (user != null)
                 {
                     var passwordVerification = Hasher.VerifyHashedPassword(user, user.password, oldPassword);
-                    if (string.Equals(newPassword,confirmPassword,StringComparison.Ordinal) && passwordVerification.Equals(PasswordVerificationResult.Success)&&!string.Equals(oldPassword, newPassword,StringComparison.Ordinal))
+                    if (string.Equals(newPassword, confirmPassword, StringComparison.Ordinal) && passwordVerification.Equals(PasswordVerificationResult.Success) && !string.Equals(oldPassword, newPassword, StringComparison.Ordinal))
                     {
                         user.password = Hasher.HashPassword(user, newPassword);
                         await dbContext.SaveChangesAsync();
@@ -43,9 +42,9 @@ namespace WebApplication1.Services
             }
             return false;
         }
-        public async Task<bool>changedetails(int userId, UserDetailsRequest userDetailsRequest)
+        public async Task<bool> changedetails(int userId, UserDetailsRequest userDetailsRequest)
         {
-            var emailExists = await dbContext.Users.AnyAsync(u=>u.email == userDetailsRequest.email&&u.Id!=userId);
+            var emailExists = await dbContext.Users.AnyAsync(u => u.email == userDetailsRequest.email && u.Id != userId);
             var user = await dbContext.Users.FirstOrDefaultAsync(u => u.Id == userId);
             if (user is null || emailExists)
                 return false;
@@ -65,12 +64,12 @@ namespace WebApplication1.Services
         public async Task<List<UserResponse>> GetAllAsync()
         {
             var users = await dbContext.Users
-                .Include(u=>u.UserRoles)
+                .Include(u => u.UserRoles)
                 .ThenInclude(ur => ur.Role)
-                .Include(u=>u.Reviews)
-                .ThenInclude(r=>r.Media)
+                .Include(u => u.Reviews)
+                .ThenInclude(r => r.Media)
                 .ToListAsync();
-            return users.Select(UserMapping.ToResponse).ToList();
+            return users.Select(UserMapper.ToResponse).ToList();
         }
         public async Task<bool> Register(UserRequest userRequest)
         {
@@ -80,14 +79,14 @@ namespace WebApplication1.Services
             var user = new User
             {
                 username = userRequest.username,
-                password = Hasher.HashPassword(null,userRequest.password),
+                password = Hasher.HashPassword(null, userRequest.password),
                 name = userRequest.name,
                 surname = userRequest.surname,
                 email = userRequest.email,
             };
             dbContext.Users.Add(user);
             await dbContext.SaveChangesAsync();
-            var role = await dbContext.Roles.FirstOrDefaultAsync(r=>r.role == ERole.User);
+            var role = await dbContext.Roles.FirstOrDefaultAsync(r => r.role == ERole.User);
             if (role is null) return false;
             var UserRoles = new UserRole
             {
@@ -96,7 +95,7 @@ namespace WebApplication1.Services
             };
             dbContext.UsersRoles.Add(UserRoles);
             await dbContext.SaveChangesAsync();
-            
+
             return true;
         }
         public async Task<UserResponse?> GetById(int id)
@@ -106,25 +105,25 @@ namespace WebApplication1.Services
                     .ThenInclude(ur => ur.Role)
                 .Include(u => u.Reviews)
                     .ThenInclude(r => r.Media)
-                .FirstOrDefaultAsync(u=>u.Id == id);
+                .FirstOrDefaultAsync(u => u.Id == id);
             if (user is null) return null;
-            return UserMapping.ToResponse(user);
+            return UserMapper.ToResponse(user);
         }
-        public async Task<List<UserResponse>>GetBy(string name)
+        public async Task<List<UserResponse>> GetBy(string name)
         {
             var User = await dbContext.Users
                 .Include(u => u.UserRoles)
                     .ThenInclude(ur => ur.Role)
                 .Include(u => u.Reviews)
                     .ThenInclude(r => r.Media)
-                .Where(u=>
-                        EF.Functions.Like(u.name,$"%{name}") ||
-                        EF.Functions.Like(u.surname,$"{name}")||
+                .Where(u =>
+                        EF.Functions.Like(u.name, $"%{name}") ||
+                        EF.Functions.Like(u.surname, $"{name}") ||
                         u.username == name ||
                         u.email == name)
                 .ToListAsync();
             if (!User.Any()) return new List<UserResponse>();
-            return User.Select(UserMapping.ToResponse).ToList();
+            return User.Select(UserMapper.ToResponse).ToList();
         }
     }
 }

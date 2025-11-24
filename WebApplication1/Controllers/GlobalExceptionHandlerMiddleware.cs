@@ -19,7 +19,7 @@ namespace WebApplication1.Controllers
             {
                 await next(context);
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 logger.LogError(ex, "Unhandled exception occurred");
                 context.Response.StatusCode = ex switch

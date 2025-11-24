@@ -2,16 +2,15 @@
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
 using WebApplication1.DTO.Request;
-using WebApplication1.Migrations;
 using WebApplication1.Services;
 using WebApplication1.Services.Interfaces;
 
 namespace WebApplication1.Controllers
 {
-    [AllowAnonymous]
+    [Authorize]
     [ApiController]
     [Route("api")]
-    public class LoginController:ControllerBase
+    public class LoginController : ControllerBase
     {
         private readonly IUserServices userServices;
         private readonly AuthService authService;
@@ -21,6 +20,7 @@ namespace WebApplication1.Controllers
             this.authService = authService;
             this.userServices = userServices;
         }
+        [AllowAnonymous]
         [HttpPost("Login")]
         public async Task<IActionResult> Login([FromBody] LoginRequest loginRequest)
         {
@@ -56,30 +56,6 @@ namespace WebApplication1.Controllers
         public async Task<IActionResult> Register([FromBody] UserRequest userRequest)
         {
             return Ok(await userServices.Register(userRequest));
-        }
-
-        [Authorize(Roles =("User"))]
-        [HttpPost("refreshToken")]
-        public async Task<IActionResult> RefreshToken()
-        {
-            var refreshToken = Request.Cookies["refreshToken"];
-            if(refreshToken is null)
-            {
-                return Unauthorized();
-            }
-            var tokens = await authService.RefreshAccessToken(refreshToken);
-            if (tokens is null)
-            {
-                throw new Exception("Not found tokens to use");
-            }
-            Response.Cookies.Append("refreshToken", tokens.refreshToken, new CookieOptions
-            {
-                Secure = true,
-                HttpOnly = true,
-                SameSite = SameSiteMode.Lax,
-                Expires = DateTime.Now.AddDays(7)
-            });
-            return Ok();
         }
     }
 }

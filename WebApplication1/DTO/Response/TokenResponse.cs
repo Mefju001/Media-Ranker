@@ -1,6 +1,4 @@
-﻿using WebApplication1.Models;
-
-namespace WebApplication1.DTO.Response
+﻿namespace WebApplication1.DTO.Response
 {
-    public record TokenResponse(string accessToken,string refreshToken);
+    public record TokenResponse(string accessToken, string refreshToken);
 }

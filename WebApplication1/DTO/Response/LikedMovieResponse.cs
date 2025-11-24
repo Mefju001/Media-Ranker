@@ -1,6 +1,6 @@
 ﻿namespace WebApplication1.DTO.Response
 {
-    public record LikedMovieResponse(UserResponse user, MovieResponse movie, DateTime LikedDate)
+    public record LikedMediaResponse(int id, UserResponse user, MediaResponse Media, DateTime LikedDate)
     {
     }
 }

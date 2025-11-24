@@ -1,13 +1,15 @@
-﻿namespace WebApplication1.DTO.Request
+﻿using WebApplication1.Models;
+
+namespace WebApplication1.DTO.Request
 {
     public record GameRequest
         (
         string Title,
         string Description,
         GenreRequest Genre,
-        DateTime ReleaseDate,
+        DateTime? ReleaseDate,
         string Language,
         string? Developer,
-        string Platform
+        EPlatform Platform
         );
 }

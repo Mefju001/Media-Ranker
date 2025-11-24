@@ -1,10 +1,11 @@
 ﻿namespace WebApplication1.DTO.Response
 {
     public record MediaResponse(
-        string Title, 
-        string Description, 
-        GenreResponse Genre, 
+        int id,
+        string Title,
+        string Description,
+        GenreResponse Genre,
         DateTime ReleaseDate,
         string? Language,
-        List<ReviewResponse>?Reviews);
+        List<ReviewResponse>? Reviews);
 }

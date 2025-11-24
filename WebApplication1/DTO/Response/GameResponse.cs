@@ -1,6 +1,9 @@
-﻿namespace WebApplication1.DTO.Response
+﻿using WebApplication1.Models;
+
+namespace WebApplication1.DTO.Response
 {
     public record GameResponse(
+        int id,
         string Title,
         string Description,
         GenreResponse Genre,
@@ -9,6 +12,6 @@
         List<ReviewResponse>? Reviews,
 
         string? Developer,
-        string Platform
-        ) : MediaResponse(Title, Description, Genre, ReleaseDate, Language, Reviews);
+        EPlatform Platform
+        ) : MediaResponse(id, Title, Description, Genre, ReleaseDate, Language, Reviews);
 }
