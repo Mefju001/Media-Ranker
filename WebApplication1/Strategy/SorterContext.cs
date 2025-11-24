@@ -1,6 +1,4 @@
-﻿using WebApplication1.Strategy.Interfaces;
-
-namespace WebApplication1.Strategy
+﻿namespace WebApplication1.Strategy
 {
     public class SorterContext<T> where T : class
     {

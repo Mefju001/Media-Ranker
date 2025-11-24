@@ -1,7 +1,7 @@
 ﻿
 using Microsoft.EntityFrameworkCore;
 using WebApplication1.Data;
-using WebApplication1.DTO.Mapping;
+using WebApplication1.DTO.Mapper;
 using WebApplication1.DTO.Request;
 using WebApplication1.DTO.Response;
 using WebApplication1.Models;

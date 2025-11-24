@@ -1,4 +1,4 @@
-﻿namespace WebApplication1.BackgroundService.Interfaces
+﻿namespace WebApplication1.BackgroundTasks.Interfaces
 {
     public interface IBackgroundTaskQueue
     {

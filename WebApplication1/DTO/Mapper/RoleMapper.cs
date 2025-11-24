@@ -1,7 +1,7 @@
 ﻿using WebApplication1.DTO.Response;
 using WebApplication1.Models;
 
-namespace WebApplication1.DTO.Mapping
+namespace WebApplication1.DTO.Mapper
 {
     public static class RoleMapper
     {

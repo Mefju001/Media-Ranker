@@ -1,8 +1,8 @@
 ﻿
 using System.Threading.Channels;
-using WebApplication1.BackgroundService.Interfaces;
+using WebApplication1.BackgroundTasks.Interfaces;
 
-namespace WebApplication1.BackgroundService
+namespace WebApplication1.BackgroundTasks
 {
     public class BackgroundTaskQueue : IBackgroundTaskQueue
     {

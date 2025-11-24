@@ -1,7 +1,8 @@
 using WebApplication1.DTO.Request;
 using WebApplication1.DTO.Response;
 using WebApplication1.Models;
-namespace WebApplication1.DTO.Mapping
+
+namespace WebApplication1.DTO.Mapper
 {
     public static class MovieMapper
     {
@@ -11,12 +12,12 @@ namespace WebApplication1.DTO.Mapping
                 movie.Id,
                 movie.title,
                 movie.description,
-                GenreMapper.ToResponse(movie.genre) ?? new GenreResponse("Nie podano"),
-                DirectorMapper.ToResponse(movie.director) ?? new DirectorResponse("Nie znany", "nie znany"),
+                GenreMapper.ToResponse(movie.genre) ?? new GenreResponse(0,"Nie podano"),
+                DirectorMapper.ToResponse(movie.director) ?? new DirectorResponse(0,"Nie znany", "nie znany"),
                 movie.ReleaseDate,
                 movie.Language,
                 movie.Reviews?.Select(r => ReviewMapper.ToResponse(r)).ToList() ?? new List<ReviewResponse>(),
-                MediaStatsMapper.ToResponse(movie.Stats) ?? new MediaStatsResponse(0, 0, null),
+                MediaStatsMapper.ToResponse(movie.Stats) ?? new MediaStatsResponse(0,0, 0, null),
                 movie.Duration,
                 movie.IsCinemaRelease);
         }

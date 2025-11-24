@@ -1,7 +1,8 @@
 ﻿using Microsoft.EntityFrameworkCore.Storage;
 using WebApplication1.Models;
+using WebApplication1.Services.Interfaces;
 
-namespace WebApplication1.Services.Interfaces
+namespace WebApplication1.Data
 {
     public interface IUnitOfWork : IDisposable
     {

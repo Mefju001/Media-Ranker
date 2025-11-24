@@ -1,24 +1,30 @@
 ﻿using MediatR;
 using Microsoft.EntityFrameworkCore;
 using WebApplication1.Builder.Interfaces;
-using WebApplication1.DTO.Mapping;
+using WebApplication1.Data;
+using WebApplication1.DTO.Mapper;
 using WebApplication1.DTO.Request;
 using WebApplication1.DTO.Response;
 using WebApplication1.Exceptions;
 using WebApplication1.Models;
-using WebApplication1.QueryHandler;
 using WebApplication1.QueryHandler.Query;
 using WebApplication1.Services.Interfaces;
 
 namespace WebApplication1.Services
 {
-    public class GameServices(IReferenceDataService reference, IUnitOfWork unitOfWork, IGameBuilder gameBuilder, QueryServices<Game> handler, IMediator mediator) : IGameServices
+    public class GameServices: IGameServices
     {
-        private readonly IUnitOfWork _unitOfWork = unitOfWork;
-        private readonly IGameBuilder gameBuilder = gameBuilder;
-        private readonly QueryServices<Game> handler = handler;
-        private readonly IMediator mediator = mediator;
-        private readonly IReferenceDataService referenceDataService = reference;
+        private readonly IUnitOfWork _unitOfWork;
+        private readonly IGameBuilder gameBuilder;
+        private readonly IMediator mediator;
+        private readonly IReferenceDataService referenceDataService;
+        public GameServices(IUnitOfWork unitOfWork, IGameBuilder gameBuilder, IMediator mediator, IReferenceDataService referenceDataService)
+        {
+            _unitOfWork = unitOfWork;
+            this.gameBuilder = gameBuilder;
+            this.mediator = mediator;
+            this.referenceDataService = referenceDataService;
+        }
 
         public async Task<bool> Delete(int id)
         {
@@ -51,11 +57,10 @@ namespace WebApplication1.Services
         }
         public async Task<List<GameResponse>> GetGamesByCriteriaAsync(GameQuery gameQuery)
         {
-            var query = _unitOfWork.Games.AsQueryable();
             var games = await mediator.Send(gameQuery);
             return games;
         }
-        public async Task<(int movieId, GameResponse response)> Upsert(int? gameId, GameRequest gameRequest)
+        public async Task<GameResponse> Upsert(int? gameId, GameRequest gameRequest)
         {
             await using var transaction = await _unitOfWork.BeginTransactionAsync();
             try
@@ -86,7 +91,7 @@ namespace WebApplication1.Services
                 if (game is null) throw new ArgumentNullException(nameof(game));
                 var response = GameMapper.ToGameResponse(game);
                 await transaction.CommitAsync();
-                return (game.Id, response);
+                return response;
             }
             catch
             {

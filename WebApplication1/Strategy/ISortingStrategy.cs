@@ -1,4 +1,4 @@
-﻿namespace WebApplication1.Strategy.Interfaces
+﻿namespace WebApplication1.Strategy
 {
     public interface ISortingStrategy<T> where T : class
     {

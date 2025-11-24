@@ -3,7 +3,9 @@
 namespace WebApplication1.DTO.Response
 {
     public record TvSeriesAVGResponse
-        (string Title,
+        (
+        int id,
+        string Title,
         string Description,
         GenreResponse Genre,
         DateTime ReleaseDate,
@@ -15,9 +17,9 @@ namespace WebApplication1.DTO.Response
         string? Network,
         EStatus Status,
         double Avarage
-        ) : MediaResponse(Title, Description, Genre, ReleaseDate, Language, Reviews)
+        ) : MediaResponse(id, Title, Description, Genre, ReleaseDate, Language, Reviews)
     {
-        public TvSeriesAVGResponse(TvSeriesResponse tvSeries, double avg) : this(tvSeries.Title,
+        public TvSeriesAVGResponse(TvSeriesResponse tvSeries, double avg) : this(tvSeries.id, tvSeries.Title,
             tvSeries.Description, tvSeries.Genre, tvSeries.ReleaseDate, tvSeries.Language,
             tvSeries.Reviews, tvSeries.Seasons, tvSeries.Episodes, tvSeries.Network,
             tvSeries.Status, avg)

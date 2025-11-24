@@ -2,9 +2,9 @@
 using MediatR;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using WebApplication1.BackgroundService;
-using WebApplication1.BackgroundService.Interfaces;
-using WebApplication1.BackgroundTasks.Service;
+using WebApplication1.BackgroundTasks;
+using WebApplication1.BackgroundTasks.Interfaces;
+using WebApplication1.BackgroundTasks.Workers;
 using WebApplication1.Builder;
 using WebApplication1.Builder.Interfaces;
 using WebApplication1.Data;

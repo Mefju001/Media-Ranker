@@ -12,14 +12,19 @@ namespace WebApplication1.Controllers
     [Route("[controller]")]
     public class UserController : ControllerBase
     {
-        private readonly AuthService authService;
         private readonly IUserServices userServices;
-        private readonly ILikedMediaServices likedMediaServices;
-        public UserController(IUserServices userServices, AuthService authService, ILikedMediaServices likedMovieServices)
+        public UserController(IUserServices userServices)
         {
             this.userServices = userServices;
-            this.authService = authService;
-            this.likedMediaServices = likedMovieServices;
+        }
+        private string getStringUserId()
+        {
+            var stringUserId =  User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            if (string.IsNullOrEmpty(stringUserId))
+            {
+                return "";
+            }
+            return stringUserId;
         }
         private int parse(string String)
         {
@@ -49,38 +54,11 @@ namespace WebApplication1.Controllers
             return Ok(await userServices.GetBy(name));
         }
         [Authorize(Roles = "Admin,User")]
-        [HttpGet("/Liked")]
-        public async Task<IActionResult> GetLikedMovies()
-        {
-            return Ok(await likedMediaServices.GetAllAsync());
-        }
-        [AllowAnonymous/*Authorize(Roles = "User")*/]
-        [HttpGet("/Liked/{id}")]
-        public async Task<IActionResult> GetLikedMoviesByUser(int id)
-        {
-            return Ok(await likedMediaServices.GetUserLikedMedia(id));
-        }
-        [AllowAnonymous/*Authorize(Roles = "Admin,User")*/]
-        [HttpPost("/Liked")]
-        public /*async*/ Task<IActionResult> AddLikedMovie([FromBody] LikedMediaRequest likedMovie)
-        {
-            /*var (movieId, response) = await likedMediaServices.Upsert(likedMovie);
-            return CreatedAtAction(nameof(GetById), new { id = movieId }, response);*/
-            throw new NotImplementedException();
-        }
-        [Authorize(Roles = "Admin,User")]
-        [HttpDelete("/Liked/id/{id}")]
-        public /*async*/ Task<IActionResult> DeleteLikedMovie(int id)
-        {
-            // return Ok(await likedMediaServices.Delete(id));
-            throw new NotImplementedException();
-        }
-        [Authorize(Roles = "Admin,User")]
         [HttpPatch("ChangePassword")]
         public async Task<IActionResult> ChangePassword(string newPassword, string confirmPassword, string oldPassword)
         {
-            var stringUserId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-            if (stringUserId == null)
+            var stringUserId = getStringUserId();
+            if (string.IsNullOrEmpty(stringUserId))
             {
                 return Unauthorized();
             }
@@ -89,10 +67,10 @@ namespace WebApplication1.Controllers
         }
         [Authorize(Roles = "Admin,User")]
         [HttpPatch("/ChangeDetails")]
-        public async Task<IActionResult> ChangeDetails(UserDetailsRequest userDetailsRequest)
+        public async Task<IActionResult> ChangeDetails([FromBody]UserDetailsRequest userDetailsRequest)
         {
-            var stringUserId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-            if (stringUserId == null)
+            var stringUserId = getStringUserId();
+            if (string.IsNullOrEmpty(stringUserId))
             {
                 return Unauthorized();
             }

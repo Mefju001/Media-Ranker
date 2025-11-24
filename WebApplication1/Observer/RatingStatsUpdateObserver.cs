@@ -1,5 +1,5 @@
 ﻿using MediatR;
-using WebApplication1.BackgroundService.Interfaces;
+using WebApplication1.BackgroundTasks.Interfaces;
 using WebApplication1.DTO.Notification;
 using WebApplication1.Services.Interfaces;
 

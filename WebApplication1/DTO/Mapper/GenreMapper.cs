@@ -1,7 +1,7 @@
 ﻿using WebApplication1.DTO.Response;
 using WebApplication1.Models;
 
-namespace WebApplication1.DTO.Mapping
+namespace WebApplication1.DTO.Mapper
 {
     public class GenreMapper
     {
@@ -9,6 +9,7 @@ namespace WebApplication1.DTO.Mapping
         {
             if (genre == null) return null;
             return new GenreResponse(
+                genre.Id,
                 genre.name);
         }
     }

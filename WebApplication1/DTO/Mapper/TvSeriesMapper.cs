@@ -2,13 +2,14 @@
 using WebApplication1.DTO.Response;
 using WebApplication1.Models;
 
-namespace WebApplication1.DTO.Mapping
+namespace WebApplication1.DTO.Mapper
 {
     public class TvSeriesMapper
     {
         public static TvSeriesResponse ToTvSeriesResponse(TvSeries tvSeries)
         {
             return new TvSeriesResponse(
+                tvSeries.Id,
                 tvSeries.title,
                 tvSeries.description,
                 GenreMapper.ToResponse(tvSeries.genre),

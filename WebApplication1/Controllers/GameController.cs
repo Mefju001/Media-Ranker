@@ -31,7 +31,7 @@ namespace WebApplication1.Controllers
             var games = await gameServices.GetGamesByCriteriaAsync(gameQuery);
             return Ok(games);
         }
-        [HttpGet("id/{id}")]
+        [HttpGet("FindById/{id}")]
         public async Task<IActionResult> GetById(int id)
         {
             var games = await gameServices.GetById(id);
@@ -42,17 +42,17 @@ namespace WebApplication1.Controllers
         public async Task<IActionResult> AddGame(GameRequest gameRequest)
         {
             var created = await gameServices.Upsert(null, gameRequest);
-            return CreatedAtAction(nameof(GetById), new { id = created.movieId },created.response);
+            return CreatedAtAction(nameof(GetById), new { id = created.id },created);
         }
         [Authorize(Roles = "Admin")]
         [HttpPut("UpdateGameById/{id}")]
         public async Task<IActionResult> UpdateGame(int id, GameRequest gameRequest)
         {
             var updated = await gameServices.Upsert(id, gameRequest);
-            return Ok(updated.response);
+            return Ok(updated);
         }
         [Authorize(Roles = "Admin")]
-        [HttpDelete("{id}")]
+        [HttpDelete("DeleteById/{id}")]
         public async Task<IActionResult> Delete(int id)
         {
             var deleted = await gameServices.Delete(id);

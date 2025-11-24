@@ -2,13 +2,14 @@
 using WebApplication1.DTO.Response;
 using WebApplication1.Models;
 
-namespace WebApplication1.DTO.Mapping
+namespace WebApplication1.DTO.Mapper
 {
     public static class GameMapper
     {
         public static GameResponse ToGameResponse(Game game)
         {
             return new GameResponse(
+                game.Id,
                 game.title,
                 game.description,
                 GenreMapper.ToResponse(game.genre),

@@ -1,6 +1,5 @@
 ﻿using WebApplication1.Models;
 using WebApplication1.Strategy;
-using WebApplication1.Strategy.Interfaces;
 
 namespace WebApplication1.Extensions
 {

@@ -1,7 +1,7 @@
 ﻿using MediatR;
 using Microsoft.EntityFrameworkCore;
 using System.Linq.Expressions;
-using WebApplication1.DTO.Mapping;
+using WebApplication1.DTO.Mapper;
 using WebApplication1.DTO.Response;
 using WebApplication1.Models;
 using WebApplication1.QueryHandler.Query;

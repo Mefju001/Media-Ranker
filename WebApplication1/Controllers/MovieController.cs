@@ -32,28 +32,28 @@ namespace WebApplication1.Controllers
         }
         [AllowAnonymous]
         [HttpGet("id/{id}")]
-        public async Task<IActionResult> GetById(int id)
+        public async Task<IActionResult> GetById([FromRoute]int id)
         {
             var movie = await movieServices.GetById(id);
             return Ok(movie);
         }
         [Authorize(Roles = "Admin")]
         [HttpPost]
-        public async Task<IActionResult> AddMovie(MovieRequest movie)
+        public async Task<IActionResult> AddMovie([FromBody]MovieRequest movie)
         {
             var created = await movieServices.Upsert(null, movie);
             return CreatedAtAction(nameof(GetById), new { id = created.id }, created);
         }
         [Authorize(Roles = "Admin")]
         [HttpPut("updateById/{id}")]
-        public async Task<IActionResult> UpdateMovie(int id,MovieRequest movie)
+        public async Task<IActionResult> UpdateMovie([FromRoute]int id, [FromBody] MovieRequest movie)
         {
             var updated = await movieServices.Upsert(id, movie);
             return Ok(updated);
         }
         [Authorize(Roles = "Admin")]
         [HttpDelete("deleteById/{id}")]
-        public async Task<IActionResult> Delete(int id)
+        public async Task<IActionResult> Delete([FromRoute] int id)
         {
             var deleted = await movieServices.Delete(id);
             if (!deleted) return NotFound();

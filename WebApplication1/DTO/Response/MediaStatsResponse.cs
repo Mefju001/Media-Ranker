@@ -1,4 +1,4 @@
 ﻿namespace WebApplication1.DTO.Response
 {
-    public record MediaStatsResponse(double? AverageRating, int? ReviewCount, DateTime? LastCalculated);
+    public record MediaStatsResponse(int id, double? AverageRating, int? ReviewCount, DateTime? LastCalculated);
 }

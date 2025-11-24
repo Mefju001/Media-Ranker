@@ -3,6 +3,7 @@
 namespace WebApplication1.DTO.Response
 {
     public record GameAvgResponse(
+        int id,
         string Title,
         string Description,
         GenreResponse Genre,
@@ -13,9 +14,9 @@ namespace WebApplication1.DTO.Response
         string? Developer,
         EPlatform Platform,
         double Average
-        ) : MediaResponse(Title, Description, Genre, ReleaseDate, Language, Reviews)
+        ) : MediaResponse(id, Title, Description, Genre, ReleaseDate, Language, Reviews)
     {
-        public GameAvgResponse(GameResponse game, double avg) : this(game.Title,
+        public GameAvgResponse(GameResponse game, double avg) : this(game.id, game.Title,
             game.Description, game.Genre, game.ReleaseDate, game.Language, game.Reviews,
             game.Developer, game.Platform, avg)
         { }

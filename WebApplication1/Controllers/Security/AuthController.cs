@@ -42,5 +42,28 @@ namespace WebApplication1.Controllers.Security
             await tokenCleanupService.Cleanup();
             return Ok("Czyszczenie tokenów rozpoczęte.");
         }
+        [Authorize(Roles = ("User"),("Admin"))]
+        [HttpPost("refreshToken")]
+        public async Task<IActionResult> RefreshToken()
+        {
+            var refreshToken = Request.Cookies["refreshToken"];
+            if (refreshToken is null)
+            {
+                return Unauthorized();
+            }
+            var tokens = await authService.RefreshAccessToken(refreshToken);
+            if (tokens is null)
+            {
+                throw new Exception("Not found tokens to use");
+            }
+            Response.Cookies.Append("refreshToken", tokens.refreshToken, new CookieOptions
+            {
+                Secure = true,
+                HttpOnly = true,
+                SameSite = SameSiteMode.Lax,
+                Expires = DateTime.Now.AddDays(7)
+            });
+            return Ok();
+        }
     }
 }

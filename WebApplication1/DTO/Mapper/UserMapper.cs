@@ -1,7 +1,7 @@
 ﻿using WebApplication1.DTO.Response;
 using WebApplication1.Models;
 
-namespace WebApplication1.DTO.Mapping
+namespace WebApplication1.DTO.Mapper
 {
     public static class UserMapper
     {
@@ -9,6 +9,7 @@ namespace WebApplication1.DTO.Mapping
         {
             if (user is null) return null;
             return new UserResponse(
+                user.Id,
                 user.username,
                 user.password,
                 user.name,

@@ -1,6 +1,6 @@
 ﻿using WebApplication1.Services.Interfaces;
 
-namespace WebApplication1.BackgroundTasks.Service
+namespace WebApplication1.BackgroundTasks.Workers
 {
     public class TokenBackgroundService : IHostedService, IDisposable
     {

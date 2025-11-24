@@ -1,8 +1,7 @@
-﻿
-using WebApplication1.BackgroundService.Interfaces;
+﻿using WebApplication1.BackgroundTasks.Interfaces;
 using Host = Microsoft.Extensions.Hosting;
 
-namespace WebApplication1.BackgroundTasks.Service
+namespace WebApplication1.BackgroundTasks.Workers
 {
     public class QueueProcessorService : Host.BackgroundService
     {
