@@ -88,8 +88,10 @@ namespace WebApplication1.Services
         public async Task<MovieResponse?> GetById(int id)
         {
             var movie = await _unitOfWork.Movies.GetByIdAsync(id);
-            ArgumentNullException.ThrowIfNull(movie, nameof(id));
+            if(movie is null)
+                return null;
             return MovieMapper.ToMovieResponse(movie);
         }
+            
     }
 }

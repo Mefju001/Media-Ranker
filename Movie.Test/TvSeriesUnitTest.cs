@@ -1,17 +1,13 @@
-﻿using Microsoft.EntityFrameworkCore.Storage;
+﻿using MediatR;
+using Microsoft.EntityFrameworkCore.Storage;
 using Moq;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Linq.Expressions;
-using System.Text;
-using System.Threading.Tasks;
 using WebApplication1.Builder.Interfaces;
 using WebApplication1.Data;
 using WebApplication1.DTO.Request;
-using WebApplication1.Interfaces;
 using WebApplication1.Models;
 using WebApplication1.Services;
+using WebApplication1.Services.Interfaces;
 
 namespace MovieTest
 {
@@ -30,9 +26,9 @@ namespace MovieTest
         {
             var testRequest = new TvSeriesRequest(
                 "Inception", "Great movie", new GenreRequest("Action"), DateTime.Now,
-                "English", 1,12, "Netflix","Completed"
+                "English", 1,12, "Netflix",EStatus.Completed
             );
-
+            var createdGenre = new Genre { name = "Action", Id = 99 };
             var GenRepoMock = new Mock<IGenericRepository<Genre>>();
             var TvSeriesRepoMock = new Mock<IGenericRepository<TvSeries>>();
             var transactionMock = new Mock<IDbContextTransaction>();
@@ -46,6 +42,9 @@ namespace MovieTest
             unitOfWorkMock.Setup(u => u.BeginTransactionAsync()).ReturnsAsync(transactionMock.Object);
             unitOfWorkMock.Setup(u => u.CompleteAsync()).ReturnsAsync(1);
             var builderMock = new Mock<ITvSeriesBuilder>();
+            var IMediatorMock = new Mock<IMediator>();
+            var IRafMock = new Mock<IReferenceDataService>();
+            IRafMock.Setup(raf => raf.GetOrCreateGenreAsync(It.IsAny<GenreRequest>())).ReturnsAsync(createdGenre);
             var tvSeries = new TvSeries
             {
                 title = "Inception",
@@ -56,17 +55,17 @@ namespace MovieTest
                 Seasons = 1,
                 Episodes = 12,
                 Network = "Netflix",
-                Status = "Completed"
+                Status = EStatus.Completed
             };
             builderMock.Setup(b => b.CreateNew(It.IsAny<string>(), It.IsAny<string>())).Returns(builderMock.Object);
-            builderMock.Setup(b => b.WithMetadata(It.IsAny<int>(), It.IsAny<int>(), It.IsAny<string>(), It.IsAny<string>())).Returns(builderMock.Object);
+            builderMock.Setup(b => b.WithMetadata(It.IsAny<int>(), It.IsAny<int>(), It.IsAny<string>(), It.IsAny<EStatus>())).Returns(builderMock.Object);
             builderMock.Setup(b => b.WithGenre(It.IsAny<Genre>())).Returns(builderMock.Object);
             builderMock.Setup(b => b.Build()).Returns(tvSeries);
-            var movieServicesMock = new TvSeriesServices(unitOfWorkMock.Object, builderMock.Object);
+            var movieServicesMock = new TvSeriesServices(IMediatorMock.Object, unitOfWorkMock.Object, builderMock.Object, IRafMock.Object);
 
             var result = await movieServicesMock.Upsert(null, testRequest);
 
-            GenRepoMock.Verify(r => r.AddAsync(It.IsAny<Genre>()), Times.Once);
+           // GenRepoMock.Verify(r => r.AddAsync(It.IsAny<Genre>()), Times.Once);
             TvSeriesRepoMock.Verify(r => r.AddAsync(It.IsAny<TvSeries>()), Times.Once);
 
             unitOfWorkMock.Verify(u => u.CompleteAsync(), Times.AtLeastOnce);
