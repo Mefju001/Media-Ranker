@@ -8,9 +8,9 @@ using System.Linq.Expressions;
 using WebApplication1.Builder.Interfaces;
 using WebApplication1.Data;
 using WebApplication1.DTO.Request;
-using WebApplication1.Interfaces;
 using WebApplication1.Models;
 using WebApplication1.Services;
+using WebApplication1.Services.Interfaces;
 
 namespace MovieTest
 {
@@ -41,7 +41,7 @@ namespace MovieTest
         }
         //Edycja
         [Fact]
-        public async Task Upsert_AddMovie()
+        public async Task Upsert_UpdateMovie()
         {
             var testRequest = new MovieRequest(
                     "Inception", "Great movie", new GenreRequest("Action"),
@@ -92,13 +92,16 @@ namespace MovieTest
             builderMock.Setup(b => b.WithDirector(It.IsAny<Director>())).Returns(builderMock.Object);
             builderMock.Setup(b => b.Build()).Returns(movie);
             var MediatorMock = new Mock<IMediator>();
-            var movieServicesMock = new MovieServices(unitOfWorkMock.Object, builderMock.Object, MediatorMock.Object);
+            var IRefMock = new Mock<IReferenceDataService>();
+            IRefMock.Setup(r => r.GetOrCreateGenreAsync(It.IsAny<GenreRequest>())).ReturnsAsync(new Genre { name = "Action", Id = 99 });
+            IRefMock.Setup(r => r.GetOrCreateDirectorAsync(It.IsAny<DirectorRequest>())).ReturnsAsync(new Director { name = "John", surname = "Doe", Id = 99 });
+            var movieServicesMock = new MovieServices(IRefMock.Object,unitOfWorkMock.Object, builderMock.Object, MediatorMock.Object);
 
             var result = await movieServicesMock.Upsert(1, testRequest);
 
             // 1. Sprawdzamy, czy wszystkie elementy zostały dodane do bazy (nowe Genre, Director i Movie)
-            DirRepoMock.Verify(r => r.AddAsync(It.IsAny<Director>()), Times.Once);
-            GenRepoMock.Verify(r => r.AddAsync(It.IsAny<Genre>()), Times.Once);
+            //DirRepoMock.Verify(r => r.AddAsync(It.IsAny<Director>()), Times.Once);
+           // GenRepoMock.Verify(r => r.AddAsync(It.IsAny<Genre>()), Times.Once);
             MovieRepoMock.Verify(r => r.FirstOrDefaultAsync(It.IsAny<Expression<Func<Movie, bool>>>()), Times.Once);
 
             // 2. Sprawdzamy, czy zapisano zmiany i zatwierdzono transakcję
@@ -106,8 +109,8 @@ namespace MovieTest
             transactionMock.Verify(t => t.CommitAsync(It.IsAny<CancellationToken>()), Times.Once);
 
             // 3. Weryfikacja wyniku (tylko dla pewności)
-            Assert.NotNull(result.response);
-            Assert.Equal("Inception", result.response.Title);
+            Assert.NotNull(result);
+            Assert.Equal("Inception", result.Title);
         }
         [Fact]
         public async Task Upsert_AddMovie2()
@@ -117,6 +120,8 @@ namespace MovieTest
                     new DirectorRequest("John", "Doe"), DateTime.Now, "English",
                     new TimeSpan(2, 28, 0), true);
 
+            var createdGenre = new Genre { name = "Action", Id = 99 };
+            var createdDirector = new Director { name = "John", surname = "Doe", Id = 98};
             var DirRepoMock = new Mock<IGenericRepository<Director>>();
             var GenRepoMock = new Mock<IGenericRepository<Genre>>();
             var MovieRepoMock = new Mock<IGenericRepository<Movie>>();
@@ -134,6 +139,9 @@ namespace MovieTest
             unitOfWorkMock.Setup(u => u.BeginTransactionAsync()).ReturnsAsync(transactionMock.Object);
             unitOfWorkMock.Setup(u => u.CompleteAsync()).ReturnsAsync(1);
             var builderMock = new Mock<IMovieBuilder>();
+            var IRafMock = new Mock<IReferenceDataService>();
+            IRafMock.Setup(raf => raf.GetOrCreateGenreAsync(It.IsAny<GenreRequest>())).ReturnsAsync(createdGenre);
+            IRafMock.Setup(raf => raf.GetOrCreateDirectorAsync(It.IsAny<DirectorRequest>())).ReturnsAsync(createdDirector);
             var movie = new Movie
             {
                 title = "Inception",
@@ -151,13 +159,14 @@ namespace MovieTest
             builderMock.Setup(b => b.WithDirector(It.IsAny<Director>())).Returns(builderMock.Object);
             builderMock.Setup(b => b.Build()).Returns(movie);
             var MediatorMock = new Mock<IMediator>();
-            var movieServicesMock = new MovieServices(unitOfWorkMock.Object, builderMock.Object,MediatorMock.Object);
+            var IRefMock = new Mock<IReferenceDataService>();
+            var movieServicesMock = new MovieServices(IRefMock.Object,unitOfWorkMock.Object, builderMock.Object,MediatorMock.Object);
 
             var result = await movieServicesMock.Upsert(null, testRequest);
 
             // 1. Sprawdzamy, czy wszystkie elementy zostały dodane do bazy (nowe Genre, Director i Movie)
-            DirRepoMock.Verify(r => r.AddAsync(It.IsAny<Director>()), Times.Once);
-            GenRepoMock.Verify(r => r.AddAsync(It.IsAny<Genre>()), Times.Once);
+           // DirRepoMock.Verify(r => r.AddAsync(It.IsAny<Director>()), Times.Once);
+            //GenRepoMock.Verify(r => r.AddAsync(It.IsAny<Genre>()), Times.Once);
             MovieRepoMock.Verify(r => r.AddAsync(It.IsAny<Movie>()), Times.Once);
 
             // 2. Sprawdzamy, czy zapisano zmiany i zatwierdzono transakcję
@@ -165,8 +174,8 @@ namespace MovieTest
             transactionMock.Verify(t => t.CommitAsync(It.IsAny<CancellationToken>()), Times.Once);
 
             // 3. Weryfikacja wyniku (tylko dla pewności)
-            Assert.NotNull(result.response);
-            Assert.Equal("Inception", result.response.Title);
+            Assert.NotNull(result);
+            Assert.Equal("Inception", result.Title);
         }
         
         [Fact]
@@ -196,7 +205,8 @@ namespace MovieTest
             unitOfWorkMock.Setup(u => u.Movies).Returns(MovieRepoMock.Object);
             var builderMock = new Mock<IMovieBuilder>();
             var MediatorMock = new Mock<IMediator>();
-            var movieService = new MovieServices(unitOfWorkMock.Object, builderMock.Object, MediatorMock.Object);
+            var IRefMock = new Mock<IReferenceDataService>();
+            var movieService = new MovieServices(IRefMock.Object,unitOfWorkMock.Object, builderMock.Object, MediatorMock.Object);
 
             // Act
             var result = await movieService.GetAllAsync();
@@ -220,11 +230,12 @@ namespace MovieTest
                 director = new Director { name = "John", surname = "Doe" },
             };
             var MovieRepoMock = new Mock<IGenericRepository<Movie>>();
-            MovieRepoMock.Setup(u=>u.FirstOrDefaultAsync(It.IsAny<Expression<Func<Movie,bool>>>())).ReturnsAsync(movie);
+            MovieRepoMock.Setup(u=>u.GetByIdAsync(It.IsAny<int>())).ReturnsAsync(movie);
             unitOfWorkMock.Setup(u => u.Movies).Returns(MovieRepoMock.Object);
             var builderMock = new Mock<IMovieBuilder>();
             var MediatorMock = new Mock<IMediator>();
-            var mockServices = new MovieServices(unitOfWorkMock.Object, builderMock.Object, MediatorMock.Object);
+            var IRefMock = new Mock<IReferenceDataService>();
+            var mockServices = new MovieServices(IRefMock.Object,unitOfWorkMock.Object, builderMock.Object, MediatorMock.Object);
             var result = await mockServices.GetById(movie.Id);
             Assert.NotNull(result);
             Assert.Equal("New Title", result.Title);
@@ -239,7 +250,8 @@ namespace MovieTest
             unitOfWorkMock.Setup(u => u.Movies).Returns(MovieRepoMock.Object);
             var builderMock = new Mock<IMovieBuilder>();
             var MediatorMock = new Mock<IMediator>();
-            var mockServices = new MovieServices(unitOfWorkMock.Object, builderMock.Object, MediatorMock.Object);
+            var IrefMock = new Mock<IReferenceDataService>();
+            var mockServices = new MovieServices(IrefMock.Object,unitOfWorkMock.Object, builderMock.Object, MediatorMock.Object);
             var result = await mockServices.GetById(42);
             Assert.Null(result);
         }
