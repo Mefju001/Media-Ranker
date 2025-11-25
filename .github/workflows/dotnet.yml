@@ -25,4 +25,4 @@ jobs:
     - name: Build
       run: dotnet build WebApplication1/WebApplication1.sln --no-restore
     - name: Test
-      run: dotnet test Movie.Test/MovieTest.csproj --no-build --verbosity normal
+      run: dotnet test Movie.Test/MovieTest.csproj --verbosity normal
