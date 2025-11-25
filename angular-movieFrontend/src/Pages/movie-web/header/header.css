@@ -1,0 +1,82 @@
+/* src/app/header/header.component.css */
+
+.header {
+  background-color: var(--header-bg);
+  color: var(--light-text);
+  padding: 20px 30px;
+  display: flex; /* Włącza Flexbox dla elementów w nagłówku */
+  justify-content: space-between; /* Rozkłada elementy (logo, nawigacja, akcje użytkownika) */
+  align-items: center; /* Wyśrodkowuje elementy pionowo */
+  border-radius: 10px;
+  margin-bottom: 20px; /* Odstęp od następnej sekcji */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+}
+
+.logo h1 {
+  margin: 0;
+  font-size: 2.8em;
+  letter-spacing: 2px;
+  color: var(--primary-color);
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.4);
+}
+
+.main-nav ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex; /* Włącza Flexbox dla elementów listy nawigacji */
+}
+
+.main-nav li {
+  margin-right: 25px; /* Większy odstęp między elementami nawigacji */
+}
+
+.main-nav a {
+  color: var(--light-text);
+  text-decoration: none;
+  font-weight: bold;
+  font-size: 1.1em;
+  padding: 5px 0;
+  transition: color 0.3s ease, border-bottom 0.3s ease;
+}
+
+.main-nav a:hover {
+  color: var(--primary-color);
+  border-bottom: 2px solid var(--primary-color);
+}
+
+.user-actions {
+  display: flex;
+  align-items: center;
+}
+
+.user-actions input[type="text"] {
+  padding: 10px 15px;
+  border: 1px solid var(--border-color);
+  border-radius: 5px;
+  margin-right: 10px;
+  background-color: #3a3a3a;
+  color: var(--light-text);
+  outline: none;
+}
+
+.user-actions input[type="text"]::placeholder {
+  color: #bbb;
+}
+
+.user-actions button {
+  background-color: var(--primary-color);
+  color: var(--light-text);
+  border: none;
+  padding: 10px 18px;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  font-weight: bold;
+  letter-spacing: 0.5px;
+  margin-left: 5px; /* Odstęp między przyciskami */
+}
+
+.user-actions button:hover {
+  background-color: #cc0000;
+}

@@ -1,0 +1,42 @@
+/* src/styles.css */
+
+/* Zmienne CSS - kluczowe dla spójności kolorystycznej */
+:root {
+  --primary-color: #e50914; /* Intensywny czerwony, jak w logo */
+  --secondary-color: #1a1a1a; /* Bardzo ciemne tło */
+  --dark-text: #f0f0f0; /* Jasny tekst na ciemnym tle */
+  --light-text: #ffffff; /* Biały tekst */
+  --border-color: #333; /* Ciemniejsza ramka */
+  --header-bg: #0d0d0d; /* Jeszcze ciemniejszy nagłówek */
+  --footer-bg: #0d0d0d; /* Jeszcze ciemniejsza stopka */
+  --card-bg: #2a2a2a; /* Tło kart filmu */
+  --sidebar-bg: #1f1f1f; /* Tło paska bocznego */
+}
+
+/* Import czcionki (możesz też dodać do index.html) */
+@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap');
+
+body {
+  font-family: 'Roboto', sans-serif;
+  margin: 0;
+  padding: 0;
+  background-color: var(--secondary-color);
+  color: var(--dark-text);
+  background-image: linear-gradient(to right bottom, #0a0a0a, #202020);
+  min-height: 100vh;
+  line-height: 1.6; /* Poprawia czytelność tekstu */
+}
+
+/* Ogólny kontener, który otacza całą stronę */
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 20px;
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+  border-radius: 10px;
+  overflow: hidden;
+  display: flex; /* WAŻNE: Włącz Flexbox dla całej zawartości w pionie */
+  flex-direction: column; /* Ułóż elementy (header, main, footer) w kolumnie */
+  min-height: calc(100vh - 40px); /* Dopasuj wysokość kontenera do viewportu minus padding */
+  box-sizing: border-box; /* Upewnij się, że padding nie zwiększa rozmiaru kontenera */
+}
