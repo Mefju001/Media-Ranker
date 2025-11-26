@@ -4,6 +4,7 @@ using WebApplication1.Data;
 using WebApplication1.DTO.Mapper;
 using WebApplication1.DTO.Request;
 using WebApplication1.DTO.Response;
+using WebApplication1.Exceptions;
 using WebApplication1.Models;
 using WebApplication1.Services.Interfaces;
 
@@ -12,58 +13,58 @@ namespace WebApplication1.Services
     public class UserServices : IUserServices
     {
         private readonly IPasswordHasher<User> Hasher;
-        private AppDbContext dbContext;
-        private readonly AuthService authService;
-        public UserServices(AppDbContext dbContext, IPasswordHasher<User> passwordHasher, AuthService authService)
+        private readonly IUnitOfWork unitOfWork;
+        public UserServices(AppDbContext dbContext, IPasswordHasher<User> passwordHasher,IUnitOfWork unitOfWork)
         {
+            this.unitOfWork = unitOfWork;
             this.dbContext = dbContext;
             Hasher = passwordHasher;
-            this.authService = authService;
         }
-        public async Task<bool> changePassword(string newPassword, string confirmPassword, string oldPassword, int userId)
+        public async Task changePassword(string newPassword, string confirmPassword, string oldPassword, int userId)
         {
-            if (!string.IsNullOrEmpty(newPassword) && !string.IsNullOrEmpty(confirmPassword) && !string.IsNullOrEmpty(oldPassword))
+            if (string.IsNullOrEmpty(newPassword) || string.IsNullOrEmpty(confirmPassword) || string.IsNullOrEmpty(oldPassword))
             {
-                var user = await dbContext.Users.FirstOrDefaultAsync(u => u.Id == userId);
-                if (user != null)
-                {
-                    var passwordVerification = Hasher.VerifyHashedPassword(user, user.password, oldPassword);
-                    if (string.Equals(newPassword, confirmPassword, StringComparison.Ordinal) && passwordVerification.Equals(PasswordVerificationResult.Success) && !string.Equals(oldPassword, newPassword, StringComparison.Ordinal))
-                    {
-                        user.password = Hasher.HashPassword(user, newPassword);
-                        await dbContext.SaveChangesAsync();
-                        return true;
-                    }
-                    else
-                    {
-                        return false;
-                    }
-                }
+                throw new ArgumentException("you should fill in these fields with passwords");
             }
-            return false;
+            var user = await unitOfWork.Users.FirstOrDefaultAsync(u => u.Id == userId);
+            var passwordVerificationResult = user is null
+               ? PasswordVerificationResult.Failed
+               : Hasher.VerifyHashedPassword(user, user.password, oldPassword);
+            if (!string.Equals(newPassword, confirmPassword, StringComparison.Ordinal))
+            {
+                throw new PasswordMismatchException("The new password differed from the confirmation password");
+            }
+            if (passwordVerificationResult is not PasswordVerificationResult.Success)
+                throw new InvalidCredentialsException("You write wrong old password");
+            if (string.Equals(oldPassword, newPassword, StringComparison.Ordinal))
+                throw new NewPasswordIsSameAsOldException("The new password is too similar to the old one");
+                user.password = Hasher.HashPassword(user, newPassword);
+                await unitOfWork.CompleteAsync();
         }
-        public async Task<bool> changedetails(int userId, UserDetailsRequest userDetailsRequest)
+        public async Task changedetails(int userId, UserDetailsRequest userDetailsRequest)
         {
-            var emailExists = await dbContext.Users.AnyAsync(u => u.email == userDetailsRequest.email && u.Id != userId);
-            var user = await dbContext.Users.FirstOrDefaultAsync(u => u.Id == userId);
-            if (user is null || emailExists)
-                return false;
+            if(userId<0) throw new ArgumentOutOfRangeException("userId");
+            if(userDetailsRequest is null)
+                throw new ArgumentException("you should fill that field");
+            var user = await unitOfWork.Users.FirstOrDefaultAsync(u => u.Id == userId);
+            if(user is null) throw new UserNotFoundException("Not found user");
+            var emailExist = await unitOfWork.Users.AnyAsync(u => u.email == userDetailsRequest.email && u.Id != user.Id);
+            if (emailExist) throw new EmailAlreadyExistsException("This email is taken.");
             user.setUser(userDetailsRequest);
-            await dbContext.SaveChangesAsync();
-            return true;
+            await unitOfWork.CompleteAsync();
         }
-        public async Task<bool> Delete(int id)
+        public async Task Delete(int id)
         {
-            var user = await dbContext.Users.FirstOrDefaultAsync(u => u.Id == id);
-            if (user is null) return false;
-            dbContext.Users.Remove(user);
-            await dbContext.SaveChangesAsync();
-            return true;
+            if(id < 0) throw new ArgumentOutOfRangeException("id");
+            var user = await unitOfWork.Users.FirstOrDefaultAsync(u => u.Id == id);
+            if (user is null) throw new UserNotFoundException("Not found user with " + id);
+            unitOfWork.Users.Delete(user);
+            await unitOfWork.CompleteAsync();
         }
 
         public async Task<List<UserResponse>> GetAllAsync()
         {
-            var users = await dbContext.Users
+            var users = await unitOfWork.Users.AsQueryable()
                 .Include(u => u.UserRoles)
                 .ThenInclude(ur => ur.Role)
                 .Include(u => u.Reviews)
@@ -73,7 +74,7 @@ namespace WebApplication1.Services
         }
         public async Task<bool> Register(UserRequest userRequest)
         {
-            bool exists = await dbContext.Users.AnyAsync(u => u.username == userRequest.username || u.email == userRequest.email);
+            bool exists = await unitOfWork.Users.AnyAsync(u => u.username == userRequest.username || u.email == userRequest.email);
             if (exists)
                 return false;
             var user = new User
@@ -84,9 +85,9 @@ namespace WebApplication1.Services
                 surname = userRequest.surname,
                 email = userRequest.email,
             };
-            dbContext.Users.Add(user);
-            await dbContext.SaveChangesAsync();
-            var role = await dbContext.Roles.FirstOrDefaultAsync(r => r.role == ERole.User);
+            await unitOfWork.Users.AddAsync(user);
+            await unitOfWork.CompleteAsync();
+            var role = await unitOfWork.Roles.FirstOrDefaultAsync(r => r.role == ERole.User);
             if (role is null) return false;
             var UserRoles = new UserRole
             {

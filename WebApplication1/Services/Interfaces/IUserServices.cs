@@ -7,9 +7,9 @@ namespace WebApplication1.Services.Interfaces
     {
         Task<List<UserResponse>> GetAllAsync();
         Task<UserResponse?> GetById(int id);
-        Task<bool> Delete(int id);
-        Task<bool> changePassword(string newPassword, string confirmPassword, string oldPassword, int userId);
-        Task<bool> changedetails(int userId, UserDetailsRequest userDetailsRequest);
+        Task Delete(int id);
+        Task changePassword(string newPassword, string confirmPassword, string oldPassword, int userId);
+        Task changedetails(int userId, UserDetailsRequest userDetailsRequest);
         Task<bool> Register(UserRequest userRequest);
         Task<List<UserResponse>> GetBy(string name);
     }

@@ -16,6 +16,11 @@ namespace WebApplication1.Data
             await _context.Set<T>().AddAsync(entity);
         }
 
+        public async Task<bool> AnyAsync(Expression<Func<T, bool>> predicate)
+        {
+            return await _context.Set<T>().AnyAsync(predicate);
+        }
+
         public IQueryable<T> AsQueryable()
         {
             return _context.Set<T>().AsQueryable();
