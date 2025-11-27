@@ -53,6 +53,14 @@ namespace WebApplication1.Controllers
             return Ok(response);
 
         }
+        [AllowAnonymous]
+        [HttpGet("/TheLatest")]
+        public async Task<IActionResult> GetAllSortedByLatestAsync()
+        {
+            var reviews = await services.GetTheLatestReviews();
+            return Ok(reviews);
+
+        }
         [Authorize(Roles = "User")]
         [HttpGet("{id}")]
         public async Task<IActionResult> GetById(int id)

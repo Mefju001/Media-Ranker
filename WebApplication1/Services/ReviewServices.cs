@@ -81,7 +81,15 @@ namespace WebApplication1.Services
 
             return reviews.Select(ReviewMapper.ToResponse).ToList();
         }
-
+        public async Task<List<ReviewResponse>>GetTheLatestReviews()
+        {
+            var reviews = await _context.Reviews
+                .Include(r => r.User)
+                .Include(r => r.Media)
+                .OrderByDescending(r=>r.CreatedAt)
+                .ToListAsync();
+            return reviews.Select(ReviewMapper.ToResponse).ToList();
+        }
         public async Task<ReviewResponse> GetById(int id)
         {
             var review = await _context.Reviews

@@ -1,5 +1,7 @@
 ﻿using WebApplication1.Data;
+using WebApplication1.DTO.Mapper;
 using WebApplication1.DTO.Request;
+using WebApplication1.DTO.Response;
 using WebApplication1.Models;
 using WebApplication1.Services.Interfaces;
 
@@ -27,6 +29,13 @@ namespace WebApplication1.Services
             genre = new Genre { name = genreRequest.name };
             await _unitOfWork.Genres.AddAsync(genre);
             return genre;
+        }
+        public async Task<List<GenreResponse>>GetGenres()
+        {
+            var genres = await _unitOfWork.Genres.GetAllAsync();
+            if (genres is null) return new List<GenreResponse>();
+            var response =  genres.Select(GenreMapper.ToResponse).ToList();
+            return response;
         }
     }
 }

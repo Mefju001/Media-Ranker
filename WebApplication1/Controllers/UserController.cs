@@ -63,7 +63,8 @@ namespace WebApplication1.Controllers
                 return Unauthorized();
             }
             int userId = parse(stringUserId);
-            return Ok(await userServices.changePassword(newPassword, confirmPassword, oldPassword, userId));
+            await userServices.changePassword(newPassword, confirmPassword, oldPassword, userId);
+            return Ok();
         }
         [Authorize(Roles = "Admin,User")]
         [HttpPatch("/ChangeDetails")]
@@ -75,7 +76,8 @@ namespace WebApplication1.Controllers
                 return Unauthorized();
             }
             int userId = parse(stringUserId);
-            return Ok(await userServices.changedetails(userId, userDetailsRequest));
+            await userServices.changedetails(userId, userDetailsRequest);
+            return Ok();
         }
     }
 }

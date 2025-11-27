@@ -14,10 +14,9 @@ namespace WebApplication1.Services
     {
         private readonly IPasswordHasher<User> Hasher;
         private readonly IUnitOfWork unitOfWork;
-        public UserServices(AppDbContext dbContext, IPasswordHasher<User> passwordHasher,IUnitOfWork unitOfWork)
+        public UserServices(IPasswordHasher<User> passwordHasher,IUnitOfWork unitOfWork)
         {
             this.unitOfWork = unitOfWork;
-            this.dbContext = dbContext;
             Hasher = passwordHasher;
         }
         public async Task changePassword(string newPassword, string confirmPassword, string oldPassword, int userId)
@@ -94,14 +93,14 @@ namespace WebApplication1.Services
                 UserId = user.Id,
                 RoleId = role.Id
             };
-            dbContext.UsersRoles.Add(UserRoles);
-            await dbContext.SaveChangesAsync();
+            await unitOfWork.UsersRoles.AddAsync(UserRoles);
+            await unitOfWork.CompleteAsync();
 
             return true;
         }
         public async Task<UserResponse?> GetById(int id)
         {
-            var user = await dbContext.Users
+            var user = await unitOfWork.Users.AsQueryable()
                 .Include(u => u.UserRoles)
                     .ThenInclude(ur => ur.Role)
                 .Include(u => u.Reviews)
@@ -112,7 +111,7 @@ namespace WebApplication1.Services
         }
         public async Task<List<UserResponse>> GetBy(string name)
         {
-            var User = await dbContext.Users
+            var User = await unitOfWork.Users.AsQueryable()
                 .Include(u => u.UserRoles)
                     .ThenInclude(ur => ur.Role)
                 .Include(u => u.Reviews)

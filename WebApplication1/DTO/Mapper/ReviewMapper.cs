@@ -9,9 +9,12 @@ namespace WebApplication1.DTO.Mapper
         {
             return new ReviewResponse(
                 review.Id,
+                review.MediaId,
                 review.User.username ?? "Nieznany użytkownik",
                 review.Rating,
-                review.Comment);
+                review.Comment,
+                review.CreatedAt,
+                review.LastModifiedAt);
 
         }
     }

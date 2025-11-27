@@ -2,12 +2,10 @@
   <aside class="sidebar">
     <h3>Kategorie</h3>
     <ul>
-      <li><a href="#">Akcja</a></li>
-      <li><a href="#">Dramat</a></li>
-      <li><a href="#">Komedia</a></li>
-      <li><a href="#">Sci-Fi</a></li>
-      <li><a href="#">Thriller</a></li>
-      <li><a href="#">Animacja</a></li>
+      @for(genre of genres;track genre.id){
+      <li><a href="#">{{genre.name}}</a></li>
+      }
+      @empty {<p>Ładowanie kategorii lub brak danych...</p>}
     </ul>
 
     <h3>Najnowsze Recenzje</h3>
@@ -20,36 +18,24 @@
 
   <section class="film-listings">
     <h2>Popularne Filmy</h2>
-
+    @for(movie of movies;track movie.id){
     <div class="film-card">
+      <div class="movie-details">
       <img src="https://via.placeholder.com/150x220?text=Plakat+Filmu+1" alt="Plakat Filmu 1" />
       <div class="film-info">
-        <h3>Tytuł Filmu 1</h3>
+        <h3>{{movie.title}}</h3>
         <p>
-          <span class="rating">8.5/10</span>
-          <span class="genre">Dramat, Akcja</span>
+          <span class="rating">{{movie.mediaStats.averageRating}}</span>
+          <span class="genre">{{movie.genre.name}}</span>
         </p>
         <p class="description">
-          Krótki opis filmu, zachęcający do obejrzenia i dowiedzenia się więcej.
+         {{movie.description}}
         </p>
+        </div>
         <button>Więcej...</button>
       </div>
     </div>
-
-    <div class="film-card">
-      <img src="https://via.placeholder.com/150x220?text=Plakat+Filmu+2" alt="Plakat Filmu 2" />
-      <div class="film-info">
-        <h3>Tytuł Filmu 2</h3>
-        <p>
-          <span class="rating">7.9/10</span>
-          <span class="genre">Komedia, Romans</span>
-        </p>
-        <p class="description">
-          Krótki opis filmu, zachęcający do obejrzenia i dowiedzenia się więcej.
-        </p>
-        <button>Więcej...</button>
-      </div>
-    </div>
-
-    </section>
+    }
+    @empty {<p>Ładowanie filmów lub brak danych...</p>}
+  </section>
 </main>

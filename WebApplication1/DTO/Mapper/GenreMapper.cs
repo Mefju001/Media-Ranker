@@ -5,9 +5,8 @@ namespace WebApplication1.DTO.Mapper
 {
     public class GenreMapper
     {
-        public static GenreResponse? ToResponse(Genre genre)
+        public static GenreResponse ToResponse(Genre genre)
         {
-            if (genre == null) return null;
             return new GenreResponse(
                 genre.Id,
                 genre.name);

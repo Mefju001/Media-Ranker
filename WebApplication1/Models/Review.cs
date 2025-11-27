@@ -14,6 +14,8 @@ namespace WebApplication1.Models
         public virtual Media Media { get; set; }
         public int UserId { get; set; }
         public virtual User User { get; set; }
+        public DateTime CreatedAt { get; init; }
+        public DateTime LastModifiedAt { get; set; }
         public void SetReview(Review review)
         {
             this.Rating = review.Rating;
