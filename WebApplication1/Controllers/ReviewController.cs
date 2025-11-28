@@ -54,7 +54,7 @@ namespace WebApplication1.Controllers
 
         }
         [AllowAnonymous]
-        [HttpGet("/TheLatest")]
+        [HttpGet("TheLatest")]
         public async Task<IActionResult> GetAllSortedByLatestAsync()
         {
             var reviews = await services.GetTheLatestReviews();

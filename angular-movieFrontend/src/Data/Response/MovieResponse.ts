@@ -1,7 +1,7 @@
 import { DirectorResponse } from "./DirectorResponse";
 import { GenreResponse } from "./GenreResponse";
 import { MediaStatsResponse } from "./MediaStatsResponse";
-import { Review } from "./ReviewResponse";
+import { ReviewResponse } from "./ReviewResponse";
 
 export interface MovieResponse{
 id: number;
@@ -15,5 +15,5 @@ id: number;
   director: DirectorResponse;
   genre: GenreResponse;
   mediaStats: MediaStatsResponse;
-  reviews: Review[];
+  reviews: ReviewResponse[];
 }

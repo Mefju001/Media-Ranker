@@ -10,14 +10,39 @@
 
     <h3>Najnowsze Recenzje</h3>
     <ul>
-      <li><a href="#">Tytuł Filmu 1</a></li>
-      <li><a href="#">Tytuł Filmu 2</a></li>
-      <li><a href="#">Tytuł Filmu 3</a></li>
+      @for(reviewTitle of reviewsTitle;track reviewTitle){
+      <li><a href="#">{{reviewTitle}}</a></li>
+      }
+      @empty {<p>Ładowanie tytułów lub brak danych...</p>}
     </ul>
   </aside>
-
   <section class="film-listings">
     <h2>Popularne Filmy</h2>
+<div class="sorting-filtering-controls">
+    <input type="text" placeholder="Wyszukaj film po tytule..." 
+           >[(ngModel)]="filterParams.titleSearch" (input)="loadMovies()"
+    
+    <label for="sort-by">Sortuj:</label>
+    <select id="sort-by" >[(ngModel)]="filterParams.sortByField" (change)="loadMovies()"
+      <option value="">-- Wybierz Pole --</option>
+      <option value="TitleSearch">Tytuł</option>
+      <option value="MinRating">Ocena</option>
+      <option value="ReleaseYear">Rok Wydania</option>
+      </select>
+    
+    <label>
+      <input type="checkbox" >[(ngModel)]="filterParams.isSortAscending" (change)="loadMovies()"
+      Malejąco
+    </label>
+    
+    <input type="text" placeholder="Imię Reżysera" 
+           >[(ngModel)]="filterParams.directorName" (input)="loadMovies()"
+    <input type="text" placeholder="Nazwisko Reżysera" 
+           >[(ngModel)]="filterParams.directorSurname" (input)="loadMovies()"
+           
+    <input type="number" placeholder="Rok Wydania" 
+           >[(ngModel)]="filterParams.releaseYear" (input)="loadMovies()"
+  </div>
     @for(movie of movies;track movie.id){
     <div class="film-card">
       <div class="movie-details">

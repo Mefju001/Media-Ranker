@@ -11,20 +11,20 @@ namespace WebApplication1.Services
 {
     public class ReviewServices : IReviewServices
     {
-        private readonly AppDbContext _context;
-        public ReviewServices(AppDbContext context)
+        private readonly IUnitOfWork unitOfWork;
+        public ReviewServices(IUnitOfWork unitOfWork)
         {
-            _context = context;
+            this.unitOfWork = unitOfWork;
         }
         public async Task<(int reviewId, ReviewResponse response)> Upsert(int? reviewId, int userId, int movieId, ReviewRequest reviewRequest)
         {
-            using var transaction = await _context.Database.BeginTransactionAsync();
+            using var transaction = await unitOfWork.BeginTransactionAsync();
             try
             {
                 Review? review;
                 if (reviewId is not null)
                 {
-                    review = await _context.Reviews
+                    review = await unitOfWork.Reviews.AsQueryable()
                        .Include(r => r.Media)
                        .Include(r => r.User)
                        .FirstOrDefaultAsync(r => r.Id == reviewId);
@@ -32,7 +32,7 @@ namespace WebApplication1.Services
                     {
                         review.Rating = reviewRequest.Rating;
                         review.Comment = reviewRequest.Comment;
-                        await _context.SaveChangesAsync();
+                        await unitOfWork.CompleteAsync();
                         await transaction.CommitAsync();
                         return (review.Id, ReviewMapper.ToResponse(review));
                     }
@@ -44,9 +44,9 @@ namespace WebApplication1.Services
                     MediaId = movieId,
                     UserId = userId
                 };
-                _context.Reviews.Add(review);
-                await _context.SaveChangesAsync();
-                var response = await _context.Reviews
+                await unitOfWork.Reviews.AddAsync(review);
+                await unitOfWork.CompleteAsync();
+                var response = await unitOfWork.Reviews.AsQueryable()
                     .Include(r => r.User)
                     .Include(r => r.Media)
                     .FirstOrDefaultAsync(r => r.Id == review.Id);
@@ -62,11 +62,11 @@ namespace WebApplication1.Services
 
         public async Task<bool> Delete(int id)
         {
-            var review = _context.Reviews.FirstOrDefault(r => r.Id == id);
+            var review = await unitOfWork.Reviews.FirstOrDefaultAsync(r => r.Id == id);
             if (review != null)
             {
-                _context.Reviews.Remove(review);
-                await _context.SaveChangesAsync();
+                unitOfWork.Reviews.Delete(review);
+                await unitOfWork.CompleteAsync();
                 return true;
             }
             return false;
@@ -74,25 +74,28 @@ namespace WebApplication1.Services
 
         public async Task<List<ReviewResponse>> GetAllAsync()
         {
-            var reviews = await _context.Reviews
+            var reviews = await unitOfWork.Reviews.AsQueryable()
                 .Include(r => r.User)
                 .Include(r => r.Media)
                 .ToListAsync();
 
             return reviews.Select(ReviewMapper.ToResponse).ToList();
         }
-        public async Task<List<ReviewResponse>>GetTheLatestReviews()
+        public async Task<List<string>>GetTheLatestReviews()
         {
-            var reviews = await _context.Reviews
+            var title = await unitOfWork.Reviews.AsQueryable()
                 .Include(r => r.User)
                 .Include(r => r.Media)
+                .Take(10)
                 .OrderByDescending(r=>r.CreatedAt)
+                .Select(r=>r.Media.title)
+                .Distinct()
                 .ToListAsync();
-            return reviews.Select(ReviewMapper.ToResponse).ToList();
+            return title;
         }
         public async Task<ReviewResponse> GetById(int id)
         {
-            var review = await _context.Reviews
+            var review = await unitOfWork.Reviews.AsQueryable()
                 .Include(r => r.User)
                 .Include(r => r.Media)
                 .FirstOrDefaultAsync(r => r.Id == id);

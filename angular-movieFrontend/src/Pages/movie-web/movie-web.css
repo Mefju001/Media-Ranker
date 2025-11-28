@@ -135,3 +135,64 @@
 .film-info button:hover {
   background-color: #cc0000;
 }
+
+
+.sorting-filtering-controls {
+    display: flex; /* Użycie Flexbox dla ułożenia elementów w linii */
+    flex-wrap: wrap; /* Pozwala elementom przejść do następnego wiersza na małych ekranach */
+    gap: 15px; /* Odstępy między kontrolkami */
+    padding: 15px;
+    margin-bottom: 25px; /* Odstęp od listy filmów poniżej */
+    background-color: #f0f4f7; /* Jasne tło, aby kontrolki się wyróżniały */
+    border-radius: 8px;
+    align-items: center; /* Wyśrodkowanie elementów w pionie */
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+}
+
+.sorting-filtering-controls label {
+    font-weight: 600;
+    color: #444;
+    white-space: nowrap; /* Zapobiega łamaniu się etykiet */
+}
+
+/* Stylizacja pól tekstowych i rozwijanych list */
+.sorting-filtering-controls input[type="text"],
+.sorting-filtering-controls input[type="number"],
+.sorting-filtering-controls select {
+    padding: 8px 12px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    font-size: 1em;
+    transition: border-color 0.3s, box-shadow 0.3s;
+    flex-basis: 180px; /* Daje minimalną szerokość dla lepszego wyglądu */
+    height: 38px; /* Wyrównuje wysokość z innymi elementami */
+}
+
+.sorting-filtering-controls input:focus,
+.sorting-filtering-controls select:focus {
+    border-color: #007bff;
+    box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.25);
+    outline: none;
+}
+
+/* Stylizacja checkboxa "Malejąco" */
+.sorting-filtering-controls input[type="checkbox"] {
+    margin-right: 5px;
+    /* Dalsza stylizacja checkboxa często wymaga customizacji, 
+       ale ten bazowy styl jest wystarczający */
+}
+
+/* Stylizacja kontrolek gatunków w pasku bocznym, aby były bardziej interaktywne */
+
+.sidebar li a {
+    /* ... (istniejące style) ... */
+    cursor: pointer;
+}
+
+/* Dodajemy styl dla aktywnie wybranego gatunku (jeśli używasz [class.active]) */
+.sidebar li a.active {
+    font-weight: bold;
+    color: #cc3333; /* Wyróżniający się kolor dla aktywnego filtru */
+    text-decoration: none;
+    border-bottom: 2px solid #cc3333;
+}

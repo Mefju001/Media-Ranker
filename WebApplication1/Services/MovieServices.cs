@@ -1,4 +1,5 @@
 using MediatR;
+using Microsoft.EntityFrameworkCore;
 using WebApplication1.Builder.Interfaces;
 using WebApplication1.Data;
 using WebApplication1.DTO.Mapper;
@@ -62,7 +63,6 @@ namespace WebApplication1.Services
                 throw;
             }
         }
-
         public async Task<bool> Delete(int id)
         {
             var movie = await _unitOfWork.Movies.FirstOrDefaultAsync(x => x.Id == id);
@@ -75,7 +75,6 @@ namespace WebApplication1.Services
         }
         public async Task<List<MovieResponse>> GetMoviesByCriteriaAsync(MovieQuery moviesQuery)
         {
-            var query = _unitOfWork.Movies.AsQueryable();
             var MovieResponses = await _mediator.Send(moviesQuery);
             return MovieResponses;
         }
