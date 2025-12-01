@@ -46,7 +46,6 @@
     @for(movie of movies;track movie.id){
     <div class="film-card">
       <div class="movie-details">
-      <img src="https://via.placeholder.com/150x220?text=Plakat+Filmu+1" alt="Plakat Filmu 1" />
       <div class="film-info">
         <h3>{{movie.title}}</h3>
         <p>
@@ -57,7 +56,9 @@
          {{movie.description}}
         </p>
         </div>
-        <button>Więcej...</button>
+        <button>
+          <a [routerLink]="['/movie/id', movie.id]">Więcej...</a>
+        </button>
       </div>
     </div>
     }

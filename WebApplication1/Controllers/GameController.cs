@@ -32,7 +32,7 @@ namespace WebApplication1.Controllers
             return Ok(games);
         }
         [HttpGet("FindById/{id}")]
-        public async Task<IActionResult> GetById(int id)
+        public async Task<IActionResult> GetById([FromRoute]int id)
         {
             var games = await gameServices.GetById(id);
             return Ok(games);
@@ -46,14 +46,14 @@ namespace WebApplication1.Controllers
         }
         [Authorize(Roles = "Admin")]
         [HttpPut("UpdateGameById/{id}")]
-        public async Task<IActionResult> UpdateGame(int id, GameRequest gameRequest)
+        public async Task<IActionResult> UpdateGame([FromRoute] int id, GameRequest gameRequest)
         {
             var updated = await gameServices.Upsert(id, gameRequest);
             return Ok(updated);
         }
         [Authorize(Roles = "Admin")]
         [HttpDelete("DeleteById/{id}")]
-        public async Task<IActionResult> Delete(int id)
+        public async Task<IActionResult> Delete([FromRoute] int id)
         {
             var deleted = await gameServices.Delete(id);
             if (!deleted) return NotFound();

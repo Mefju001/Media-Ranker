@@ -10,5 +10,8 @@ private apiUrl = 'http://localhost:5009/Movie';
 constructor(private http: HttpClient) {}
 getMovies(): Observable<MovieResponse[]> {
     return this.http.get<MovieResponse[]>(`${this.apiUrl}`);
+}
+getMovieById(id: number): Observable<MovieResponse> {
+    return this.http.get<MovieResponse>(`${this.apiUrl}/id/${id}`);
   }
 }

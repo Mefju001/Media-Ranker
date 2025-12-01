@@ -51,8 +51,8 @@ namespace WebApplication1.Services
                 .Include(g => g.genre)
                 .Include(g => g.Reviews)
                 .FirstOrDefaultAsync(x => x.Id == id);
-            if (game == null)
-                throw new NotFoundException("No game found with that name");
+            if (game is null)
+                return null;
             return GameMapper.ToGameResponse(game);
         }
         public async Task<List<GameResponse>> GetGamesByCriteriaAsync(GameQuery gameQuery)
@@ -88,7 +88,7 @@ namespace WebApplication1.Services
                     await _unitOfWork.Games.AddAsync(game);
                 }
                 await _unitOfWork.CompleteAsync();
-                if (game is null) throw new ArgumentNullException(nameof(game));
+                if (game is null) throw new InvalidOperationException(nameof(game));
                 var response = GameMapper.ToGameResponse(game);
                 await transaction.CommitAsync();
                 return response;

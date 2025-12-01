@@ -1,4 +1,5 @@
-﻿using WebApplication1.DTO.Response;
+﻿using WebApplication1.DTO.Request;
+using WebApplication1.DTO.Response;
 using WebApplication1.Models;
 
 namespace WebApplication1.DTO.Mapper
@@ -16,6 +17,12 @@ namespace WebApplication1.DTO.Mapper
                 review.CreatedAt,
                 review.LastModifiedAt);
 
+        }
+        public static void updateReview(Review review, ReviewRequest reviewRequest)
+        {
+            review.Rating = reviewRequest.Rating;
+            review.Comment = reviewRequest.Comment;
+            review.LastModifiedAt=DateTime.UtcNow;
         }
     }
 }

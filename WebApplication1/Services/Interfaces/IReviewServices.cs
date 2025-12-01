@@ -7,8 +7,8 @@ namespace WebApplication1.Services.Interfaces
     {
         Task<List<ReviewResponse>> GetAllAsync();
         Task<List<string>> GetTheLatestReviews();
-        Task<ReviewResponse> GetById(int id);
-        Task<bool> Delete(int id);
-        Task<(int reviewId, ReviewResponse response)> Upsert(int? reviewId, int userId, int movieId, ReviewRequest reviewRequest);
+        Task<ReviewResponse?> GetById(int id);
+        Task<bool> Delete(int id,int userId);
+        Task<ReviewResponse> Upsert(int? reviewId, int userId, int movieId, ReviewRequest reviewRequest);
     }
 }

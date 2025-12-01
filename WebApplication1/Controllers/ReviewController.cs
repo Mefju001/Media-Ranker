@@ -16,42 +16,42 @@ namespace WebApplication1.Controllers
         {
             this.services = services;
         }
+        private int? getUserId()
+        {
+            var stringUserId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            if(stringUserId == null)return null;
+            int id = int.Parse(stringUserId);
+            if (int.TryParse(stringUserId, out int userId))
+            {
+                return userId;
+            }
+            else
+                return null;
+        }
         [AllowAnonymous]
         [HttpGet]
         public async Task<IActionResult> GetAll()
         {
             var reviews = await services.GetAllAsync();
             return Ok(reviews);
-
         }
-        private int parse(string String)
-        {
-            int id = int.Parse(String);
-            if (int.TryParse(String, out int userId))
-            {
-                return userId;
-            }
-            else
-                throw new Exception();
-        }
-        [Authorize(Roles = "User")]
+        [Authorize(Roles = "User, Admin")]
         [HttpPost]
-        public async Task<IActionResult> Upsert(int? reviewId, int movieId, ReviewRequest reviewRequest)
+        public async Task<IActionResult> AddReview([FromQuery] int movieId, [FromQuery] ReviewRequest reviewRequest)
         {
-            var stringUserId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-            if (stringUserId == null)
-            {
-                return Unauthorized();
-            }
-            int userId = parse(stringUserId);
-            var (id, response) = await services.Upsert(reviewId, userId, movieId, reviewRequest);
-            if (reviewId is null)
-            {
-                return CreatedAtAction(nameof(GetById), new { id }, response);
-            }
-
+            var userId = getUserId();
+            if (userId == null) return Unauthorized();
+            var response = await services.Upsert(null, userId.Value, movieId, reviewRequest);
+            return CreatedAtAction(nameof(GetById), new { response.id }, response);
+        }
+        [Authorize(Roles = "User, Admin")]
+        [HttpPut]
+        public async Task<IActionResult> UpdateReview([FromQuery]int reviewId, [FromQuery] int movieId, [FromQuery] ReviewRequest reviewRequest)
+        {
+            var userId = getUserId();
+            if (userId == null) return Unauthorized();
+            var response = await services.Upsert(reviewId, userId.Value, movieId, reviewRequest);
             return Ok(response);
-
         }
         [AllowAnonymous]
         [HttpGet("TheLatest")]
@@ -59,7 +59,6 @@ namespace WebApplication1.Controllers
         {
             var reviews = await services.GetTheLatestReviews();
             return Ok(reviews);
-
         }
         [Authorize(Roles = "User")]
         [HttpGet("{id}")]
@@ -68,10 +67,12 @@ namespace WebApplication1.Controllers
             return Ok(await services.GetById(id));
         }
         [Authorize(Roles = "User")]
-        [HttpDelete]
-        public async Task<IActionResult> Delete(int id)
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> Delete([FromRoute]int id)
         {
-            var deletedReview = await services.Delete(id);
+            var userId = getUserId();
+            if (userId == null) return Unauthorized();
+            var deletedReview = await services.Delete(id, userId.Value);
             if (!deletedReview) return NotFound();
             return NoContent();
         }

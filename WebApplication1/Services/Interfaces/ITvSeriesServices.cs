@@ -8,7 +8,7 @@ namespace WebApplication1.Services.Interfaces
     {
         Task<List<TvSeriesResponse>> GetAllAsync();
         Task<List<TvSeriesResponse>> GetMoviesByCriteriaAsync(TvSeriesQuery tvSeriesQuery);
-        Task<TvSeriesResponse> GetById(int id);
+        Task<TvSeriesResponse?> GetById(int id);
         Task<bool> Delete(int id);
         Task<(int tvSeriesId, TvSeriesResponse response)> Upsert(int? tvSeriesId, TvSeriesRequest tvSeriesRequest);
 

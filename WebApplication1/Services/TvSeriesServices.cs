@@ -37,7 +37,6 @@ namespace WebApplication1.Services
             }
             return false;
         }
-
         public async Task<List<TvSeriesResponse>> GetAllAsync()
         {
             var TvSeries = await unitOfWork.TvSeries.AsQueryable()
@@ -48,7 +47,7 @@ namespace WebApplication1.Services
             return TvSeries.Select(TvSeriesMapper.ToTvSeriesResponse).ToList();
         }
 
-        public async Task<TvSeriesResponse> GetById(int id)
+        public async Task<TvSeriesResponse?> GetById(int id)
         {
             var TvSeries = await unitOfWork.TvSeries.AsQueryable()
                 .Include(m => m.genre)
@@ -56,32 +55,13 @@ namespace WebApplication1.Services
                 .ThenInclude(r => r.User)
                 .FirstOrDefaultAsync(tv => tv.Id == id);
             if (TvSeries == null)
-                throw new NotFoundException("Not found");
+                return null;
             return TvSeriesMapper.ToTvSeriesResponse(TvSeries);
         }
-
-
-
         public async Task<List<TvSeriesResponse>> GetMoviesByCriteriaAsync(TvSeriesQuery tvSeriesQuery)
         {
             var movies = await mediatR.Send(tvSeriesQuery);
             return movies;
-        }
-        //modif
-        public async Task<List<TvSeriesAVGResponse>> GetTvSeriesByAvrRating()
-        {
-            var TvSeries = await unitOfWork.TvSeries.AsQueryable()
-                    .Include(m => m.genre)
-                    .Include(m => m.Reviews)
-                        .ThenInclude(r => r.User)
-                    .Select(tv => new
-                    {
-                        TvSeries = tv,
-                        avarage = tv.Reviews.Average(r => (double?)r.Rating) ?? 0
-                    })
-                    .OrderByDescending(x => x.avarage)
-                    .ToListAsync();
-            return TvSeries.Select(x => TvSeriesMapper.ToTvSeriesAVGResponse(x.TvSeries, x.avarage)).ToList();
         }
         public async Task<(int tvSeriesId, TvSeriesResponse response)> Upsert(int? tvSeriesId, TvSeriesRequest tvSeriesRequest)
         {

@@ -1,9 +1,11 @@
 ﻿
 using Microsoft.EntityFrameworkCore;
+using System.Reflection.Metadata.Ecma335;
 using WebApplication1.Data;
 using WebApplication1.DTO.Mapper;
 using WebApplication1.DTO.Request;
 using WebApplication1.DTO.Response;
+using WebApplication1.Exceptions;
 using WebApplication1.Models;
 using WebApplication1.Services.Interfaces;
 
@@ -16,42 +18,37 @@ namespace WebApplication1.Services
         {
             this.unitOfWork = unitOfWork;
         }
-        public async Task<(int reviewId, ReviewResponse response)> Upsert(int? reviewId, int userId, int movieId, ReviewRequest reviewRequest)
+        public async Task<ReviewResponse> Upsert(int? reviewId, int userId, int movieId, ReviewRequest reviewRequest)
         {
             using var transaction = await unitOfWork.BeginTransactionAsync();
             try
             {
-                Review? review;
-                if (reviewId is not null)
+                Review? review= null;
+                if (reviewId.HasValue)
                 {
                     review = await unitOfWork.Reviews.AsQueryable()
-                       .Include(r => r.Media)
-                       .Include(r => r.User)
-                       .FirstOrDefaultAsync(r => r.Id == reviewId);
-                    if (review is not null)
+                       .FirstOrDefaultAsync(r => r.Id == reviewId&&r.UserId == userId);
+                    if (review is null)
                     {
-                        review.Rating = reviewRequest.Rating;
-                        review.Comment = reviewRequest.Comment;
-                        await unitOfWork.CompleteAsync();
-                        await transaction.CommitAsync();
-                        return (review.Id, ReviewMapper.ToResponse(review));
+                        throw new NotFoundException($"Review with this id {reviewId} was not found or does not belong to the user. ");
                     }
+                    ReviewMapper.updateReview(review, reviewRequest);
                 }
-                review = new Review
+                else
                 {
-                    Comment = reviewRequest.Comment,
-                    Rating = reviewRequest.Rating,
-                    MediaId = movieId,
-                    UserId = userId
-                };
-                await unitOfWork.Reviews.AddAsync(review);
+                    review = new Review
+                    {
+                        Comment = reviewRequest.Comment,
+                        Rating = reviewRequest.Rating,
+                        MediaId = movieId,
+                        UserId = userId
+                    };
+                    await unitOfWork.Reviews.AddAsync(review);
+                }
                 await unitOfWork.CompleteAsync();
-                var response = await unitOfWork.Reviews.AsQueryable()
-                    .Include(r => r.User)
-                    .Include(r => r.Media)
-                    .FirstOrDefaultAsync(r => r.Id == review.Id);
+                var response = ReviewMapper.ToResponse(review)?? throw new InvalidOperationException("The saved review could not be found.");
                 await transaction.CommitAsync();
-                return (review.Id, ReviewMapper.ToResponse(response));
+                return response;
             }
             catch
             {
@@ -60,16 +57,17 @@ namespace WebApplication1.Services
             }
         }
 
-        public async Task<bool> Delete(int id)
+        public async Task<bool> Delete(int id,int userId)
         {
-            var review = await unitOfWork.Reviews.FirstOrDefaultAsync(r => r.Id == id);
-            if (review != null)
+            if (id < 0) throw new ArgumentOutOfRangeException("id");
+            var review = await unitOfWork.Reviews.FirstOrDefaultAsync(r => r.Id == id&&r.UserId == userId);
+            if (review is null)
             {
-                unitOfWork.Reviews.Delete(review);
-                await unitOfWork.CompleteAsync();
-                return true;
+                return false;
             }
-            return false;
+            unitOfWork.Reviews.Delete(review);
+            await unitOfWork.CompleteAsync();
+            return true;
         }
 
         public async Task<List<ReviewResponse>> GetAllAsync()
@@ -86,21 +84,20 @@ namespace WebApplication1.Services
             var title = await unitOfWork.Reviews.AsQueryable()
                 .Include(r => r.User)
                 .Include(r => r.Media)
-                .Take(10)
                 .OrderByDescending(r=>r.CreatedAt)
+                .Take(10)
                 .Select(r=>r.Media.title)
                 .Distinct()
                 .ToListAsync();
             return title;
         }
-        public async Task<ReviewResponse> GetById(int id)
+        public async Task<ReviewResponse?> GetById(int id)
         {
             var review = await unitOfWork.Reviews.AsQueryable()
                 .Include(r => r.User)
                 .Include(r => r.Media)
                 .FirstOrDefaultAsync(r => r.Id == id);
-            if (review != null) return ReviewMapper.ToResponse(review);
-            return null;
+            return review is null? null: ReviewMapper.ToResponse(review);
         }
 
     }

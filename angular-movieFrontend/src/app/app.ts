@@ -6,7 +6,7 @@ import { Header } from '../Pages/header/header';
 
 @Component({
   selector: 'app-root',
-  imports: [Footer,MovieWeb,Header],
+  imports: [Footer, Header, RouterOutlet],
   templateUrl: './app.html',
   styleUrl: './app.css'
 })

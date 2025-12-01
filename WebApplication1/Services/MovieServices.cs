@@ -11,12 +11,19 @@ using WebApplication1.QueryHandler.Query;
 using WebApplication1.Services.Interfaces;
 namespace WebApplication1.Services
 {
-    public class MovieServices(IReferenceDataService referenceDataService, IUnitOfWork unitOfWork, IMovieBuilder builder, IMediator mediator) : IMovieServices
+    public class MovieServices : IMovieServices
     {
-        private readonly IUnitOfWork _unitOfWork = unitOfWork;
-        private readonly IMediator _mediator = mediator;
-        private readonly IMovieBuilder movieBuilder = builder;
-        private readonly IReferenceDataService referenceDataService = referenceDataService;
+        private readonly IUnitOfWork _unitOfWork;
+        private readonly IMediator _mediator;
+        private readonly IMovieBuilder movieBuilder;
+        private readonly IReferenceDataService referenceDataService;
+        public MovieServices(IReferenceDataService referenceDataService, IUnitOfWork unitOfWork, IMovieBuilder builder, IMediator mediator)
+        {
+            this.referenceDataService = referenceDataService;
+            this.movieBuilder = builder;
+            this._unitOfWork = unitOfWork;
+            this._mediator = mediator;
+        }
 
         public async Task<MovieResponse> Upsert(int? movieId, MovieRequest movieRequest)
         {
@@ -25,7 +32,7 @@ namespace WebApplication1.Services
             {
                 var director = await referenceDataService.GetOrCreateDirectorAsync(movieRequest.Director);
                 var genre = await referenceDataService.GetOrCreateGenreAsync(movieRequest.Genre);
-                Movie? movie;
+                Movie? movie= null;
                 if (movieId.HasValue)
                 {
                     movie = await _unitOfWork.Movies
@@ -51,7 +58,7 @@ namespace WebApplication1.Services
                 }
 
                 await _unitOfWork.CompleteAsync();
-                if (movie is null) throw new ArgumentNullException(nameof(movie));
+                if (movie is null) throw new InvalidOperationException(nameof(movie));
                 var response = MovieMapper.ToMovieResponse(movie);
                 await transaction.CommitAsync();
                 await _mediator.Publish(new LogNotification("Information", "Nowy film zosta³ dodany.", nameof(MovieServices)));
@@ -66,7 +73,7 @@ namespace WebApplication1.Services
         public async Task<bool> Delete(int id)
         {
             var movie = await _unitOfWork.Movies.FirstOrDefaultAsync(x => x.Id == id);
-            if (movie == null)
+            if (movie is null)
                 return false;
             _unitOfWork.Movies.Delete(movie);
             await _unitOfWork.CompleteAsync();

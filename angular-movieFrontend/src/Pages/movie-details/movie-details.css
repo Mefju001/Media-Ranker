@@ -1,0 +1,96 @@
+/* --- OGÓLNY KONTEKST STRONY --- */
+
+.movie-details-page {
+    max-width: 1000px;
+    margin: 40px auto;
+    padding: 20px;
+    background-color: #ffffff;
+    border-radius: 10px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+}
+
+/* --- HEADER (Plakat i Podstawowe Info) --- */
+
+.movie-header {
+    display: flex;
+    gap: 30px;
+    margin-bottom: 40px;
+    align-items: flex-start;
+    padding-bottom: 20px;
+    border-bottom: 1px solid #e0e0e0;
+}
+
+.movie-poster {
+    width: 250px;
+    height: auto;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.header-info {
+    flex-grow: 1;
+}
+
+.header-info h1 {
+    margin-top: 0;
+    font-size: 2.5em;
+    color: #333;
+}
+
+/* Stylizacja elementów meta (ocena, gatunek, rok) */
+.header-info p {
+    margin: 8px 0;
+    font-size: 1.1em;
+}
+
+.rating span {
+    display: inline-block;
+    background-color: #ffc107;
+    color: #333;
+    padding: 5px 10px;
+    border-radius: 5px;
+    font-weight: bold;
+    margin-left: 10px;
+}
+
+.genre, .year {
+    color: #666;
+}
+
+/* --- SEKCJE SZCZEGÓŁOWE (Opis, Reżyser) --- */
+
+.description-section, .director-section {
+    margin-bottom: 30px;
+    padding: 15px 0;
+}
+
+.description-section h2, .director-section h2 {
+    font-size: 1.5em;
+    color: #444;
+    border-left: 4px solid #007bff;
+    padding-left: 10px;
+    margin-bottom: 15px;
+}
+
+.description-section p {
+    line-height: 1.6;
+    color: #555;
+}
+
+/* --- LINK POWROTNY --- */
+
+.back-link {
+    display: inline-block;
+    margin-top: 20px;
+    padding: 10px 15px;
+    background-color: #f0f0f0;
+    color: #007bff;
+    text-decoration: none;
+    border-radius: 5px;
+    transition: background-color 0.2s;
+}
+
+.back-link:hover {
+    background-color: #e0e0e0;
+    color: #0056b3;
+}

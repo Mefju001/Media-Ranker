@@ -1,0 +1,30 @@
+@if (!movie) {
+  <p>Nie znaleziono filmu lub wystąpił błąd.</p>
+}  @else { 
+
+    <div class="movie-header"> 
+
+      <div class="header-info"> 
+
+        <h1>{{ movie.title }}</h1> 
+
+        <p class="rating">Ocena: <span>{{ movie.mediaStats.averageRating | number:'1.1-1' }}</span></p> 
+
+        <p class="genre">Gatunek: {{ movie.genre.name }}</p> 
+
+        <p class="year">Rok Wydania: {{ movie.releaseDate | date:'yyyy' }}</p> 
+
+      </div> 
+
+    </div> 
+
+    <section class="description-section"> 
+
+      <h2>Opis</h2> <p>{{ movie.description }}</p> 
+
+    </section> <section class="director-section"> 
+
+      <h2>Reżyser</h2> <p>{{ movie.director.name }} {{ movie.director.surname }}</p> </section> 
+
+      <a [routerLink]="['']" class="back-link">← Powrót do listy filmów</a> 
+    } 
