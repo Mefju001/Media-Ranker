@@ -1,67 +1,79 @@
 <main class="main-content">
   <aside class="sidebar">
+
     <h3>Kategorie</h3>
     <ul>
-      @for(genre of genres;track genre.id){
-      <li><a href="#">{{genre.name}}</a></li>
+      @for(genre of genres; track genre.id) {
+        <li><a href="#">{{ genre.name }}</a></li>
       }
-      @empty {<p>Ładowanie kategorii lub brak danych...</p>}
+      @empty { <p>Ładowanie kategorii lub brak danych...</p> }
     </ul>
 
     <h3>Najnowsze Recenzje</h3>
     <ul>
-      @for(reviewTitle of reviewsTitle;track reviewTitle){
-      <li><a href="#">{{reviewTitle}}</a></li>
+      @for(reviewTitle of reviewsTitle; track reviewTitle) {
+        <li><a href="#">{{ reviewTitle }}</a></li>
       }
-      @empty {<p>Ładowanie tytułów lub brak danych...</p>}
+      @empty { <p>Ładowanie tytułów lub brak danych...</p> }
     </ul>
+
+ <form [formGroup]="filterForm" class="filter-form">
+
+  <!-- Filtry -->
+  <div class="filter-group">
+    <input type="text" formControlName="TitleSearch" placeholder="Tytuł">
+    <input type="number" formControlName="MinRating" min="0" max="10" placeholder="Min ocena">
+    <input type="number" formControlName="ReleaseYear" placeholder="Rok">
+    <input type="text" formControlName="genreName" placeholder="Gatunek">
+    <input type="text" formControlName="DirectorName" placeholder="Imię reżysera">
+    <input type="text" formControlName="DirectorSurname" placeholder="Nazwisko reżysera">
+    <button type="button" (click)="filterForm.reset({
+      TitleSearch: '',
+      MinRating: null,
+      ReleaseYear: null,
+      genreName: '',
+      DirectorName: '',
+      DirectorSurname: '',
+      SortByField: '',
+      IsDescending: false
+    })">Resetuj</button>
+  </div>
+
+  <!-- Sortowanie -->
+  <div class="sort-group">
+    <select formControlName="SortByField">
+      @for(field of sortFields; track field.value){
+        <option [value]="field.value">{{ field.name }}</option>
+      }
+    </select>
+    <input type="checkbox" formControlName="IsDescending">
+  </div>
+</form>
   </aside>
+
   <section class="film-listings">
     <h2>Popularne Filmy</h2>
-<div class="sorting-filtering-controls">
-    <input type="text" placeholder="Wyszukaj film po tytule..." 
-           >[(ngModel)]="filterParams.titleSearch" (input)="loadMovies()"
-    
-    <label for="sort-by">Sortuj:</label>
-    <select id="sort-by" >[(ngModel)]="filterParams.sortByField" (change)="loadMovies()"
-      <option value="">-- Wybierz Pole --</option>
-      <option value="TitleSearch">Tytuł</option>
-      <option value="MinRating">Ocena</option>
-      <option value="ReleaseYear">Rok Wydania</option>
-      </select>
-    
-    <label>
-      <input type="checkbox" >[(ngModel)]="filterParams.isSortAscending" (change)="loadMovies()"
-      Malejąco
-    </label>
-    
-    <input type="text" placeholder="Imię Reżysera" 
-           >[(ngModel)]="filterParams.directorName" (input)="loadMovies()"
-    <input type="text" placeholder="Nazwisko Reżysera" 
-           >[(ngModel)]="filterParams.directorSurname" (input)="loadMovies()"
-           
-    <input type="number" placeholder="Rok Wydania" 
-           >[(ngModel)]="filterParams.releaseYear" (input)="loadMovies()"
-  </div>
-    @for(movie of movies;track movie.id){
-    <div class="film-card">
-      <div class="movie-details">
-      <div class="film-info">
-        <h3>{{movie.title}}</h3>
-        <p>
-          <span class="rating">{{movie.mediaStats.averageRating}}</span>
-          <span class="genre">{{movie.genre.name}}</span>
-        </p>
-        <p class="description">
-         {{movie.description}}
-        </p>
+    <!-- LISTA FILMÓW -->
+    @for(movie of movies; track movie.id) {
+      <div class="film-card">
+        <div class="movie-details">
+          <div class="film-info">
+            <h3>{{ movie.title }}</h3>
+            <p>
+              <span class="rating">{{ movie.mediaStats.averageRating }}</span>
+              <span class="genre">{{ movie.genre.name }}</span>
+            </p>
+            <p class="description">
+              {{ movie.description }}
+            </p>
+          </div>
+
+          <button>
+            <a [routerLink]="['/movie', movie.id]">Więcej...</a>
+          </button>
         </div>
-        <button>
-          <a [routerLink]="['/movie/id', movie.id]">Więcej...</a>
-        </button>
       </div>
-    </div>
     }
-    @empty {<p>Ładowanie filmów lub brak danych...</p>}
+    @empty { <p>Ładowanie filmów lub brak danych...</p> }
   </section>
 </main>
