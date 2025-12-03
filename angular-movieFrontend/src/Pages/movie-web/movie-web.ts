@@ -7,6 +7,7 @@ import { GenreResponse } from '../../Data/Response/GenreResponse';
 import { ReviewService } from '../../Services/ReviewService';
 import { RouterLink } from '@angular/router';
 import { FormBuilder, FormGroup, ReactiveFormsModule } from '@angular/forms';
+import { debounceTime, distinctUntilChanged } from 'rxjs';
 @Component({
   selector: 'app-movie-web',
   imports: [RouterLink,ReactiveFormsModule],
@@ -14,19 +15,18 @@ import { FormBuilder, FormGroup, ReactiveFormsModule } from '@angular/forms';
   styleUrl: './movie-web.css'
 })
 export class MovieWeb implements OnInit {
-  filterForm!: FormGroup;
+  filterForm: FormGroup;
   movies: MovieResponse[] = [];
   genres: GenreResponse[] = [];
   reviewsTitle: String[] = [];
   sortFields = [
           { name: 'Tytuł', value: 'Title' },
-          { name: 'Ocena', value: 'AverageRating' },
-          { name: 'Rok Wydania', value: 'ReleaseYear' }
+          { name: 'Ocena', value: 'average' },
+          { name: 'Rodzaj', value: 'genre' },
+          { name: 'Rok Wydania', value: 'releaseDate' }
       ];
   constructor(private fb: FormBuilder,private cdr: ChangeDetectorRef,private movieService: MovieService,private genreService: GenreService,private reviewService: ReviewService) {
-  }
-  ngOnInit(): void {
-    this.filterForm = this.fb.group({
+  this.filterForm = this.fb.group({
       TitleSearch: [''],
       MinRating: [null],
       ReleaseYear: [null],
@@ -36,6 +36,16 @@ export class MovieWeb implements OnInit {
       SortByField: [''],
       IsDescending: [false]
     });
+  }
+  ngOnInit(): void {
+    this.filterForm.valueChanges
+      .pipe(
+        debounceTime(300), // Poczekaj 300ms po ostatniej zmianie
+        distinctUntilChanged((prev, curr) => JSON.stringify(prev) === JSON.stringify(curr))
+      )
+      .subscribe((query: MovieQuery) => {
+        this.loadMoviesByFilter(query);
+      });
     this.loadMovies();
     this.loadGenres();
     this.GetTheLastestReviews();
@@ -47,9 +57,8 @@ export class MovieWeb implements OnInit {
       this.cdr.detectChanges();
     });
   }
-  loadMoviesByFilter(): void {
-    const searchValues = this.filterForm.value;
-    this.movieService.getMoviesByFilter(searchValues).subscribe({
+  loadMoviesByFilter(query: MovieQuery): void {
+    this.movieService.getMoviesByFilter(query).subscribe({
         next: (data) => {
           console.log('Załadowano filmy z filtrami:', data);
             this.movies = data;
@@ -60,9 +69,6 @@ export class MovieWeb implements OnInit {
         }
     });
   }
-onSubmit(): void {
-  Promise.resolve().then(() => this.loadMoviesByFilter());
-}
 
 loadGenres(): void {
   this.genreService.getGenres().subscribe((data) => {

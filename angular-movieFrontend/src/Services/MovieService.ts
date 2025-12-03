@@ -17,13 +17,12 @@ getMovieById(id: number): Observable<MovieResponse> {
 }
 getMoviesByFilter(query: MovieQuery): Observable<MovieResponse[]> {
   let params = new HttpParams();
-    for (const key in query) {
-        const value = query[key as keyof MovieQuery];
-        
-        if (value !== null && value !== undefined && value !== '') {
-            params = params.append(key, String(value));
-        }
-    }
+  Object.keys(query).forEach(key => {
+      const value = query[key as keyof MovieQuery];
+      if (value !== null && value !== undefined && value !== '') {
+        params = params.set(key, value.toString());
+      }
+    });
   return this.http.get<MovieResponse[]>(`${this.apiUrl}/FilterBy`, { params: params });
 }
 

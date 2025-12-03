@@ -1,27 +1,26 @@
-/* src/app/main-content/main-content.component.css */
 
 .main-content {
-  display: flex; /* Włącza Flexbox dla sidebara i film-listings */
-  gap: 25px; /* Odstęp między sidebarem a listą filmów */
-  flex-wrap: wrap; /* Zezwala na zawijanie elementów na mniejszych ekranach */
-  flex-grow: 1; /* Pozwala głównej zawartości rozciągnąć się, aby zająć dostępną przestrzeń */
+  display: flex;
+  gap: 25px;
+  flex-wrap: wrap;
+  flex-grow: 1;
 }
 
 .sidebar {
-  flex: 1; /* Sidebar zajmuje 1 część przestrzeni */
-  min-width: 250px; /* Minimalna szerokość sidebara */
+  flex: 1;
+  min-width: 250px;
   background-color: var(--sidebar-bg);
   padding: 25px;
   border-radius: 10px;
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
-  color: var(--dark-text); /* Kolor tekstu na tle sidebara */
+  color: var(--dark-text);
 }
 
 .sidebar h3 {
   color: var(--primary-color);
   margin-top: 0;
   margin-bottom: 15px;
-  border-bottom: 1px solid #444; /* Ciemniejsza linia */
+  border-bottom: 1px solid #444;
   padding-bottom: 10px;
 }
 
@@ -45,13 +44,13 @@
 }
 
 .film-listings {
-  flex: 3; /* Lista filmów zajmuje 3 części przestrzeni */
-  min-width: 400px; /* Minimalna szerokość listy filmów */
+  flex: 3;
+  min-width: 400px;
   background-color: var(--sidebar-bg);
   padding: 25px;
   border-radius: 10px;
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
-  color: var(--dark-text); /* Kolor tekstu na tle listy filmów */
+  color: var(--dark-text);
 }
 
 .film-listings h2 {
@@ -62,10 +61,9 @@
   padding-bottom: 10px;
 }
 
-/* Styles for individual film cards - these should ideally go into film-card.component.css */
-/* Przeniesienie tych styli do film-card.component.css jest następnym krokiem do lepszej modularyzacji */
+
 .film-card {
-  display: flex; /* Włącza Flexbox dla obrazka i informacji w karcie */
+  display: flex;
   margin-bottom: 20px;
   border: 1px solid #444;
   border-radius: 10px;
@@ -106,7 +104,7 @@
 
 .film-info .rating {
   font-weight: bold;
-  color: #ffc107; /* Żółty dla ocen */
+  color: #ffc107;
   margin-right: 10px;
 }
 
@@ -137,62 +135,104 @@
 }
 
 
-.sorting-filtering-controls {
-    display: flex; /* Użycie Flexbox dla ułożenia elementów w linii */
-    flex-wrap: wrap; /* Pozwala elementom przejść do następnego wiersza na małych ekranach */
-    gap: 15px; /* Odstępy między kontrolkami */
-    padding: 15px;
-    margin-bottom: 25px; /* Odstęp od listy filmów poniżej */
-    background-color: #f0f4f7; /* Jasne tło, aby kontrolki się wyróżniały */
+.filter-form {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    padding: 25px;
     border-radius: 8px;
-    align-items: center; /* Wyśrodkowanie elementów w pionie */
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+    max-width: 400px;
+    margin: 20px auto;
+    font-family: Arial, sans-serif;
 }
 
-.sorting-filtering-controls label {
+.filter-form h3 {
+    color: #ff0000;
+    border-bottom: 2px solid #007bff;
+    padding-bottom: 5px;
+    margin-top: 0;
+    margin-bottom: 15px;
+}
+
+.filter-form hr {
+    border: none;
+    border-top: 1px solid #dee2e6;
+    margin: 10px 0;
+}
+
+.filter-group, .sort-group {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    padding: 10px;
+    border-radius: 6px;
+}
+
+.filter-form label {
     font-weight: 600;
-    color: #444;
-    white-space: nowrap; /* Zapobiega łamaniu się etykiet */
+    color: #ffffff;
+    margin-top: 8px;
 }
 
-/* Stylizacja pól tekstowych i rozwijanych list */
-.sorting-filtering-controls input[type="text"],
-.sorting-filtering-controls input[type="number"],
-.sorting-filtering-controls select {
-    padding: 8px 12px;
-    border: 1px solid #ccc;
-    border-radius: 5px;
-    font-size: 1em;
-    transition: border-color 0.3s, box-shadow 0.3s;
-    flex-basis: 180px; /* Daje minimalną szerokość dla lepszego wyglądu */
-    height: 38px; /* Wyrównuje wysokość z innymi elementami */
+.filter-form input[type="text"],
+.filter-form input[type="number"],
+.filter-form select {
+    width: 100%;
+    padding: 10px 12px;
+    margin-top: 5px;
+    border: 1px solid #ced4da;
+    border-radius: 4px;
+    box-sizing: border-box;
+    transition: border-color 0.2s, box-shadow 0.2s;
+    font-size: 16px;
 }
 
-.sorting-filtering-controls input:focus,
-.sorting-filtering-controls select:focus {
+.filter-form input:focus,
+.filter-form select:focus {
     border-color: #007bff;
-    box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.25);
+    box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
     outline: none;
 }
 
-/* Stylizacja checkboxa "Malejąco" */
-.sorting-filtering-controls input[type="checkbox"] {
-    margin-right: 5px;
-    /* Dalsza stylizacja checkboxa często wymaga customizacji, 
-       ale ten bazowy styl jest wystarczający */
-}
-
-/* Stylizacja kontrolek gatunków w pasku bocznym, aby były bardziej interaktywne */
-
-.sidebar li a {
-    /* ... (istniejące style) ... */
+.checkbox-label {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-weight: 400;
+    color: #343a40;
     cursor: pointer;
 }
 
-/* Dodajemy styl dla aktywnie wybranego gatunku (jeśli używasz [class.active]) */
-.sidebar li a.active {
-    font-weight: bold;
-    color: #cc3333; /* Wyróżniający się kolor dla aktywnego filtru */
-    text-decoration: none;
-    border-bottom: 2px solid #cc3333;
+.checkbox-label input[type="checkbox"] {
+    width: 18px;
+    height: 18px;
+    margin: 0;
+    flex-shrink: 0; 
 }
+
+
+.reset-btn {
+    padding: 10px 15px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-weight: bold;
+    transition: background-color 0.3s, transform 0.1s;
+    
+    background-color: #dc3545;
+    color: white;
+    
+    margin-top: 10px;
+}
+
+.reset-btn:hover {
+    background-color: #c82333;
+    transform: translateY(-1px);
+}
+
+.reset-btn:active {
+    background-color: #bd2130;
+    transform: translateY(0);
+}
+

@@ -24,7 +24,7 @@ namespace WebApplication1.QueryHandler
             IQueryable<Movie> query = queryServices.StartQuery();
             var predicate = BuildPredicate(request);
             query = queryServices.Filter(query, predicate);
-            if (!string.IsNullOrEmpty(request.SortByField) || request.IsDescending)
+            if (!string.IsNullOrEmpty(request.SortByField))
             {
                 query = queryServices.Sort(query, request.SortByField, request.IsDescending);
             }
@@ -45,7 +45,7 @@ namespace WebApplication1.QueryHandler
             }
             if (query.MinRating.HasValue)
             {
-                finalPredicate = finalPredicate.And(m => m.Reviews.Average(x => (double?)x.Rating) >= query.MinRating.Value);
+                finalPredicate = finalPredicate.And(m => m.Stats!.AverageRating >= query.MinRating.Value);
             }
             if (query.ReleaseYear.HasValue)
             {

@@ -1,59 +1,59 @@
 <main class="main-content">
   <aside class="sidebar">
+ <div class="movie-page-container">
 
-    <h3>Kategorie</h3>
-    <ul>
-      @for(genre of genres; track genre.id) {
-        <li><a href="#">{{ genre.name }}</a></li>
-      }
-      @empty { <p>Ładowanie kategorii lub brak danych...</p> }
-    </ul>
+    <form [formGroup]="filterForm" class="filter-form">
 
-    <h3>Najnowsze Recenzje</h3>
-    <ul>
-      @for(reviewTitle of reviewsTitle; track reviewTitle) {
-        <li><a href="#">{{ reviewTitle }}</a></li>
-      }
-      @empty { <p>Ładowanie tytułów lub brak danych...</p> }
-    </ul>
+    <div class="filter-group">
+      <h3>🔍 Filtry Wyszukiwania</h3>
 
- <form [formGroup]="filterForm" class="filter-form">
+      <label for="titleSearch">Szukaj po tytule:</label>
+      <input id="titleSearch" type="text" formControlName="TitleSearch">
+      
+      <label for="minRating">Min. ocena (0-10):</label>
+      <input id="minRating" type="number" formControlName="MinRating" min="0" max="10">
+      
+      <label for="releaseYear">Rok Wydania:</label>
+      <input id="releaseYear" type="number" formControlName="ReleaseYear" min="1900">
 
-  <!-- Filtry -->
-  <div class="filter-group">
-    <input type="text" formControlName="TitleSearch" placeholder="Tytuł">
-    <input type="number" formControlName="MinRating" min="0" max="10" placeholder="Min ocena">
-    <input type="number" formControlName="ReleaseYear" placeholder="Rok">
-    <input type="text" formControlName="genreName" placeholder="Gatunek">
-    <input type="text" formControlName="DirectorName" placeholder="Imię reżysera">
-    <input type="text" formControlName="DirectorSurname" placeholder="Nazwisko reżysera">
-    <button type="button" (click)="filterForm.reset({
-      TitleSearch: '',
-      MinRating: null,
-      ReleaseYear: null,
-      genreName: '',
-      DirectorName: '',
-      DirectorSurname: '',
-      SortByField: '',
-      IsDescending: false
-    })">Resetuj</button>
-  </div>
+      <label for="genreName">Gatunek:</label>
+      <select id="genreName" formControlName="genreName">
+          <option [value]="''">-- Wszystkie gatunki --</option>
+          @for (genre of genres; track genre.id) {
+              <option [value]="genre.name">{{ genre.name }}</option>
+          }
+      </select>
+    </div>
+    <button 
+      type="button" 
+      (click)="filterForm.reset({SortByField: null, IsDescending: false, TitleSearch: null, MinRating: null, ReleaseYear: null, genreName: null, DirectorName: null, DirectorSurname: null})" 
+      class="reset-btn"
+    >
+      Resetuj Filtry
+    </button>
+    <hr>
 
-  <!-- Sortowanie -->
-  <div class="sort-group">
-    <select formControlName="SortByField">
-      @for(field of sortFields; track field.value){
-        <option [value]="field.value">{{ field.name }}</option>
-      }
-    </select>
-    <input type="checkbox" formControlName="IsDescending">
-  </div>
-</form>
+    <div class="sort-group">
+      <h3>↕️ Sortowanie</h3>
+      
+      <label for="sortByField">Sortuj wg:</label>
+      <select id="sortByField" formControlName="SortByField">
+        @for (field of sortFields; track field.value) {
+          <option [value]="field.value">{{ field.name }}</option>
+        }
+      </select>
+      <label class="checkbox-label">
+        <input type="checkbox" formControlName="IsDescending">
+        Sortuj malejąco (DESC)
+      </label>
+    </div>
+
+    </form>
+    <hr>
+    </div>
   </aside>
-
   <section class="film-listings">
     <h2>Popularne Filmy</h2>
-    <!-- LISTA FILMÓW -->
     @for(movie of movies; track movie.id) {
       <div class="film-card">
         <div class="movie-details">
