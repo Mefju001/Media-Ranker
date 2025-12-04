@@ -10,7 +10,7 @@ namespace WebApplication1.DTO.Response
         DateTime ReleaseDate,
         string? Language,
         List<ReviewResponse>? Reviews,
-
+        MediaStatsResponse MediaStats,
         int Seasons,
         int Episodes,
         string? Network,

@@ -7,10 +7,6 @@ namespace WebApplication1.DTO.Mapper
     {
         public static MediaStatsResponse ToResponse(MediaStats mediaStats)
         {
-            if (mediaStats == null)
-            {
-                return null;
-            }
             return new MediaStatsResponse(mediaStats.MediaId,mediaStats.AverageRating, mediaStats.ReviewCount, mediaStats.LastCalculated);
         }
     }

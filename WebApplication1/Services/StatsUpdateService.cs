@@ -25,7 +25,7 @@ namespace WebApplication1.Services
                 await _unitOfWork.MediaStats.AddAsync(media.Stats);
             }
             int reviewCount = media.Reviews.Count();
-            double? averageRating = reviewCount > 0 ? media.Reviews.Average(x => (double?)x.Rating) : null;
+            double? averageRating = reviewCount > 0 ? media.Reviews.Average(x => (double?)x.Rating) : 0;
 
             media.Stats.ReviewCount = reviewCount;
             media.Stats.AverageRating = averageRating;

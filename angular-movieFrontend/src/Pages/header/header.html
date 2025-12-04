@@ -1,12 +1,12 @@
 <header class="header">
   <div class="logo">
-    <h1>Media-Ranker</h1>
+    <h1 [routerLink]="['']">Media-Ranker</h1>
   </div>
   <nav class="main-nav">
     <ul>
-      <li><a href="#">Filmy</a></li>
-      <li><a href="#">Seriale</a></li>
-      <li><a href ="#">Gry</a></li>
+      <li><a [routerLink]="['movies']">Filmy</a></li>
+      <li><a [routerLink]="['tvSeries']">Seriale</a></li>
+      <li><a [routerLink]="['games']">Gry</a></li>
       <li><a href="#">Rankingi</a></li>
       <li><a href="#">Premiery</a></li>
       <li><a href="#">Newsy</a></li>
@@ -15,7 +15,10 @@
   </nav>
   <div class="user-actions">
     <input type="text" placeholder="Szukaj filmów..." />
-    <button>Zaloguj</button>
-    <button>Zarejestruj</button>
+    @if(isLoggedIn) {
+      <button>Zalogowany jako {{ username }}</button>
+    } @else {
+      <button (click)="openLoginDialog()">Zaloguj</button>
+    }
   </div>
 </header>

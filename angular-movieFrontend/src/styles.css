@@ -39,3 +39,5 @@ body {
   min-height: calc(100vh - 40px); /* Dopasuj wysokość kontenera do viewportu minus padding */
   box-sizing: border-box; /* Upewnij się, że padding nie zwiększa rozmiaru kontenera */
 }
+html, body { height: 100%; }
+body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }

@@ -40,7 +40,6 @@
       class="reset-btn">
       Resetuj sortowanie
     </button>
-    <button (click)="[refresh]">zastosuj</button>
     </div>
 
     </form>
@@ -49,22 +48,22 @@
   </aside>
   <section class="film-listings">
     <h2>Popularne Filmy</h2>
-    @for(movie of movies; track movie.id) {
+    @for(tvSeries of TvSeries; track tvSeries.id) {
       <div class="film-card">
         <div class="movie-details">
           <div class="film-info">
-            <h3>{{ movie.title }}</h3>
+            <h3>{{ tvSeries.title }}</h3>
             <p>
-              <span class="rating">{{ movie.mediaStats.averageRating }}</span>
-              <span class="genre">{{ movie.genre.name }}</span>
+              <span class="rating">{{ tvSeries.mediaStats.averageRating }}</span>
+              <span class="genre">{{ tvSeries.genre.name }}</span>
             </p>
             <p class="description">
-              {{ movie.description }}
+              {{ tvSeries.description }}
             </p>
           </div>
 
           <button>
-            <a [routerLink]="['/movie', movie.id]">Więcej...</a>
+            <a [routerLink]="['/tvSeries', tvSeries.id]">Więcej...</a>
           </button>
         </div>
       </div>

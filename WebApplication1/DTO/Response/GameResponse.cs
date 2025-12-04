@@ -10,7 +10,7 @@ namespace WebApplication1.DTO.Response
         DateTime ReleaseDate,
         string? Language,
         List<ReviewResponse>? Reviews,
-
+        MediaStatsResponse MediaStats,
         string? Developer,
         EPlatform Platform
         ) : MediaResponse(id, Title, Description, Genre, ReleaseDate, Language, Reviews);

@@ -16,6 +16,7 @@ namespace WebApplication1.DTO.Mapper
                 game.ReleaseDate,
                 game.Language,
                 game.Reviews?.Select(r => ReviewMapper.ToResponse(r)).ToList() ?? new List<ReviewResponse>(),
+                MediaStatsMapper.ToResponse(game.Stats!)??new MediaStatsResponse(0,0,0,null),
                 game.Developer,
                 game.Platform
                 );

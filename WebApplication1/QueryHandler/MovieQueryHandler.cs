@@ -24,9 +24,16 @@ namespace WebApplication1.QueryHandler
             IQueryable<Movie> query = queryServices.StartQuery();
             var predicate = BuildPredicate(request);
             query = queryServices.Filter(query, predicate);
-            if (!string.IsNullOrEmpty(request.SortByField))
+            if (!string.IsNullOrEmpty(request.SortByField)&&request.SortByField.Contains('|'))
             {
-                query = queryServices.Sort(query, request.SortByField, request.IsDescending);
+                var fields = request.SortByField.Split('|');
+                if (fields.Length == 2 && bool.TryParse(fields[1], out bool IsDescending))
+                {
+                    request.IsDescending = IsDescending;
+                    request.SortByField = fields[0];
+                    query = queryServices.Sort(query, request.SortByField, request.IsDescending);
+                }
+                else throw new Exception("Mismatch");
             }
             var movies = await query.ToListAsync(cancellationToken);
             var Response = movies.Select(m => MovieMapper.ToMovieResponse(m)).ToList();

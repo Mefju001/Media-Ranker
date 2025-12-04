@@ -7,5 +7,4 @@ export interface MovieQuery {
         DirectorSurname: string | null;
 
         SortByField: string | null;
-        IsDescending: Boolean;
 }

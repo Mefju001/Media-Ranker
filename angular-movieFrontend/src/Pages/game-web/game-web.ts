@@ -1,23 +1,25 @@
-import { ChangeDetectorRef, Component, OnInit} from '@angular/core';
+import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
+import { FormBuilder, FormGroup, ReactiveFormsModule } from '@angular/forms';
+import { debounceTime } from 'rxjs';
 import { MovieQuery } from '../../Data/Request/MovieQuery';
-import { MovieService } from '../../Services/MovieService';
-import { GenreService } from '../../Services/GenreService';
-import { MovieResponse } from '../../Data/Response/MovieResponse';
 import { GenreResponse } from '../../Data/Response/GenreResponse';
+import { MovieResponse } from '../../Data/Response/MovieResponse';
+import { GenreService } from '../../Services/GenreService';
+import { MovieService } from '../../Services/MovieService';
 import { ReviewService } from '../../Services/ReviewService';
 import { RouterLink } from '@angular/router';
-import { FormBuilder, FormGroup, ReactiveFormsModule } from '@angular/forms';
-import { debounceTime, distinctUntilChanged } from 'rxjs';
+import { GameService } from '../../Services/GameService';
+import { GameResponse } from '../../Data/Response/GameResponse';
+
 @Component({
-  selector: 'app-movie-web',
-  standalone: true,
+  selector: 'app-game-web',
   imports: [RouterLink,ReactiveFormsModule],
-  templateUrl: './movie-web.html',
-  styleUrl: './movie-web.css'
+  templateUrl: './game-web.html',
+  styleUrl: './game-web.css',
 })
-export class MovieWeb implements OnInit {
+export class GameWeb implements OnInit {
   filterForm: FormGroup;
-  movies: MovieResponse[];
+  games: GameResponse[] = [];
   genres: GenreResponse[] = [];
   reviewsTitle: String[] = [];
   sortFields = [
@@ -28,7 +30,7 @@ export class MovieWeb implements OnInit {
     { name: 'Ocena (najwyższa)', value: 'average|true' },
     { name: 'Rok Wydania (najnowsze)', value: 'releaseDate|true' },
     ];
-  constructor(private fb: FormBuilder,private cdr: ChangeDetectorRef,private movieService: MovieService,private genreService: GenreService,private reviewService: ReviewService) {
+  constructor(private fb: FormBuilder,private cdr: ChangeDetectorRef,private gameService: GameService,private genreService: GenreService,private reviewService: ReviewService) {
   this.filterForm = this.fb.group({
       TitleSearch: [null],
       MinRating: [null],
@@ -39,9 +41,8 @@ export class MovieWeb implements OnInit {
       SortByField: [null],
       IsDescending: [false]
     });
-    this.movies = [];
   }
-  ngOnInit(): void {
+ngOnInit(): void {
     this.filterForm.valueChanges
       .pipe(
         debounceTime(300)
@@ -49,31 +50,27 @@ export class MovieWeb implements OnInit {
       .subscribe((query: MovieQuery) => {
         this.loadMoviesByFilter(query);
       });
-    this.loadMovies();
+    this.loadGames();
     this.loadGenres();
     this.GetTheLastestReviews();
   }
 
-  loadMovies(): void {
-    this.movieService.getMovies().subscribe((data) => {
-      this.movies = data;
+  loadGames(): void {
+    this.gameService.getGames().subscribe((data) => {
+      this.games = data;
+      console.log('Załadowano gry:', data);
       this.cdr.detectChanges();
     });
   }
-  refresh(): void {
-    this.cdr.detectChanges();
-  }
   loadMoviesByFilter(query: MovieQuery): void {
-    this.movieService.getMoviesByFilter(query).subscribe({
+    this.gameService.getGamesByFilter(query).subscribe({
         next: (data) => {
           console.log('Załadowano filmy z filtrami:', data);
-            this.movies = data;
-            console.log('Filmy po zastosowaniu filtrów:', this.movies);
-            this.cdr.detectChanges();
+            this.games = data;
         },
         error: (err) => {
             console.error('Błąd ładowania filmów:', err);
-            this.movies = [];
+            this.games = [];
         }
     });
   }

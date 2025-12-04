@@ -1,23 +1,25 @@
-import { ChangeDetectorRef, Component, OnInit} from '@angular/core';
+import { ChangeDetectorRef, Component } from '@angular/core';
+import { FormBuilder, FormGroup, ReactiveFormsModule } from '@angular/forms';
+import { debounceTime } from 'rxjs';
 import { MovieQuery } from '../../Data/Request/MovieQuery';
-import { MovieService } from '../../Services/MovieService';
-import { GenreService } from '../../Services/GenreService';
-import { MovieResponse } from '../../Data/Response/MovieResponse';
 import { GenreResponse } from '../../Data/Response/GenreResponse';
+import { MovieResponse } from '../../Data/Response/MovieResponse';
+import { GenreService } from '../../Services/GenreService';
+import { MovieService } from '../../Services/MovieService';
 import { ReviewService } from '../../Services/ReviewService';
 import { RouterLink } from '@angular/router';
-import { FormBuilder, FormGroup, ReactiveFormsModule } from '@angular/forms';
-import { debounceTime, distinctUntilChanged } from 'rxjs';
+import { TvSeriesResponse } from '../../Data/Response/TvSeriesResponse';
+import { TvSeriesService } from '../../Services/TvSeriesService';
+
 @Component({
-  selector: 'app-movie-web',
-  standalone: true,
+  selector: 'app-tv-series-web',
   imports: [RouterLink,ReactiveFormsModule],
-  templateUrl: './movie-web.html',
-  styleUrl: './movie-web.css'
+  templateUrl: './tv-series-web.html',
+  styleUrl: './tv-series-web.css',
 })
-export class MovieWeb implements OnInit {
-  filterForm: FormGroup;
-  movies: MovieResponse[];
+export class TvSeriesWeb {
+filterForm: FormGroup;
+  TvSeries: TvSeriesResponse[] = [];
   genres: GenreResponse[] = [];
   reviewsTitle: String[] = [];
   sortFields = [
@@ -28,7 +30,7 @@ export class MovieWeb implements OnInit {
     { name: 'Ocena (najwyższa)', value: 'average|true' },
     { name: 'Rok Wydania (najnowsze)', value: 'releaseDate|true' },
     ];
-  constructor(private fb: FormBuilder,private cdr: ChangeDetectorRef,private movieService: MovieService,private genreService: GenreService,private reviewService: ReviewService) {
+  constructor(private fb: FormBuilder,private cdr: ChangeDetectorRef,private tvSeriesService: TvSeriesService,private genreService: GenreService,private reviewService: ReviewService) {
   this.filterForm = this.fb.group({
       TitleSearch: [null],
       MinRating: [null],
@@ -39,7 +41,6 @@ export class MovieWeb implements OnInit {
       SortByField: [null],
       IsDescending: [false]
     });
-    this.movies = [];
   }
   ngOnInit(): void {
     this.filterForm.valueChanges
@@ -47,33 +48,28 @@ export class MovieWeb implements OnInit {
         debounceTime(300)
       )
       .subscribe((query: MovieQuery) => {
-        this.loadMoviesByFilter(query);
+        this.loadTvSeriesByFilter(query);
       });
-    this.loadMovies();
+    this.loadTvSeries();
     this.loadGenres();
     this.GetTheLastestReviews();
   }
 
-  loadMovies(): void {
-    this.movieService.getMovies().subscribe((data) => {
-      this.movies = data;
+  loadTvSeries(): void {
+    this.tvSeriesService.getTvSeries().subscribe((data) => {
+      this.TvSeries = data;
       this.cdr.detectChanges();
     });
   }
-  refresh(): void {
-    this.cdr.detectChanges();
-  }
-  loadMoviesByFilter(query: MovieQuery): void {
-    this.movieService.getMoviesByFilter(query).subscribe({
+  loadTvSeriesByFilter(query: MovieQuery): void {
+    this.tvSeriesService.getMoviesByFilter(query).subscribe({
         next: (data) => {
           console.log('Załadowano filmy z filtrami:', data);
-            this.movies = data;
-            console.log('Filmy po zastosowaniu filtrów:', this.movies);
-            this.cdr.detectChanges();
+            this.TvSeries = data;
         },
         error: (err) => {
             console.error('Błąd ładowania filmów:', err);
-            this.movies = [];
+            this.TvSeries = [];
         }
     });
   }

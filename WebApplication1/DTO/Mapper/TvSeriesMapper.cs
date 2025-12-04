@@ -16,6 +16,7 @@ namespace WebApplication1.DTO.Mapper
                 tvSeries.ReleaseDate,
                 tvSeries.Language,
                 tvSeries.Reviews?.Select(r => ReviewMapper.ToResponse(r)).ToList() ?? new List<ReviewResponse>(),
+                MediaStatsMapper.ToResponse(tvSeries.Stats!)??new MediaStatsResponse(0,0,0,null),
                 tvSeries.Seasons,
                 tvSeries.Episodes,
                 tvSeries.Network,

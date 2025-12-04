@@ -40,7 +40,6 @@
       class="reset-btn">
       Resetuj sortowanie
     </button>
-    <button (click)="[refresh]">zastosuj</button>
     </div>
 
     </form>
@@ -48,27 +47,27 @@
     </div>
   </aside>
   <section class="film-listings">
-    <h2>Popularne Filmy</h2>
-    @for(movie of movies; track movie.id) {
+    <h2>Popularne Gry</h2>
+    @for(game of games; track game.id) {
       <div class="film-card">
         <div class="movie-details">
           <div class="film-info">
-            <h3>{{ movie.title }}</h3>
+            <h3>{{ game.title }}</h3>
             <p>
-              <span class="rating">{{ movie.mediaStats.averageRating }}</span>
-              <span class="genre">{{ movie.genre.name }}</span>
+              <span class="rating">{{ game.mediaStats.averageRating }}</span>
+              <span class="genre">{{ game.genre.name }}</span>
             </p>
             <p class="description">
-              {{ movie.description }}
+              {{ game.description }}
             </p>
           </div>
 
           <button>
-            <a [routerLink]="['/movie', movie.id]">Więcej...</a>
+            <a [routerLink]="['/movie', game.id]">Więcej...</a>
           </button>
         </div>
       </div>
     }
-    @empty { <p>Ładowanie filmów lub brak danych...</p> }
+    @empty { <p>Ładowanie gier lub brak danych...</p> }
   </section>
 </main>
