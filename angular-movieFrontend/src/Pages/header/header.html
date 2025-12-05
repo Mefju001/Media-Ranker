@@ -16,7 +16,17 @@
   <div class="user-actions">
     <input type="text" placeholder="Szukaj filmów..." />
     @if(isLoggedIn) {
-      <button>Zalogowany jako {{ username }}</button>
+      <div class="dropdown">
+        <button class="btn btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+          Zalogowany jako {{ username }}
+        </button>
+        <ul class="dropdown-menu">
+          <li><a class="dropdown-item" href="#">zmiana hasła</a></li>
+          <li><a class="dropdown-item" href="#">zmiana danych</a></li>
+          <li><a class="dropdown-item" href="#">Usuń konto</a></li>
+          <li><a class="dropdown-item" href="#">wyloguj</a></li>
+        </ul>
+      </div>
     } @else if(!isLoggedIn) {
       <button (click)="openLoginDialog()">Zaloguj</button>
     }

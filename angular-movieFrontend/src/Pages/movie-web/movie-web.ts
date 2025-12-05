@@ -59,9 +59,7 @@ export class MovieWeb implements OnInit {
       this.movies = data;
     });
   }
-  refresh(): void {
-    this.cdr.detectChanges();
-  }
+
   loadMoviesByFilter(query: MovieQuery): void {
     this.movieService.getMoviesByFilter(query).subscribe({
         next: (data) => {

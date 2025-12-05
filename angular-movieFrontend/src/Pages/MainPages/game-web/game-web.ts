@@ -1,15 +1,15 @@
 import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { debounceTime } from 'rxjs';
-import { MovieQuery } from '../../Data/Request/MovieQuery';
-import { GenreResponse } from '../../Data/Response/GenreResponse';
-import { MovieResponse } from '../../Data/Response/MovieResponse';
-import { GenreService } from '../../Services/GenreService';
-import { MovieService } from '../../Services/MovieService';
-import { ReviewService } from '../../Services/ReviewService';
+import { MovieQuery } from '../../../Data/Request/MovieQuery';
+import { GenreResponse } from '../../../Data/Response/GenreResponse';
+import { MovieResponse } from '../../../Data/Response/MovieResponse';
+import { GenreService } from '../../../Services/GenreService';
+import { MovieService } from '../../../Services/MovieService';
+import { ReviewService } from '../../../Services/ReviewService';
 import { RouterLink } from '@angular/router';
-import { GameService } from '../../Services/GameService';
-import { GameResponse } from '../../Data/Response/GameResponse';
+import { GameService } from '../../../Services/GameService';
+import { GameResponse } from '../../../Data/Response/GameResponse';
 
 @Component({
   selector: 'app-game-web',

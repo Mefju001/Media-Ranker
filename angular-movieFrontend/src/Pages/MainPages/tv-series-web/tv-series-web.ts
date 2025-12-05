@@ -1,15 +1,15 @@
 import { ChangeDetectorRef, Component } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { debounceTime } from 'rxjs';
-import { MovieQuery } from '../../Data/Request/MovieQuery';
-import { GenreResponse } from '../../Data/Response/GenreResponse';
-import { MovieResponse } from '../../Data/Response/MovieResponse';
-import { GenreService } from '../../Services/GenreService';
-import { MovieService } from '../../Services/MovieService';
-import { ReviewService } from '../../Services/ReviewService';
+import { MovieQuery } from '../../../Data/Request/MovieQuery';
+import { GenreResponse } from '../../../Data/Response/GenreResponse';
+import { MovieResponse } from '../../../Data/Response/MovieResponse';
+import { GenreService } from '../../../Services/GenreService';
+import { MovieService } from '../../../Services/MovieService';
+import { ReviewService } from '../../../Services/ReviewService';
 import { RouterLink } from '@angular/router';
-import { TvSeriesResponse } from '../../Data/Response/TvSeriesResponse';
-import { TvSeriesService } from '../../Services/TvSeriesService';
+import { TvSeriesResponse } from '../../../Data/Response/TvSeriesResponse';
+import { TvSeriesService } from '../../../Services/TvSeriesService';
 
 @Component({
   selector: 'app-tv-series-web',

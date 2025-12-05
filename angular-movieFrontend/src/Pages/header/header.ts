@@ -30,6 +30,7 @@ openLoginDialog(): void {
               this.authService.login(credentials).subscribe({
                   next: (response) => {
                       this.isLoggedIn = true;
+                      sessionStorage.setItem('isLoggedIn',this.isLoggedIn.toString());
                       this.username = credentials.username;
                       console.log('Login successful:', response);
                   }
