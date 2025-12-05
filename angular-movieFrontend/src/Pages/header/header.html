@@ -17,7 +17,7 @@
     <input type="text" placeholder="Szukaj filmów..." />
     @if(isLoggedIn) {
       <button>Zalogowany jako {{ username }}</button>
-    } @else {
+    } @else if(!isLoggedIn) {
       <button (click)="openLoginDialog()">Zaloguj</button>
     }
   </div>

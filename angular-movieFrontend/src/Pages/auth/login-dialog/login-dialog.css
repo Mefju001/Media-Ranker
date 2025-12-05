@@ -1,26 +1,21 @@
-/* * Plik CSS dla komponentu LoginDialog. 
- * Style są ładowane automatycznie, gdy komponent jest używany.
- */
-
-/* Zapewnia, że formularz wewnątrz kontenera dialogu zajmuje całą dostępną szerokość */
+@import '@angular/material/prebuilt-themes/indigo-pink.css';
 .w-full {
   width: 100%;
 }
 
-/* Stylizacja dla kontenera formularza (mat-dialog-content) */
-/* Ustawia odpowiednie odstępy wewnątrz okna dialogowego */
 mat-dialog-content {
-  padding: 0 24px 24px 24px;
-  /* Opcjonalnie: minimalna szerokość dla czytelności */
-  min-width: 300px; 
+  padding: 50px 24px 24px 24px;
+
+  min-width: 400px; 
 }
 
-/* Dodanie marginesu dla lepszego odstępu między polami formularza */
 mat-form-field {
   margin-bottom: 1rem;
 }
 
-/* Upewnienie się, że przyciski akcji mają odpowiedni margines */
 mat-dialog-actions button {
   margin-left: 8px;
+}
+.mat-mdc-dialog-content>:first-child {
+    margin-top: 1rem;
 }

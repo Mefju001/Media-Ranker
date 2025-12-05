@@ -20,7 +20,7 @@ namespace WebApplication1.QueryHandler
             query = gameServices.Filter(query, predicate);
             if (!string.IsNullOrEmpty(request.sortByField) || request.IsDescending)
             {
-                query = gameServices.Sort(query, request.sortByField, request.IsDescending);
+                query = gameServices.Sort(query, request.sortByField!, request.IsDescending);
             }
 
             var games = await query.ToListAsync(cancellationToken);

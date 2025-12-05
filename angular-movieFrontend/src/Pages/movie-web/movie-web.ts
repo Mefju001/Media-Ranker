@@ -57,7 +57,6 @@ export class MovieWeb implements OnInit {
   loadMovies(): void {
     this.movieService.getMovies().subscribe((data) => {
       this.movies = data;
-      this.cdr.detectChanges();
     });
   }
   refresh(): void {
