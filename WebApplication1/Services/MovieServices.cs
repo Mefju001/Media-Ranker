@@ -24,7 +24,40 @@ namespace WebApplication1.Services
             this._unitOfWork = unitOfWork;
             this._mediator = mediator;
         }
-
+        public async Task<List<MovieResponse>>AddListOfMovie(List<MovieRequest>requests)
+        {
+            if(requests is null)throw new ArgumentNullException(nameof(requests));
+            await using var transaction = await _unitOfWork.BeginTransactionAsync();
+            try
+            {
+                List<Movie> movies = new List<Movie>();
+                foreach (var request in requests)
+                {
+                    var director = await referenceDataService.GetOrCreateDirectorAsync(request.Director);
+                    var genre = await referenceDataService.GetOrCreateGenreAsync(request.Genre);
+                    var movie = movieBuilder
+                        .CreateNew(request.Title, request.Description)
+                        .WithTechnicalDetails
+                        (request.Duration,
+                         request.Language,
+                         request.IsCinemaRelease,
+                         request.ReleaseDate)
+                        .WithGenre(genre)
+                        .WithDirector(director)
+                        .Build();
+                    movies.Add(movie);
+                }
+                await _unitOfWork.Movies.AddRangeAsync(movies);
+                await _unitOfWork.CompleteAsync();
+                var listOfResponses = movies.Select(MovieMapper.ToMovieResponse).ToList();
+                await transaction.CommitAsync();
+                return listOfResponses;
+            }
+            catch (Exception ex)
+            {
+                throw new InvalidOperationException();
+            }
+        }
         public async Task<MovieResponse> Upsert(int? movieId, MovieRequest movieRequest)
         {
             await using var transaction = await _unitOfWork.BeginTransactionAsync();
