@@ -6,6 +6,7 @@ using Moq;
 using SQLitePCL;
 using System.IO;
 using System.Linq.Expressions;
+using WebApplication1.Builder;
 using WebApplication1.Builder.Interfaces;
 using WebApplication1.Data;
 using WebApplication1.DTO.Mapper;
@@ -59,6 +60,7 @@ namespace MovieTest
             var createdDirector = new Director { name = "John", surname = "Doe", Id = 98 };
             return new Movie
             {
+                Id = 1,
                 title = "Inception",
                 description = "Great movie",
                 genre = createdGenre,
@@ -83,11 +85,9 @@ namespace MovieTest
             _unitOfWorkMock.SetupGet(uow => uow.Genres).Returns(genreRepositoryMock.Object);
             _unitOfWorkMock.SetupGet(uow => uow.Directors).Returns(directorRepositoryMock.Object);
         }
-        private void SetupMovieBuilderChain(Movie movie)
+        private IMovieBuilder SetupMovieBuilderChain(Movie movie)
         {
-            var createNewSequence = _movieBuilderMock.SetupSequence(b => b.CreateNew(It.IsAny<string>(), It.IsAny<string>()));
             var builderStepMock = new Mock<IMovieBuilder>();
-
             builderStepMock
                 .Setup(b => b.WithTechnicalDetails(It.IsAny<TimeSpan>(), It.IsAny<string>(), It.IsAny<bool>(), It.IsAny<DateTime>()))
                 .Returns(builderStepMock.Object);
@@ -98,9 +98,12 @@ namespace MovieTest
                 .Setup(b => b.WithDirector(It.IsAny<Director>()))
                 .Returns(builderStepMock.Object);
 
-            var buildSetup = builderStepMock.SetupSequence(b => b.Build());
-            createNewSequence = createNewSequence.Returns(builderStepMock.Object);
-            buildSetup = buildSetup.Returns(movie);
+            builderStepMock.Setup(b => b.Build()).Returns(movie);
+            return builderStepMock.Object;
+        }
+        private void SetupBuilderSequence(IMovieBuilder movieBuilder)
+        {
+
         }
         private void SetupReferenceDataMocks(Genre genre, Director director)
         {
@@ -112,23 +115,7 @@ namespace MovieTest
         public async Task Upsert_UpdateMovie()
         {
             var testRequest = ReturnMovieRequest();
-            var stats = new MediaStats
-            {
-                Media = new Movie()
-                {
-                    title = "New Title",
-                    description = "Some description",
-                }
-            };
-            Movie movieInDb = new Movie()
-            {
-                Id = 1,
-                title = "New Title",
-                description = "Some description",
-                genre = new Genre { name = "New Genre" },
-                director = new Director { name = "John", surname = "Doe" },
-                Stats = stats
-            };
+            var movieInDb = ReturnMovie();
             movieRepositoryMock.Setup(u => u.FirstOrDefaultAsync(It.IsAny<Expression<Func<Movie, bool>>>())).ReturnsAsync(movieInDb);
             var createdGenre = new Genre { name = "Action", Id = 99 };
             var createdDirector = new Director { name = "John", surname = "Doe", Id = 98 };
@@ -144,75 +131,72 @@ namespace MovieTest
         public async Task Upsert_AddMovie2()
         {
             var testRequest = ReturnMovieRequest();
-            var createdGenre = new Genre { name = "Action", Id = 99 };
-            var createdDirector = new Director { name = "John", surname = "Doe", Id = 98 };
-            var stats = new MediaStats
-            {
-                Media = new Movie(){
-                    title = "Inception",
-                    description = "Great movie",
-                }
-            };
-            var expectedMovie = new Movie
-            {
-                title = "Inception",
-                description = "Great movie",
-                genre = new Genre { name = "Action" },
-                director = new Director { name = "John", surname = "Doe" },
-                ReleaseDate = DateTime.Now,
-                Language = "English",
-                Duration = new TimeSpan(2, 28, 0),
-                IsCinemaRelease = true,
-                Stats = stats
-            };
-
-            SetupReferenceDataMocks(createdGenre,createdDirector);
-            SetupMovieBuilderChain(expectedMovie);
-
+            var expectedMovie = ReturnMovie();
+            SetupReferenceDataMocks(expectedMovie.genre,expectedMovie.director);
+            var builder = SetupMovieBuilderChain(expectedMovie);
+            _movieBuilderMock
+                .SetupSequence(b => b.CreateNew(It.IsAny<string>(), It.IsAny<string>()))
+                .Returns(builder);
             var result = await _sut.Upsert(null, testRequest);
-
             _unitOfWorkMock.Verify(u => u.Movies.AddAsync(It.Is<Movie>(m => m.title == "Inception")), Times.Once);
-
             _unitOfWorkMock.Verify(u => u.CompleteAsync(), Times.Once);
             _unitOfWorkMock.Verify(u => u.BeginTransactionAsync().Result.CommitAsync(), Times.Once);
-
             Assert.NotNull(result);
             Assert.Equal("Inception", result.Title);
         }
-
+        [Fact]
+        public async Task AddListOfMovies()
+        {
+            List<MovieRequest> movies = new List<MovieRequest>()
+            {
+                ReturnMovieRequest(),
+                ReturnMovieRequest()
+            };
+            var createdGenre = new Genre { name = "Action", Id = 99 };
+            var createdDirector = new Director { name = "John", surname = "Doe", Id = 98 };
+            SetupReferenceDataMocks(createdGenre, createdDirector);
+            var builder1 = SetupMovieBuilderChain(ReturnMovie());
+            var builder2 = SetupMovieBuilderChain(
+                new Movie
+                {
+                    Id = 2,
+                    title = "Inception",
+                    description = "Great movie",
+                    genre = createdGenre,
+                    director = createdDirector,
+                    ReleaseDate = DateTime.Now,
+                    Language = "English",
+                    Duration = new TimeSpan(2, 28, 0),
+                    IsCinemaRelease = true,
+                    Stats = new MediaStats
+                    {
+                        Media = new Movie()
+                        {
+                            title = "Inception",
+                            description = "Great movie",
+                        }
+                    }
+                }
+            );
+            _movieBuilderMock
+                .SetupSequence(b => b.CreateNew(It.IsAny<string>(), It.IsAny<string>()))
+                .Returns(builder1)
+                .Returns(builder2);
+            var results = await _sut.AddListOfMovie(movies);
+            Assert.True(results.Count > 0);
+            Assert.Equal(results.Count, movies.Count);
+        }
         [Fact]
         public async Task GetAllAsync_ReturnsAllMovies()
         {
-            var stats = new MediaStats
-            {
-                Media = new Movie()
-                {
-                    title = "New Title",
-                    description = "Some description",
-                }
-            };
             List<Movie> movies = new List<Movie>()
             {
-             new Movie()
-            {
-                title = "New Title",
-                description = "Some description",
-                genre = new Genre { name = "New Genre" },
-                director = new Director { name = "John", surname = "Doe" },
-                Stats = stats
-            },
-            new Movie()
-            {
-                title = "New Title",
-                description = "Some description",
-                genre = new Genre { name = "New Genre" },
-                director = new Director { name = "John", surname = "Doe" },
-                Stats = stats
-            }
+                ReturnMovie(),
+                ReturnMovie()
             };
             movieRepositoryMock.Setup(m => m.GetAllAsync()).ReturnsAsync(movies);
-            var result = await _sut.GetAllAsync();
 
+            var result = await _sut.GetAllAsync();
             movieRepositoryMock.Verify(r => r.GetAllAsync(), Times.Once);
             Assert.NotNull(result);
             Assert.Equal(2, result.Count);
@@ -222,29 +206,13 @@ namespace MovieTest
         [Fact]
         public async Task GetMovieByIdAsync_WhenMovieExists_ReturnsMovieResponse()
         {
-            var stats = new MediaStats
-            {
-                Media = new Movie()
-                {
-                    title = "New Title",
-                    description = "Some description",
-                }
-            };
-            var movie = new Movie()
-            {
-                Id = 1,
-                title = "New Title",
-                description = "Some description",
-                genre = new Genre { name = "New Genre" },
-                director = new Director { name = "John", surname = "Doe" },
-                Stats = stats
-            };
+            var movie = ReturnMovie();
             SetupUnitOfWork();
             movieRepositoryMock.Setup(u=>u.GetByIdAsync(It.IsAny<int>())).ReturnsAsync(movie);
             var result = await _sut.GetById(movie.Id);
             Assert.NotNull(result);
-            Assert.Equal("New Title", result.Title);
-            Assert.Equal("Some description", result.Description);
+            Assert.Equal("Inception", result.Title);
+            Assert.Equal("Great movie", result.Description);
         }
         
         [Fact]
