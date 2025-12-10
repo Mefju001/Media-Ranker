@@ -101,10 +101,6 @@ namespace MovieTest
             builderStepMock.Setup(b => b.Build()).Returns(movie);
             return builderStepMock.Object;
         }
-        private void SetupBuilderSequence(IMovieBuilder movieBuilder)
-        {
-
-        }
         private void SetupReferenceDataMocks(Genre genre, Director director)
         {
             _referenceDataServiceMock.Setup(raf => raf.GetOrCreateGenreAsync(It.IsAny<GenreRequest>())).ReturnsAsync(genre);
@@ -128,7 +124,7 @@ namespace MovieTest
             Assert.Equal("Inception", result.Title);
         }
         [Fact]
-        public async Task Upsert_AddMovie2()
+        public async Task Upsert_AddMovie()
         {
             var testRequest = ReturnMovieRequest();
             var expectedMovie = ReturnMovie();
@@ -160,7 +156,7 @@ namespace MovieTest
                 new Movie
                 {
                     Id = 2,
-                    title = "Inception",
+                    title = "Inception 2",
                     description = "Great movie",
                     genre = createdGenre,
                     director = createdDirector,
@@ -183,6 +179,8 @@ namespace MovieTest
                 .Returns(builder1)
                 .Returns(builder2);
             var results = await _sut.AddListOfMovie(movies);
+            _unitOfWorkMock.Verify(u => u.Movies.AddRangeAsync(It.IsAny<IEnumerable<Movie>>()), Times.Once);
+            _unitOfWorkMock.Verify(u => u.CompleteAsync(), Times.Once);
             Assert.True(results.Count > 0);
             Assert.Equal(results.Count, movies.Count);
         }
@@ -195,7 +193,6 @@ namespace MovieTest
                 ReturnMovie()
             };
             movieRepositoryMock.Setup(m => m.GetAllAsync()).ReturnsAsync(movies);
-
             var result = await _sut.GetAllAsync();
             movieRepositoryMock.Verify(r => r.GetAllAsync(), Times.Once);
             Assert.NotNull(result);
@@ -213,15 +210,36 @@ namespace MovieTest
             Assert.NotNull(result);
             Assert.Equal("Inception", result.Title);
             Assert.Equal("Great movie", result.Description);
+            _unitOfWorkMock.Verify(u => u.Movies.GetByIdAsync(It.IsAny<int>()), Times.Once);
+
         }
-        
+
         [Fact]
         public async Task GetMovieByIdAsync_WhenMovieDoesNotExist_ReturnsNull()
         {
-            movieRepositoryMock.Setup(u => u.FirstOrDefaultAsync(It.IsAny<Expression<Func<Movie,bool>>>())).ReturnsAsync((Movie?)null);
+            const int movieId = 1;
+            movieRepositoryMock.Setup(u => u.GetByIdAsync(It.IsAny<int>())).ReturnsAsync((Movie?)null);
             SetupUnitOfWork();
-            var result = await _sut.GetById(42);
+            var result = await _sut.GetById(movieId);
             Assert.Null(result);
+            _unitOfWorkMock.Verify(u => u.Movies.GetByIdAsync(It.IsAny<int>()), Times.Once);
+        }
+        [Fact]
+        public async Task DeleteMovie_SuccessfullyRemovesMovie()
+        {
+            var movie = ReturnMovie();
+            movieRepositoryMock.Setup(m => m.FirstOrDefaultAsync(It.IsAny<Expression<Func<Movie, bool>>>())).ReturnsAsync(movie);
+            await _sut.Delete(movie.Id);
+            movieRepositoryMock.Verify(m=>m.Delete(movie),Times.Once);
+            _unitOfWorkMock.Verify(u=>u.CompleteAsync(), Times.Once);
+        }
+        [Fact]
+        public async Task DeleteMovie_WhenMovieDoesNotExist()
+        {
+            movieRepositoryMock.Setup(m => m.FirstOrDefaultAsync(It.IsAny<Expression<Func<Movie, bool>>>())).ReturnsAsync((Movie)null);
+            var results = await _sut.Delete(1);
+            Assert.False(results);
+            _unitOfWorkMock.Verify(u => u.CompleteAsync(), Times.Never);
         }
     }
 }

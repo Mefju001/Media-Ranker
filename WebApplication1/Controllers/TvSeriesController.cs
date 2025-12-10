@@ -43,7 +43,7 @@ namespace WebApplication1.Controllers
         public async Task<IActionResult> AddTvSeries(TvSeriesRequest tvSeriesRequest)
         {
             var created = await TvSeriesServices.Upsert(null, tvSeriesRequest);
-            return CreatedAtAction(nameof(GetById), new { id = created.tvSeriesId }, created.response);
+            return CreatedAtAction(nameof(GetById), new { id = created.id }, created);
         }
         [Authorize(Roles = "Admin")]
         [HttpPut("UpdateById/{id}")]

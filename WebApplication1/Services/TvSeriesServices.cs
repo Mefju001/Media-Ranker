@@ -39,11 +39,7 @@ namespace WebApplication1.Services
         }
         public async Task<List<TvSeriesResponse>> GetAllAsync()
         {
-            var TvSeries = await unitOfWork.TvSeries.AsQueryable()
-                                .Include(m => m.genre)
-                                .Include(m => m.Reviews)
-                                .ThenInclude(r => r.User)
-                                .ToListAsync();
+            var TvSeries = await unitOfWork.TvSeries.GetAllAsync();
             return TvSeries.Select(TvSeriesMapper.ToTvSeriesResponse).ToList();
         }
 
@@ -63,7 +59,7 @@ namespace WebApplication1.Services
             var movies = await mediatR.Send(tvSeriesQuery);
             return movies;
         }
-        public async Task<(int tvSeriesId, TvSeriesResponse response)> Upsert(int? tvSeriesId, TvSeriesRequest tvSeriesRequest)
+        public async Task<TvSeriesResponse> Upsert(int? tvSeriesId, TvSeriesRequest tvSeriesRequest)
         {
             await using var transaction = await unitOfWork.BeginTransactionAsync();
             try
@@ -72,8 +68,7 @@ namespace WebApplication1.Services
                 TvSeries? tvSeries;
                 if (tvSeriesId is not null)
                 {
-                    tvSeries = await unitOfWork.TvSeries.AsQueryable()
-                            .Include(m => m.genre)
+                    tvSeries = await unitOfWork.TvSeries
                             .FirstOrDefaultAsync(m => m.Id == tvSeriesId.Value);
                     if (tvSeries is not null)
                     {
@@ -96,7 +91,7 @@ namespace WebApplication1.Services
                 if (tvSeries is null) throw new ArgumentNullException(nameof(tvSeries));
                 var response = TvSeriesMapper.ToTvSeriesResponse(tvSeries);
                 await transaction.CommitAsync();
-                return (tvSeries.Id, response);
+                return response;
             }
             catch
             {
