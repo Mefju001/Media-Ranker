@@ -45,10 +45,7 @@ namespace WebApplication1.Services
 
         public async Task<TvSeriesResponse?> GetById(int id)
         {
-            var TvSeries = await unitOfWork.TvSeries.AsQueryable()
-                .Include(m => m.genre)
-                .Include(m => m.Reviews)
-                .ThenInclude(r => r.User)
+            var TvSeries = await unitOfWork.TvSeries
                 .FirstOrDefaultAsync(tv => tv.Id == id);
             if (TvSeries == null)
                 return null;
