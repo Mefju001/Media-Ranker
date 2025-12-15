@@ -47,10 +47,7 @@ namespace WebApplication1.Services
 
         public async Task<GameResponse?> GetById(int id)
         {
-            var game = await _unitOfWork.Games.AsQueryable()
-                .Include(g => g.genre)
-                .Include(g => g.Reviews)
-                .FirstOrDefaultAsync(x => x.Id == id);
+            var game = await _unitOfWork.Games.FirstOrDefaultAsync(x => x.Id == id);
             if (game is null)
                 return null;
             return GameMapper.ToGameResponse(game);
@@ -69,9 +66,7 @@ namespace WebApplication1.Services
                 Game? game;
                 if (gameId.HasValue)
                 {
-                    game = await _unitOfWork.Games.AsQueryable()
-                        .Include(g => g.genre)
-                        .Include(g => g.Reviews)
+                    game = await _unitOfWork.Games
                         .FirstOrDefaultAsync(g => g.Id == gameId);
                     if (game != null)
                     {

@@ -13,37 +13,63 @@ namespace MovieTest
 {
     public class GameServicesUnitTest
     {
-        private readonly AppDbContext _context;
         private readonly Mock<IUnitOfWork> unitOfWorkMock;
-        private readonly MovieServices _movieServices;
+        private readonly Mock<IGenericRepository<Game>> gameRepositoryMock;
+        private readonly Mock<IGenericRepository<Genre>> genreRepositoryMock;
+        private readonly Mock<IReferenceDataService> referenceDataServiceMock;
+        private readonly Mock<IGameBuilder> gameBuilderMock;
+        private readonly GameServices _sut;
+        private readonly Mock<IMediator> mockMediator;
 
         public GameServicesUnitTest()
         {
+            gameRepositoryMock = new Mock<IGenericRepository<Game>>();
+            genreRepositoryMock = new Mock<IGenericRepository<Genre>>();
+            referenceDataServiceMock = new Mock<IReferenceDataService>();
+            gameBuilderMock = new Mock<IGameBuilder>();
+            mockMediator = new Mock<IMediator>();
             unitOfWorkMock = new Mock<IUnitOfWork>();
+            var transacional = new Mock<IDbContextTransaction>();
+            unitOfWorkMock.Setup(uow => uow.BeginTransactionAsync()).ReturnsAsync(transacional.Object);
+            SetupUnitOfWork();
+            _sut = new GameServices(
+                unitOfWorkMock.Object,
+                gameBuilderMock.Object,
+                mockMediator.Object,
+                referenceDataServiceMock.Object
+                );
 
         }
-        [Fact]
-        public async Task Upsert_AddMovie2()
+        private void SetupUnitOfWork()
         {
-            var testRequest = new GameRequest(
-                "Inception","Great movie",new GenreRequest( "Action" ),DateTime.Now,
-                "English",null, EPlatform.Playstation
+            unitOfWorkMock.SetupGet(uow => uow.Games).Returns(gameRepositoryMock.Object);
+            unitOfWorkMock.SetupGet(uow => uow.Genres).Returns(genreRepositoryMock.Object);
+        
+        }
+        private IGameBuilder SetupIGameBuilder(Game game)
+        {
+            var gameBuilderMock = new Mock<IGameBuilder>();
+            gameBuilderMock
+                .Setup(b => b.WithTechnicalDetails(It.IsAny<DateTime>(), It.IsAny<string>(), It.IsAny<string>()))
+                .Returns(gameBuilderMock.Object);
+            gameBuilderMock
+                .Setup(b => b.WithGenre(It.IsAny<Genre>()))
+                .Returns(gameBuilderMock.Object);
+            gameBuilderMock
+                .Setup(b => b.Build())
+                .Returns(game);
+            return gameBuilderMock.Object;
+        }
+        private GameRequest GetRequest()
+        {
+            return new GameRequest(
+                "Inception", "Great movie", new GenreRequest("Action"), DateTime.Now,
+                "English", null, EPlatform.Playstation
             );
-
-            var GenRepoMock = new Mock<IGenericRepository<Genre>>();
-            var GameRepoMock = new Mock<IGenericRepository<Game>>();
-            var transactionMock = new Mock<IDbContextTransaction>();
-
-            GenRepoMock.Setup(r => r.FirstOrDefaultAsync(It.IsAny<Expression<Func<Genre, bool>>>()))
-                       .ReturnsAsync(null as Genre);
-
-            unitOfWorkMock.Setup(u => u.Genres).Returns(GenRepoMock.Object);
-            unitOfWorkMock.Setup(u => u.Games).Returns(GameRepoMock.Object);
-
-            unitOfWorkMock.Setup(u => u.BeginTransactionAsync()).ReturnsAsync(transactionMock.Object);
-            unitOfWorkMock.Setup(u => u.CompleteAsync()).ReturnsAsync(1);
-            var builderMock = new Mock<IGameBuilder>();
-            var game = new Game
+        }
+        private Game GetGame()
+        {
+            return new Game
             {
                 title = "Inception",
                 description = "Great movie",
@@ -51,28 +77,83 @@ namespace MovieTest
                 genre = new Genre { name = "Action" },
                 ReleaseDate = DateTime.Now,
                 Language = "English",
+                Stats = new MediaStats()
+                {
+                    Media = new TvSeries()
+                    {
+                        title = "Inception",
+                        description = "Great movie"
+                    }
+                }
             };
-            var genre = new Genre { name="Action" ,Id = 99};
-            builderMock.Setup(b => b.CreateNew(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<EPlatform>())).Returns(builderMock.Object);
-            builderMock.Setup(b => b.WithTechnicalDetails(It.IsAny<DateTime>(), It.IsAny<string>(), It.IsAny<string>())).Returns(builderMock.Object);
-            builderMock.Setup(b => b.WithGenre(It.IsAny<Genre>())).Returns(builderMock.Object);
-            builderMock.Setup(b => b.Build()).Returns(game);
-            var mediatorMock = new Mock<IMediator>();
-            var IRefMock = new Mock<IReferenceDataService>();
-            IRefMock.Setup(r => r.GetOrCreateGenreAsync(It.IsAny<GenreRequest>())).ReturnsAsync(genre);
-            var movieServicesMock = new GameServices(unitOfWorkMock.Object, builderMock.Object, mediatorMock.Object, IRefMock.Object);
-
-            var result = await movieServicesMock.Upsert(null, testRequest);
-
-            // 1. Sprawdzamy, czy wszystkie elementy zostały dodane do bazy (nowe Genre, Director i Movie)
-          //  GenRepoMock.Verify(r => r.AddAsync(It.IsAny<Genre>()), Times.Once);
-            GameRepoMock.Verify(r => r.AddAsync(It.IsAny<Game>()), Times.Once);
-
-            // 2. Sprawdzamy, czy zapisano zmiany i zatwierdzono transakcję
+        }
+        private Game GetGameInDb()
+        {
+            return new Game
+            {
+                Id = 1,
+                title = "oldTitle",
+                description = "oldDescription",
+                Platform = EPlatform.Unknown,
+                genre = new Genre { name = "Action" },
+                ReleaseDate = DateTime.Now,
+                Language = "English",
+                Stats = new MediaStats()
+                {
+                    Media = new TvSeries()
+                    {
+                        title = "Inception",
+                        description = "Great movie"
+                    }
+                }
+            };
+        }
+        [Fact]
+        public async Task GetGameByIdAsync_WhenGameExists()
+        {
+            const int id = 1;
+            gameRepositoryMock.Setup(g => g.FirstOrDefaultAsync(It.IsAny<Expression<Func<Game, bool>>>())).ReturnsAsync(GetGameInDb());
+            var result = await _sut.GetById( id );
+            Assert.NotNull(result);
+            Assert.Equal("oldTitle", result.Title);
+            Assert.Equal("oldDescription", result.Description);
+            unitOfWorkMock.Verify(u => u.Games.FirstOrDefaultAsync(It.IsAny<Expression<Func<Game, bool>>>()), Times.Once);
+        }
+        [Fact]
+        public async Task Upsert_UpdateGame()
+        {
+            var notUpdatedGame = GetGameInDb();
+            var testRequest = GetRequest();
+            genreRepositoryMock.Setup(r => r.FirstOrDefaultAsync(It.IsAny<Expression<Func<Genre, bool>>>()))
+                       .ReturnsAsync(null as Genre);
+            gameRepositoryMock.Setup(g=>g.FirstOrDefaultAsync(It.IsAny<Expression<Func<Game,bool>>>())).ReturnsAsync(notUpdatedGame);
+            var genre = new Genre { name = "Action", Id = 99 };
+            referenceDataServiceMock.Setup(r => r.GetOrCreateGenreAsync(It.IsAny<GenreRequest>())).ReturnsAsync(genre);
+            var result = await _sut.Upsert(1, testRequest);
+            gameRepositoryMock.Verify(g => g.FirstOrDefaultAsync(It.IsAny<Expression<Func<Game, bool>>>()),Times.Once);
+            unitOfWorkMock.Verify(r => r.Genres.FirstOrDefaultAsync(It.IsAny<Expression<Func<Genre, bool>>>()), Times.Never);
             unitOfWorkMock.Verify(u => u.CompleteAsync(), Times.AtLeastOnce);
-            transactionMock.Verify(t => t.CommitAsync(It.IsAny<CancellationToken>()), Times.Once);
+            Assert.NotNull(result);
+            Assert.Equal("Inception", result.Title);
+        }
+        [Fact]
+        public async Task Upsert_AddMovie2()
+        {
+            var testRequest = GetRequest();
+            genreRepositoryMock.Setup(r => r.FirstOrDefaultAsync(It.IsAny<Expression<Func<Genre, bool>>>()))
+                       .ReturnsAsync(null as Genre);
 
-            // 3. Weryfikacja wyniku (tylko dla pewności)
+            var game = GetGame();
+            var genre = new Genre { name="Action" ,Id = 99};
+            var builderMock = SetupIGameBuilder(game);
+            gameBuilderMock.Setup(b => b.CreateNew(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<EPlatform>())).Returns(builderMock);
+            referenceDataServiceMock.Setup(r => r.GetOrCreateGenreAsync(It.IsAny<GenreRequest>())).ReturnsAsync(genre);
+
+            var result = await _sut.Upsert(null, testRequest);
+
+            gameRepositoryMock.Verify(r => r.AddAsync(It.IsAny<Game>()), Times.Once);
+            unitOfWorkMock.Verify(r => r.Genres.FirstOrDefaultAsync(It.IsAny<Expression<Func<Genre, bool>>>()), Times.Never);
+            unitOfWorkMock.Verify(u => u.CompleteAsync(), Times.AtLeastOnce);
             Assert.NotNull(result);
             Assert.Equal("Inception", result.Title);
         }

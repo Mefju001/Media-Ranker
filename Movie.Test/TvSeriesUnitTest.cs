@@ -179,7 +179,7 @@ namespace MovieTest
             unitOfWorkMock.Verify(u => u.CompleteAsync(), Times.Once);
         }
         [Fact]
-        public async Task DeleteMovie_WhenMovieDoesNotExist()
+        public async Task DeleteTvSeries_WhenMovieDoesNotExist()
         {
             SetupUnitOfWork();
             tvSeriesRepositoryMock.Setup(t=>t.FirstOrDefaultAsync(It.IsAny<Expression<Func<TvSeries, bool>>>())).ReturnsAsync((TvSeries?)null);
