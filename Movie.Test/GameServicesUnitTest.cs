@@ -109,6 +109,27 @@ namespace MovieTest
             };
         }
         [Fact]
+        public async Task GetAll_ReturnsAllSeries()
+        {
+            List<Game> Games = new List<Game>()
+            {
+                GetGameInDb(),
+                GetGameInDb()
+            };
+            gameRepositoryMock.Setup(g=>g.GetAllAsync()).ReturnsAsync(Games);
+            var results = await _sut.GetAllAsync();
+            Assert.Equal(2, results.Count);
+        }
+        [Fact]
+        public async Task GetGameByIdAsync_WhenGameDoesNotExist()
+        {
+            const int id = 1;
+            gameRepositoryMock.Setup(g => g.FirstOrDefaultAsync(It.IsAny<Expression<Func<Game, bool>>>())).ReturnsAsync((Game) null);
+            var result = await _sut.GetById(id);
+            Assert.Null(result);
+            unitOfWorkMock.Verify(u => u.Games.FirstOrDefaultAsync(It.IsAny<Expression<Func<Game, bool>>>()), Times.Once);
+        }
+        [Fact]
         public async Task GetGameByIdAsync_WhenGameExists()
         {
             const int id = 1;

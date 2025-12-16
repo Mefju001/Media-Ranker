@@ -38,10 +38,7 @@ namespace WebApplication1.Services
 
         public async Task<List<GameResponse>> GetAllAsync()
         {
-            var games = await _unitOfWork.Games.AsQueryable()
-                .Include(g => g.genre)
-                .Include(g => g.Reviews)
-                .ToListAsync();
+            var games = await _unitOfWork.Games.GetAllAsync();
             return games.Select(GameMapper.ToGameResponse).ToList();
         }
 
