@@ -109,6 +109,75 @@ namespace MovieTest
             };
         }
         [Fact]
+        public async Task AddListOfGames()
+        {
+            List<GameRequest> gamesRequest = new List<GameRequest>()
+            {
+                GetRequest(),
+                GetRequest()
+            };
+            var createdGenre = new Genre { name = "Action", Id = 99 };
+            referenceDataServiceMock.Setup(raf => raf.GetOrCreateGenreAsync(It.IsAny<GenreRequest>())).ReturnsAsync(createdGenre);
+            var builder1 = SetupIGameBuilder(GetGame());
+            var builder2 = SetupIGameBuilder(
+                new Game
+                {
+                    Id = 2,
+                    title = "oldTitle",
+                    description = "oldDescription",
+                    Platform = EPlatform.Unknown,
+                    genre = new Genre { name = "Action" },
+                    ReleaseDate = DateTime.Now,
+                    Language = "English",
+                    Stats = new MediaStats()
+                    {
+                        Media = new TvSeries()
+                        {
+                            title = "Inception",
+                            description = "Great movie"
+                        }
+                    }
+                }
+            );
+            gameBuilderMock
+                .SetupSequence(b => b.CreateNew(It.IsAny<string>(), It.IsAny<string>(),It.IsAny<EPlatform>()))
+                .Returns(builder1)
+                .Returns(builder2);
+            var results = await _sut.AddListOfGames(gamesRequest);
+            unitOfWorkMock.Verify(u => u.Games.AddRangeAsync(It.IsAny<IEnumerable<Game>>()), Times.Once);
+            unitOfWorkMock.Verify(u => u.CompleteAsync(), Times.Once);
+            Assert.True(results.Count > 0);
+            Assert.Equal(results.Count, gamesRequest.Count);
+        }
+        [Fact]
+        public async Task DeleteGame_SuccessfullyRemoveGame()
+        {
+            var gameInDb=GetGameInDb();
+            const int id = 1;
+            gameRepositoryMock.Setup(g=>g.FirstOrDefaultAsync(It.IsAny<Expression<Func<Game,bool>>>())).ReturnsAsync(gameInDb);
+            gameRepositoryMock.Setup(g => g.Delete(gameInDb));
+            var result = await _sut.Delete(id);
+            Assert.True(result);
+            gameRepositoryMock.Verify(g => g.Delete(gameInDb), Times.Once);
+            unitOfWorkMock.Verify(u => u.CompleteAsync(), Times.Once);
+        }
+        [Fact]
+        public async Task DeleteGame_WhenGameDoesNotExist()
+        {
+            const int id = 1;
+            gameRepositoryMock.Setup(g => g.FirstOrDefaultAsync(It.IsAny<Expression<Func<Game, bool>>>())).ReturnsAsync((Game)null);
+            var result = await _sut.Delete(id);
+            Assert.False(result);
+        }
+        [Fact]
+        public async Task GetAll_ReturnsEmptySeries()
+        { 
+            gameRepositoryMock.Setup(g => g.GetAllAsync()).ReturnsAsync(new List<Game>());
+            var results = await _sut.GetAllAsync();
+            Assert.Empty(results);
+            gameRepositoryMock.Verify(g=>g.GetAllAsync(), Times.Once);
+        }
+        [Fact]
         public async Task GetAll_ReturnsAllSeries()
         {
             List<Game> Games = new List<Game>()
@@ -158,7 +227,7 @@ namespace MovieTest
             Assert.Equal("Inception", result.Title);
         }
         [Fact]
-        public async Task Upsert_AddMovie2()
+        public async Task Upsert_AddMovie()
         {
             var testRequest = GetRequest();
             genreRepositoryMock.Setup(r => r.FirstOrDefaultAsync(It.IsAny<Expression<Func<Genre, bool>>>()))

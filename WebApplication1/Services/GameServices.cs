@@ -1,5 +1,7 @@
-﻿using MediatR;
+﻿using Azure.Core;
+using MediatR;
 using Microsoft.EntityFrameworkCore;
+using WebApplication1.Builder;
 using WebApplication1.Builder.Interfaces;
 using WebApplication1.Data;
 using WebApplication1.DTO.Mapper;
@@ -25,7 +27,38 @@ namespace WebApplication1.Services
             this.mediator = mediator;
             this.referenceDataService = referenceDataService;
         }
-
+        public async Task<List<GameResponse>>AddListOfGames(List<GameRequest>gamesRequest)
+        {
+            if(gamesRequest is null) throw new ArgumentNullException(nameof(gamesRequest));
+            await using var transaction = await _unitOfWork.BeginTransactionAsync();
+            try
+            {
+                List<Game>games = new List<Game>();
+                foreach(var game in gamesRequest)
+                {
+                    var genre = await referenceDataService.GetOrCreateGenreAsync(game.Genre);
+                    var gameBuild = gameBuilder
+                        .CreateNew(game.Title, game.Description,game.Platform)
+                        .WithTechnicalDetails
+                        (game.ReleaseDate,
+                         game.Language,
+                         game.Developer)
+                        .WithGenre(genre)
+                        .Build();
+                    games.Add(gameBuild);
+                }
+                await _unitOfWork.Games.AddRangeAsync(games);
+                await _unitOfWork.CompleteAsync();
+                var listOfResponses = games.Select(GameMapper.ToGameResponse).ToList();
+                await transaction.CommitAsync();
+                return listOfResponses;
+            }
+            catch
+            {
+                await transaction.RollbackAsync();
+                throw;
+            }
+        }
         public async Task<bool> Delete(int id)
         {
             var games = await _unitOfWork.Games.FirstOrDefaultAsync(x => x.Id == id);

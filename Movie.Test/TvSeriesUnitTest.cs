@@ -187,5 +187,49 @@ namespace MovieTest
             Assert.False(result);
             unitOfWorkMock.Verify(u => u.CompleteAsync(), Times.Never);
         }
+        [Fact]
+        public async Task AddListOfSeries()
+        {
+            List<TvSeriesRequest> tvSeries = new List<TvSeriesRequest>()
+            {
+                GetTvSeriesRequest(),
+                GetTvSeriesRequest()
+            };
+            var createdGenre = new Genre { name = "Action", Id = 99 };
+            referenceDataServiceMock.Setup(raf => raf.GetOrCreateGenreAsync(It.IsAny<GenreRequest>())).ReturnsAsync(createdGenre);
+            var builder1 = SetupBuilderChain(GetTvSeries());
+            var builder2 = SetupBuilderChain(
+                new TvSeries
+                {
+                    Id = 2,
+                    title = "Inception",
+                    description = "Great movie",
+                    genre = new Genre { name = "Action" },
+                    ReleaseDate = DateTime.Now,
+                    Language = "English",
+                    Seasons = 1,
+                    Episodes = 12,
+                    Network = "Netflix",
+                    Status = EStatus.Completed,
+                    Stats = new MediaStats()
+                    {
+                        Media = new TvSeries()
+                        {
+                            title = "Inception",
+                            description = "Great movie"
+                        }
+                    }
+                }
+            );
+            tvSeriesBuilderMock
+                .SetupSequence(b => b.CreateNew(It.IsAny<string>(), It.IsAny<string>()))
+                .Returns(builder1)
+                .Returns(builder2);
+            var results = await _sut.AddListOfTvSeries(tvSeries);
+            unitOfWorkMock.Verify(u => u.TvSeries.AddRangeAsync(It.IsAny<IEnumerable<TvSeries>>()), Times.Once);
+            unitOfWorkMock.Verify(u => u.CompleteAsync(), Times.Once);
+            Assert.True(results.Count > 0);
+            Assert.Equal(results.Count, tvSeries.Count);
+        }
     }
 }

@@ -25,7 +25,38 @@ namespace WebApplication1.Services
             this.referenceDataService = referenceDataService;
             this.mediatR = mediatR;
         }
-
+        public async Task<List<TvSeriesResponse>>AddListOfTvSeries(List<TvSeriesRequest>tvSeriesRequests)
+        {
+            if(tvSeriesRequests is null) throw new ArgumentNullException(nameof(tvSeriesRequests));
+            await using var transaction = await unitOfWork.BeginTransactionAsync();
+            try
+            {
+                List<TvSeries> listTvSeries = new List<TvSeries>();
+                foreach (var request in tvSeriesRequests)
+                {
+                    var genre = await referenceDataService.GetOrCreateGenreAsync(request.genre);
+                    var tvSeries = builder.CreateNew(request.title, request.description)
+                        .WithGenre(genre)
+                        .WithMetadata
+                        (request.Seasons,
+                        request.Episodes,
+                        request.Network,
+                        request.Status)
+                        .Build();
+                    listTvSeries.Add(tvSeries);
+                }
+                await unitOfWork.TvSeries.AddRangeAsync(listTvSeries);
+                await unitOfWork.CompleteAsync();
+                var listOfResponses = listTvSeries.Select(TvSeriesMapper.ToTvSeriesResponse).ToList();
+                await transaction.CommitAsync();
+                return listOfResponses;
+            }
+            catch
+            {
+                await transaction.RollbackAsync();
+                throw;
+            }
+        }
         public async Task<bool> Delete(int id)
         {
             var TvSeries = await unitOfWork.TvSeries.FirstOrDefaultAsync(x => x.Id == id);
