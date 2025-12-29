@@ -21,6 +21,7 @@ export class Header {
     private dialog: MatDialog,
     private authService: AuthService
   ) {}
+
 openLoginDialog(): void {
       this.dialog.open(LoginDialog, {
           width: '400px',
@@ -30,8 +31,9 @@ openLoginDialog(): void {
               this.authService.login(credentials).subscribe({
                   next: (response) => {
                       this.isLoggedIn = true;
-                      sessionStorage.setItem('isLoggedIn',this.isLoggedIn.toString());
+                      this.storeLoginState(true);
                       this.username = credentials.username;
+                      sessionStorage.setItem('username', this.username);
                       console.log('Login successful:', response);
                   }
               ,error: (error) => {
@@ -41,9 +43,15 @@ openLoginDialog(): void {
   }
       });
   }
-logout(): void {
-      this.isLoggedIn = false;
-      this.username = '';
-      console.log('User logged out');
+  logout(): void {
+    this.authService.logout();
+    this.isLoggedIn = false;
+    this.storeLoginState(false);
+    this.username = '';
+    sessionStorage.removeItem('username');
+    console.log('User logged out');
+  }
+  private storeLoginState(isLoggedIn: boolean): void {
+    sessionStorage.setItem('isLoggedIn', isLoggedIn ? 'true' : 'false');
   }
 }
