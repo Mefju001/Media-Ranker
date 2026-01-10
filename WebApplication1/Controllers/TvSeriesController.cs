@@ -1,10 +1,10 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using WebApplication1.DTO.Request;
-using WebApplication1.QueryHandler.Query;
+using WebApplication1.Application.Common.DTO.Request;
+using WebApplication1.Application.Features.TvSeries.GetTvSeriesByCriteria;
 using WebApplication1.Services.Interfaces;
 
-namespace WebApplication1.Controllers
+namespace Api.Controllers
 {
     [Authorize]
     [ApiController]
@@ -47,9 +47,9 @@ namespace WebApplication1.Controllers
         }
         [Authorize(Roles = "Admin")]
         [HttpPut("UpdateById/{id}")]
-        public async Task<IActionResult> UpdateTvSeries(int id,TvSeriesRequest tvSeriesRequest)
+        public async Task<IActionResult> UpdateTvSeries(int id, TvSeriesRequest tvSeriesRequest)
         {
-            var updated = await TvSeriesServices.Upsert(id,tvSeriesRequest);
+            var updated = await TvSeriesServices.Upsert(id, tvSeriesRequest);
             return Ok(updated);
         }
         [Authorize(Roles = "Admin")]

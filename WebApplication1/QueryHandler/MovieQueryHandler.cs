@@ -1,11 +1,10 @@
 ﻿using MediatR;
 using Microsoft.EntityFrameworkCore;
 using System.Linq.Expressions;
-using WebApplication1.DTO.Mapper;
-using WebApplication1.DTO.Response;
-using WebApplication1.Models;
-using WebApplication1.QueryHandler.Query;
-using WebApplication1.Specification;
+using WebApplication1.Application.Common.DTO.Response;
+using WebApplication1.Application.Mapper;
+using WebApplication1.Domain.Entities;
+using WebApplication1.Infrastructure.Specification;
 
 namespace WebApplication1.QueryHandler
 {
@@ -24,7 +23,7 @@ namespace WebApplication1.QueryHandler
             IQueryable<Movie> query = queryServices.StartQuery();
             var predicate = BuildPredicate(request);
             query = queryServices.Filter(query, predicate);
-            if (!string.IsNullOrEmpty(request.SortByField)&&request.SortByField.Contains('|'))
+            if (!string.IsNullOrEmpty(request.SortByField) && request.SortByField.Contains('|'))
             {
                 var fields = request.SortByField.Split('|');
                 if (fields.Length == 2 && bool.TryParse(fields[1], out bool IsDescending))

@@ -1,14 +1,13 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using WebApplication1.Data;
-using WebApplication1.DTO.Mapper;
-using WebApplication1.DTO.Request;
-using WebApplication1.DTO.Response;
-using WebApplication1.Models;
+using WebApplication1.Application.Common.DTO.Request;
+using WebApplication1.Application.Common.DTO.Response;
+using WebApplication1.Application.Common.Interfaces;
+using WebApplication1.Application.Mapper;
 using WebApplication1.Services.Interfaces;
 
 namespace WebApplication1.Services
 {
-    public class LikedMediaServices: ILikedMediaServices
+    public class LikedMediaServices : ILikedMediaServices
     {
         private readonly IUnitOfWork unitOfWork;
         public LikedMediaServices(IUnitOfWork unitOfWork)
@@ -48,9 +47,9 @@ namespace WebApplication1.Services
             await unitOfWork.CompleteAsync();
             return true;
         }
-        public async Task<LikedMediaResponse?>GetBy(int likedId)
+        public async Task<LikedMediaResponse?> GetBy(int likedId)
         {
-            var liked = await unitOfWork.LikedMedias.FirstOrDefaultAsync(l=>l.Id == likedId);
+            var liked = await unitOfWork.LikedMedias.FirstOrDefaultAsync(l => l.Id == likedId);
             return liked == null ? null : LikedMediaMapper.ToResponse(liked);
         }
         public async Task<List<LikedMediaResponse>> GetAllAsync()

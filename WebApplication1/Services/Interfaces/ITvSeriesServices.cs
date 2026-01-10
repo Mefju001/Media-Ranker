@@ -1,6 +1,6 @@
-﻿using WebApplication1.DTO.Request;
-using WebApplication1.DTO.Response;
-using WebApplication1.QueryHandler.Query;
+﻿using WebApplication1.Application.Common.DTO.Request;
+using WebApplication1.Application.Common.DTO.Response;
+using WebApplication1.Application.Features.TvSeries.GetTvSeriesByCriteria;
 
 namespace WebApplication1.Services.Interfaces
 {

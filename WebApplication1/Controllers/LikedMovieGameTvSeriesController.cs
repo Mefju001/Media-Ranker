@@ -1,12 +1,11 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using System.Reflection.Metadata.Ecma335;
 using System.Security.Claims;
-using WebApplication1.DTO.Request;
-using WebApplication1.DTO.Response;
+using WebApplication1.Application.Common.DTO.Request;
+using WebApplication1.Application.Common.DTO.Response;
 using WebApplication1.Services.Interfaces;
 
-namespace WebApplication1.Controllers
+namespace Api.Controllers
 {
     [Authorize]
     [ApiController]
@@ -57,7 +56,7 @@ namespace WebApplication1.Controllers
             return Ok(response);
         }
         [Authorize(Roles = "Admin,User")]
-        [ProducesResponseType(typeof(LikedMediaRequest),StatusCodes.Status201Created)]
+        [ProducesResponseType(typeof(LikedMediaRequest), StatusCodes.Status201Created)]
         [HttpPost("Add")]
         public async Task<IActionResult> AddLikedMovie([FromBody] LikedMediaRequest likedMovie)
         {
@@ -65,14 +64,14 @@ namespace WebApplication1.Controllers
             if (userId is null) return Unauthorized();
             likedMovie.UserId = userId.Value;
             var response = await likedMediaServices.Add(likedMovie);
-            return CreatedAtAction(nameof(GetById),new { id = response.id }, response);
+            return CreatedAtAction(nameof(GetById), new { id = response.id }, response);
         }
         [Authorize(Roles = "Admin,User")]
         [HttpDelete("delete/{id}")]
-        public async Task<IActionResult> DeleteLikedMovie([FromRoute]int id)
+        public async Task<IActionResult> DeleteLikedMovie([FromRoute] int id)
         {
             var userId = getUserId();
-            if(userId is null)return Unauthorized();
+            if (userId is null) return Unauthorized();
             await likedMediaServices.Delete(userId.Value, id);
             return NoContent();
         }

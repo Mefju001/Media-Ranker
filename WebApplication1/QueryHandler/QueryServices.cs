@@ -1,6 +1,6 @@
 ﻿using System.Linq.Expressions;
+using WebApplication1.Infrastructure.Sorting;
 using WebApplication1.Services.Interfaces;
-using WebApplication1.Strategy;
 
 namespace WebApplication1.QueryHandler
 {

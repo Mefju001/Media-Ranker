@@ -2,19 +2,22 @@
 using MediatR;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using WebApplication1.BackgroundTasks;
-using WebApplication1.BackgroundTasks.Interfaces;
-using WebApplication1.BackgroundTasks.Workers;
-using WebApplication1.Builder;
-using WebApplication1.Builder.Interfaces;
-using WebApplication1.Data;
-using WebApplication1.Models;
+using WebApplication1.Application.Common.Interfaces;
+using WebApplication1.Domain.Builder;
+using WebApplication1.Domain.Entities;
+using WebApplication1.Domain.Interfaces;
+using WebApplication1.Infrastructure.BackgroundTasks;
+using WebApplication1.Infrastructure.BackgroundTasks.Interfaces;
+using WebApplication1.Infrastructure.BackgroundTasks.Workers;
+using WebApplication1.Infrastructure.Persistence;
+using WebApplication1.Infrastructure.Persistence.Repository;
+using WebApplication1.Infrastructure.Persistence.UnitOfWork;
+using WebApplication1.Infrastructure.Sorting;
 using WebApplication1.QueryHandler;
 using WebApplication1.Services;
 using WebApplication1.Services.Interfaces;
-using WebApplication1.Strategy;
 
-namespace WebApplication1.Extensions
+namespace Api.Extensions
 {
     public static class AppServiceExtension
     {

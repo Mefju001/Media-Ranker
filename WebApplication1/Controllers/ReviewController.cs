@@ -1,10 +1,10 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
-using WebApplication1.DTO.Request;
+using WebApplication1.Application.Common.DTO.Request;
 using WebApplication1.Services.Interfaces;
 
-namespace WebApplication1.Controllers
+namespace Api.Controllers
 {
     [Authorize(Roles = "User")]
     [ApiController]
@@ -19,7 +19,7 @@ namespace WebApplication1.Controllers
         private int? getUserId()
         {
             var stringUserId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-            if(stringUserId == null)return null;
+            if (stringUserId == null) return null;
             int id = int.Parse(stringUserId);
             if (int.TryParse(stringUserId, out int userId))
             {
@@ -46,7 +46,7 @@ namespace WebApplication1.Controllers
         }
         [Authorize(Roles = "User, Admin")]
         [HttpPut]
-        public async Task<IActionResult> UpdateReview([FromQuery]int reviewId, [FromQuery] int movieId, [FromQuery] ReviewRequest reviewRequest)
+        public async Task<IActionResult> UpdateReview([FromQuery] int reviewId, [FromQuery] int movieId, [FromQuery] ReviewRequest reviewRequest)
         {
             var userId = getUserId();
             if (userId == null) return Unauthorized();
@@ -68,7 +68,7 @@ namespace WebApplication1.Controllers
         }
         [Authorize(Roles = "User")]
         [HttpDelete("{id}")]
-        public async Task<IActionResult> Delete([FromRoute]int id)
+        public async Task<IActionResult> Delete([FromRoute] int id)
         {
             var userId = getUserId();
             if (userId == null) return Unauthorized();

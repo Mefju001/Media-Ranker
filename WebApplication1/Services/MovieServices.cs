@@ -1,12 +1,9 @@
 using MediatR;
-using WebApplication1.Builder.Interfaces;
-using WebApplication1.Data;
-using WebApplication1.DTO.Mapper;
-using WebApplication1.DTO.Notification;
-using WebApplication1.DTO.Request;
-using WebApplication1.DTO.Response;
-using WebApplication1.Models;
-using WebApplication1.QueryHandler.Query;
+using WebApplication1.Application.Common.DTO.Request;
+using WebApplication1.Application.Common.DTO.Response;
+using WebApplication1.Application.Mapper;
+using WebApplication1.Domain.Entities;
+using WebApplication1.Domain.Interfaces;
 using WebApplication1.Services.Interfaces;
 namespace WebApplication1.Services
 {
@@ -23,9 +20,9 @@ namespace WebApplication1.Services
             this._unitOfWork = unitOfWork;
             this._mediator = mediator;
         }
-        public async Task<List<MovieResponse>>AddListOfMovie(List<MovieRequest>requests)
+        public async Task<List<MovieResponse>> AddListOfMovie(List<MovieRequest> requests)
         {
-            if(requests is null)throw new ArgumentNullException(nameof(requests));
+            if (requests is null) throw new ArgumentNullException(nameof(requests));
             await using var transaction = await _unitOfWork.BeginTransactionAsync();
             try
             {
@@ -64,7 +61,7 @@ namespace WebApplication1.Services
             {
                 var director = await referenceDataService.GetOrCreateDirectorAsync(movieRequest.Director);
                 var genre = await referenceDataService.GetOrCreateGenreAsync(movieRequest.Genre);
-                Movie? movie= null;
+                Movie? movie = null;
                 if (movieId.HasValue)
                 {
                     movie = await _unitOfWork.Movies
@@ -126,10 +123,10 @@ namespace WebApplication1.Services
         public async Task<MovieResponse?> GetById(int id)
         {
             var movie = await _unitOfWork.Movies.GetByIdAsync(id);
-            if(movie is null)
+            if (movie is null)
                 return null;
             return MovieMapper.ToMovieResponse(movie);
         }
-            
+
     }
 }

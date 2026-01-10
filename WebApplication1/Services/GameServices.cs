@@ -1,20 +1,15 @@
-﻿using Azure.Core;
-using MediatR;
-using Microsoft.EntityFrameworkCore;
-using WebApplication1.Builder;
-using WebApplication1.Builder.Interfaces;
-using WebApplication1.Data;
-using WebApplication1.DTO.Mapper;
-using WebApplication1.DTO.Request;
-using WebApplication1.DTO.Response;
-using WebApplication1.Exceptions;
-using WebApplication1.Models;
-using WebApplication1.QueryHandler.Query;
+﻿using MediatR;
+using WebApplication1.Application.Common.DTO.Request;
+using WebApplication1.Application.Common.DTO.Response;
+using WebApplication1.Application.Common.Interfaces;
+using WebApplication1.Application.Mapper;
+using WebApplication1.Domain.Entities;
+using WebApplication1.Domain.Interfaces;
 using WebApplication1.Services.Interfaces;
 
 namespace WebApplication1.Services
 {
-    public class GameServices: IGameServices
+    public class GameServices : IGameServices
     {
         private readonly IUnitOfWork _unitOfWork;
         private readonly IGameBuilder gameBuilder;
@@ -27,18 +22,18 @@ namespace WebApplication1.Services
             this.mediator = mediator;
             this.referenceDataService = referenceDataService;
         }
-        public async Task<List<GameResponse>>AddListOfGames(List<GameRequest>gamesRequest)
+        public async Task<List<GameResponse>> AddListOfGames(List<GameRequest> gamesRequest)
         {
-            if(gamesRequest is null) throw new ArgumentNullException(nameof(gamesRequest));
+            if (gamesRequest is null) throw new ArgumentNullException(nameof(gamesRequest));
             await using var transaction = await _unitOfWork.BeginTransactionAsync();
             try
             {
-                List<Game>games = new List<Game>();
-                foreach(var game in gamesRequest)
+                List<Game> games = new List<Game>();
+                foreach (var game in gamesRequest)
                 {
                     var genre = await referenceDataService.GetOrCreateGenreAsync(game.Genre);
                     var gameBuild = gameBuilder
-                        .CreateNew(game.Title, game.Description,game.Platform)
+                        .CreateNew(game.Title, game.Description, game.Platform)
                         .WithTechnicalDetails
                         (game.ReleaseDate,
                          game.Language,

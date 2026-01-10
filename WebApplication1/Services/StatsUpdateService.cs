@@ -1,6 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using WebApplication1.Data;
-using WebApplication1.Models;
+using WebApplication1.Application.Common.Interfaces;
 using WebApplication1.Services.Interfaces;
 
 namespace WebApplication1.Services

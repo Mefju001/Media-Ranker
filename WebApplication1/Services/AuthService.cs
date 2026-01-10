@@ -6,11 +6,10 @@ using System.Data;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
-using WebApplication1.Data;
-using WebApplication1.DTO.Request;
-using WebApplication1.DTO.Response;
-using WebApplication1.Exceptions;
-using WebApplication1.Models;
+using WebApplication1.Application.Common.DTO.Request;
+using WebApplication1.Application.Common.DTO.Response;
+using WebApplication1.Domain.Entities;
+using WebApplication1.Infrastructure.Persistence;
 
 namespace WebApplication1.Services
 {

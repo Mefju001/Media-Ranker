@@ -1,8 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations;
-using WebApplication1.Exceptions;
+using WebApplication1.Domain.Exceptions;
 
-
-namespace WebApplication1.Controllers
+namespace Api.Controllers
 {
     public class GlobalExceptionHandlerMiddleware
     {

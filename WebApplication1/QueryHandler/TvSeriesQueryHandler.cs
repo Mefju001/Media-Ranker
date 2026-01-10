@@ -1,9 +1,9 @@
 ﻿using MediatR;
 using System.Linq.Expressions;
-using WebApplication1.DTO.Response;
-using WebApplication1.Models;
-using WebApplication1.QueryHandler.Query;
-using WebApplication1.Specification;
+using WebApplication1.Application.Common.DTO.Response;
+using WebApplication1.Application.Features.TvSeries.GetTvSeriesByCriteria;
+using WebApplication1.Domain.Entities;
+using WebApplication1.Infrastructure.Specification;
 
 namespace WebApplication1.QueryHandler
 {

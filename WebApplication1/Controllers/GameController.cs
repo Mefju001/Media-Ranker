@@ -1,10 +1,9 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using WebApplication1.DTO.Request;
-using WebApplication1.QueryHandler.Query;
+using WebApplication1.Application.Common.DTO.Request;
 using WebApplication1.Services.Interfaces;
 
-namespace WebApplication1.Controllers
+namespace Api.Controllers
 {
     [Authorize]
     [Route("[controller]")]
@@ -32,7 +31,7 @@ namespace WebApplication1.Controllers
             return Ok(games);
         }
         [HttpGet("FindById/{id}")]
-        public async Task<IActionResult> GetById([FromRoute]int id)
+        public async Task<IActionResult> GetById([FromRoute] int id)
         {
             var games = await gameServices.GetById(id);
             return Ok(games);
@@ -42,7 +41,7 @@ namespace WebApplication1.Controllers
         public async Task<IActionResult> AddGame(GameRequest gameRequest)
         {
             var created = await gameServices.Upsert(null, gameRequest);
-            return CreatedAtAction(nameof(GetById), new { id = created.id },created);
+            return CreatedAtAction(nameof(GetById), new { id = created.id }, created);
         }
         [Authorize(Roles = "Admin")]
         [HttpPut("UpdateGameById/{id}")]

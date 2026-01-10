@@ -1,7 +1,8 @@
-﻿using WebApplication1.Models;
-using WebApplication1.Strategy;
+﻿using WebApplication1.Application.Common.Interfaces;
+using WebApplication1.Domain.Entities;
+using WebApplication1.Infrastructure.Sorting;
 
-namespace WebApplication1.Extensions
+namespace Api.Extensions
 {
     public static class GameSortTransient
     {

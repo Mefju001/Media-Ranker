@@ -1,11 +1,11 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using WebApplication1.Data;
-using WebApplication1.DTO.Mapper;
-using WebApplication1.DTO.Request;
-using WebApplication1.DTO.Response;
-using WebApplication1.Exceptions;
-using WebApplication1.Models;
+using WebApplication1.Application.Common.DTO.Request;
+using WebApplication1.Application.Common.DTO.Response;
+using WebApplication1.Application.Common.Interfaces;
+using WebApplication1.Application.Mapper;
+using WebApplication1.Domain.Entities;
+using WebApplication1.Domain.ValueObjects;
 using WebApplication1.Services.Interfaces;
 
 namespace WebApplication1.Services
@@ -14,7 +14,7 @@ namespace WebApplication1.Services
     {
         private readonly IPasswordHasher<User> Hasher;
         private readonly IUnitOfWork unitOfWork;
-        public UserServices(IPasswordHasher<User> passwordHasher,IUnitOfWork unitOfWork)
+        public UserServices(IPasswordHasher<User> passwordHasher, IUnitOfWork unitOfWork)
         {
             this.unitOfWork = unitOfWork;
             Hasher = passwordHasher;
@@ -37,16 +37,16 @@ namespace WebApplication1.Services
                 throw new InvalidCredentialsException("You write wrong old password");
             if (string.Equals(oldPassword, newPassword, StringComparison.Ordinal))
                 throw new NewPasswordIsSameAsOldException("The new password is too similar to the old one");
-                user.password = Hasher.HashPassword(user, newPassword);
-                await unitOfWork.CompleteAsync();
+            user.password = Hasher.HashPassword(user, newPassword);
+            await unitOfWork.CompleteAsync();
         }
         public async Task changedetails(int userId, UserDetailsRequest userDetailsRequest)
         {
-            if(userId<0) throw new ArgumentOutOfRangeException("userId");
-            if(userDetailsRequest is null)
+            if (userId < 0) throw new ArgumentOutOfRangeException("userId");
+            if (userDetailsRequest is null)
                 throw new ArgumentException("you should fill that field");
             var user = await unitOfWork.Users.FirstOrDefaultAsync(u => u.Id == userId);
-            if(user is null) throw new UserNotFoundException("Not found user");
+            if (user is null) throw new UserNotFoundException("Not found user");
             var emailExist = await unitOfWork.Users.AnyAsync(u => u.email == userDetailsRequest.email && u.Id != user.Id);
             if (emailExist) throw new EmailAlreadyExistsException("This email is taken.");
             user.setUser(userDetailsRequest);
@@ -54,7 +54,7 @@ namespace WebApplication1.Services
         }
         public async Task Delete(int id)
         {
-            if(id < 0) throw new ArgumentOutOfRangeException("id");
+            if (id < 0) throw new ArgumentOutOfRangeException("id");
             var user = await unitOfWork.Users.FirstOrDefaultAsync(u => u.Id == id);
             if (user is null) throw new UserNotFoundException("Not found user with " + id);
             unitOfWork.Users.Delete(user);

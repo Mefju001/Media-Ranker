@@ -1,13 +1,11 @@
 ﻿using MediatR;
-using Microsoft.EntityFrameworkCore;
-using WebApplication1.Builder.Interfaces;
-using WebApplication1.Data;
-using WebApplication1.DTO.Mapper;
-using WebApplication1.DTO.Request;
-using WebApplication1.DTO.Response;
-using WebApplication1.Exceptions;
-using WebApplication1.Models;
-using WebApplication1.QueryHandler.Query;
+using WebApplication1.Application.Common.DTO.Request;
+using WebApplication1.Application.Common.DTO.Response;
+using WebApplication1.Application.Common.Interfaces;
+using WebApplication1.Application.Features.TvSeries.GetTvSeriesByCriteria;
+using WebApplication1.Application.Mapper;
+using WebApplication1.Domain.Entities;
+using WebApplication1.Domain.Interfaces;
 using WebApplication1.Services.Interfaces;
 
 namespace WebApplication1.Services
@@ -25,9 +23,9 @@ namespace WebApplication1.Services
             this.referenceDataService = referenceDataService;
             this.mediatR = mediatR;
         }
-        public async Task<List<TvSeriesResponse>>AddListOfTvSeries(List<TvSeriesRequest>tvSeriesRequests)
+        public async Task<List<TvSeriesResponse>> AddListOfTvSeries(List<TvSeriesRequest> tvSeriesRequests)
         {
-            if(tvSeriesRequests is null) throw new ArgumentNullException(nameof(tvSeriesRequests));
+            if (tvSeriesRequests is null) throw new ArgumentNullException(nameof(tvSeriesRequests));
             await using var transaction = await unitOfWork.BeginTransactionAsync();
             try
             {

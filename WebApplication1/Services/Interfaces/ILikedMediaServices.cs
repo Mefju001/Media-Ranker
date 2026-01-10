@@ -1,5 +1,5 @@
-﻿using WebApplication1.DTO.Request;
-using WebApplication1.DTO.Response;
+﻿using WebApplication1.Application.Common.DTO.Request;
+using WebApplication1.Application.Common.DTO.Response;
 
 namespace WebApplication1.Services.Interfaces
 {

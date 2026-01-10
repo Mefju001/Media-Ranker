@@ -1,6 +1,7 @@
+using Api.Controllers;
+using Api.Extensions;
 using System.Text.Json.Serialization;
-using WebApplication1.Controllers;
-using WebApplication1.Extensions;
+
 var MyAllowSpecificOrigins = "_myAllowSpecificOrigins";
 var builder = WebApplication.CreateBuilder(args);
 AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);

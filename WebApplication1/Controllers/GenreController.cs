@@ -2,12 +2,12 @@
 using Microsoft.AspNetCore.Mvc;
 using WebApplication1.Services.Interfaces;
 
-namespace WebApplication1.Controllers
+namespace Api.Controllers
 {
     [Authorize(Roles = "User")]
     [ApiController]
     [Route("[controller]")]
-    public class GenreController:ControllerBase
+    public class GenreController : ControllerBase
     {
         private readonly IReferenceDataService referenceDataService;
         public GenreController(IReferenceDataService referenceDataService)
