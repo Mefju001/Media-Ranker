@@ -1,8 +1,12 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using WebApplication1.Application.Common.DTO.Request;
+using WebApplication1.Application.Features.TvSeries.GetAll;
+using WebApplication1.Application.Features.TvSeries.GetTvSeriesById;
 using WebApplication1.Application.Features.TvSeries.GetTvSeriesByCriteria;
-using WebApplication1.Services.Interfaces;
+using WebApplication1.Application.Features.TvSeries.TvSeriesUpsert;
+using WebApplication1.Application.Features.TvSeries.DeleteById;
 
 namespace Api.Controllers
 {
@@ -11,52 +15,75 @@ namespace Api.Controllers
     [Route("[controller]")]
     public class TvSeriesController : ControllerBase
     {
-        private readonly ITvSeriesServices TvSeriesServices;
+        private readonly IMediator mediator;
 
-        public TvSeriesController(ITvSeriesServices tvSeriesServices)
+        public TvSeriesController(IMediator mediator)
         {
-            TvSeriesServices = tvSeriesServices;
+            this.mediator = mediator;
         }
         [AllowAnonymous]
         [HttpGet]
         public async Task<IActionResult> GetAll()
         {
-            var movies = await TvSeriesServices.GetAllAsync();
+            var query = new GetAllTvSeriesQuery();
+            var movies = await mediator.Send(query);
             return Ok(movies);
         }
         [AllowAnonymous]
         [HttpGet("FilterBy")]
-        public async Task<IActionResult> GetTvSeries([FromQuery] TvSeriesQuery tvSeriesQuery)
+        public async Task<IActionResult> GetTvSeries([FromQuery] GetTvSeriesByCriteriaQuery tvSeriesQuery)
         {
-            var movies = await TvSeriesServices.GetMoviesByCriteriaAsync(tvSeriesQuery);
+            var movies = await mediator.Send(tvSeriesQuery);
             return Ok(movies);
         }
         [AllowAnonymous]
         [HttpGet("id/{id}")]
         public async Task<IActionResult> GetById(int id)
         {
-            var movie = await TvSeriesServices.GetById(id);
+            var query = new GetTvSeriesByIdQuery(id);
+            var movie = await mediator.Send(query);
             return Ok(movie);
         }
         [Authorize(Roles = "Admin")]
         [HttpPost]
         public async Task<IActionResult> AddTvSeries(TvSeriesRequest tvSeriesRequest)
         {
-            var created = await TvSeriesServices.Upsert(null, tvSeriesRequest);
+            var command = new UpsertTvSeriesCommand(null, 
+                tvSeriesRequest.title,
+                tvSeriesRequest.description,
+                tvSeriesRequest.genre,
+                tvSeriesRequest.ReleaseDate,
+                tvSeriesRequest.Language,
+                tvSeriesRequest.Seasons,
+                tvSeriesRequest.Episodes,
+                tvSeriesRequest.Network,
+                tvSeriesRequest.Status);
+            var created = await mediator.Send(command);
             return CreatedAtAction(nameof(GetById), new { id = created.id }, created);
         }
         [Authorize(Roles = "Admin")]
         [HttpPut("UpdateById/{id}")]
         public async Task<IActionResult> UpdateTvSeries(int id, TvSeriesRequest tvSeriesRequest)
         {
-            var updated = await TvSeriesServices.Upsert(id, tvSeriesRequest);
+            var command = new UpsertTvSeriesCommand(id,
+                tvSeriesRequest.title,
+                tvSeriesRequest.description,
+                tvSeriesRequest.genre,
+                tvSeriesRequest.ReleaseDate,
+                tvSeriesRequest.Language,
+                tvSeriesRequest.Seasons,
+                tvSeriesRequest.Episodes,
+                tvSeriesRequest.Network,
+                tvSeriesRequest.Status);
+            var updated = await mediator.Send(command);
             return Ok(updated);
         }
         [Authorize(Roles = "Admin")]
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(int id)
         {
-            var deleted = await TvSeriesServices.Delete(id);
+            var command = new DeleteByIdCommand(id);
+            var deleted = await mediator.Send(command);
             if (!deleted) return NotFound();
             return NoContent();
         }

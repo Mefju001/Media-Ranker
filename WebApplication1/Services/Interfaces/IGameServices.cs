@@ -6,7 +6,7 @@ namespace WebApplication1.Services.Interfaces
     public interface IGameServices
     {
         Task<List<GameResponse>> GetAllAsync();
-        Task<List<GameResponse>> GetGamesByCriteriaAsync(GameQuery gameQuery);
+       //Task<List<GameResponse>> GetGamesByCriteriaAsync(GameQuery gameQuery);
         Task<GameResponse?> GetById(int id);
         Task<GameResponse> Upsert(int? movieId, GameRequest game);
         Task<bool> Delete(int id);

@@ -1,4 +1,7 @@
-﻿using WebApplication1.Services.Interfaces;
+﻿using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
+using WebApplication1.Services.Interfaces;
 
 namespace WebApplication1.Infrastructure.BackgroundTasks.Workers
 {

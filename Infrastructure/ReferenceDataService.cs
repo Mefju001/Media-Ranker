@@ -1,4 +1,5 @@
-﻿using WebApplication1.Application.Common.DTO.Request;
+﻿using Microsoft.EntityFrameworkCore;
+using WebApplication1.Application.Common.DTO.Request;
 using WebApplication1.Application.Common.DTO.Response;
 using WebApplication1.Application.Common.Interfaces;
 using WebApplication1.Application.Mapper;
@@ -36,6 +37,12 @@ namespace WebApplication1.Services
             if (genres is null) return new List<GenreResponse>();
             var response = genres.Select(GenreMapper.ToResponse).ToList();
             return response;
+        }
+        public async Task saveTokens(Token token)
+        {
+            if (token == null) throw new ArgumentNullException();
+            await _unitOfWork.Tokens.AddAsync(token);
+            await _unitOfWork.CompleteAsync();
         }
     }
 }

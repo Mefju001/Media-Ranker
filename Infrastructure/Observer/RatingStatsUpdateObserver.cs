@@ -1,4 +1,5 @@
 ﻿using MediatR;
+using Microsoft.Extensions.DependencyInjection;
 using WebApplication1.Application.Notification;
 using WebApplication1.Infrastructure.BackgroundTasks.Interfaces;
 using WebApplication1.Services.Interfaces;

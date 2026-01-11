@@ -5,6 +5,7 @@ using WebApplication1.Application.Common.DTO.Response;
 using WebApplication1.Application.Common.Interfaces;
 using WebApplication1.Application.Mapper;
 using WebApplication1.Domain.Entities;
+using WebApplication1.Domain.Exceptions;
 using WebApplication1.Domain.ValueObjects;
 using WebApplication1.Services.Interfaces;
 
@@ -49,7 +50,7 @@ namespace WebApplication1.Services
             if (user is null) throw new UserNotFoundException("Not found user");
             var emailExist = await unitOfWork.Users.AnyAsync(u => u.email == userDetailsRequest.email && u.Id != user.Id);
             if (emailExist) throw new EmailAlreadyExistsException("This email is taken.");
-            user.setUser(userDetailsRequest);
+            //user.setUser(userDetailsRequest);
             await unitOfWork.CompleteAsync();
         }
         public async Task Delete(int id)

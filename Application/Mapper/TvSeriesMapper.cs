@@ -1,5 +1,5 @@
-﻿using WebApplication1.Application.Common.DTO.Request;
-using WebApplication1.Application.Common.DTO.Response;
+﻿using WebApplication1.Application.Common.DTO.Response;
+using WebApplication1.Application.Features.TvSeries.TvSeriesUpsert;
 using WebApplication1.Domain.Entities;
 
 namespace WebApplication1.Application.Mapper
@@ -22,12 +22,7 @@ namespace WebApplication1.Application.Mapper
                 tvSeries.Network,
                 tvSeries.Status);
         }
-        public static TvSeriesAVGResponse ToTvSeriesAVGResponse(TvSeries tvSeries, double avg)
-        {
-            var tvSeriesResponse = ToTvSeriesResponse(tvSeries);
-            return new TvSeriesAVGResponse(tvSeriesResponse, avg);
-        }
-        public static void UpdateEntity(TvSeries tvSeries, TvSeriesRequest tvSeriesRequest, Genre genre)
+        public static void UpdateEntity(TvSeries tvSeries, UpsertTvSeriesCommand tvSeriesRequest, Genre genre)
         {
             tvSeries.title = tvSeriesRequest.title;
             tvSeries.description = tvSeriesRequest.description;

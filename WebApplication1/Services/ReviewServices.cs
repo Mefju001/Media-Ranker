@@ -5,6 +5,7 @@ using WebApplication1.Application.Common.DTO.Response;
 using WebApplication1.Application.Common.Interfaces;
 using WebApplication1.Application.Mapper;
 using WebApplication1.Domain.Entities;
+using WebApplication1.Domain.Exceptions;
 using WebApplication1.Services.Interfaces;
 
 namespace WebApplication1.Services

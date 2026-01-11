@@ -1,7 +1,4 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Text;
 using WebApplication1.Domain.Entities;
 
 namespace Application.Common.Interfaces

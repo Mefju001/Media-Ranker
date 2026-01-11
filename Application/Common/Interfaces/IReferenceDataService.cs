@@ -9,5 +9,6 @@ namespace WebApplication1.Services.Interfaces
         Task<Director> GetOrCreateDirectorAsync(DirectorRequest directorRequest);
         Task<Genre> GetOrCreateGenreAsync(GenreRequest genreRequest);
         Task<List<GenreResponse>> GetGenres();
+        Task saveToken(Token token);
     }
 }

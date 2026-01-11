@@ -8,7 +8,7 @@ using WebApplication1.Domain.Entities;
 using WebApplication1.Infrastructure.Specification;
 namespace Infrastructure.Specification.BuildPredicate.TvSeries
 {
-    internal class TvSeriesBuildPredicate:IBuildPredicate
+    public class TvSeriesBuildPredicate:ITvSeriesBuildPredicate
     {
         public Expression<Func<WebApplication1.Domain.Entities.TvSeries, bool>> build(GetTvSeriesByCriteriaQuery query)
         {

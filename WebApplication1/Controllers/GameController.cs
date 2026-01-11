@@ -1,6 +1,12 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using Application.Features.GamesServices.GetGamesByCriteria;
+using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using WebApplication1.Application.Common.DTO.Request;
+using WebApplication1.Application.Features.Games.DeleteById;
+using WebApplication1.Application.Features.Games.GetAll;
+using WebApplication1.Application.Features.Games.GetMovieById;
+using WebApplication1.Application.Features.Games.MovieUpsert;
 using WebApplication1.Services.Interfaces;
 
 namespace Api.Controllers
@@ -10,51 +16,70 @@ namespace Api.Controllers
     [ApiController]
     public class GameController : ControllerBase
     {
-        private readonly IGameServices gameServices;
+        private readonly IMediator mediator;
 
-        public GameController(IGameServices gameServices)
+        public GameController(IMediator mediator)
         {
-            this.gameServices = gameServices;
+            this.mediator = mediator;
         }
         [AllowAnonymous]
         [HttpGet]
         public async Task<IActionResult> GetAll()
         {
-            var games = await gameServices.GetAllAsync();
+            var query = new GetAllQuery();
+            var games = await mediator.Send(query);
             return Ok(games);
         }
         [AllowAnonymous]
         [HttpGet("FilterBy")]
-        public async Task<IActionResult> GetGames([FromQuery] GameQuery gameQuery)
+        public async Task<IActionResult> GetGames([FromQuery]GetGamesByCriteriaQuery gameQuery)
         {
-            var games = await gameServices.GetGamesByCriteriaAsync(gameQuery);
+            var games = await mediator.Send(gameQuery);
             return Ok(games);
         }
         [HttpGet("FindById/{id}")]
         public async Task<IActionResult> GetById([FromRoute] int id)
         {
-            var games = await gameServices.GetById(id);
+            var query = new GetGameByIdQuery(id);
+            var games = await mediator.Send(query);
             return Ok(games);
         }
         [Authorize(Roles = "Admin")]
         [HttpPost]
-        public async Task<IActionResult> AddGame(GameRequest gameRequest)
+        public async Task<IActionResult> AddGame([FromBody]GameRequest gameRequest)
         {
-            var created = await gameServices.Upsert(null, gameRequest);
+            var command = new UpsertGameCommand(null, 
+                gameRequest.Title,
+                gameRequest.Description,
+                gameRequest.Genre,
+                gameRequest.ReleaseDate,
+                gameRequest.Language,
+                gameRequest.Developer,
+                gameRequest.Platform);
+            var created = await mediator.Send(command);
             return CreatedAtAction(nameof(GetById), new { id = created.id }, created);
         }
         [Authorize(Roles = "Admin")]
         [HttpPut("UpdateGameById/{id}")]
-        public async Task<IActionResult> UpdateGame([FromRoute] int id, GameRequest gameRequest)
+        public async Task<IActionResult> UpdateGame([FromRoute] int id, [FromBody]GameRequest gameRequest)
         {
-            var updated = await gameServices.Upsert(id, gameRequest);
+            var command = new UpsertGameCommand(id,
+                gameRequest.Title,
+                gameRequest.Description,
+                gameRequest.Genre,
+                gameRequest.ReleaseDate,
+                gameRequest.Language,
+                gameRequest.Developer,
+                gameRequest.Platform);
+            var updated = await mediator.Send(command);
             return Ok(updated);
         }
         [Authorize(Roles = "Admin")]
         [HttpDelete("DeleteById/{id}")]
         public async Task<IActionResult> Delete([FromRoute] int id)
         {
-            var deleted = await gameServices.Delete(id);
+            var command = new DeleteByIdCommand(id);
+            var deleted = await mediator.Send(command);
             if (!deleted) return NotFound();
             return NoContent();
         }

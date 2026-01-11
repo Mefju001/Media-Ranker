@@ -21,12 +21,7 @@ namespace WebApplication1.Application.Mapper
                 movie.Duration,
                 movie.IsCinemaRelease);
         }
-        public static MovieAVGResponse ToMovieAVGResponse(Movie movie, double avg)
-        {
-            var movieResponse = ToMovieResponse(movie);
-            return new MovieAVGResponse(movieResponse, avg);
-        }
-        public static void UpdateEntity(Movie movie, UpsertGameCommand movieRequest, Director director, Genre genre)
+        public static void UpdateEntity(Movie movie, UpsertMovieCommand movieRequest, Director director, Genre genre)
         {
             movie.title = movieRequest.Title;
             movie.description = movieRequest.Description;

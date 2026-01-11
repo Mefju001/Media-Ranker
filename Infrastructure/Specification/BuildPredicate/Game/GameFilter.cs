@@ -1,4 +1,4 @@
-﻿using Application.Features.MoviesManagement.GetMoviesByCriteria;
+﻿using Application.Features.GamesManagement.GetGamesByCriteria;
 using System;
 using System.Collections.Generic;
 using System.Linq.Expressions;
@@ -7,9 +7,9 @@ using WebApplication1.Domain.Entities;
 
 namespace Infrastructure.Specification.BuildPredicate.Game
 {
-    internal class GameFilter:IGameFilter
+    public class GameFilter:IGameFilter
     {
-        public IQueryable<Game> Filter(IQueryable<Game> query, Expression<Func<Game, bool>> filterPredicate)
+        public IQueryable<WebApplication1.Domain.Entities.Game> Filter(IQueryable<WebApplication1.Domain.Entities.Game> query, Expression<Func<WebApplication1.Domain.Entities.Game, bool>> filterPredicate)
         {
             query = query.Where(filterPredicate);
             return query;

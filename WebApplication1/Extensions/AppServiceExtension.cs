@@ -1,4 +1,11 @@
-﻿using FluentValidation;
+﻿using Application.Common.Interfaces;
+using Application.Features.GamesManagement.GetGamesByCriteria;
+using Application.Features.MoviesManagement.GetMoviesByCriteria;
+using Application.Features.TvSeriesManagement.GetTvSeriesByCriteria;
+using FluentValidation;
+using Infrastructure.Specification.BuildPredicate.Game;
+using Infrastructure.Specification.BuildPredicate.Movie;
+using Infrastructure.Specification.BuildPredicate.TvSeries;
 using MediatR;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -13,7 +20,6 @@ using WebApplication1.Infrastructure.Persistence;
 using WebApplication1.Infrastructure.Persistence.Repository;
 using WebApplication1.Infrastructure.Persistence.UnitOfWork;
 using WebApplication1.Infrastructure.Sorting;
-using WebApplication1.QueryHandler;
 using WebApplication1.Services;
 using WebApplication1.Services.Interfaces;
 
@@ -32,14 +38,21 @@ namespace Api.Extensions
                 var logger = provider.GetRequiredService<ILogger<BackgroundTaskQueue>>();
                 return new BackgroundTaskQueue(logger);
             });
-            services.AddTransient<MovieQueryHandler>();
-            services.AddTransient<QueryServices<TvSeries>>();
-            services.AddTransient<QueryServices<Movie>>();
-            services.AddTransient<QueryServices<Game>>();
+
             services.AddScoped<SorterContext<TvSeries>>();
-            services.AddScoped<SorterContext<Movie>>();
             services.AddScoped<SorterContext<Game>>();
             services.AddScoped<IReferenceDataService, ReferenceDataService>();
+
+            services.AddScoped(typeof(ISorterContext<>), typeof(SorterContext<>)); services.AddScoped<IAppDbContext, AppDbContext>();
+            services.AddScoped<IGameFilter, GameFilter>();
+            services.AddScoped<IMovieFilter, MovieFilter>();
+            services.AddScoped<ITvSeriesFilter, TvSeriesFilter>();
+            services.AddScoped<IGameBuildPredicate, GameBuildPredicate>();
+            services.AddScoped<IMovieBuildPredicate, MovieBuildPredicate>();
+            services.AddScoped<ITvSeriesBuildPredicate, TvSeriesBuildPredicate>();
+
+
+
             services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
             services.AddHostedService<QueueProcessorService>();
             services.AddHostedService<TokenBackgroundService>();
@@ -49,16 +62,18 @@ namespace Api.Extensions
             services.AddScoped<IMovieBuilder, MovieBuilder>();
             services.AddScoped<IGameBuilder, GameBuilder>();
             services.AddScoped<ITvSeriesBuilder, TvSeriesBuilder>();
-            services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(typeof(Program).Assembly));
+            services.AddMediatR(cfg => {
+                cfg.RegisterServicesFromAssembly(typeof(WebApplication1.Application.Features.Movies.GetAll.GetAllQuery).Assembly);
+            });
             services.AddValidatorsFromAssembly(typeof(Program).Assembly);
             services.AddTransient(typeof(IPipelineBehavior<,>), typeof(ValidationBehavior<,>));
-            services.AddScoped<IMovieServices, MovieServices>();
+            //services.AddScoped<IMovieServices, MovieServices>();
             services.AddScoped<IUnitOfWork, UnitOfWork>();
-            services.AddScoped<IGameServices, GameServices>();
+            //services.AddScoped<IGameServices, GameServices>();
             services.AddScoped<IReviewServices, ReviewServices>();
             services.AddScoped<IUserServices, UserServices>();
             services.AddScoped<ILikedMediaServices, LikedMediaServices>();
-            services.AddScoped<ITvSeriesServices, TvSeriesServices>();
+            ///services.AddScoped<ITvSeriesServices, TvSeriesServices>();
             services.AddScoped<ITokenCleanupService, TokenCleanupService>();
             services.AddScoped<IStatsUpdateService, StatsUpdateService>();
 

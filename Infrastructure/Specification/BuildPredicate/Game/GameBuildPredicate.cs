@@ -1,16 +1,16 @@
-﻿using Application.Features.MoviesManagement.GetMoviesByCriteria;
+﻿using Application.Features.GamesManagement.GetGamesByCriteria;
+using Application.Features.GamesServices.GetGamesByCriteria;
 using System;
 using System.Collections.Generic;
 using System.Linq.Expressions;
 using System.Text;
 using WebApplication1.Application.Features.Games.GetMovieById;
-using WebApplication1.Application.Features.Games.GetMoviesByCriteria;
 using WebApplication1.Domain.Entities;
 using WebApplication1.Infrastructure.Specification;
 
 namespace Infrastructure.Specification.BuildPredicate.Game
 {
-    internal class GameBuildPredicate : IGameBuildPredicate
+    public class GameBuildPredicate : IGameBuildPredicate
     {
         public Expression<Func<WebApplication1.Domain.Entities.Game, bool>> BuildPredicate(GetGamesByCriteriaQuery query)
         {

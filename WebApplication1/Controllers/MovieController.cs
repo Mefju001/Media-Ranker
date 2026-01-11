@@ -31,7 +31,7 @@ namespace Api.Controllers
         }
         [AllowAnonymous]
         [HttpGet("FilterBy")]
-        public async Task<IActionResult> GetMovies([FromQuery] GetTvSeriesByCriteriaQuery moviesQuery)
+        public async Task<IActionResult> GetMovies([FromQuery] GetMoviesByCriteriaQuery moviesQuery)
         {
             var movies = await mediator.Send(moviesQuery);
             return Ok(movies);
@@ -49,7 +49,7 @@ namespace Api.Controllers
         [HttpPost]
         public async Task<IActionResult> AddMovie([FromBody] MovieRequest movie)
         {
-            var command = new UpsertGameCommand(
+            var command = new UpsertMovieCommand(
                 null,
                 movie.Title,
                 movie.Description,
@@ -66,7 +66,7 @@ namespace Api.Controllers
         [HttpPut("updateById/{id}")]
         public async Task<IActionResult> UpdateMovie([FromRoute] int id, [FromBody] MovieRequest movie)
         {
-            var command = new UpsertGameCommand(
+            var command = new UpsertMovieCommand(
                 id,
                 movie.Title,
                 movie.Description,

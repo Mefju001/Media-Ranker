@@ -21,13 +21,6 @@ namespace WebApplication1.Application.Mapper
                 game.Platform
                 );
         }
-        public static GameAvgResponse toGameAvgResponse(Game game, double average)
-        {
-            var gameResponse = ToGameResponse(game);
-            return new GameAvgResponse(
-                gameResponse,
-                average);
-        }
         public static void UpdateEntity(Game game, UpsertGameCommand gameRequest, Genre genre)
         {
             game.title = gameRequest.Title;
