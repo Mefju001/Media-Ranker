@@ -38,7 +38,7 @@ namespace WebApplication1.Services
             var response = genres.Select(GenreMapper.ToResponse).ToList();
             return response;
         }
-        public async Task saveTokens(Token token)
+        public async Task saveToken(Token token)
         {
             if (token == null) throw new ArgumentNullException();
             await _unitOfWork.Tokens.AddAsync(token);

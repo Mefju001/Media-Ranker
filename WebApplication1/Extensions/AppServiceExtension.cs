@@ -3,6 +3,7 @@ using Application.Features.GamesManagement.GetGamesByCriteria;
 using Application.Features.MoviesManagement.GetMoviesByCriteria;
 using Application.Features.TvSeriesManagement.GetTvSeriesByCriteria;
 using FluentValidation;
+using Infrastructure.Persistence.Repository;
 using Infrastructure.Specification.BuildPredicate.Game;
 using Infrastructure.Specification.BuildPredicate.Movie;
 using Infrastructure.Specification.BuildPredicate.TvSeries;
@@ -50,9 +51,7 @@ namespace Api.Extensions
             services.AddScoped<IGameBuildPredicate, GameBuildPredicate>();
             services.AddScoped<IMovieBuildPredicate, MovieBuildPredicate>();
             services.AddScoped<ITvSeriesBuildPredicate, TvSeriesBuildPredicate>();
-
-
-
+            services.AddScoped<ITokenRepository, TokenRepository>();
             services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
             services.AddHostedService<QueueProcessorService>();
             services.AddHostedService<TokenBackgroundService>();

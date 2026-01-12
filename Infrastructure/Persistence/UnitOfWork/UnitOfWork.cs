@@ -1,4 +1,7 @@
-﻿using Microsoft.EntityFrameworkCore.Storage;
+﻿using Application.Common.Interfaces;
+using Infrastructure.Persistence.Repository;
+using Microsoft.EntityFrameworkCore.Storage;
+using System.Diagnostics.Contracts;
 using WebApplication1.Application.Common.Interfaces;
 using WebApplication1.Domain.Entities;
 using WebApplication1.Infrastructure.Persistence.Repository;
@@ -9,6 +12,8 @@ namespace WebApplication1.Infrastructure.Persistence.UnitOfWork
     public class UnitOfWork : IUnitOfWork
     {
         private readonly AppDbContext context;
+        public IUserRepository UserRepository { get; }
+        public ITokenRepository TokenRepository {  get; }
         public IGenericRepository<MediaStats> MediaStats { get; }
         public IGenericRepository<Movie> Movies { get; }
         public IGenericRepository<Director> Directors { get; }
@@ -26,6 +31,8 @@ namespace WebApplication1.Infrastructure.Persistence.UnitOfWork
         public UnitOfWork(AppDbContext context)
         {
             this.context = context;
+            UserRepository = new UserRepository(context);
+            TokenRepository = new TokenRepository(context);
             MediaStats = new GenericRepository<MediaStats>(context);
             Movies = new GenericRepository<Movie>(context);
             Directors = new GenericRepository<Director>(context);

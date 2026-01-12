@@ -12,6 +12,7 @@ using WebApplication1.Application.Common.DTO.Request;
 using WebApplication1.Application.Common.DTO.Response;
 using WebApplication1.Application.Common.Interfaces;
 using WebApplication1.Domain.Entities;
+using WebApplication1.Domain.Exceptions;
 
 namespace Application.Features.AuthServices.Login
 {
@@ -31,15 +32,10 @@ namespace Application.Features.AuthServices.Login
 
         public async Task<TokenResponse?> Handle(LoginCommand command, CancellationToken cancellationToken)
         {
-            var user = await unitOfWork.Users.FirstOrDefaultAsync(u => u.username == command.username);
-            if (user == null)
+            var user = await unitOfWork.UserRepository.GetUserIdByUsername(command.username);
+            if (user is not null|| (passwordHasher.VerifyHashedPassword(user, user.password, command.password))==PasswordVerificationResult.Success)
             {
-                return null;
-            }
-            var passwordVerification = passwordHasher.VerifyHashedPassword(user, user.password, command.password);
-            if (passwordVerification == PasswordVerificationResult.Failed)
-            {
-                return null;
+                throw new InvalidCredentialsException("Wrong username or password");
             }
             var accessToken = accessTokenService.generateAccessToken(user.Id, command.username, user.UserRoles);
             var refreshToken = await refreshTokenService.GenerateRefreshToken(user.Id, command.username);

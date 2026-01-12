@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore.Storage;
+﻿using Application.Common.Interfaces;
+using Microsoft.EntityFrameworkCore.Storage;
 using WebApplication1.Domain.Entities;
 using WebApplication1.Services.Interfaces;
 
@@ -6,6 +7,8 @@ namespace WebApplication1.Application.Common.Interfaces
 {
     public interface IUnitOfWork : IDisposable
     {
+        IUserRepository UserRepository { get; }
+        ITokenRepository TokenRepository { get; }
         IGenericRepository<Movie> Movies { get; }
         IGenericRepository<Director> Directors { get; }
         IGenericRepository<Genre> Genres { get; }
