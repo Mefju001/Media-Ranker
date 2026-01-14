@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using System.Linq.Expressions;
 using WebApplication1.Application.Common.DTO.Request;
 using WebApplication1.Application.Common.DTO.Response;
 using WebApplication1.Application.Common.Interfaces;
@@ -13,33 +14,16 @@ namespace WebApplication1.Services
 {
     public class UserServices : IUserServices
     {
+        private int add(int a, int b) => a + b;
+        private double add(double a, double b) => a + b;
+        delegate int Add(int a, int b);
+        delegate double AddD(double a, double b);
         private readonly IPasswordHasher<User> Hasher;
         private readonly IUnitOfWork unitOfWork;
         public UserServices(IPasswordHasher<User> passwordHasher, IUnitOfWork unitOfWork)
         {
             this.unitOfWork = unitOfWork;
             Hasher = passwordHasher;
-        }
-        public async Task changePassword(string newPassword, string confirmPassword, string oldPassword, int userId)
-        {
-            if (string.IsNullOrEmpty(newPassword) || string.IsNullOrEmpty(confirmPassword) || string.IsNullOrEmpty(oldPassword))
-            {
-                throw new ArgumentException("you should fill in these fields with passwords");
-            }
-            var user = await unitOfWork.Users.FirstOrDefaultAsync(u => u.Id == userId);
-            var passwordVerificationResult = user is null
-               ? PasswordVerificationResult.Failed
-               : Hasher.VerifyHashedPassword(user, user.password, oldPassword);
-            if (!string.Equals(newPassword, confirmPassword, StringComparison.Ordinal))
-            {
-                throw new PasswordMismatchException("The new password differed from the confirmation password");
-            }
-            if (passwordVerificationResult is not PasswordVerificationResult.Success)
-                throw new InvalidCredentialsException("You write wrong old password");
-            if (string.Equals(oldPassword, newPassword, StringComparison.Ordinal))
-                throw new NewPasswordIsSameAsOldException("The new password is too similar to the old one");
-            user.password = Hasher.HashPassword(user, newPassword);
-            await unitOfWork.CompleteAsync();
         }
         public async Task changedetails(int userId, UserDetailsRequest userDetailsRequest)
         {

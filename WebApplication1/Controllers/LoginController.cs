@@ -1,4 +1,7 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using Application.Features.AuthServices.Login;
+using Application.Features.AuthServices.Logout;
+using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
 using WebApplication1.Application.Common.DTO.Request;
@@ -12,19 +15,18 @@ namespace Api.Controllers
     [Route("api")]
     public class LoginController : ControllerBase
     {
-        private readonly IUserServices userServices;
-        private readonly AuthService authService;
+        private readonly IMediator mediator;
 
-        public LoginController(AuthService authService, IUserServices userServices)
+        public LoginController(IMediator mediator)
         {
-            this.authService = authService;
-            this.userServices = userServices;
+            this.mediator = mediator;
         }
         [AllowAnonymous]
         [HttpPost("Login")]
         public async Task<IActionResult> Login([FromBody] LoginRequest loginRequest)
         {
-            var tokens = await authService.Login(loginRequest);
+            var command = new LoginCommand(loginRequest.username, loginRequest.password);
+            var tokens = await mediator.Send(command);
             if (tokens == null)
             {
                 return Unauthorized("Nieprawidłowe dane");
@@ -47,15 +49,16 @@ namespace Api.Controllers
             {
                 return Unauthorized("Nie znaleziono ID użytkownika w tokenie.");
             }
-            await authService.Logout(userId);
+            var command = new LogoutCommand(userId);
+            await mediator.Send(command);
             Response.Cookies.Delete("refreshToken");
             return Ok(new { Message = "wylogowano pomyślnie" });
         }
-        [AllowAnonymous]
+        /*[AllowAnonymous]
         [HttpPost("Register")]
         public async Task<IActionResult> Register([FromBody] UserRequest userRequest)
         {
             return Ok(await userServices.Register(userRequest));
-        }
+        }*/
     }
 }

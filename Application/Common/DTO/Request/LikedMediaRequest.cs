@@ -2,7 +2,6 @@
 {
     public class LikedMediaRequest
     {
-        public int UserId { get; set; }
         public int MediaId { get; set; }
     }
 }

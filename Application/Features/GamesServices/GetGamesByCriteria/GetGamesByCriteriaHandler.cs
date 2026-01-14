@@ -32,7 +32,6 @@ namespace Application.Features.GamesServices.GetGamesByCriteria
                 .Include(m => m.Stats)
                 .AsNoTracking()
                 .AsQueryable();
-            //IQueryable<Movie> query = queryServices.StartQuery();
             var predicate = gameBuildPredicate.BuildPredicate(request);
             query = gameFilter.Filter(query, predicate);
             if (!string.IsNullOrEmpty(request.sortByField) && request.sortByField.Contains('|'))

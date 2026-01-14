@@ -7,6 +7,8 @@ namespace WebApplication1.Application.Common.Interfaces
 {
     public interface IUnitOfWork : IDisposable
     {
+        ILikedMediaRepository LikedMediaRepository { get; }
+        IMediaRepository MediaRepository { get; }
         IUserRepository UserRepository { get; }
         ITokenRepository TokenRepository { get; }
         IGenericRepository<Movie> Movies { get; }

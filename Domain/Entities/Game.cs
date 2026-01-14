@@ -1,5 +1,4 @@
 ﻿using WebApplication1.Domain.ValueObjects;
-
 namespace WebApplication1.Domain.Entities
 {
     public class Game : Media

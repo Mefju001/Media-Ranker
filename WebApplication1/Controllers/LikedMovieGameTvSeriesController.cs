@@ -1,4 +1,10 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using Application.Features.LikedServices.AddLiked;
+using Application.Features.LikedServices.Delete;
+using Application.Features.LikedServices.GetAllLiked;
+using Application.Features.LikedServices.GetAllLikedByUser;
+using Application.Features.LikedServices.GetByIdLiked;
+using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
 using WebApplication1.Application.Common.DTO.Request;
@@ -12,7 +18,7 @@ namespace Api.Controllers
     [Route("Api/Liked")]
     public class LikedMovieGameTvSeriesController : ControllerBase
     {
-        private readonly ILikedMediaServices likedMediaServices;
+        private readonly IMediator mediator;
         private int? getUserId()
         {
             var stringUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
@@ -24,14 +30,15 @@ namespace Api.Controllers
             else
                 return null;
         }
-        public LikedMovieGameTvSeriesController(ILikedMediaServices likedMediaServices)
+        public LikedMovieGameTvSeriesController(IMediator mediator)
         {
-            this.likedMediaServices = likedMediaServices;
+            this.mediator = mediator;
         }
         [HttpGet()]
         public async Task<IActionResult> GetAll()
         {
-            var movies = await likedMediaServices.GetAllAsync();
+            var query = new GetAllQuery();
+            var movies = await mediator.Send(query);
             return Ok(movies);
         }
         [Authorize(Roles = "User")]
@@ -40,15 +47,17 @@ namespace Api.Controllers
         {
             var userId = getUserId();
             if (userId is null) return Unauthorized();
-            return Ok(await likedMediaServices.GetUserLikedMedia(userId.Value));
+            var query = new GetAllLikedByUserQuery(userId.Value);
+            return Ok(await mediator.Send(query));
         }
         [Authorize(Roles = "User")]
         [HttpGet("{id:int}")]
         [ProducesResponseType(typeof(LikedMediaResponse), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public async Task<IActionResult> GetById(int id)
+        public async Task<IActionResult> GetById([FromRoute]int id)
         {
-            var response = await likedMediaServices.GetBy(id);
+            var query = new GetByIdQuery(id);
+            var response = await mediator.Send(query);
             if (response is null)
             {
                 return NotFound();
@@ -58,12 +67,12 @@ namespace Api.Controllers
         [Authorize(Roles = "Admin,User")]
         [ProducesResponseType(typeof(LikedMediaRequest), StatusCodes.Status201Created)]
         [HttpPost("Add")]
-        public async Task<IActionResult> AddLikedMovie([FromBody] LikedMediaRequest likedMovie)
+        public async Task<IActionResult> AddLiked([FromBody] LikedMediaRequest liked)
         {
             var userId = getUserId();
             if (userId is null) return Unauthorized();
-            likedMovie.UserId = userId.Value;
-            var response = await likedMediaServices.Add(likedMovie);
+            var command = new AddLikedCommand(userId.Value, liked.MediaId);
+            var response = await mediator.Send(command);
             return CreatedAtAction(nameof(GetById), new { id = response.id }, response);
         }
         [Authorize(Roles = "Admin,User")]
@@ -72,7 +81,8 @@ namespace Api.Controllers
         {
             var userId = getUserId();
             if (userId is null) return Unauthorized();
-            await likedMediaServices.Delete(userId.Value, id);
+            var command = new DeleteLikedCommand(userId.Value, id);
+            await mediator.Send(command);
             return NoContent();
         }
     }

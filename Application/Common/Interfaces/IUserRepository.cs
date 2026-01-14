@@ -10,5 +10,8 @@ namespace Application.Common.Interfaces
     public interface IUserRepository
     {
         Task<User> GetUserIdByUsername(string username);
+        Task<User> GetUserById(int userId);
+        Task<bool> IsAnyUserWhoHaveEmailAndId(string email, int id);
+        Task DeleteUser(int userId);
     }
 }
