@@ -1,5 +1,5 @@
-﻿using MediatR;
-using WebApplication1.Application.Common.DTO.Response;
+﻿using Application.Common.DTO.Response;
+using MediatR;
 
 namespace Application.Features.GamesServices.GetGamesByCriteria
 {

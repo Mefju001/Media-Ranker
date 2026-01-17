@@ -1,11 +1,11 @@
-﻿using WebApplication1.Application.Common.DTO.Response;
-using WebApplication1.Domain.Entities;
+﻿using Application.Common.DTO.Response;
+using Domain.Entity;
 
-namespace WebApplication1.Application.Mapper
+namespace Application.Mapper
 {
     public static class UserMapper
     {
-        public static UserResponse ToResponse(User user)
+        public static UserResponse ToResponse(UserDomain user)
         {
             if (user is null) return null;
             return new UserResponse(
@@ -15,7 +15,7 @@ namespace WebApplication1.Application.Mapper
                 user.name,
                 user.surname,
                 user.email,
-                user.UserRoles.Select(ur => RoleMapper.ToResponse(ur.Role)).ToList() ?? new List<RoleResponse>(),
+                user.UserRoles.Select(ur => RoleMapper.ToResponse(ur)).ToList() ?? new List<RoleResponse>(),
                 user.Reviews.Select(r => ReviewMapper.ToResponse(r)).ToList() ?? new List<ReviewResponse>());
 
         }

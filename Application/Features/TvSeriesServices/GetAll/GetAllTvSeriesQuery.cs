@@ -1,7 +1,7 @@
-﻿using MediatR;
-using WebApplication1.Application.Common.DTO.Response;
+﻿using Application.Common.DTO.Response;
+using MediatR;
 
-namespace WebApplication1.Application.Features.TvSeries.GetAll
+namespace Application.Features.TvSeriesServices.GetAll
 {
     public record GetAllTvSeriesQuery : IRequest<List<TvSeriesResponse>>;
 }

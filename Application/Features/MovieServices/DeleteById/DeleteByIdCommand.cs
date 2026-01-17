@@ -1,6 +1,6 @@
 ﻿using MediatR;
 
-namespace WebApplication1.Application.Features.Movies.DeleteById
+namespace Application.Features.MovieServices.DeleteById
 {
     public record DeleteByIdCommand(int id) : IRequest<bool>;
 }

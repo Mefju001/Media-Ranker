@@ -1,10 +1,10 @@
-﻿using MediatR;
-using WebApplication1.Application.Common.DTO.Response;
-using WebApplication1.Application.Common.Interfaces;
-using WebApplication1.Application.Mapper;
-using WebApplication1.Domain.Exceptions;
+﻿using Application.Common.DTO.Response;
+using Application.Common.Interfaces;
+using Application.Mapper;
+using Domain.Exceptions;
+using MediatR;
 
-namespace WebApplication1.Application.Features.Games.GetMovieById
+namespace Application.Features.GamesServices.GetGameById
 {
     public class GetGameByIdHandler : IRequestHandler<GetGameByIdQuery, GameResponse?>
     {
@@ -17,13 +17,14 @@ namespace WebApplication1.Application.Features.Games.GetMovieById
 
         public async Task<GameResponse?> Handle(GetGameByIdQuery request, CancellationToken cancellationToken)
         {
-            var game = await unitOfWork.Games.GetByIdAsync(request.id);
+            throw new NotImplementedException();
+            /*var game = await unitOfWork.Games.GetByIdAsync(request.id);
             if (game == null)
             {
                 throw new NotFoundException("not found");
             }
             var gameResponses = GameMapper.ToGameResponse(game);
-            return gameResponses;
+            return gameResponses;*/
         }
     }
 }

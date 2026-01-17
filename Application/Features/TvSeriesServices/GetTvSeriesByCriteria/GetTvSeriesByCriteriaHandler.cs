@@ -1,21 +1,21 @@
-﻿using Application.Common.Interfaces;
-using Application.Features.TvSeriesManagement.GetTvSeriesByCriteria;
+﻿using Application.Common.DTO.Response;
+using Application.Common.Interfaces;
+using Application.Mapper;
+using Domain.Entity;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
-using WebApplication1.Application.Common.DTO.Response;
-using WebApplication1.Application.Mapper;
 
 
-namespace WebApplication1.Application.Features.TvSeries.GetTvSeriesByCriteria
+namespace Application.Features.TvSeriesServices.GetTvSeriesByCriteria
 {
     public class GetTvSeriesByCriteriaHandler : IRequestHandler<GetTvSeriesByCriteriaQuery, List<TvSeriesResponse>>
     {
         private readonly IAppDbContext context;
-        private readonly ISorterContext<Domain.Entities.TvSeries> sorterContext;
+        private readonly ISorterContext<TvSeriesDomain> sorterContext;
         private readonly ITvSeriesFilter tvSeriesFilter;
         private readonly ITvSeriesBuildPredicate buildPredicate;
 
-        public GetTvSeriesByCriteriaHandler(ISorterContext<Domain.Entities.TvSeries> sorterContext, IAppDbContext appDbContext, ITvSeriesBuildPredicate buildPredicate, ITvSeriesFilter tvSeriesFilter)
+        public GetTvSeriesByCriteriaHandler(ISorterContext<TvSeriesDomain> sorterContext, IAppDbContext appDbContext, ITvSeriesBuildPredicate buildPredicate, ITvSeriesFilter tvSeriesFilter)
         {
             this.sorterContext = sorterContext;
             this.context = appDbContext;
@@ -27,8 +27,8 @@ namespace WebApplication1.Application.Features.TvSeries.GetTvSeriesByCriteria
         public async Task<List<TvSeriesResponse>> Handle(GetTvSeriesByCriteriaQuery request, CancellationToken cancellationToken)
         {
             var query = context.TvSeries
-                .Include(m => m.genre)
-                .Include(m => m.Stats)
+                //.Include(m => m.genre)
+                //.Include(m => m.Stats)
                 .AsNoTracking()
                 .AsQueryable();
             var predicate = buildPredicate.build(request);

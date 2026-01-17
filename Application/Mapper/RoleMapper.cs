@@ -1,11 +1,11 @@
-﻿using WebApplication1.Application.Common.DTO.Response;
-using WebApplication1.Domain.Entities;
+﻿using Application.Common.DTO.Response;
+using Domain.Entity;
 
-namespace WebApplication1.Application.Mapper
+namespace Application.Mapper
 {
     public static class RoleMapper
     {
-        public static RoleResponse ToResponse(Role role)
+        public static RoleResponse ToResponse(RoleDomain role)
         {
             return new RoleResponse(role.role)
             {

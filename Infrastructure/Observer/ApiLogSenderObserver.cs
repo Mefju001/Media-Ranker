@@ -1,9 +1,9 @@
-﻿using MediatR;
+﻿using Application.Notification;
+using MediatR;
 using Microsoft.Extensions.Configuration;
 using System.Text.Json;
-using WebApplication1.Application.Notification;
 
-namespace WebApplication1.Infrastructure.Observer
+namespace Infrastructure.Observer
 {
     public class ApiLogSenderObserver : INotificationHandler<LogNotification>
     {

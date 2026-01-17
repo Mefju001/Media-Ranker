@@ -1,8 +1,8 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Application.Common.Interfaces;
+using Microsoft.EntityFrameworkCore;
 using System.Linq.Expressions;
-using WebApplication1.Services.Interfaces;
 
-namespace WebApplication1.Infrastructure.Persistence.Repository
+namespace Infrastructure.Persistence.Repository
 {
     public class GenericRepository<T> : IGenericRepository<T> where T : class
     {

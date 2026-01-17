@@ -1,12 +1,11 @@
-﻿using WebApplication1.Domain.Entities;
-using WebApplication1.Domain.Interfaces;
-using WebApplication1.Domain.ValueObjects;
+﻿using Domain.Enums;
+using Domain.Interfaces;
 
-namespace WebApplication1.Domain.Builder
+namespace Domain.Builder
 {
     public class TvSeriesBuilder : ITvSeriesBuilder
     {
-        private TvSeries tvSeries;
+        /*private TvSeries tvSeries;
         public TvSeries Build()
         {
             if (tvSeries.genre == null)
@@ -46,6 +45,6 @@ namespace WebApplication1.Domain.Builder
             tvSeries.Network = network ?? string.Empty;
             tvSeries.Status = status ?? EStatus.Unknown;
             return this;
-        }
+        }*/
     }
 }

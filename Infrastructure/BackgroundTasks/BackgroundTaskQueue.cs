@@ -1,9 +1,8 @@
-﻿
+﻿using Infrastructure.BackgroundTasks.Interfaces;
 using Microsoft.Extensions.Logging;
 using System.Threading.Channels;
-using WebApplication1.Infrastructure.BackgroundTasks.Interfaces;
 
-namespace WebApplication1.Infrastructure.BackgroundTasks
+namespace Infrastructure.BackgroundTasks
 {
     public class BackgroundTaskQueue : IBackgroundTaskQueue
     {

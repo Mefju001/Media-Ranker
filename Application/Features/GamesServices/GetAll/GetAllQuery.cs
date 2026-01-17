@@ -1,7 +1,7 @@
-﻿using MediatR;
-using WebApplication1.Application.Common.DTO.Response;
+﻿using Application.Common.DTO.Response;
+using MediatR;
 
-namespace WebApplication1.Application.Features.Games.GetAll
+namespace Application.Features.GamesServices.GetAll
 {
     public record GetAllQuery : IRequest<List<GameResponse>>;
 }

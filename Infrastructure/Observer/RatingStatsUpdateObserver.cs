@@ -1,10 +1,10 @@
-﻿using MediatR;
+﻿using Application.Common.Interfaces;
+using Application.Notification;
+using Infrastructure.BackgroundTasks.Interfaces;
+using MediatR;
 using Microsoft.Extensions.DependencyInjection;
-using WebApplication1.Application.Notification;
-using WebApplication1.Infrastructure.BackgroundTasks.Interfaces;
-using WebApplication1.Services.Interfaces;
 
-namespace WebApplication1.Infrastructure.Observer
+namespace Infrastructure.Observer
 {
     public class RatingStatsUpdateObserver : INotificationHandler<ReviewChangedNotification>
     {

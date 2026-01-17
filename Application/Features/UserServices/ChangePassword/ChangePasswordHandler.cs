@@ -1,9 +1,9 @@
-﻿using MediatR;
+﻿using Application.Common.Interfaces;
+using Domain.Entity;
+using Domain.Exceptions;
+using MediatR;
 using Microsoft.AspNetCore.Identity;
-using System.Collections.Generic;
-using WebApplication1.Application.Common.Interfaces;
-using WebApplication1.Domain.Entities;
-using WebApplication1.Domain.Exceptions;
+
 
 
 namespace Application.Features.UserServices.ChangePassword
@@ -11,9 +11,9 @@ namespace Application.Features.UserServices.ChangePassword
     public class ChangePasswordHandler : IRequestHandler<ChangePasswordCommand, Unit>
     {
         private readonly IUnitOfWork unitOfWork;
-        private readonly IPasswordHasher<User> Hasher;
+        private readonly IPasswordHasher<UserDomain> Hasher;
 
-        public ChangePasswordHandler(IPasswordHasher<User> passwordHasher, IUnitOfWork unitOfWork)
+        public ChangePasswordHandler(IPasswordHasher<UserDomain> passwordHasher, IUnitOfWork unitOfWork)
         {
             this.unitOfWork = unitOfWork;
             Hasher = passwordHasher;
@@ -40,7 +40,7 @@ namespace Application.Features.UserServices.ChangePassword
             var passwordVerificationResult = Hasher.VerifyHashedPassword(user, user.password, request.oldPassword);
             if (passwordVerificationResult is not PasswordVerificationResult.Success)
                 throw new InvalidCredentialsException("You write wrong old password");
-            user.password = Hasher.HashPassword(user, request.newPassword);
+            user.ChangePassword(Hasher.HashPassword(user, request.newPassword));
             await unitOfWork.CompleteAsync();
             return Unit.Value;
         }

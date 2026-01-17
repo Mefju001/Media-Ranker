@@ -1,36 +1,25 @@
-using WebApplication1.Application.Common.DTO.Response;
-using WebApplication1.Application.Features.Movies.MovieUpsert;
-using WebApplication1.Domain.Entities;
+using Application.Common.DTO.Response;
+using Application.Features.MovieServices.MovieUpsert;
+using Domain.Entity;
 
-namespace WebApplication1.Application.Mapper
+namespace Application.Mapper
 {
     public static class MovieMapper
     {
-        public static MovieResponse ToMovieResponse(Movie movie)
+        public static MovieResponse ToMovieResponse(MovieDomain movieDomain,GenreDomain genreDomain,DirectorDomain directorDomain)
         {
             return new MovieResponse(
-                movie.Id,
-                movie.title,
-                movie.description,
-                GenreMapper.ToResponse(movie.genre) ?? new GenreResponse(0, "Nie podano"),
-                DirectorMapper.ToResponse(movie.director) ?? new DirectorResponse(0, "Nie znany", "nie znany"),
-                movie.ReleaseDate,
-                movie.Language,
-                movie.Reviews?.Select(r => ReviewMapper.ToResponse(r)).ToList() ?? new List<ReviewResponse>(),
-                MediaStatsMapper.ToResponse(movie.Stats) ?? new MediaStatsResponse(0, 0, 0, null),
-                movie.Duration,
-                movie.IsCinemaRelease);
-        }
-        public static void UpdateEntity(Movie movie, UpsertMovieCommand movieRequest, Director director, Genre genre)
-        {
-            movie.title = movieRequest.Title;
-            movie.description = movieRequest.Description;
-            movie.director = director;
-            movie.genre = genre;
-            movie.ReleaseDate = movieRequest.ReleaseDate!.Value;
-            movie.Language = movieRequest.Language;
-            movie.IsCinemaRelease = movieRequest.IsCinemaRelease;
-            movie.Duration = movieRequest.Duration;
+                movieDomain.Id,
+                movieDomain.Title,
+                movieDomain.Description,
+                GenreMapper.ToResponse(genreDomain) ?? new GenreResponse(0, "Nie podano"),
+                DirectorMapper.ToResponse(directorDomain) ?? new DirectorResponse(0, "Nie znany", "nie znany"),
+                movieDomain.ReleaseDate,
+                movieDomain.Language,
+                movieDomain.Reviews?.Select(r => ReviewMapper.ToResponse(r)).ToList() ?? new List<ReviewResponse>(),
+                MediaStatsMapper.ToResponse(movieDomain.Stats) ?? new MediaStatsResponse(0, 0, 0, null),
+                movieDomain.Duration,
+                movieDomain.IsCinemaRelease);
         }
     }
 }

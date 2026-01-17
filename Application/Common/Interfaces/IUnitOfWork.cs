@@ -1,17 +1,15 @@
-﻿using Application.Common.Interfaces;
-using Microsoft.EntityFrameworkCore.Storage;
-using WebApplication1.Domain.Entities;
-using WebApplication1.Services.Interfaces;
+﻿using Microsoft.EntityFrameworkCore.Storage;
 
-namespace WebApplication1.Application.Common.Interfaces
+namespace Application.Common.Interfaces
 {
     public interface IUnitOfWork : IDisposable
     {
+        IMovieRepository MovieRepository { get; }
         ILikedMediaRepository LikedMediaRepository { get; }
         IMediaRepository MediaRepository { get; }
         IUserRepository UserRepository { get; }
         ITokenRepository TokenRepository { get; }
-        IGenericRepository<Movie> Movies { get; }
+        /*IGenericRepository<MovieDomain> Movies { get; }
         IGenericRepository<Director> Directors { get; }
         IGenericRepository<Genre> Genres { get; }
         IGenericRepository<Media> Medias { get; }
@@ -23,7 +21,7 @@ namespace WebApplication1.Application.Common.Interfaces
         IGenericRepository<Token> Tokens { get; }
         IGenericRepository<UserRole> UsersRoles { get; }
         IGenericRepository<LikedMedia> LikedMedias { get; }
-        IGenericRepository<MediaStats> MediaStats { get; }
+        IGenericRepository<MediaStats> MediaStats { get; }*/
 
 
         Task<IDbContextTransaction> BeginTransactionAsync();

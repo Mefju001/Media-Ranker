@@ -1,14 +1,14 @@
-﻿using WebApplication1.Application.Common.DTO.Request;
-using WebApplication1.Application.Common.DTO.Response;
-using WebApplication1.Domain.Entities;
+﻿using Application.Common.DTO.Request;
+using Application.Common.DTO.Response;
+using Domain.Entity;
 
-namespace WebApplication1.Services.Interfaces
+namespace Application.Common.Interfaces
 {
     public interface IReferenceDataService
     {
-        Task<Director> GetOrCreateDirectorAsync(DirectorRequest directorRequest);
-        Task<Genre> GetOrCreateGenreAsync(GenreRequest genreRequest);
+        Task<DirectorDomain> GetOrCreateDirectorAsync(DirectorRequest directorRequest);
+        Task<GenreDomain> GetOrCreateGenreAsync(GenreRequest genreRequest);
         Task<List<GenreResponse>> GetGenres();
-        Task saveToken(Token token);
+        Task saveToken(TokenDomain token);
     }
 }

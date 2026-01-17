@@ -1,17 +1,22 @@
-﻿using MediatR;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Application.Common.DTO.Response;
+using Application.Common.Interfaces;
+using Application.Mapper;
+using MediatR;
 
 namespace Application.Features.UserServices.GetById
 {
-    public class GetByIdHandler : IRequestHandler<GetByIdQuery, Unit>
+    public class GetByIdHandler : IRequestHandler<GetByIdQuery, UserResponse?>
     {
-        public Task<Unit> Handle(GetByIdQuery request, CancellationToken cancellationToken)
+        private readonly IUnitOfWork unitOfWork;
+        public GetByIdHandler(IUnitOfWork unitOfWork)
         {
-            throw new NotImplementedException();
+            this.unitOfWork = unitOfWork;
+        }
+        public async Task<UserResponse?> Handle(GetByIdQuery request, CancellationToken cancellationToken)
+        {
+            var user = await unitOfWork.UserRepository.GetUserById(request.id);
+            if (user is null) return null;
+            return UserMapper.ToResponse(user);
         }
     }
 }

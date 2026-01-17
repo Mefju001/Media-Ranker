@@ -1,9 +1,9 @@
-﻿using MediatR;
-using WebApplication1.Application.Common.DTO.Response;
-using WebApplication1.Application.Common.Interfaces;
-using WebApplication1.Application.Mapper;
+﻿using Application.Common.DTO.Response;
+using Application.Common.Interfaces;
+using Application.Mapper;
+using MediatR;
 
-namespace WebApplication1.Application.Features.Games.GetAll
+namespace Application.Features.GamesServices.GetAll
 {
     public class GetAllHandler : IRequestHandler<GetAllQuery, List<GameResponse>>
     {
@@ -14,9 +14,10 @@ namespace WebApplication1.Application.Features.Games.GetAll
         }
         public async Task<List<GameResponse>> Handle(GetAllQuery request, CancellationToken cancellationToken)
         {
-            var games = await unitOfWork.Games.GetAllAsync();
+            throw new NotImplementedException();
+            /*var games = await unitOfWork.Games.GetAllAsync();
             var gameResponses = games.Select(GameMapper.ToGameResponse).ToList();
-            return (gameResponses);
+            return (gameResponses);*/
         }
     }
 }

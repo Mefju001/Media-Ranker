@@ -1,4 +1,4 @@
-﻿namespace WebApplication1.Services.Interfaces
+﻿namespace Application.Common.Interfaces
 {
     public interface IStatsUpdateService
     {

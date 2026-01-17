@@ -1,16 +1,10 @@
 ﻿using Application.Common.Interfaces;
+using Domain.Entity;
 using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using WebApplication1.Domain.Entities;
-using WebApplication1.Infrastructure.Persistence;
 
 namespace Infrastructure.Persistence.Repository
 {
-    public class TokenRepository: ITokenRepository
+    public class TokenRepository : ITokenRepository
     {
         private readonly AppDbContext appDbContext;
 
@@ -19,7 +13,7 @@ namespace Infrastructure.Persistence.Repository
             this.appDbContext = appDbContext;
         }
 
-        public async Task SaveToken(Token token)
+        public async Task SaveToken(TokenDomain token)
         {
             if (token == null) throw new ArgumentNullException();
             await appDbContext.Tokens.AddAsync(token);

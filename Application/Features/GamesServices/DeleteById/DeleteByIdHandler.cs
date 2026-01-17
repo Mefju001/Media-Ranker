@@ -1,7 +1,7 @@
-﻿using MediatR;
-using WebApplication1.Application.Common.Interfaces;
+﻿using Application.Common.Interfaces;
+using MediatR;
 
-namespace WebApplication1.Application.Features.Games.DeleteById
+namespace Application.Features.GamesServices.DeleteById
 {
     public class DeleteByIdHandler : IRequestHandler<DeleteByIdCommand, bool>
     {
@@ -12,12 +12,13 @@ namespace WebApplication1.Application.Features.Games.DeleteById
         }
         public async Task<bool> Handle(DeleteByIdCommand request, CancellationToken cancellationToken)
         {
-            var game = await unitOfWork.Games.FirstOrDefaultAsync(x => x.Id == request.id);
+            throw new NotImplementedException();
+            /*var game = await unitOfWork.Games.FirstOrDefaultAsync(x => x.Id == request.id);
             if (game is null)
                 return false;
             unitOfWork.Games.Delete(game);
             await unitOfWork.CompleteAsync();
-            return true;
+            return true;*/
         }
     }
 }

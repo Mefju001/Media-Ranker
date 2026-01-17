@@ -1,13 +1,7 @@
 ﻿using Application.Common.Interfaces;
+using Domain.Entity;
+using Domain.Exceptions;
 using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using WebApplication1.Domain.Entities;
-using WebApplication1.Domain.Exceptions;
-using WebApplication1.Infrastructure.Persistence;
 
 namespace Infrastructure.Persistence.Repository
 {
@@ -18,7 +12,7 @@ namespace Infrastructure.Persistence.Repository
         {
             this.appDbContext = appDbContext;
         }
-        public async Task<User> GetUserIdByUsername(string username)
+        public async Task<UserDomain> GetUserIdByUsername(string username)
         {
             var user = await appDbContext.Users
                 .Where(u => u.username == username)
@@ -26,7 +20,7 @@ namespace Infrastructure.Persistence.Repository
             if (user == null) throw new NotFoundException("User not found");
             return user;
         }
-        public async Task<User> GetUserById(int userId)
+        public async Task<UserDomain> GetUserById(int userId)
         {
             var user = await appDbContext.Users
                 .Where(u => u.Id == userId)

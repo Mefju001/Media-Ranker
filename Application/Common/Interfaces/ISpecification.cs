@@ -1,6 +1,6 @@
 ﻿using System.Linq.Expressions;
 
-namespace WebApplication1.Application.Common.Interfaces
+namespace Application.Common.Interfaces
 {
     public interface ISpecification<T>
     {

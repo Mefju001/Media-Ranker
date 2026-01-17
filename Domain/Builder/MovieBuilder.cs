@@ -1,11 +1,10 @@
-﻿using WebApplication1.Domain.Entities;
-using WebApplication1.Domain.Interfaces;
+﻿using Domain.Interfaces;
 
-namespace WebApplication1.Domain.Builder
+namespace Domain.Builder
 {
     public class MovieBuilder : IMovieBuilder
     {
-        private Movie _movie;
+        /*private Movie _movie;
 
         public Movie Build()
         {
@@ -57,6 +56,6 @@ namespace WebApplication1.Domain.Builder
 
             return this;
 
-        }
+        }*/
     }
 }

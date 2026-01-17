@@ -1,22 +1,21 @@
-﻿using Application.Common.Interfaces;
-using Application.Features.MoviesManagement.GetMoviesByCriteria;
+﻿using Application.Common.DTO.Response;
+using Application.Common.Interfaces;
+using Application.Mapper;
+using Domain.Entity;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
-using WebApplication1.Application.Common.DTO.Response;
-using WebApplication1.Application.Mapper;
-using WebApplication1.Domain.Entities;
 
 
-namespace WebApplication1.Application.Features.Movies.GetMoviesByCriteria
+namespace Application.Features.MovieServices.GetMoviesByCriteria
 {
     public class GetMoviesByCriteriaHandler : IRequestHandler<GetMoviesByCriteriaQuery, List<MovieResponse>>
     {
         private readonly IAppDbContext context;
-        private readonly ISorterContext<Movie> sorterContext;
+        private readonly ISorterContext<MovieDomain> sorterContext;
         private readonly IMovieBuildPredicate movieBuildPredicate;
         private readonly IMovieFilter movieFilter;
 
-        public GetMoviesByCriteriaHandler(ISorterContext<Movie> sorterContext, IAppDbContext appDbContext, IMovieBuildPredicate movieBuildPredicate, IMovieFilter movieFilter)
+        public GetMoviesByCriteriaHandler(ISorterContext<MovieDomain> sorterContext, IAppDbContext appDbContext, IMovieBuildPredicate movieBuildPredicate, IMovieFilter movieFilter)
         {
             this.sorterContext = sorterContext;
             this.context = appDbContext;
@@ -28,8 +27,8 @@ namespace WebApplication1.Application.Features.Movies.GetMoviesByCriteria
         public async Task<List<MovieResponse>> Handle(GetMoviesByCriteriaQuery request, CancellationToken cancellationToken)
         {
             var query = context.Movies
-                .Include(m => m.genre)
-                .Include(m => m.director)
+                //.Include(m => m.)
+                //.Include(m => m.director)
                 .Include(m => m.Stats)
                 .AsNoTracking()
                 .AsQueryable();
@@ -48,7 +47,7 @@ namespace WebApplication1.Application.Features.Movies.GetMoviesByCriteria
                 else throw new Exception("Mismatch");
             }
             var movies = await query.ToListAsync(cancellationToken);
-            var Response = movies.Select(m => MovieMapper.ToMovieResponse(m)).ToList();
+            var Response = movies.Select(m => MovieMapper.ToMovieResponse(m,GenreDomain.Create(""),DirectorDomain.Create("",""))).ToList();
             return Response;
         }
     }

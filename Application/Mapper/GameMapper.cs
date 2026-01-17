@@ -1,18 +1,18 @@
-﻿using WebApplication1.Application.Common.DTO.Response;
-using WebApplication1.Application.Features.Games.MovieUpsert;
-using WebApplication1.Domain.Entities;
+﻿using Application.Common.DTO.Response;
+using Application.Features.GamesServices.GameUpsert;
+using Domain.Entity;
 
-namespace WebApplication1.Application.Mapper
+namespace Application.Mapper
 {
     public static class GameMapper
     {
-        public static GameResponse ToGameResponse(Game game)
+        public static GameResponse ToGameResponse(GameDomain game)
         {
             return new GameResponse(
                 game.Id,
-                game.title,
-                game.description,
-                GenreMapper.ToResponse(game.genre),
+                game.Title,
+                game.Description,
+                new GenreResponse(0,""),// GenreMapper.ToResponse(game.genre),
                 game.ReleaseDate,
                 game.Language,
                 game.Reviews?.Select(r => ReviewMapper.ToResponse(r)).ToList() ?? new List<ReviewResponse>(),
@@ -21,15 +21,6 @@ namespace WebApplication1.Application.Mapper
                 game.Platform
                 );
         }
-        public static void UpdateEntity(Game game, UpsertGameCommand gameRequest, Genre genre)
-        {
-            game.title = gameRequest.Title;
-            game.description = gameRequest.Description;
-            game.genre = genre;
-            game.Language = gameRequest.Language;
-            game.Developer = gameRequest.Developer;
-            game.Platform = gameRequest.Platform;
-            game.ReleaseDate = gameRequest.ReleaseDate!.Value;
-        }
+
     }
 }

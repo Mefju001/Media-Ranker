@@ -1,15 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using WebApplication1.Domain.Entities;
+﻿using Domain.Entity;
 
 namespace Application.Common.Interfaces
 {
     public interface ITokenRepository
     {
-        Task SaveToken(Token token);
+        Task SaveToken(TokenDomain token);
         Task<bool> DeleteTokensFromUserId(int userId);
     }
 }

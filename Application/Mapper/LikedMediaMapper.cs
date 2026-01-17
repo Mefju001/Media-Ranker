@@ -1,19 +1,19 @@
-﻿using WebApplication1.Application.Common.DTO.Response;
-using WebApplication1.Domain.Entities;
+﻿using Application.Common.DTO.Response;
+using Domain.Entity;
 
-namespace WebApplication1.Application.Mapper
+namespace Application.Mapper
 {
     public class LikedMediaMapper
     {
-        public static LikedMediaResponse ToResponse(LikedMedia likedMedia)
+        public static LikedMediaResponse ToResponse(LikedMediaDomain likedMedia)
         {
             return new LikedMediaResponse(
-                likedMedia.Id,
-                UserMapper.ToResponse(likedMedia.User)
-                ?? null,
-                MediaMapper.ToResponse(likedMedia.Media)
-                ?? null,
-                likedMedia.LikedDate
+                likedMedia.id,
+                //UserMapper.ToResponse(likedMedia.User)
+                null,
+                //MediaMapper.ToResponse(likedMedia.Media)
+                null,
+                likedMedia.likedDate
             );
         }
     }

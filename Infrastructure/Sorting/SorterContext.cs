@@ -1,7 +1,6 @@
 ﻿using Application.Common.Interfaces;
-using WebApplication1.Application.Common.Interfaces;
 
-namespace WebApplication1.Infrastructure.Sorting
+namespace Infrastructure.Sorting
 {
     public class SorterContext<T> : ISorterContext<T> where T : class
     {

@@ -1,11 +1,10 @@
-﻿using WebApplication1.Domain.Entities;
-using WebApplication1.Domain.ValueObjects;
+﻿using Domain.Enums;
 
-namespace WebApplication1.Domain.Interfaces
+namespace Domain.Interfaces
 {
     public interface ITvSeriesBuilder
     {
-        ITvSeriesBuilder CreateNew(string title, string description);
+        /*ITvSeriesBuilder CreateNew(string title, string description);
         ITvSeriesBuilder WithMetadata(
             int? seasons,
             int? episodes,
@@ -13,6 +12,6 @@ namespace WebApplication1.Domain.Interfaces
             EStatus? status);
         ITvSeriesBuilder WithGenre(Genre Genre);
         ITvSeriesBuilder WithDefaultReview(Review review);
-        TvSeries Build();
+        TvSeries Build();*/
     }
 }

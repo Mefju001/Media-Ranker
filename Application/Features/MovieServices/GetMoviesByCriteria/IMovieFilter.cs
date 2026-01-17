@@ -1,9 +1,10 @@
-﻿using System.Linq.Expressions;
+﻿using Domain.Entity;
+using System.Linq.Expressions;
 
-namespace Application.Features.MoviesManagement.GetMoviesByCriteria
+namespace Application.Features.MovieServices.GetMoviesByCriteria
 {
     public interface IMovieFilter
     {
-        public IQueryable<WebApplication1.Domain.Entities.Movie> Filter(IQueryable<WebApplication1.Domain.Entities.Movie> query, Expression<Func<WebApplication1.Domain.Entities.Movie, bool>> filterPredicate);
+        public IQueryable<MovieDomain> Filter(IQueryable<MovieDomain> query, Expression<Func<MovieDomain, bool>> filterPredicate);
     }
 }

@@ -1,11 +1,10 @@
-﻿using System.Linq.Expressions;
-using WebApplication1.Application.Features.TvSeries.GetTvSeriesByCriteria;
-using WebApplication1.Domain.Entities;
+﻿using Domain.Entity;
+using System.Linq.Expressions;
 
-namespace Application.Features.TvSeriesManagement.GetTvSeriesByCriteria
+namespace Application.Features.TvSeriesServices.GetTvSeriesByCriteria
 {
     public interface ITvSeriesBuildPredicate
     {
-        Expression<Func<TvSeries, bool>> build(GetTvSeriesByCriteriaQuery query);
+        Expression<Func<TvSeriesDomain, bool>> build(GetTvSeriesByCriteriaQuery query);
     }
 }

@@ -1,9 +1,10 @@
-﻿using System.Linq.Expressions;
+﻿using Domain.Entity;
+using System.Linq.Expressions;
 
-namespace Application.Features.TvSeriesManagement.GetTvSeriesByCriteria
+namespace Application.Features.TvSeriesServices.GetTvSeriesByCriteria
 {
     public interface ITvSeriesFilter
     {
-        public IQueryable<WebApplication1.Domain.Entities.TvSeries> Filter(IQueryable<WebApplication1.Domain.Entities.TvSeries> query, Expression<Func<WebApplication1.Domain.Entities.TvSeries, bool>> filterPredicate);
+        public IQueryable<TvSeriesDomain> Filter(IQueryable<TvSeriesDomain> query, Expression<Func<TvSeriesDomain, bool>> filterPredicate);
     }
 }

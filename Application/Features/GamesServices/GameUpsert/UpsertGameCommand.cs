@@ -1,9 +1,9 @@
-﻿using MediatR;
-using WebApplication1.Application.Common.DTO.Request;
-using WebApplication1.Application.Common.DTO.Response;
-using WebApplication1.Domain.ValueObjects;
+﻿using Application.Common.DTO.Request;
+using Application.Common.DTO.Response;
+using Domain.Enums;
+using MediatR;
 
-namespace WebApplication1.Application.Features.Games.MovieUpsert
+namespace Application.Features.GamesServices.GameUpsert
 {
     public record UpsertGameCommand(
         int? id,

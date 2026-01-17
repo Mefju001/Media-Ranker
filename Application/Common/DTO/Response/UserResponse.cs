@@ -1,4 +1,4 @@
-﻿namespace WebApplication1.Application.Common.DTO.Response
+﻿namespace Application.Common.DTO.Response
 {
     public record UserResponse(int id, string username, string password, string name,
     string surname, string email,

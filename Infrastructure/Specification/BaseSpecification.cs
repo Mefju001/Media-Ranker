@@ -1,7 +1,7 @@
-﻿using System.Linq.Expressions;
-using WebApplication1.Application.Common.Interfaces;
+﻿using Application.Common.Interfaces;
+using System.Linq.Expressions;
 
-namespace WebApplication1.Infrastructure.Specification
+namespace Infrastructure.Specification
 {
     public class BaseSpecification<T> : ISpecification<T>
     {

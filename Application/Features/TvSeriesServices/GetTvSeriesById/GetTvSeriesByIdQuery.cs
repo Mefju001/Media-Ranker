@@ -1,7 +1,7 @@
-﻿using MediatR;
-using WebApplication1.Application.Common.DTO.Response;
+﻿using Application.Common.DTO.Response;
+using MediatR;
 
-namespace WebApplication1.Application.Features.TvSeries.GetTvSeriesById
+namespace Application.Features.TvSeriesServices.GetTvSeriesById
 {
     public record GetTvSeriesByIdQuery(int id) : IRequest<TvSeriesResponse?>;
 

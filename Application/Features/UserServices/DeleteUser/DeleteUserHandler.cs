@@ -1,11 +1,6 @@
-﻿using MediatR;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using WebApplication1.Application.Common.Interfaces;
-using WebApplication1.Domain.Exceptions;
+﻿using Application.Common.Interfaces;
+using MediatR;
+
 
 namespace Application.Features.UserServices.DeleteUser
 {

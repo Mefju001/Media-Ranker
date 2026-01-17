@@ -1,6 +1,6 @@
 ﻿using MediatR;
 
-namespace WebApplication1.Application.Notification
+namespace Application.Notification
 {
     public class ReviewChangedNotification : INotification
     {

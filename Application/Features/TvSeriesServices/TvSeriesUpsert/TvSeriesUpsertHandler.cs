@@ -1,11 +1,10 @@
-﻿using MediatR;
-using WebApplication1.Application.Common.DTO.Response;
-using WebApplication1.Application.Common.Interfaces;
-using WebApplication1.Application.Mapper;
-using WebApplication1.Domain.Interfaces;
-using WebApplication1.Services.Interfaces;
+﻿using Application.Common.DTO.Response;
+using Application.Common.Interfaces;
+using Application.Mapper;
+using Domain.Interfaces;
+using MediatR;
 
-namespace WebApplication1.Application.Features.TvSeries.TvSeriesUpsert
+namespace Application.Features.TvSeriesServices.TvSeriesUpsert
 {
     public class TvSeriesUpsertHandler : IRequestHandler<UpsertTvSeriesCommand, TvSeriesResponse>
     {
@@ -24,11 +23,11 @@ namespace WebApplication1.Application.Features.TvSeries.TvSeriesUpsert
 
         public async Task<TvSeriesResponse> Handle(UpsertTvSeriesCommand request, CancellationToken cancellationToken)
         {
-            await using var transaction = await unitOfWork.BeginTransactionAsync();
+            /*await using var transaction = await unitOfWork.BeginTransactionAsync();
             try
             {
                 var genre = await referenceDataService.GetOrCreateGenreAsync(request.genre);
-                WebApplication1.Domain.Entities.TvSeries? tvSeries;
+                TvSeries? tvSeries;
                 if (request.id is not null)
                 {
                     tvSeries = await unitOfWork.TvSeries
@@ -60,7 +59,8 @@ namespace WebApplication1.Application.Features.TvSeries.TvSeriesUpsert
             {
                 await transaction.RollbackAsync();
                 throw;
-            }
+            }*/
+            throw new NotImplementedException();
         }
     }
 }

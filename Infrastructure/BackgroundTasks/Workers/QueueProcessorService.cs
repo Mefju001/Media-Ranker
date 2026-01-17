@@ -1,9 +1,9 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+﻿using Infrastructure.BackgroundTasks.Interfaces;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using WebApplication1.Infrastructure.BackgroundTasks.Interfaces;
 using Host = Microsoft.Extensions.Hosting;
 
-namespace WebApplication1.Infrastructure.BackgroundTasks.Workers
+namespace Infrastructure.BackgroundTasks.Workers
 {
     public class QueueProcessorService : Host.BackgroundService
     {

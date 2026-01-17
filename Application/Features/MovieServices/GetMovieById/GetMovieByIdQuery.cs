@@ -1,8 +1,8 @@
-﻿using MediatR;
-using WebApplication1.Application.Common.DTO.Response;
+﻿using Application.Common.DTO.Response;
+using MediatR;
 
-namespace WebApplication1.Application.Features.Movies.GetMovieById
+namespace Application.Features.MovieServices.GetMovieById
 {
-    public record GetTvSeriesByIdQuery(int id) : IRequest<MovieResponse?>;
+    public record GetMovieByIdQuery(int id) : IRequest<MovieResponse?>;
 
 }

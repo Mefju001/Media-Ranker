@@ -1,28 +1,23 @@
-﻿using WebApplication1.Application.Common.DTO.Request;
-using WebApplication1.Application.Common.DTO.Response;
-using WebApplication1.Domain.Entities;
+﻿using Application.Common.DTO.Request;
+using Application.Common.DTO.Response;
+using Domain.Entity;
 
-namespace WebApplication1.Application.Mapper
+namespace Application.Mapper
 {
     public static class ReviewMapper
     {
-        public static ReviewResponse ToResponse(Review review)
+        public static ReviewResponse ToResponse(ReviewDomain review)
         {
             return new ReviewResponse(
                 review.Id,
                 review.MediaId,
-                review.User.username ?? "Nieznany użytkownik",
+                "",//review.User.username ?? "Nieznany użytkownik",
                 review.Rating,
                 review.Comment,
                 review.CreatedAt,
                 review.LastModifiedAt);
 
         }
-        public static void updateReview(Review review, ReviewRequest reviewRequest)
-        {
-            review.Rating = reviewRequest.Rating;
-            review.Comment = reviewRequest.Comment;
-            review.LastModifiedAt = DateTime.UtcNow;
-        }
+
     }
 }

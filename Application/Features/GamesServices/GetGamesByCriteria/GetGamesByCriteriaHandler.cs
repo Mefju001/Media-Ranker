@@ -1,10 +1,9 @@
-﻿using Application.Common.Interfaces;
-using Application.Features.GamesManagement.GetGamesByCriteria;
+﻿using Application.Common.DTO.Response;
+using Application.Common.Interfaces;
+using Application.Mapper;
+using Domain.Entity;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
-using WebApplication1.Application.Common.DTO.Response;
-using WebApplication1.Application.Mapper;
-using WebApplication1.Domain.Entities;
 
 
 namespace Application.Features.GamesServices.GetGamesByCriteria
@@ -12,11 +11,11 @@ namespace Application.Features.GamesServices.GetGamesByCriteria
     public class GetGamesByCriteriaHandler : IRequestHandler<GetGamesByCriteriaQuery, List<GameResponse>>
     {
         private readonly IAppDbContext context;
-        private readonly ISorterContext<Game> sorterContext;
+        private readonly ISorterContext<GameDomain> sorterContext;
         private readonly IGameBuildPredicate gameBuildPredicate;
         private readonly IGameFilter gameFilter;
 
-        public GetGamesByCriteriaHandler(ISorterContext<Game> sorterContext, IAppDbContext appDbContext, IGameFilter gameFilter, IGameBuildPredicate gameBuildPredicate)
+        public GetGamesByCriteriaHandler(ISorterContext<GameDomain> sorterContext, IAppDbContext appDbContext, IGameFilter gameFilter, IGameBuildPredicate gameBuildPredicate)
         {
             this.sorterContext = sorterContext;
             this.context = appDbContext;
@@ -28,7 +27,7 @@ namespace Application.Features.GamesServices.GetGamesByCriteria
         public async Task<List<GameResponse>> Handle(GetGamesByCriteriaQuery request, CancellationToken cancellationToken)
         {
             var query = context.Games
-                .Include(m => m.genre)
+                //.Include(m => m.genre)
                 .Include(m => m.Stats)
                 .AsNoTracking()
                 .AsQueryable();

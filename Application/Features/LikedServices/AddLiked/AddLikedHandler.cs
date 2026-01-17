@@ -1,17 +1,12 @@
-﻿using MediatR;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using WebApplication1.Application.Common.DTO.Response;
-using WebApplication1.Application.Common.Interfaces;
-using WebApplication1.Application.Mapper;
-using WebApplication1.Domain.Entities;
+﻿using Application.Common.DTO.Response;
+using Application.Common.Interfaces;
+using Application.Mapper;
+using Domain.Entity;
+using MediatR;
 
 namespace Application.Features.LikedServices.AddLiked
 {
-    public class AddLikedHandler : IRequestHandler<AddLikedCommand,LikedMediaResponse>
+    public class AddLikedHandler : IRequestHandler<AddLikedCommand, LikedMediaResponse>
     {
         private readonly IUnitOfWork unitOfWork;
 
@@ -23,18 +18,17 @@ namespace Application.Features.LikedServices.AddLiked
         public async Task<LikedMediaResponse> Handle(AddLikedCommand request, CancellationToken cancellationToken)
         {
             var media = unitOfWork.MediaRepository.GetMediaById(request.MediaId);
-            var user =  unitOfWork.UserRepository.GetUserById(request.UserId);
+            var user = unitOfWork.UserRepository.GetUserById(request.UserId);
             if (media is null || user is null)
                 throw new Exception("is empty");
             var existingLikedMedia = await unitOfWork.LikedMediaRepository.Any(request.UserId, request.MediaId);
             if (existingLikedMedia is true)
                 throw new Exception("already exist");
-            var likedMedia = new LikedMedia
-            {
-                MediaId = request.MediaId,
-                UserId = request.UserId,
-                LikedDate = DateTime.Now,
-            };
+            var likedMedia = LikedMediaDomain.Create(
+                request.MediaId,
+                request.UserId
+
+            );
             await unitOfWork.LikedMediaRepository.AddAsync(likedMedia);
             await unitOfWork.CompleteAsync();
             return LikedMediaMapper.ToResponse(likedMedia);

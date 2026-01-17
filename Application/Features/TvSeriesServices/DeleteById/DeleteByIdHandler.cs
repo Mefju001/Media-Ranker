@@ -1,7 +1,8 @@
-﻿using MediatR;
-using WebApplication1.Application.Common.Interfaces;
+﻿using Application.Common.Interfaces;
+using Domain.Entity;
+using MediatR;
 
-namespace WebApplication1.Application.Features.TvSeries.DeleteById
+namespace Application.Features.TvSeriesServices.DeleteById
 {
     public class DeleteByIdHandler : IRequestHandler<DeleteByIdCommand, bool>
     {
@@ -12,10 +13,10 @@ namespace WebApplication1.Application.Features.TvSeries.DeleteById
         }
         public async Task<bool> Handle(DeleteByIdCommand request, CancellationToken cancellationToken)
         {
-            var tvSeries = await unitOfWork.TvSeries.FirstOrDefaultAsync(x => x.Id == request.id);
+            TvSeriesDomain tvSeries = null;//await unitOfWork.TvSeries.FirstOrDefaultAsync(x => x.Id == request.id);
             if (tvSeries is null)
                 return false;
-            unitOfWork.TvSeries.Delete(tvSeries);
+            //unitOfWork.TvSeries.Delete(tvSeries);
             await unitOfWork.CompleteAsync();
             return true;
         }

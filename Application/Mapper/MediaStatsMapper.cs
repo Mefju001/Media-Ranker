@@ -1,11 +1,11 @@
-﻿using WebApplication1.Application.Common.DTO.Response;
-using WebApplication1.Domain.Entities;
+﻿using Application.Common.DTO.Response;
+using Domain.Entity;
 
-namespace WebApplication1.Application.Mapper
+namespace Application.Mapper
 {
     public static class MediaStatsMapper
     {
-        public static MediaStatsResponse ToResponse(MediaStats mediaStats)
+        public static MediaStatsResponse ToResponse(MediaStatsDomain mediaStats)
         {
             return new MediaStatsResponse(mediaStats.MediaId, mediaStats.AverageRating, mediaStats.ReviewCount, mediaStats.LastCalculated);
         }

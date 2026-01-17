@@ -1,10 +1,10 @@
-﻿using MediatR;
-using WebApplication1.Application.Common.DTO.Response;
-using WebApplication1.Application.Common.Interfaces;
-using WebApplication1.Application.Mapper;
-using WebApplication1.Domain.Exceptions;
+﻿using Application.Common.DTO.Response;
+using Application.Common.Interfaces;
+using Application.Mapper;
+using Domain.Exceptions;
+using MediatR;
 
-namespace WebApplication1.Application.Features.TvSeries.GetTvSeriesById
+namespace Application.Features.TvSeriesServices.GetTvSeriesById
 {
     public class GetTvSeriesByIdHandler : IRequestHandler<GetTvSeriesByIdQuery, TvSeriesResponse?>
     {
@@ -17,13 +17,14 @@ namespace WebApplication1.Application.Features.TvSeries.GetTvSeriesById
 
         public async Task<TvSeriesResponse?> Handle(GetTvSeriesByIdQuery request, CancellationToken cancellationToken)
         {
-            var movie = await unitOfWork.TvSeries.GetByIdAsync(request.id);
+            throw new NotImplementedException();
+           /* var movie = await unitOfWork.TvSeries.GetByIdAsync(request.id);
             if (movie == null)
             {
                 throw new NotFoundException("not found");
             }
             var movieResponse = TvSeriesMapper.ToTvSeriesResponse(movie);
-            return movieResponse;
+            return movieResponse;*/
         }
     }
 }

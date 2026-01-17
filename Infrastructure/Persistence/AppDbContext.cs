@@ -1,96 +1,28 @@
 using Application.Common.Interfaces;
+using Domain.Entity;
+using Infrastructure.Config;
 using Microsoft.EntityFrameworkCore;
-using WebApplication1.Domain.Entities;
 
-namespace WebApplication1.Infrastructure.Persistence
+namespace Infrastructure.Persistence
 {
-    public class AppDbContext : DbContext,IAppDbContext
+    public class AppDbContext : DbContext, IAppDbContext
     {
         public AppDbContext(DbContextOptions<AppDbContext> options) : base(options) { }
-        public DbSet<Media> Medias { get; set; }
-        public DbSet<TvSeries> TvSeries { get; set; }
-        public DbSet<Game> Games { get; set; }
-        public DbSet<Movie> Movies { get; set; }
-        public DbSet<Genre> Genres { get; set; }
-        public DbSet<Director> Directors { get; set; }
-        public DbSet<Review> Reviews { get; set; }
-        public DbSet<User> Users { get; set; }
-        public DbSet<Role> Roles { get; set; }
-        public DbSet<Token> Tokens { get; set; }
-        public DbSet<UserRole> UsersRoles { get; set; }
-        public DbSet<LikedMedia> LikedMedias { get; set; }
-        public DbSet<MediaStats> MediaStats { get; set; }
+        public DbSet<MediaDomain> Medias { get; set; }
+        public DbSet<TvSeriesDomain> TvSeries { get; set; }
+        public DbSet<GameDomain> Games { get; set; }
+        public DbSet<MovieDomain> Movies { get; set; }
+        public DbSet<GenreDomain> Genres { get; set; }
+        public DbSet<DirectorDomain> Directors { get; set; }
+        public DbSet<ReviewDomain> Reviews { get; set; }
+        public DbSet<UserDomain> Users { get; set; }
+        public DbSet<RoleDomain> Roles { get; set; }
+        public DbSet<TokenDomain> Tokens { get; set; }
+        public DbSet<LikedMediaDomain> LikedMedias { get; set; }
+        public DbSet<MediaStatsDomain> MediaStats { get; set; }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            modelBuilder.Entity<MediaStats>()
-                .HasKey(ms => ms.MediaId);
-
-            modelBuilder.Entity<MediaStats>()
-                .HasOne(ms => ms.Media)
-                .WithOne(m => m.Stats)
-                .HasForeignKey<MediaStats>(ms => ms.MediaId)
-                .IsRequired()
-                .OnDelete(DeleteBehavior.Cascade);
-            modelBuilder.Entity<Token>()
-                .HasOne(t => t.User)
-                 .WithMany()
-                 .HasForeignKey(t => t.UserId)
-                 .OnDelete(DeleteBehavior.Cascade);
-
-            modelBuilder.Entity<LikedMedia>()
-                .HasIndex(lm => new { lm.UserId, lm.MediaId })
-                .IsUnique();
-
-            modelBuilder.Entity<LikedMedia>()
-                .HasOne(lm => lm.User)
-                .WithMany()
-                .HasForeignKey(lm => lm.UserId);
-
-            modelBuilder.Entity<LikedMedia>()
-                .HasOne(lm => lm.Media)
-                .WithMany()
-                .HasForeignKey(lm => lm.MediaId);
-
-            modelBuilder.Entity<UserRole>()
-                .HasKey(ur => new { ur.UserId, ur.RoleId });
-
-            modelBuilder.Entity<UserRole>()
-                .HasOne(ur => ur.User)
-                .WithMany(u => u.UserRoles)
-                .HasForeignKey(ur => ur.UserId)
-                .OnDelete(DeleteBehavior.Cascade);
-
-            modelBuilder.Entity<UserRole>()
-                .HasOne(ur => ur.Role)
-                .WithMany(r => r.UserRoles)
-                .HasForeignKey(ur => ur.RoleId)
-                .OnDelete(DeleteBehavior.Cascade);
-
-            modelBuilder.Entity<Review>()
-                .HasOne(r => r.User)
-                .WithMany(u => u.Reviews)
-                .HasForeignKey(r => r.UserId)
-                .OnDelete(DeleteBehavior.Cascade);
-
-            modelBuilder.Entity<Review>()
-                .HasOne(r => r.Media)
-                .WithMany(m => m.Reviews)
-                .HasForeignKey(r => r.MediaId)
-                .OnDelete(DeleteBehavior.Cascade);
-
-            modelBuilder.Entity<Media>()
-                .HasOne(m => m.genre)
-                .WithMany()
-                .HasForeignKey("genreId");
-            modelBuilder.Entity<Media>()
-                .HasDiscriminator<string>("MediaType")
-                .HasValue<Movie>("Movie")
-                .HasValue<TvSeries>("TvSeries")
-                .HasValue<Game>("Game");
-
-            modelBuilder.Entity<Role>()
-                .Property(r => r.role)
-                .HasConversion<string>();
+            modelBuilder.ApplyConfigurationsFromAssembly(typeof(MediaConfiguration).Assembly);
 
             base.OnModelCreating(modelBuilder);
         }

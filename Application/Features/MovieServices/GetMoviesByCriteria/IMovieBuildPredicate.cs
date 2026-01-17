@@ -1,10 +1,10 @@
-﻿using System.Linq.Expressions;
-using WebApplication1.Application.Features.Movies.GetMoviesByCriteria;
+﻿using Domain.Entity;
+using System.Linq.Expressions;
 
-namespace Application.Features.MoviesManagement.GetMoviesByCriteria
+namespace Application.Features.MovieServices.GetMoviesByCriteria
 {
     public interface IMovieBuildPredicate
     {
-        public Expression<Func<WebApplication1.Domain.Entities.Movie, bool>> BuildPredicate(GetMoviesByCriteriaQuery query);
+        public Expression<Func<MovieDomain, bool>> BuildPredicate(GetMoviesByCriteriaQuery query);
     }
 }

@@ -1,15 +1,10 @@
-﻿using Application.Features.AuthServices.Common;
-using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
+﻿using Application.Common.DTO.Response;
+using Application.Common.Interfaces;
+using Application.Features.AuthServices.Common;
+using Domain.Entity;
+using Domain.Exceptions;
 using System.IdentityModel.Tokens.Jwt;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using WebApplication1.Application.Common.DTO.Response;
-using WebApplication1.Application.Common.Interfaces;
-using WebApplication1.Domain.Exceptions;
-using WebApplication1.Services.Interfaces;
+
 
 namespace Application.Features.AuthServices.RefreshAccessToken
 {
@@ -36,11 +31,11 @@ namespace Application.Features.AuthServices.RefreshAccessToken
             }
             var claims = await validatorForRefreshToken.ValidateAndGetPrincipalFromRefreshToken(refreshToken);
             var username = claims.FirstOrDefault(c => c.Type == JwtRegisteredClaimNames.Name) ?? throw new UserClaimNotFoundException("Not found your user in claims");
-            var user = await unitOfWork.Users
-                .FirstOrDefaultAsync(u => u.username == username.Value.ToString());
+            UserDomain user = null;/*await unitOfWork.Users
+                .FirstOrDefaultAsync(u => u.username == username.Value.ToString());*/
             if (user == null)
                 throw new ArgumentNullException(nameof(user));
-            var accessToken = accessTokenService.generateAccessToken(user.Id, username.Value.ToString(), user.UserRoles);
+            var accessToken = accessTokenService.generateAccessToken(user.Id, username.Value.ToString(), user.UserRoles.ToList());
             var RefreshToken = await refreshTokenService.GenerateRefreshToken(user.Id, username.Value.ToString());
             return new TokenResponse(accessToken, RefreshToken);
         }

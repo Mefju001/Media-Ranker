@@ -1,11 +1,10 @@
-﻿using Application.Features.GamesServices.GetGamesByCriteria;
+﻿using Domain.Entity;
 using System.Linq.Expressions;
-using WebApplication1.Domain.Entities;
 
-namespace Application.Features.GamesManagement.GetGamesByCriteria
+namespace Application.Features.GamesServices.GetGamesByCriteria
 {
     public interface IGameBuildPredicate
     {
-        public Expression<Func<Game, bool>> BuildPredicate(GetGamesByCriteriaQuery query);
+        public Expression<Func<GameDomain, bool>> BuildPredicate(GetGamesByCriteriaQuery query);
     }
 }

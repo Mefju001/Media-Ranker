@@ -1,9 +1,9 @@
-﻿using MediatR;
-using WebApplication1.Application.Common.DTO.Request;
-using WebApplication1.Application.Common.DTO.Response;
-using WebApplication1.Domain.ValueObjects;
+﻿using Application.Common.DTO.Request;
+using Application.Common.DTO.Response;
+using Domain.Enums;
+using MediatR;
 
-namespace WebApplication1.Application.Features.TvSeries.TvSeriesUpsert
+namespace Application.Features.TvSeriesServices.TvSeriesUpsert
 {
     public record UpsertTvSeriesCommand(
         int? id,

@@ -1,7 +1,6 @@
-﻿using Application.Common.Interfaces;
-using System.Linq.Expressions;
+﻿using System.Linq.Expressions;
 
-namespace WebApplication1.Infrastructure.Specification
+namespace Infrastructure.Specification
 {
     public static class PredicateBuilder
     {

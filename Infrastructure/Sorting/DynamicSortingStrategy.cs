@@ -1,7 +1,7 @@
-﻿using System.Linq.Expressions;
-using WebApplication1.Application.Common.Interfaces;
+﻿using Application.Common.Interfaces;
+using System.Linq.Expressions;
 
-namespace WebApplication1.Infrastructure.Sorting
+namespace Infrastructure.Sorting
 {
     public class DynamicSortingStrategy<T> : ISortingStrategy<T> where T : class
     {

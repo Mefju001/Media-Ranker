@@ -1,9 +1,10 @@
-﻿using MediatR;
-using WebApplication1.Application.Common.DTO.Response;
-using WebApplication1.Application.Common.Interfaces;
-using WebApplication1.Application.Mapper;
+﻿using Application.Common.DTO.Response;
+using Application.Common.Interfaces;
+using Application.Mapper;
+using Domain.Entity;
+using MediatR;
 
-namespace WebApplication1.Application.Features.Movies.GetAll
+namespace Application.Features.MovieServices.GetAll
 {
     public class GetAllHandler : IRequestHandler<GetAllQuery, List<MovieResponse>>
     {
@@ -14,8 +15,8 @@ namespace WebApplication1.Application.Features.Movies.GetAll
         }
         public async Task<List<MovieResponse>> Handle(GetAllQuery request, CancellationToken cancellationToken)
         {
-            var movies = await unitOfWork.Movies.GetAllAsync();
-            var MovieResponse = movies.Select(MovieMapper.ToMovieResponse).ToList();
+            var movies = await unitOfWork.MovieRepository.GetAllAsync();
+            var MovieResponse = movies.Select(m=>MovieMapper.ToMovieResponse(m,GenreDomain.Create(""),DirectorDomain.Create("",""))).ToList();
             return (MovieResponse);
         }
     }

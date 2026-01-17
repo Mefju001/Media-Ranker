@@ -1,8 +1,8 @@
-﻿using MediatR;
-using WebApplication1.Application.Common.DTO.Request;
-using WebApplication1.Application.Common.DTO.Response;
+﻿using Application.Common.DTO.Request;
+using Application.Common.DTO.Response;
+using MediatR;
 
-namespace WebApplication1.Application.Features.Games.AddListOfGames
+namespace Application.Features.GamesServices.AddListOfGames
 {
     public record AddListOfGamesCommand(List<GameRequest> requests) : IRequest<List<GameResponse>>;
 }

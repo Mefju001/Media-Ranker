@@ -1,7 +1,7 @@
-﻿using MediatR;
-using WebApplication1.Application.Common.DTO.Response;
+﻿using Application.Common.DTO.Response;
+using MediatR;
 
-namespace WebApplication1.Application.Features.Movies.GetMoviesByCriteria
+namespace Application.Features.MovieServices.GetMoviesByCriteria
 {
     public class GetMoviesByCriteriaQuery() : IRequest<List<MovieResponse>>
     {

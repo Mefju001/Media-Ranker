@@ -1,6 +1,6 @@
 ﻿using MediatR;
 
-namespace WebApplication1.Application.Features.TvSeries.DeleteById
+namespace Application.Features.TvSeriesServices.DeleteById
 {
     public record DeleteByIdCommand(int id) : IRequest<bool>;
 }

@@ -1,10 +1,10 @@
-﻿using System.Linq.Expressions;
-using WebApplication1.Domain.Entities;
+﻿using Domain.Entity;
+using System.Linq.Expressions;
 
-namespace Application.Features.GamesManagement.GetGamesByCriteria
+namespace Application.Features.GamesServices.GetGamesByCriteria
 {
     public interface IGameFilter
     {
-        public IQueryable<Game> Filter(IQueryable<Game> query, Expression<Func<Game, bool>> filterPredicate);
+        public IQueryable<GameDomain> Filter(IQueryable<GameDomain> query, Expression<Func<GameDomain, bool>> filterPredicate);
     }
 }

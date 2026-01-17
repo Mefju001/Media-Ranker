@@ -1,8 +1,8 @@
-﻿using FluentValidation;
-using WebApplication1.Application.Common.DTO.Request;
-using WebApplication1.Domain.ValueObjects;
+﻿using Application.Common.DTO.Request;
+using Domain.Enums;
+using FluentValidation;
 
-namespace WebApplication1.Application.Common.Validator
+namespace Application.Common.Validator
 {
     public class TvSeriesRequestValidator : AbstractValidator<TvSeriesRequest>
     {

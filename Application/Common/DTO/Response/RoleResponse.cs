@@ -1,6 +1,6 @@
-﻿using WebApplication1.Domain.ValueObjects;
+﻿using Domain.Enums;
 
-namespace WebApplication1.Application.Common.DTO.Response
+namespace Application.Common.DTO.Response
 {
     public record RoleResponse(ERole role);
 }

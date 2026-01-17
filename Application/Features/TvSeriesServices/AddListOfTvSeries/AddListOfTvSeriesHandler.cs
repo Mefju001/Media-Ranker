@@ -1,11 +1,10 @@
-﻿using MediatR;
-using WebApplication1.Application.Common.DTO.Response;
-using WebApplication1.Application.Common.Interfaces;
-using WebApplication1.Application.Mapper;
-using WebApplication1.Domain.Interfaces;
-using WebApplication1.Services.Interfaces;
+﻿using Application.Common.DTO.Response;
+using Application.Common.Interfaces;
+using Application.Mapper;
+using Domain.Interfaces;
+using MediatR;
 
-namespace WebApplication1.Application.Features.TvSeries.AddListOfTvSeries
+namespace Application.Features.TvSeriesServices.AddListOfTvSeries
 {
     public class AddListOfTvSeriesHandler : IRequestHandler<AddListOfTvSeriesCommand, List<TvSeriesResponse>>
     {
@@ -20,11 +19,11 @@ namespace WebApplication1.Application.Features.TvSeries.AddListOfTvSeries
         }
         public async Task<List<TvSeriesResponse>> Handle(AddListOfTvSeriesCommand requests, CancellationToken cancellationToken)
         {
-            if (requests is null) throw new ArgumentNullException(nameof(requests));
+           /* if (requests is null) throw new ArgumentNullException(nameof(requests));
             await using var transaction = await unitOfWork.BeginTransactionAsync();
             try
             {
-                List<WebApplication1.Domain.Entities.TvSeries> listTvSeries = new List<WebApplication1.Domain.Entities.TvSeries>();
+                List<TvSeries> listTvSeries = new List<TvSeries>();
                 foreach (var request in requests.requests)
                 {
                     var genre = await referenceDataService.GetOrCreateGenreAsync(request.genre);
@@ -48,7 +47,8 @@ namespace WebApplication1.Application.Features.TvSeries.AddListOfTvSeries
             {
                 await transaction.RollbackAsync();
                 throw;
-            }
+            }*/
+            throw new NotImplementedException();
         }
     }
 }

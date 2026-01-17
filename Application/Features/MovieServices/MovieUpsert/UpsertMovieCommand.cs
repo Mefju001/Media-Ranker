@@ -1,8 +1,8 @@
-﻿using MediatR;
-using WebApplication1.Application.Common.DTO.Request;
-using WebApplication1.Application.Common.DTO.Response;
+﻿using Application.Common.DTO.Request;
+using Application.Common.DTO.Response;
+using MediatR;
 
-namespace WebApplication1.Application.Features.Movies.MovieUpsert
+namespace Application.Features.MovieServices.MovieUpsert
 {
     public record UpsertMovieCommand(
         int? id,

@@ -1,8 +1,8 @@
-﻿using MediatR;
-using WebApplication1.Application.Common.DTO.Request;
-using WebApplication1.Application.Common.DTO.Response;
+﻿using Application.Common.DTO.Request;
+using Application.Common.DTO.Response;
+using MediatR;
 
-namespace WebApplication1.Application.Features.Movies.AddListOfMovies
+namespace Application.Features.MovieServices.AddListOfMovies
 {
-    public record AddListOfGamesCommand(List<MovieRequest> requests) : IRequest<List<MovieResponse>>;
+    public record AddListOfMoviesCommand(List<MovieRequest> requests) : IRequest<List<MovieResponse>>;
 }

@@ -1,10 +1,8 @@
-﻿using WebApplication1.Domain.Entities;
-
-namespace WebApplication1.Domain.Interfaces
+﻿namespace Domain.Interfaces
 {
     public interface IMovieBuilder
     {
-        IMovieBuilder CreateNew(string title, string description);
+       /* IMovieBuilder CreateNew(string title, string description);
         IMovieBuilder WithTechnicalDetails(
             TimeSpan? duration,
             string? language,
@@ -13,6 +11,6 @@ namespace WebApplication1.Domain.Interfaces
         IMovieBuilder WithDirector(Director director);
         IMovieBuilder WithGenre(Genre Genre);
         IMovieBuilder WithDefaultReview(Review review);
-        Movie Build();
+        Movie Build();*/
     }
 }

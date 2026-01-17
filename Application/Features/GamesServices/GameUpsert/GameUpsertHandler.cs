@@ -1,12 +1,10 @@
-﻿using MediatR;
-using WebApplication1.Application.Common.DTO.Response;
-using WebApplication1.Application.Common.Interfaces;
-using WebApplication1.Application.Mapper;
-using WebApplication1.Domain.Entities;
-using WebApplication1.Domain.Interfaces;
-using WebApplication1.Services.Interfaces;
+﻿using Application.Common.DTO.Response;
+using Application.Common.Interfaces;
+using Application.Mapper;
+using Domain.Interfaces;
+using MediatR;
 
-namespace WebApplication1.Application.Features.Games.MovieUpsert
+namespace Application.Features.GamesServices.GameUpsert
 {
     public class GameUpsertHandler : IRequestHandler<UpsertGameCommand, GameResponse>
     {
@@ -25,7 +23,7 @@ namespace WebApplication1.Application.Features.Games.MovieUpsert
 
         public async Task<GameResponse> Handle(UpsertGameCommand request, CancellationToken cancellationToken)
         {
-            await using var transaction = await unitOfWork.BeginTransactionAsync();
+            /*await using var transaction = await unitOfWork.BeginTransactionAsync();
             try
             {
                 var genre = await referenceDataService.GetOrCreateGenreAsync(request.Genre);
@@ -58,7 +56,8 @@ namespace WebApplication1.Application.Features.Games.MovieUpsert
             {
                 await transaction.RollbackAsync();
                 throw;
-            }
+            }*/
+            throw new NotImplementedException();
         }
     }
 }

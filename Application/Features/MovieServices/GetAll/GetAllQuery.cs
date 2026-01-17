@@ -1,7 +1,7 @@
-﻿using MediatR;
-using WebApplication1.Application.Common.DTO.Response;
+﻿using Application.Common.DTO.Response;
+using MediatR;
 
-namespace WebApplication1.Application.Features.Movies.GetAll
+namespace Application.Features.MovieServices.GetAll
 {
     public record GetAllQuery : IRequest<List<MovieResponse>>;
 }

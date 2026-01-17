@@ -1,15 +1,17 @@
-﻿using WebApplication1.Application.Common.DTO.Response;
-using WebApplication1.Domain.Entities;
+﻿using Application.Common.DTO.Response;
+using Domain.Entity;
 
-namespace WebApplication1.Application.Mapper
+namespace Application.Mapper
 {
     public class GenreMapper
     {
-        public static GenreResponse ToResponse(Genre genre)
+        public static GenreResponse ToResponse(GenreDomain genre)
         {
             return new GenreResponse(
                 genre.Id,
                 genre.name);
         }
+
+        
     }
 }

@@ -1,4 +1,4 @@
-﻿namespace WebApplication1.Domain.Exceptions
+﻿namespace Domain.Exceptions
 {
     public class NotFoundException : Exception
     {
@@ -38,5 +38,10 @@
     {
         public EmailAlreadyExistsException(string message) : base(message) { }
         public int ErrorCode { get; } = 4007;
+    }
+    public class DomainException : Exception
+    {
+        public DomainException(string message) : base(message) { }
+        public int ErrorCode { get; } = 4008;
     }
 }

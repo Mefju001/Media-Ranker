@@ -1,7 +1,7 @@
-﻿using MediatR;
-using WebApplication1.Application.Common.DTO.Response;
+﻿using Application.Common.DTO.Response;
+using MediatR;
 
-namespace WebApplication1.Application.Features.Games.GetMovieById
+namespace Application.Features.GamesServices.GetGameById
 {
     public record GetGameByIdQuery(int id) : IRequest<GameResponse?>;
 

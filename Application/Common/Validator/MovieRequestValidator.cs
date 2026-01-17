@@ -1,7 +1,7 @@
-﻿using FluentValidation;
-using WebApplication1.Application.Common.DTO.Request;
+﻿using Application.Common.DTO.Request;
+using FluentValidation;
 
-namespace WebApplication1.Application.Common.Validator
+namespace Application.Common.Validator
 {
     public class MovieRequestValidator : AbstractValidator<MovieRequest>
     {
@@ -26,7 +26,7 @@ namespace WebApplication1.Application.Common.Validator
                 .When(Request => Request.IsCinemaRelease);
             RuleFor(Request => Request.ReleaseDate)
                 .GreaterThan(DateTime.UtcNow).WithMessage("The release date of the announcement must be a future date.")
-                .When(Request => Request.IsCinemaRelease == false && Request.ReleaseDate.HasValue);
+                .When(Request => Request.IsCinemaRelease == false);
             RuleFor(Request => Request.Language)
                 .NotEmpty().WithMessage("Language should have text.")
                 .MaximumLength(200).WithMessage("Only 200 characters are allowed.");

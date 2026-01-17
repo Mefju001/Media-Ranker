@@ -1,9 +1,9 @@
-﻿using Microsoft.Extensions.Configuration;
+﻿using Domain.Entity;
+using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
+using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
-using WebApplication1.Domain.Entities;
-using System.IdentityModel.Tokens.Jwt;
 
 
 namespace Application.Features.AuthServices.Common
@@ -17,7 +17,7 @@ namespace Application.Features.AuthServices.Common
             this.configuration = configuration;
         }
 
-        public string generateAccessToken(int id, string username, ICollection<UserRole> roles)
+        public string generateAccessToken(int id, string username, ICollection<RoleDomain> roles)
         {
             var jti = Guid.NewGuid().ToString();
             var claims = new List<Claim>
@@ -26,7 +26,7 @@ namespace Application.Features.AuthServices.Common
                 new(JwtRegisteredClaimNames.Name, username),
                 new(JwtRegisteredClaimNames.Jti,jti)
             };
-            foreach (var role in roles.Select(ur => ur.Role.role.ToString()))
+            foreach (var role in roles.Select(ur => ur.role.ToString()))
             {
                 claims.Add(new Claim(ClaimTypes.Role, role));
             }

@@ -1,4 +1,4 @@
-﻿namespace WebApplication1.Domain.ValueObjects
+﻿namespace Domain.Enums
 {
     public enum MediaType
     {

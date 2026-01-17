@@ -1,16 +1,11 @@
-﻿using Microsoft.AspNetCore.Http;
-using Microsoft.EntityFrameworkCore;
+﻿using Application.Common.Interfaces;
+using Domain.Entity;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
-using System;
-using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
-using System.Linq;
 using System.Security.Claims;
 using System.Text;
-using System.Threading.Tasks;
-using WebApplication1.Domain.Entities;
-using WebApplication1.Services.Interfaces;
 
 namespace Application.Features.AuthServices.Common
 {
@@ -49,18 +44,13 @@ namespace Application.Features.AuthServices.Common
             var httpContext = httpContextAccessor.HttpContext;
             string? clientIp = httpContext?.Connection.RemoteIpAddress?.ToString();
             string? userAgent = httpContext?.Request.Headers["User-Agent"].ToString();
-            var token = new Token()
-            {
-                Jti = jti,
-                refreshToken = refToken,
-                UserId = userId,
-                IssuedAt = DateTime.Now,
-                ExpiryDate = DateTime.Now.AddDays(7),
-                IsRevoked = false,
-                RevokedAt = null,
-                CreatedByIp = clientIp,
-                UserAgent = userAgent
-            };
+            var token = TokenDomain.CreateToken(
+                jti,
+                refToken,
+                userId,
+                clientIp,
+                userAgent
+            );
             await referenceDataService.saveToken(token);
             return refToken;
         }

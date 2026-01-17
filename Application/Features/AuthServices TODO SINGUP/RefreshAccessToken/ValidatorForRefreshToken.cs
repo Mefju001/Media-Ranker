@@ -1,15 +1,10 @@
-﻿using Application.Features.AuthServices.Common;
-using Microsoft.EntityFrameworkCore;
+﻿using Application.Common.Interfaces;
+using Application.Features.AuthServices.Common;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
-using System;
-using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
-using System.Linq;
 using System.Security.Claims;
 using System.Text;
-using System.Threading.Tasks;
-using WebApplication1.Application.Common.Interfaces;
 
 namespace Application.Features.AuthServices.RefreshAccessToken
 {
@@ -20,7 +15,7 @@ namespace Application.Features.AuthServices.RefreshAccessToken
         private readonly AccessTokenService accessTokenService;
         private readonly RefreshTokenService refreshTokenService;
 
-        public ValidatorForRefreshToken(IConfiguration configuration,IUnitOfWork unitOfWork)
+        public ValidatorForRefreshToken(IConfiguration configuration, IUnitOfWork unitOfWork)
         {
             _configuration = configuration;
             _context = unitOfWork;
@@ -60,11 +55,11 @@ namespace Application.Features.AuthServices.RefreshAccessToken
                 var jti = principal.Claims.FirstOrDefault(c => c.Type == JwtRegisteredClaimNames.Jti);
                 if (jti == null)
                     return null;
-                var dbRefreshToken = await _context.Tokens.FirstOrDefaultAsync(t => t.Jti == jti.Value && !t.IsRevoked && t.ExpiryDate >= DateTime.UtcNow);
-                if (dbRefreshToken == null)
+               // var dbRefreshToken = await _context.Tokens.FirstOrDefaultAsync(t => t.Jti == jti.Value && !t.IsRevoked && t.ExpiryDate >= DateTime.UtcNow);
+               /* if (dbRefreshToken == null)
                     return null;
                 dbRefreshToken.IsRevoked = true;
-                dbRefreshToken.RevokedAt = DateTime.UtcNow;
+                dbRefreshToken.RevokedAt = DateTime.UtcNow;*/
                 await _context.CompleteAsync();
                 return principal.Claims.ToList().AsReadOnly();
             }

@@ -1,11 +1,5 @@
-﻿using MediatR;
-using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using WebApplication1.Application.Common.Interfaces;
+﻿using Application.Common.Interfaces;
+using MediatR;
 
 namespace Application.Features.AuthServices.Logout
 {
@@ -20,7 +14,7 @@ namespace Application.Features.AuthServices.Logout
         {
             var userId = ParseUserId(request.stringUserId);
             var result = await _unitOfWork.TokenRepository.DeleteTokensFromUserId(userId);
-            if ((result==true))
+            if ((result == true))
             {
                 await _unitOfWork.CompleteAsync();
             }

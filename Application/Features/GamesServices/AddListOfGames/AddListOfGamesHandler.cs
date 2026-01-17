@@ -1,12 +1,10 @@
-﻿using MediatR;
-using WebApplication1.Application.Common.DTO.Response;
-using WebApplication1.Application.Common.Interfaces;
-using WebApplication1.Application.Mapper;
-using WebApplication1.Domain.Entities;
-using WebApplication1.Domain.Interfaces;
-using WebApplication1.Services.Interfaces;
+﻿using Application.Common.DTO.Response;
+using Application.Common.Interfaces;
+using Application.Mapper;
+using Domain.Interfaces;
+using MediatR;
 
-namespace WebApplication1.Application.Features.Games.AddListOfGames
+namespace Application.Features.GamesServices.AddListOfGames
 {
     public class AddListOfGamesHandler : IRequestHandler<AddListOfGamesCommand, List<GameResponse>>
     {
@@ -21,7 +19,7 @@ namespace WebApplication1.Application.Features.Games.AddListOfGames
         }
         public async Task<List<GameResponse>> Handle(AddListOfGamesCommand requests, CancellationToken cancellationToken)
         {
-            if (requests is null) throw new ArgumentNullException(nameof(requests));
+            /*if (requests is null) throw new ArgumentNullException(nameof(requests));
             await using var transaction = await _unitOfWork.BeginTransactionAsync();
             try
             {
@@ -49,7 +47,8 @@ namespace WebApplication1.Application.Features.Games.AddListOfGames
             {
                 await transaction.RollbackAsync();
                 throw;
-            }
+            }*/
+            throw new NotImplementedException();
         }
     }
 }

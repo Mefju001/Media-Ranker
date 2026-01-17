@@ -1,6 +1,6 @@
-﻿using WebApplication1.Domain.ValueObjects;
+﻿using Domain.Enums;
 
-namespace WebApplication1.Application.Common.DTO.Request
+namespace Application.Common.DTO.Request
 {
     public record GameRequest
         (

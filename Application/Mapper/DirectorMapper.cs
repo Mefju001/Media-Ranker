@@ -1,11 +1,11 @@
-﻿using WebApplication1.Application.Common.DTO.Response;
-using WebApplication1.Domain.Entities;
+﻿using Application.Common.DTO.Response;
+using Domain.Entity;
 
-namespace WebApplication1.Application.Mapper
+namespace Application.Mapper
 {
     public class DirectorMapper
     {
-        public static DirectorResponse ToResponse(Director director)
+        public static DirectorResponse ToResponse(DirectorDomain director)
         {
             return new DirectorResponse(
                 director.Id,

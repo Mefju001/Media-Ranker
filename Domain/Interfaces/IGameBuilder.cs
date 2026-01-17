@@ -1,14 +1,13 @@
-﻿using WebApplication1.Domain.Entities;
-using WebApplication1.Domain.ValueObjects;
+﻿using Domain.Enums;
 
-namespace WebApplication1.Domain.Interfaces
+namespace Domain.Interfaces
 {
     public interface IGameBuilder
     {
-        IGameBuilder CreateNew(string title, string description, EPlatform platform);
+       /*IGameBuilder CreateNew(string title, string description, EPlatform platform);
         IGameBuilder WithTechnicalDetails(DateTime? ReleaseDate, string? Language, string? Developer);
         IGameBuilder WithGenre(Genre Genre);
         IGameBuilder WithDefaultReview(Review review);
-        Game Build();
+        Game Build();*/
     }
 }

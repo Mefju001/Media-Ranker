@@ -1,12 +1,11 @@
-﻿using WebApplication1.Domain.Entities;
-using WebApplication1.Domain.Interfaces;
-using WebApplication1.Domain.ValueObjects;
+﻿using Domain.Enums;
+using Domain.Interfaces;
 
-namespace WebApplication1.Domain.Builder
+namespace Domain.Builder
 {
     public class GameBuilder : IGameBuilder
     {
-        private Game game;
+       /* private Game game;
         public Game Build()
         {
             if (game.genre == null)
@@ -48,6 +47,6 @@ namespace WebApplication1.Domain.Builder
             game.Language = Language ?? string.Empty;
             game.Developer = Developer ?? string.Empty;
             return this;
-        }
+        }*/
     }
 }
