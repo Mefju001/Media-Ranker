@@ -9,18 +9,17 @@ namespace Application.Common.Interfaces
         IMediaRepository MediaRepository { get; }
         IUserRepository UserRepository { get; }
         ITokenRepository TokenRepository { get; }
-        /*IGenericRepository<MovieDomain> Movies { get; }
+        IDirectorRepository DirectorRepository { get; }
+        IGenreRepository GenreRepository { get; }
+        /*
         IGenericRepository<Director> Directors { get; }
         IGenericRepository<Genre> Genres { get; }
-        IGenericRepository<Media> Medias { get; }
+        
         IGenericRepository<Game> Games { get; }
         IGenericRepository<TvSeries> TvSeries { get; }
         IGenericRepository<Review> Reviews { get; }
-        IGenericRepository<User> Users { get; }
         IGenericRepository<Role> Roles { get; }
-        IGenericRepository<Token> Tokens { get; }
         IGenericRepository<UserRole> UsersRoles { get; }
-        IGenericRepository<LikedMedia> LikedMedias { get; }
         IGenericRepository<MediaStats> MediaStats { get; }*/
 
 

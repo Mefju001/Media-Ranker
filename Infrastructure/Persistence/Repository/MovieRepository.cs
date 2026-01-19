@@ -30,6 +30,17 @@ namespace Infrastructure.Persistence.Repository
             var movies = await context.Movies.ToListAsync();
             return movies;
         }
+        public async Task<MovieDomain?> FirstOrDefaultAsync(int movieId)
+        {
+            return await context.Movies.FirstOrDefaultAsync(m => m.Id == movieId);
+        }
 
+        public IQueryable<MovieDomain> AsQueryable()
+        {
+            return context.Movies
+                .Include(m => m.Stats)
+                .AsNoTracking()
+                .AsQueryable();
+        }
     }
 }

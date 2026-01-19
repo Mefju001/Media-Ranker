@@ -14,19 +14,19 @@ namespace Infrastructure
         }
         public async Task<DirectorDomain> GetOrCreateDirectorAsync(DirectorRequest directorRequest)
         {
-            DirectorDomain Director = null;//await _unitOfWork.Directors.FirstOrDefaultAsync(d => d.name == directorRequest.Name && d.surname == directorRequest.Surname);
-            if (Director is not null) return DirectorDomain.Reconstruct(Director.Id, Director.name, Director.surname);
-            //Director = new Director { name = directorRequest.Name, surname = directorRequest.Surname };
-            //await _unitOfWork.Directors.AddAsync(Director);
-            return DirectorDomain.Create(Director.name, Director.surname); ;
+            var Director = await _unitOfWork.DirectorRepository.FirstOrDefaultForNameAndSurnameAsync(directorRequest.Name,directorRequest.Surname);
+            if (Director is not null) return Director;
+            Director = DirectorDomain.Create(directorRequest.Name, directorRequest.Surname);
+            var result = await _unitOfWork.DirectorRepository.AddAsync(Director);
+            return result;
         }
         public async Task<GenreDomain> GetOrCreateGenreAsync(GenreRequest genreRequest)
         {
-            GenreDomain genre = null;//await _unitOfWork.Genres.FirstOrDefaultAsync(g => g.name == genreRequest.name);
-            if (genre != null) return GenreDomain.Reconstruct(genre.Id, genre.name);
-            //genre = new Genre { name = genreRequest.name };
-           // await _unitOfWork.Genres.AddAsync(genre);
-            return GenreDomain.Reconstruct(genre.Id, genre.name);
+            var genre = await _unitOfWork.GenreRepository.FirstOrDefaultForNameAsync(genreRequest.name);
+            if (genre != null) return genre;
+            genre = GenreDomain.Create(genreRequest.name);
+            var result = await _unitOfWork.GenreRepository.AddAsync(genre);
+            return result;
         }
         public async Task<List<GenreResponse>> GetGenres()
         {

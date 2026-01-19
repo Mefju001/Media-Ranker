@@ -9,20 +9,19 @@ namespace Infrastructure.Persistence.UnitOfWork
         private readonly AppDbContext context;
         public IUserRepository UserRepository { get; }
         public ITokenRepository TokenRepository { get; }
-
-
-        public IMovieRepository MovieRepository => throw new NotImplementedException();
-
+        public IMovieRepository MovieRepository { get; }
+        public IDirectorRepository DirectorRepository { get; }
         public ILikedMediaRepository LikedMediaRepository => throw new NotImplementedException();
-
         public IMediaRepository MediaRepository => throw new NotImplementedException();
-
+        public IGenreRepository GenreRepository { get; }
         public UnitOfWork(AppDbContext context)
         {
             this.context = context;
             UserRepository = new UserRepository(context);
             TokenRepository = new TokenRepository(context);
-
+            MovieRepository = new MovieRepository(context);
+            DirectorRepository = new DirectorRepository(context);
+            GenreRepository = new GenreRepository(context);
         }
 
         public async Task<int> CompleteAsync()

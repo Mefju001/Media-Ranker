@@ -20,13 +20,20 @@
             this.DirectorId = DirectorId;
 
         }
-        public static MovieDomain Update(MovieDomain request,MovieDomain movie)
+        public static MovieDomain Update(string Title,
+            string Description,
+            string Language,
+            DateTime ReleaseDate,
+            int GenreId,
+            int DirectorId,
+            TimeSpan Duration,
+            bool IsCinemaRelease, MovieDomain movie)
         {
-            Validate(request.Duration, request.DirectorId);
-            movie.DirectorId = request.DirectorId;
-            movie.Duration = request.Duration;
-            movie.IsCinemaRelease = request.IsCinemaRelease;
-            movie.Update(request.Title, request.Description, request.Language!, request.ReleaseDate, request.GenreId);
+            Validate(Duration,DirectorId);
+            movie.DirectorId = DirectorId;
+            movie.Duration = Duration;
+            movie.IsCinemaRelease = IsCinemaRelease;
+            movie.Update(Title, Description, Language!, ReleaseDate, GenreId);
             return movie;
         }
         public static MovieDomain Create(string Title,

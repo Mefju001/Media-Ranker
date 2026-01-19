@@ -10,12 +10,10 @@ namespace Application.Features.MovieServices.AddListOfMovies
     public class AddListOfMoviesHandler : IRequestHandler<AddListOfMoviesCommand, List<MovieResponse>>
     {
         private readonly IUnitOfWork _unitOfWork;
-        private readonly IMovieBuilder movieBuilder;
         private readonly IReferenceDataService referenceDataService;
-        public AddListOfMoviesHandler(IReferenceDataService referenceDataService, IUnitOfWork unitOfWork, IMovieBuilder builder)
+        public AddListOfMoviesHandler(IReferenceDataService referenceDataService, IUnitOfWork unitOfWork)
         {
             this.referenceDataService = referenceDataService;
-            this.movieBuilder = builder;
             this._unitOfWork = unitOfWork;
         }
         public async Task<List<MovieResponse>> Handle(AddListOfMoviesCommand requests, CancellationToken cancellationToken)
@@ -24,7 +22,7 @@ namespace Application.Features.MovieServices.AddListOfMovies
             await using var transaction = await _unitOfWork.BeginTransactionAsync();
             try
             {
-                List<MovieDomain> movies = new List<MovieDomain>();
+                var moviesWithRef = new List<(MovieDomain,GenreDomain,DirectorDomain)>();
                 foreach (var request in requests.requests)
                 {
                     var director = await referenceDataService.GetOrCreateDirectorAsync(request.Director);
@@ -33,11 +31,12 @@ namespace Application.Features.MovieServices.AddListOfMovies
                                                   request.ReleaseDate, genre.Id, director.Id,
                                                   request.Duration, request.IsCinemaRelease);
 
-                    movies.Add(movie);
+                    moviesWithRef.Add((movie,genre,director));
                 }
+                var movies = moviesWithRef.Select(m=>m.Item1).ToList();
                 await _unitOfWork.MovieRepository.AddAsync(movies);
                 await _unitOfWork.CompleteAsync();
-                var listOfResponses = movies.Select(m => MovieMapper.ToMovieResponse(m, GenreDomain.Create(""), DirectorDomain.Create("", ""))).ToList();
+                var listOfResponses = moviesWithRef.Select(m => MovieMapper.ToMovieResponse(m.Item1, m.Item2, m.Item3)).ToList();
                 await transaction.CommitAsync();
                 return listOfResponses;
             }

@@ -31,11 +31,19 @@ namespace Application.Features.MovieServices.MovieUpsert
                 MovieDomain? movie = null;
                 if (request.id.HasValue)
                 {
-                    movie = null;//await unitOfWork.Movies
-                            //.FirstOrDefaultAsync(m => m.Id == request.id.Value);
+                    movie = await unitOfWork.MovieRepository.FirstOrDefaultAsync(request.id.Value);
                     if (movie is not null)
                     {
-                        //MovieMapper.UpdateEntity(movie, request, director, genre);
+                        MovieDomain.Update(
+                            request.Title,
+                            request.Description,
+                            request.Language,
+                            request.ReleaseDate!.Value,
+                            genre.Id,
+                            director.Id,
+                            request.Duration,
+                            request.IsCinemaRelease,
+                            movie);
                     }
                 }
                 else
