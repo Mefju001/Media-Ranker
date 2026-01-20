@@ -22,21 +22,20 @@ namespace Application.Features.MovieServices.AddListOfMovies
             await using var transaction = await _unitOfWork.BeginTransactionAsync();
             try
             {
-                var moviesWithRef = new List<(MovieDomain,GenreDomain,DirectorDomain)>();
+                var movies = new List<MovieDomain>();
                 foreach (var request in requests.requests)
                 {
                     var director = await referenceDataService.GetOrCreateDirectorAsync(request.Director);
                     var genre = await referenceDataService.GetOrCreateGenreAsync(request.Genre);
                     var movie = MovieDomain.Create(request.Title, request.Description, request.Language,
-                                                  request.ReleaseDate, genre.Id, director.Id,
+                                                  request.ReleaseDate, genre, director,
                                                   request.Duration, request.IsCinemaRelease);
 
-                    moviesWithRef.Add((movie,genre,director));
+                    movies.Add(movie);
                 }
-                var movies = moviesWithRef.Select(m=>m.Item1).ToList();
                 await _unitOfWork.MovieRepository.AddAsync(movies);
                 await _unitOfWork.CompleteAsync();
-                var listOfResponses = moviesWithRef.Select(m => MovieMapper.ToMovieResponse(m.Item1, m.Item2, m.Item3)).ToList();
+                var listOfResponses = movies.AsQueryable().Select(MovieMapper.ToDto).ToList();
                 await transaction.CommitAsync();
                 return listOfResponses;
             }

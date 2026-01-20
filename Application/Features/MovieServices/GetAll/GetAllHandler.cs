@@ -1,8 +1,8 @@
 ﻿using Application.Common.DTO.Response;
 using Application.Common.Interfaces;
 using Application.Mapper;
-using Domain.Entity;
 using MediatR;
+using Microsoft.EntityFrameworkCore;
 
 namespace Application.Features.MovieServices.GetAll
 {
@@ -15,8 +15,8 @@ namespace Application.Features.MovieServices.GetAll
         }
         public async Task<List<MovieResponse>> Handle(GetAllQuery request, CancellationToken cancellationToken)
         {
-            var movies = await unitOfWork.MovieRepository.GetAllAsync();
-            var MovieResponse = movies.Select(m=>MovieMapper.ToMovieResponse(m,GenreDomain.Create(""),DirectorDomain.Create("",""))).ToList();
+            var movies = unitOfWork.MovieRepository.AsQueryable();
+            var MovieResponse = await movies.AsQueryable().Select(MovieMapper.ToDto).ToListAsync(cancellationToken);
             return (MovieResponse);
         }
     }

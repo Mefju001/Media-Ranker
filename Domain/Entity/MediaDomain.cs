@@ -8,29 +8,30 @@ namespace Domain.Entity
         public string Title { get; private set; }
         public string Description { get; private set; }
         public int GenreId { get; private set; }
+        public GenreDomain GenreDomain { get; private set; }
         public DateTime ReleaseDate { get; private set; } = DateTime.UtcNow;
         public string? Language { get; private set; }
         public MediaStatsDomain Stats { get; private set; }
         public List<ReviewDomain> Reviews { get; private set; } = new List<ReviewDomain>();
-        protected MediaDomain(string Title, string Description, string Language, DateTime ReleaseDate, int GenreId)
+        protected MediaDomain(string Title, string Description, string Language, DateTime ReleaseDate, GenreDomain genreDomain)
         {
             Validate(Title, Description, Language);
             this.Title = Title;
             this.Description = Description;
             this.Language = Language;
             this.ReleaseDate = ReleaseDate;
-            this.GenreId = GenreId;
+            this.GenreDomain = genreDomain;
             this.Stats = MediaStatsDomain.Create();
         }
-       
-        protected void Update(string Title, string Description, string Language, DateTime ReleaseDate, int GenreId)
+        
+        protected void Update(string Title, string Description, string Language, DateTime ReleaseDate, GenreDomain genreDomain)
         {
             Validate(Title, Description, Language);
             this.Title = Title;
             this.Description = Description;
             this.Language = Language;
             this.ReleaseDate = ReleaseDate;
-            this.GenreId = GenreId;
+            this.GenreDomain = genreDomain;
         }
         public static void Validate(string Title, string Description, string Language)
         {
@@ -53,6 +54,11 @@ namespace Domain.Entity
             if (Reviews.Any(r => r.UserId == review.UserId))
                 throw new DomainException("User already reviewed this media.");
             Reviews.Add(review);
+        }
+        public void AddGenre(string name)
+        {
+            GenreDomain.Validate(name);
+            GenreDomain.Create(name);
         }
     }
 }

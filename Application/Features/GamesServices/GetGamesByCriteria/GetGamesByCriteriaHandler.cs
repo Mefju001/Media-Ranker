@@ -11,13 +11,11 @@ namespace Application.Features.GamesServices.GetGamesByCriteria
     public class GetGamesByCriteriaHandler : IRequestHandler<GetGamesByCriteriaQuery, List<GameResponse>>
     {
         private readonly IAppDbContext context;
-        private readonly ISorterContext<GameDomain> sorterContext;
         private readonly IGameBuildPredicate gameBuildPredicate;
         private readonly IGameFilter gameFilter;
 
-        public GetGamesByCriteriaHandler(ISorterContext<GameDomain> sorterContext, IAppDbContext appDbContext, IGameFilter gameFilter, IGameBuildPredicate gameBuildPredicate)
+        public GetGamesByCriteriaHandler(IAppDbContext appDbContext, IGameFilter gameFilter, IGameBuildPredicate gameBuildPredicate)
         {
-            this.sorterContext = sorterContext;
             this.context = appDbContext;
             this.gameFilter = gameFilter;
             this.gameBuildPredicate = gameBuildPredicate;
@@ -40,7 +38,7 @@ namespace Application.Features.GamesServices.GetGamesByCriteria
                 {
                     request.IsDescending = IsDescending;
                     request.sortByField = fields[0];
-                    query = sorterContext.Sort(query, request.sortByField, request.IsDescending);
+                    //query = sorterContext.Sort(query, request.sortByField, request.IsDescending);
                 }
                 else throw new Exception("Mismatch");
             }

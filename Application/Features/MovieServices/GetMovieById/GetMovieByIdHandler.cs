@@ -1,5 +1,6 @@
 ﻿using Application.Common.DTO.Response;
 using Application.Common.Interfaces;
+using Application.Mapper;
 using Domain.Exceptions;
 using MediatR;
 
@@ -17,14 +18,13 @@ namespace Application.Features.MovieServices.GetMovieById
 
         public async Task<MovieResponse?> Handle(GetMovieByIdQuery request, CancellationToken cancellationToken)
         {
-            var movie = new List<int>(); //await unitOfWork.Movies.GetByIdAsync(request.id);
+            var movie = await unitOfWork.MovieRepository.FirstOrDefaultAsync(request.id);
             if (movie == null)
             {
                 throw new NotFoundException("not found");
             }
-            //var movieResponse = MovieMapper.ToMovieResponse(movie);
-            //return movieResponse;
-            throw new NotImplementedException();
+            var movieResponse = MovieMapper.ToMovieResponse(movie);
+            return movieResponse;
         }
     }
 }

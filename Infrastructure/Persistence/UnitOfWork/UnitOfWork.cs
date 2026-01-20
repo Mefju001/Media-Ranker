@@ -7,6 +7,7 @@ namespace Infrastructure.Persistence.UnitOfWork
     public class UnitOfWork : IUnitOfWork
     {
         private readonly AppDbContext context;
+        public IGameRepository GameRepository { get; }
         public IUserRepository UserRepository { get; }
         public ITokenRepository TokenRepository { get; }
         public IMovieRepository MovieRepository { get; }
@@ -17,6 +18,7 @@ namespace Infrastructure.Persistence.UnitOfWork
         public UnitOfWork(AppDbContext context)
         {
             this.context = context;
+            GameRepository = new GameRepository(context);
             UserRepository = new UserRepository(context);
             TokenRepository = new TokenRepository(context);
             MovieRepository = new MovieRepository(context);

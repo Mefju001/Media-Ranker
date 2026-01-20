@@ -9,8 +9,6 @@ namespace Api.Extensions
         public static IServiceCollection AddIdentityServices(this IServiceCollection services, IConfiguration config)
         {
             var key = config["Jwt:Key"];
-
-            // Validate that the key exists before using it
             if (string.IsNullOrEmpty(key))
             {
                 throw new InvalidOperationException("JWT Key is missing from the configuration. Please add it to appsettings.json under 'Jwt' section.");

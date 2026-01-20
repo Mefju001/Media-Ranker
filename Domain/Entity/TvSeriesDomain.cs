@@ -17,12 +17,12 @@ namespace Domain.Entity
             string Description, 
             string Language, 
             DateTime ReleaseDate, 
-            int GenreId,
+            GenreDomain genre,
             int Seasons,
             int Episodes,
             string? Network,
             EStatus Status) 
-            : base(Title, Description, Language, ReleaseDate, GenreId)
+            : base(Title, Description, Language, ReleaseDate, genre)
         {
             this.Seasons = Seasons;
             this.Episodes = Episodes;
@@ -33,7 +33,7 @@ namespace Domain.Entity
             string Description,
             string Language,
             DateTime ReleaseDate,
-            int GenreId,
+            GenreDomain genre,
             int Seasons,
             int Episodes,
             string? Network,
@@ -45,7 +45,7 @@ namespace Domain.Entity
                                    Description,
                                    Language,
                                    ReleaseDate,
-                                   GenreId,
+                                   genre,
                                    Seasons,
                                    Episodes,
                                    Network,

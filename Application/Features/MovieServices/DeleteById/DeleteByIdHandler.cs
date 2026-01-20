@@ -3,22 +3,18 @@ using MediatR;
 
 namespace Application.Features.MovieServices.DeleteById
 {
-    public class DeleteByIdHandler : IRequestHandler<DeleteByIdCommand, bool>
+    public class DeleteByIdHandler : IRequestHandler<DeleteByIdCommand, Unit>
     {
         private readonly IUnitOfWork unitOfWork;
         public DeleteByIdHandler(IUnitOfWork unitOfWork)
         {
             this.unitOfWork = unitOfWork;
         }
-        public async Task<bool> Handle(DeleteByIdCommand request, CancellationToken cancellationToken)
+        public async Task<Unit> Handle(DeleteByIdCommand request, CancellationToken cancellationToken)
         {
-            /*var movie = await unitOfWork.Movies.FirstOrDefaultAsync(x => x.Id == request.id);
-            if (movie is null)
-                return false;
-            unitOfWork.Movies.Delete(movie);
+            await unitOfWork.MovieRepository.DeleteMovie(request.id);
             await unitOfWork.CompleteAsync();
-            return true;*/
-            throw new NotImplementedException();
+            return Unit.Value;
         }
     }
 }

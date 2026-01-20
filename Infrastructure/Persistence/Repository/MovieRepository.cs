@@ -1,7 +1,6 @@
 ﻿using Application.Common.Interfaces;
 using Domain.Entity;
-using Infrastructure.Persistence.Mapper;
-using MediatR;
+using Domain.Exceptions;
 using Microsoft.EntityFrameworkCore;
 
 namespace Infrastructure.Persistence.Repository
@@ -41,6 +40,14 @@ namespace Infrastructure.Persistence.Repository
                 .Include(m => m.Stats)
                 .AsNoTracking()
                 .AsQueryable();
+        }
+
+        public async Task DeleteMovie(int movieId)
+        {
+            var movie = await context.Movies.FindAsync(movieId);
+            if (movie == null)
+                throw new NotFoundException("Movie cannot be null");
+            context.Movies.Remove(movie);
         }
     }
 }

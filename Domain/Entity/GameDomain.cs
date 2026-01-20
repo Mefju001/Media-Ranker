@@ -15,10 +15,10 @@ namespace Domain.Entity
             string Description,
             string Language,
             DateTime ReleaseDate,
-            int GenreId,
+            GenreDomain genreDomain,
             string Developer,
             EPlatform Platform)
-            : base(Title, Description, Language, ReleaseDate, GenreId)
+            : base(Title, Description, Language, ReleaseDate, genreDomain)
         {
             this.Developer = Developer;
             this.Platform = Platform;
@@ -28,7 +28,7 @@ namespace Domain.Entity
             string Description,
             string Language,
             DateTime ReleaseDate,
-            int Genre,
+            GenreDomain Genre,
             string Developer,
             EPlatform Platform)
         {

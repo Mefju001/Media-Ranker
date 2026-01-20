@@ -2,57 +2,58 @@
 {
     public class MovieDomain : MediaDomain
     {
-        public int DirectorId { get; set; }
-        public TimeSpan Duration { get; set; }
-        public bool IsCinemaRelease { get; set; } = false;
-        private MovieDomain(string Title, string Description, string Language, DateTime ReleaseDate, int GenreId, int DirectorId, TimeSpan Duration, bool IsCinemaRelease)
-            : base(Title, Description, Language, ReleaseDate, GenreId)
+        public int DirectorId { get; private set; }
+        public DirectorDomain DirectorDomain {  get; private set; }
+        public TimeSpan Duration { get; private  set; }
+        public bool IsCinemaRelease { get; private set; } = false;
+        private MovieDomain(string Title, string Description, string Language, DateTime ReleaseDate, GenreDomain genre, DirectorDomain director, TimeSpan Duration, bool IsCinemaRelease)
+            : base(Title, Description, Language, ReleaseDate, genre)
         {
             this.Duration = Duration;
             this.IsCinemaRelease = IsCinemaRelease;
-            this.DirectorId = DirectorId;
+            this.DirectorDomain = director;
         }
-        private MovieDomain(int id, string Title, string Description, string Language, DateTime ReleaseDate, int GenreId, int DirectorId, TimeSpan Duration, bool IsCinemaRelease)
-            : base(Title, Description, Language, ReleaseDate, GenreId)
+        private MovieDomain(int id, string Title, string Description, string Language, DateTime ReleaseDate, GenreDomain genre, DirectorDomain director, TimeSpan Duration, bool IsCinemaRelease)
+            : base(Title, Description, Language, ReleaseDate, genre)
         {
             this.Duration = Duration;
             this.IsCinemaRelease = IsCinemaRelease;
-            this.DirectorId = DirectorId;
+            this.DirectorDomain = director;
 
         }
         public static MovieDomain Update(string Title,
             string Description,
             string Language,
             DateTime ReleaseDate,
-            int GenreId,
-            int DirectorId,
+            GenreDomain genreDomain,
+            DirectorDomain directorDomain,
             TimeSpan Duration,
             bool IsCinemaRelease, MovieDomain movie)
         {
-            Validate(Duration,DirectorId);
-            movie.DirectorId = DirectorId;
+            Validate(Duration, directorDomain);
+            movie.DirectorDomain = directorDomain;
             movie.Duration = Duration;
             movie.IsCinemaRelease = IsCinemaRelease;
-            movie.Update(Title, Description, Language!, ReleaseDate, GenreId);
+            movie.Update(Title, Description, Language!, ReleaseDate, genreDomain);
             return movie;
         }
         public static MovieDomain Create(string Title,
             string Description,
             string Language,
             DateTime ReleaseDate,
-            int GenreId,
-            int DirectorId,
+            GenreDomain genreDomain,
+            DirectorDomain directorDomain,
             TimeSpan Duration,
             bool IsCinemaRelease)
         {
-            Validate(Duration, DirectorId);
+            Validate(Duration, directorDomain);
             return new MovieDomain(
                                    Title,
                                    Description,
                                    Language,
                                    ReleaseDate,
-                                   GenreId,
-                                   DirectorId,
+                                   genreDomain,
+                                   directorDomain,
                                    Duration,
                                    IsCinemaRelease);
         }
@@ -60,20 +61,20 @@
         {
             IsCinemaRelease = isCinemaRelease;
         }
-        private static void Validate(TimeSpan Duration, int Director)
+        private static void Validate(TimeSpan Duration, DirectorDomain Director)
         {
             if (Duration.TotalMinutes <= 0)
                 throw new ArgumentException("Duration must be greater than zero.");
-            if (Director >0)
-                throw new ArgumentException("Director id cannot be null.");
+            if (Director == null)
+                throw new ArgumentException("Director cannot be null.");
         }
         public static MovieDomain Reconstruct(int Id,
             string Title,
             string Description,
             string Language,
             DateTime ReleaseDate,
-            int Genre,
-            int Director,
+            GenreDomain Genre,
+            DirectorDomain Director,
             TimeSpan Duration,
             bool IsCinemaRelease)
         {
