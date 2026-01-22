@@ -51,6 +51,26 @@ namespace Domain.Entity
                                    Network,
                                    Status);
         }
+        public static TvSeriesDomain Update(string Title,
+            string Description,
+            string Language,
+            DateTime ReleaseDate,
+            GenreDomain genre,
+            int Seasons,
+            int Episodes,
+            string? Network,
+            EStatus Status,
+            TvSeriesDomain tvSeries)
+        {
+            Validate(Seasons, Episodes);
+            tvSeries.Seasons = Seasons;
+            tvSeries.Episodes = Episodes;
+            tvSeries.Network = Network;
+            tvSeries.Status = Status;
+            tvSeries.Update(Title, Description,Language,ReleaseDate,genre);
+            return tvSeries;
+            
+        }
         public void UpdateSeasons(int seasons)
         {
             if (seasons <= 0)

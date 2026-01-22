@@ -25,10 +25,14 @@ namespace Infrastructure.Persistence.Repository
             var entityEntry = await _context.Genres.AddAsync(genre);
             return entityEntry.Entity;
         }
-
         public GenreDomain? Get(int id)
         {
             return _context.Genres.Find(id);
+        }
+
+        public async Task<List<GenreDomain>> GetByNamesAsync(List<string> names)
+        {
+            return await _context.Genres.Where(g=>names.Contains(g.name)).ToListAsync();
         }
     }
 }

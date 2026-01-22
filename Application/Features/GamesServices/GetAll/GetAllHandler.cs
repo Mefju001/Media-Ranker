@@ -14,10 +14,9 @@ namespace Application.Features.GamesServices.GetAll
         }
         public async Task<List<GameResponse>> Handle(GetAllQuery request, CancellationToken cancellationToken)
         {
-            throw new NotImplementedException();
-            /*var games = await unitOfWork.Games.GetAllAsync();
+            var games = await unitOfWork.GameRepository.GetAllAsync();
             var gameResponses = games.Select(GameMapper.ToGameResponse).ToList();
-            return (gameResponses);*/
+            return (gameResponses);
         }
     }
 }

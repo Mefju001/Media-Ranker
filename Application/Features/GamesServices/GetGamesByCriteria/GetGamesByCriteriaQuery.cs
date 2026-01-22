@@ -10,7 +10,6 @@ namespace Application.Features.GamesServices.GetGamesByCriteria
         public string? platform { get; set; }
         public string? developer { get; set; }
         public int? releaseDate { get; set; }
-        public bool isAvgFiltr { get; set; }
         public int? MinRating { get; set; }
 
 

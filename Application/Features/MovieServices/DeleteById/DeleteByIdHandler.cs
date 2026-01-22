@@ -1,4 +1,5 @@
 ﻿using Application.Common.Interfaces;
+using Domain.Exceptions;
 using MediatR;
 
 namespace Application.Features.MovieServices.DeleteById
@@ -12,7 +13,9 @@ namespace Application.Features.MovieServices.DeleteById
         }
         public async Task<Unit> Handle(DeleteByIdCommand request, CancellationToken cancellationToken)
         {
-            await unitOfWork.MovieRepository.DeleteMovie(request.id);
+            var movie = await unitOfWork.MovieRepository.FirstOrDefaultAsync(request.id);
+            if (movie == null) throw new NotFoundException("Not found movie");
+            await unitOfWork.MovieRepository.DeleteMovie(movie);
             await unitOfWork.CompleteAsync();
             return Unit.Value;
         }

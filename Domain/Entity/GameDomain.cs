@@ -42,6 +42,20 @@ namespace Domain.Entity
                                    Developer,
                                    Platform);
         }
+        public static GameDomain Update(string Title,
+            string Description,
+            string Language,
+            DateTime ReleaseDate,
+            GenreDomain Genre,
+            string Developer,
+            EPlatform Platform, GameDomain game)
+        {
+            Validate(Developer);
+            game.Developer = Developer;
+            game.Platform = Platform;
+            game.Update(Title, Description, Language, ReleaseDate, Genre);
+            return game;
+        }
         private static void Validate(string Developer)
         {
             if (string.IsNullOrWhiteSpace(Developer)) throw new ArgumentException("Developer cannot be null or empty.");

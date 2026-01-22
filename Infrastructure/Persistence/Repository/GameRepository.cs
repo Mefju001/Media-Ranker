@@ -1,5 +1,6 @@
 ﻿using Application.Common.Interfaces;
 using Domain.Entity;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -15,9 +16,34 @@ namespace Infrastructure.Persistence.Repository
         {
             _context = context;
         }
-        public async Task AddListOfGames(List<GameDomain>games)
+        public async Task AddListOfGames(List<GameDomain>games,CancellationToken cancellationToken)
         {
-            await _context.Games.AddRangeAsync(games); 
+            await _context.Games.AddRangeAsync(games,cancellationToken); 
+        }
+        public async Task<GameDomain?> GetGameDomainAsync(int gameId,CancellationToken cancellationToken)
+        {
+            return await _context.Games.FirstOrDefaultAsync(g => g.Id == gameId,cancellationToken);
+        }
+        public async Task DeleteGame(GameDomain game)
+        {
+             _context.Games.Remove(game);
+        }
+        public async Task AddGameAsync(GameDomain game)
+        {
+            await _context.Games.AddAsync(game);
+        }
+        public async Task<List<GameDomain>> GetAllAsync()
+        {
+            return await _context.Games.ToListAsync();
+        }
+
+        public async Task<IQueryable<GameDomain>> AsQueryable()
+        {
+            return _context.Games
+                .Include(g => g.GenreDomain)
+                .Include(g => g.Stats)
+                .AsNoTracking()
+                .AsQueryable();
         }
     }
 }

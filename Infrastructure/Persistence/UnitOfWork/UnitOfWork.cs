@@ -15,6 +15,7 @@ namespace Infrastructure.Persistence.UnitOfWork
         public ILikedMediaRepository LikedMediaRepository => throw new NotImplementedException();
         public IMediaRepository MediaRepository => throw new NotImplementedException();
         public IGenreRepository GenreRepository { get; }
+        public ITvSeriesRepository TvSeriesRepository { get; }
         public UnitOfWork(AppDbContext context)
         {
             this.context = context;
@@ -24,6 +25,7 @@ namespace Infrastructure.Persistence.UnitOfWork
             MovieRepository = new MovieRepository(context);
             DirectorRepository = new DirectorRepository(context);
             GenreRepository = new GenreRepository(context);
+            TvSeriesRepository = new TvSeriesRepository(context);
         }
 
         public async Task<int> CompleteAsync()

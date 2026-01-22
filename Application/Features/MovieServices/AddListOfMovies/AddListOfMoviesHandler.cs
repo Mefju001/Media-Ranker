@@ -18,32 +18,21 @@ namespace Application.Features.MovieServices.AddListOfMovies
         }
         public async Task<List<MovieResponse>> Handle(AddListOfMoviesCommand requests, CancellationToken cancellationToken)
         {
-            if (requests is null) throw new ArgumentNullException(nameof(requests));
-            await using var transaction = await _unitOfWork.BeginTransactionAsync();
-            try
+            var genreNames = requests.movies.Select(m => m.Genre.name).Distinct().ToList();
+            var directors = requests.movies.Select(r => r.Director).ToList();
+            var dictionaryDirectors = await referenceDataService.EnsureDirectorsExistAsync(directors);
+            var dictionaryNames = await referenceDataService.EnsureGenresExistAsync(genreNames);
+            var movies = requests.movies.Select(movieReq =>
             {
-                var movies = new List<MovieDomain>();
-                foreach (var request in requests.requests)
-                {
-                    var director = await referenceDataService.GetOrCreateDirectorAsync(request.Director);
-                    var genre = await referenceDataService.GetOrCreateGenreAsync(request.Genre);
-                    var movie = MovieDomain.Create(request.Title, request.Description, request.Language,
-                                                  request.ReleaseDate, genre, director,
-                                                  request.Duration, request.IsCinemaRelease);
-
-                    movies.Add(movie);
-                }
-                await _unitOfWork.MovieRepository.AddAsync(movies);
-                await _unitOfWork.CompleteAsync();
-                var listOfResponses = movies.AsQueryable().Select(MovieMapper.ToDto).ToList();
-                await transaction.CommitAsync();
-                return listOfResponses;
-            }
-            catch
-            {
-                await transaction.RollbackAsync();
-                throw;
-            }
+                var genre = dictionaryNames[movieReq.Genre.name];
+                var director = dictionaryDirectors[(movieReq.Director.Name, movieReq.Director.Surname)];
+                return MovieDomain.Create(movieReq.Title, movieReq.Description, movieReq.Language,
+                                                  movieReq.ReleaseDate, genre, director,
+                                                  movieReq.Duration, movieReq.IsCinemaRelease);
+            }).ToList();
+            await _unitOfWork.MovieRepository.AddListOfMovies(movies,cancellationToken);
+            await _unitOfWork.CompleteAsync();
+            return movies.Select(MovieMapper.ToMovieResponse).ToList();
         }
     }
 }

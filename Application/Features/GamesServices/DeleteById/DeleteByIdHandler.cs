@@ -12,13 +12,12 @@ namespace Application.Features.GamesServices.DeleteById
         }
         public async Task<bool> Handle(DeleteByIdCommand request, CancellationToken cancellationToken)
         {
-            throw new NotImplementedException();
-            /*var game = await unitOfWork.Games.FirstOrDefaultAsync(x => x.Id == request.id);
+            var game = await unitOfWork.GameRepository.GetGameDomainAsync(request.id,cancellationToken);
             if (game is null)
                 return false;
-            unitOfWork.Games.Delete(game);
+            await unitOfWork.GameRepository.DeleteGame(game);
             await unitOfWork.CompleteAsync();
-            return true;*/
+            return true;
         }
     }
 }

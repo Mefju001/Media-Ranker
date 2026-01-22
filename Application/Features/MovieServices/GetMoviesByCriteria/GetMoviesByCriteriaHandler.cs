@@ -20,7 +20,7 @@ namespace Application.Features.MovieServices.GetMoviesByCriteria
         public async Task<List<MovieResponse>> Handle(GetMoviesByCriteriaQuery request, CancellationToken cancellationToken)
         {
             var query = unitOfWork.MovieRepository.AsQueryable();
-            query = SortAndFilterService.ApplyFiltersAsync(query, request);
+            query = SortAndFilterService.ApplyFilters(query, request);
             query = SortAndFilterService.ApplySorting(query, request);
             var Response = await query.Select(MovieMapper.ToDto).ToListAsync(cancellationToken);
             return Response;

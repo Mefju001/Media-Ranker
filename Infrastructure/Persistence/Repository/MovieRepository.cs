@@ -42,12 +42,14 @@ namespace Infrastructure.Persistence.Repository
                 .AsQueryable();
         }
 
-        public async Task DeleteMovie(int movieId)
+        public async Task DeleteMovie(MovieDomain movieDomain)
         {
-            var movie = await context.Movies.FindAsync(movieId);
-            if (movie == null)
-                throw new NotFoundException("Movie cannot be null");
-            context.Movies.Remove(movie);
+            context.Movies.Remove(movieDomain);
+        }
+
+        public async Task AddListOfMovies(List<MovieDomain> movieDomains, CancellationToken cancellationToken)
+        {
+            await context.AddRangeAsync(movieDomains,cancellationToken);
         }
     }
 }

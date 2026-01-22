@@ -17,14 +17,13 @@ namespace Application.Features.GamesServices.GetGameById
 
         public async Task<GameResponse?> Handle(GetGameByIdQuery request, CancellationToken cancellationToken)
         {
-            throw new NotImplementedException();
-            /*var game = await unitOfWork.Games.GetByIdAsync(request.id);
+            var game = await unitOfWork.GameRepository.GetGameDomainAsync(request.id,cancellationToken);
             if (game == null)
             {
                 throw new NotFoundException("not found");
             }
             var gameResponses = GameMapper.ToGameResponse(game);
-            return gameResponses;*/
+            return gameResponses;
         }
     }
 }

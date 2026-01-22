@@ -12,9 +12,9 @@ namespace Application.Common.Interfaces
         ITokenRepository TokenRepository { get; }
         IDirectorRepository DirectorRepository { get; }
         IGenreRepository GenreRepository { get; }
+        ITvSeriesRepository TvSeriesRepository { get; }
         /*
         
-        IGenericRepository<TvSeries> TvSeries { get; }
         IGenericRepository<Review> Reviews { get; }
         IGenericRepository<Role> Roles { get; }
         IGenericRepository<UserRole> UsersRoles { get; }

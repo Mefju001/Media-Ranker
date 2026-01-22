@@ -1,6 +1,7 @@
 ﻿using Application.Common.DTO.Response;
 using Application.Common.Interfaces;
 using Application.Mapper;
+using Domain.Entity;
 using Domain.Interfaces;
 using MediatR;
 
@@ -23,44 +24,44 @@ namespace Application.Features.TvSeriesServices.TvSeriesUpsert
 
         public async Task<TvSeriesResponse> Handle(UpsertTvSeriesCommand request, CancellationToken cancellationToken)
         {
-            /*await using var transaction = await unitOfWork.BeginTransactionAsync();
-            try
+            var genre = await referenceDataService.GetOrCreateGenreAsync(request.genre);
+            TvSeriesDomain? tvSeries;
+            if (request.id is not null)
             {
-                var genre = await referenceDataService.GetOrCreateGenreAsync(request.genre);
-                TvSeries? tvSeries;
-                if (request.id is not null)
+                tvSeries = await unitOfWork.TvSeriesRepository.GetTvSeriesById(request.id.Value);
+                if (tvSeries is not null)
                 {
-                    tvSeries = await unitOfWork.TvSeries
-                            .FirstOrDefaultAsync(m => m.Id == request.id);
-                    if (tvSeries is not null)
-                    {
-                        TvSeriesMapper.UpdateEntity(tvSeries, request, genre);
-                    }
-                }
-                else
-                {
-                    tvSeries = tvSeriesBuilder.CreateNew(request.title, request.description)
-                        .WithGenre(genre)
-                        .WithMetadata
-                        (request.Seasons,
+                    TvSeriesDomain.Update(
+                        request.title,
+                        request.description,
+                        request.Language,
+                        request.ReleaseDate,
+                        genre,
+                        request.Seasons,
                         request.Episodes,
                         request.Network,
-                        request.Status)
-                        .Build();
-                    await unitOfWork.TvSeries.AddAsync(tvSeries);
+                        request.Status,
+                        tvSeries);
                 }
-                await unitOfWork.CompleteAsync();
-                if (tvSeries is null) throw new ArgumentNullException(nameof(tvSeries));
-                var response = TvSeriesMapper.ToTvSeriesResponse(tvSeries);
-                await transaction.CommitAsync();
-                return response;
             }
-            catch
+            else
             {
-                await transaction.RollbackAsync();
-                throw;
-            }*/
-            throw new NotImplementedException();
+                tvSeries = TvSeriesDomain.Create(
+                        request.title,
+                        request.description,
+                        request.Language,
+                        request.ReleaseDate,
+                        genre,
+                        request.Seasons,
+                        request.Episodes,
+                        request.Network,
+                        request.Status);
+                await unitOfWork.TvSeriesRepository.AddTvSeriesAsync(tvSeries);
+            }
+            await unitOfWork.CompleteAsync();
+            if (tvSeries is null) throw new ArgumentNullException(nameof(tvSeries));
+            var response = TvSeriesMapper.ToTvSeriesResponse(tvSeries);
+            return response;
         }
     }
 }

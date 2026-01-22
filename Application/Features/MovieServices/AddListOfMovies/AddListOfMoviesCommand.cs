@@ -4,5 +4,5 @@ using MediatR;
 
 namespace Application.Features.MovieServices.AddListOfMovies
 {
-    public record AddListOfMoviesCommand(List<MovieRequest> requests) : IRequest<List<MovieResponse>>;
+    public record AddListOfMoviesCommand(List<MovieRequest> movies) : IRequest<List<MovieResponse>>;
 }

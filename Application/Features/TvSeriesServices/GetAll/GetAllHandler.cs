@@ -15,10 +15,9 @@ namespace Application.Features.TvSeriesServices.GetAll
         }
         public async Task<List<TvSeriesResponse>> Handle(GetAllTvSeriesQuery request, CancellationToken cancellationToken)
         {
-            throw new NotImplementedException();
-            /*TvSeriesDomain tvSeries = await unitOfWork.TvSeries.GetAllAsync();
-            var MovieResponse = tvSeries.Select(TvSeriesMapper.ToTvSeriesResponse).ToList();
-            return (MovieResponse);*/
+            var tvSeries = await unitOfWork.TvSeriesRepository.GetAll(cancellationToken);
+            var tvSeriesResponses = tvSeries.Select(TvSeriesMapper.ToTvSeriesResponse).ToList();
+            return (tvSeriesResponses);
         }
     }
 }

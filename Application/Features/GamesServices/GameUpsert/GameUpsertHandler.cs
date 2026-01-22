@@ -1,6 +1,7 @@
 ﻿using Application.Common.DTO.Response;
 using Application.Common.Interfaces;
 using Application.Mapper;
+using Domain.Entity;
 using Domain.Interfaces;
 using MediatR;
 
@@ -23,41 +24,41 @@ namespace Application.Features.GamesServices.GameUpsert
 
         public async Task<GameResponse> Handle(UpsertGameCommand request, CancellationToken cancellationToken)
         {
-            /*await using var transaction = await unitOfWork.BeginTransactionAsync();
-            try
+            var genre = await referenceDataService.GetOrCreateGenreAsync(request.Genre);
+            GameDomain? game;
+            if (request.id.HasValue)
             {
-                var genre = await referenceDataService.GetOrCreateGenreAsync(request.Genre);
-                Game? game;
-                if (request.id.HasValue)
+                game = await unitOfWork.GameRepository.GetGameDomainAsync(request.id.Value, cancellationToken);
+                if (game != null)
                 {
-                    game = await unitOfWork.Games
-                        .FirstOrDefaultAsync(g => g.Id == request.id);
-                    if (game != null)
-                    {
-                        GameMapper.UpdateEntity(game, request, genre);
-                    }
+                    GameDomain.Update
+                        (
+                        request.Title,
+                        request.Description,
+                        request.Language,
+                        request.ReleaseDate!.Value,
+                        genre,
+                        request.Developer!,
+                        request.Platform,
+                        game
+                        );
                 }
-                else
-                {
-                    game = gameBuilder
-                        .CreateNew(request.Title, request.Description, request.Platform)
-                        .WithGenre(genre)
-                        .WithTechnicalDetails(request.ReleaseDate, request.Language, request.Developer)
-                        .Build();
-                    await unitOfWork.Games.AddAsync(game);
-                }
-                await unitOfWork.CompleteAsync();
-                if (game is null) throw new InvalidOperationException(nameof(game));
-                var response = GameMapper.ToGameResponse(game);
-                await transaction.CommitAsync();
-                return response;
             }
-            catch
+            else
             {
-                await transaction.RollbackAsync();
-                throw;
-            }*/
-            throw new NotImplementedException();
+                game = GameDomain.Create(
+                    request.Title,
+                    request.Description,
+                    request.Language,
+                    request.ReleaseDate!.Value,
+                    genre,request.Developer!,
+                    request.Platform);
+                await unitOfWork.GameRepository.AddGameAsync(game);
+            }
+            await unitOfWork.CompleteAsync();
+            if (game is null) throw new InvalidOperationException(nameof(game));
+            var response = GameMapper.ToGameResponse(game);
+            return response;
         }
     }
 }

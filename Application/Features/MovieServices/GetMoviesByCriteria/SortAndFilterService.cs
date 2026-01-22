@@ -5,7 +5,7 @@ namespace Application.Features.MovieServices.GetMoviesByCriteria
 {
     internal static class SortAndFilterService
     {
-        public static IQueryable<MovieDomain> ApplyFiltersAsync(IQueryable<MovieDomain> query, GetMoviesByCriteriaQuery request)
+        public static IQueryable<MovieDomain> ApplyFilters(IQueryable<MovieDomain> query, GetMoviesByCriteriaQuery request)
         {
             if (!string.IsNullOrWhiteSpace(request.TitleSearch))
             {

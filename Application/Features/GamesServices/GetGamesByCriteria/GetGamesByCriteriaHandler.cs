@@ -10,40 +10,20 @@ namespace Application.Features.GamesServices.GetGamesByCriteria
 {
     public class GetGamesByCriteriaHandler : IRequestHandler<GetGamesByCriteriaQuery, List<GameResponse>>
     {
-        private readonly IAppDbContext context;
-        private readonly IGameBuildPredicate gameBuildPredicate;
-        private readonly IGameFilter gameFilter;
+        private readonly IUnitOfWork context;
 
-        public GetGamesByCriteriaHandler(IAppDbContext appDbContext, IGameFilter gameFilter, IGameBuildPredicate gameBuildPredicate)
+        public GetGamesByCriteriaHandler(IUnitOfWork unitOfWork)
         {
-            this.context = appDbContext;
-            this.gameFilter = gameFilter;
-            this.gameBuildPredicate = gameBuildPredicate;
+            this.context = unitOfWork;
         }
 
 
         public async Task<List<GameResponse>> Handle(GetGamesByCriteriaQuery request, CancellationToken cancellationToken)
         {
-            var query = context.Games
-                //.Include(m => m.genre)
-                .Include(m => m.Stats)
-                .AsNoTracking()
-                .AsQueryable();
-            var predicate = gameBuildPredicate.BuildPredicate(request);
-            query = gameFilter.Filter(query, predicate);
-            if (!string.IsNullOrEmpty(request.sortByField) && request.sortByField.Contains('|'))
-            {
-                var fields = request.sortByField.Split('|');
-                if (fields.Length == 2 && bool.TryParse(fields[1], out bool IsDescending))
-                {
-                    request.IsDescending = IsDescending;
-                    request.sortByField = fields[0];
-                    //query = sorterContext.Sort(query, request.sortByField, request.IsDescending);
-                }
-                else throw new Exception("Mismatch");
-            }
-            var movies = await query.ToListAsync(cancellationToken);
-            var Response = movies.Select(m => GameMapper.ToGameResponse(m)).ToList();
+            var query = await context.GameRepository.AsQueryable();
+            query = SortAndFilterService.ApplyFilters(query, request);
+            query = SortAndFilterService.ApplySorting(query, request);
+            var Response = await query.Select(m => GameMapper.ToGameResponse(m)).ToListAsync(cancellationToken);
             return Response;
         }
     }

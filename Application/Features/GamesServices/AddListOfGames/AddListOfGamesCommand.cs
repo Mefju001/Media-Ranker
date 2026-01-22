@@ -4,5 +4,5 @@ using MediatR;
 
 namespace Application.Features.GamesServices.AddListOfGames
 {
-    public record AddListOfGamesCommand(List<GameRequest> requests) : IRequest<List<GameResponse>>;
+    public record AddListOfGamesCommand(List<GameRequest> games) : IRequest<List<GameResponse>>;
 }

@@ -17,14 +17,13 @@ namespace Application.Features.TvSeriesServices.GetTvSeriesById
 
         public async Task<TvSeriesResponse?> Handle(GetTvSeriesByIdQuery request, CancellationToken cancellationToken)
         {
-            throw new NotImplementedException();
-           /* var movie = await unitOfWork.TvSeries.GetByIdAsync(request.id);
+            var movie = await unitOfWork.TvSeriesRepository.GetTvSeriesById(request.id);
             if (movie == null)
             {
                 throw new NotFoundException("not found");
             }
             var movieResponse = TvSeriesMapper.ToTvSeriesResponse(movie);
-            return movieResponse;*/
+            return movieResponse;
         }
     }
 }

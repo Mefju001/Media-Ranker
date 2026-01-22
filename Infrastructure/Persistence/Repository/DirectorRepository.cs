@@ -29,5 +29,10 @@ namespace Infrastructure.Persistence.Repository
         {
             return context.Directors.Find(id);
         }
+
+        public async Task<List<DirectorDomain>> findByNameAndSurname(List<string>names,List<string>surnames)
+        {
+            return await context.Directors.Where(d=>names.Contains(d.name)&&surnames.Contains(d.surname)).ToListAsync();
+        }
     }
 }

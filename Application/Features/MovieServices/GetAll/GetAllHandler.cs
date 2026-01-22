@@ -16,7 +16,7 @@ namespace Application.Features.MovieServices.GetAll
         public async Task<List<MovieResponse>> Handle(GetAllQuery request, CancellationToken cancellationToken)
         {
             var movies = unitOfWork.MovieRepository.AsQueryable();
-            var MovieResponse = await movies.AsQueryable().Select(MovieMapper.ToDto).ToListAsync(cancellationToken);
+            var MovieResponse = await movies.Select(MovieMapper.ToDto).ToListAsync(cancellationToken);
             return (MovieResponse);
         }
     }

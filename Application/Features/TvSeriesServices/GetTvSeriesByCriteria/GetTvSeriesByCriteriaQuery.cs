@@ -6,8 +6,6 @@ namespace Application.Features.TvSeriesServices.GetTvSeriesByCriteria
 {
     public class GetTvSeriesByCriteriaQuery() : IRequest<List<TvSeriesResponse>>
     {
-        // PARAMETRY FILTROWANIA (Dla Wzorca Specyfikacja)
-
         public string? TitleSearch { get; set; }
         public double? MinRating { get; set; }
         public int? ReleaseYear { get; set; }
@@ -17,8 +15,6 @@ namespace Application.Features.TvSeriesServices.GetTvSeriesByCriteria
         public string? network { get; set; }
         public EStatus? status { get; set; }
 
-
-        // PARAMETRY SORTOWANIA (Dla Wzorca Strategia)
 
         public string? SortByField { get; set; }
         public bool IsDescending { get; set; } = false;

@@ -13,10 +13,10 @@ namespace Application.Features.TvSeriesServices.DeleteById
         }
         public async Task<bool> Handle(DeleteByIdCommand request, CancellationToken cancellationToken)
         {
-            TvSeriesDomain tvSeries = null;//await unitOfWork.TvSeries.FirstOrDefaultAsync(x => x.Id == request.id);
+            var tvSeries = await unitOfWork.TvSeriesRepository.GetTvSeriesById(request.id);
             if (tvSeries is null)
                 return false;
-            //unitOfWork.TvSeries.Delete(tvSeries);
+            await unitOfWork.TvSeriesRepository.Delete(tvSeries);
             await unitOfWork.CompleteAsync();
             return true;
         }

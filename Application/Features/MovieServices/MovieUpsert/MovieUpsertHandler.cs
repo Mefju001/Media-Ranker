@@ -23,54 +23,45 @@ namespace Application.Features.MovieServices.MovieUpsert
 
         public async Task<MovieResponse> Handle(UpsertMovieCommand request, CancellationToken cancellationToken)
         {
-            await using var transaction = await unitOfWork.BeginTransactionAsync();
-            try
+            var director = await referenceDataService.GetOrCreateDirectorAsync(request.Director);
+            var genre = await referenceDataService.GetOrCreateGenreAsync(request.Genre);
+            MovieDomain? movie = null;
+            if (request.id.HasValue)
             {
-                var director = await referenceDataService.GetOrCreateDirectorAsync(request.Director);
-                var genre = await referenceDataService.GetOrCreateGenreAsync(request.Genre);
-                MovieDomain? movie = null;
-                if (request.id.HasValue)
+                movie = await unitOfWork.MovieRepository.FirstOrDefaultAsync(request.id.Value);
+                if (movie is not null)
                 {
-                    movie = await unitOfWork.MovieRepository.FirstOrDefaultAsync(request.id.Value);
-                    if (movie is not null)
-                    {
-                        MovieDomain.Update(
-                            request.Title,
-                            request.Description,
-                            request.Language,
-                            request.ReleaseDate!.Value,
-                            genre,
-                            director,
-                            request.Duration,
-                            request.IsCinemaRelease,
-                            movie);
-                    }
+                    MovieDomain.Update(
+                        request.Title,
+                        request.Description,
+                        request.Language,
+                        request.ReleaseDate!.Value,
+                        genre,
+                        director,
+                        request.Duration,
+                        request.IsCinemaRelease,
+                        movie);
                 }
-                else
-                {
-                    movie = MovieDomain.Create(request.Title,
-                                               request.Description,
-                                               request.Language,
-                                               request.ReleaseDate ?? DateTime.Now,
-                                               genre,
-                                               director,
-                                               request.Duration,
-                                               request.IsCinemaRelease);
-                    await unitOfWork.MovieRepository.AddAsync(movie);
-                }
+            }
+            else
+            {
+                movie = MovieDomain.Create(request.Title,
+                                            request.Description,
+                                            request.Language,
+                                            request.ReleaseDate!.Value,
+                                            genre,
+                                            director,
+                                            request.Duration,
+                                            request.IsCinemaRelease);
+                await unitOfWork.MovieRepository.AddAsync(movie);
+            }
 
-                await unitOfWork.CompleteAsync();
-                if (movie is null) throw new InvalidOperationException(nameof(movie));
-                var response = MovieMapper.ToMovieResponse(movie);
-                await transaction.CommitAsync();
-                await _mediator.Publish(new LogNotification("Information", "Nowy film został dodany.", nameof(MovieUpsertHandler)));
-                return response;
-            }
-            catch
-            {
-                await transaction.RollbackAsync();
-                throw;
-            }
+            await unitOfWork.CompleteAsync();
+            if (movie is null) throw new InvalidOperationException(nameof(movie));
+            var response = MovieMapper.ToMovieResponse(movie);
+            await _mediator.Publish(new LogNotification("Information", "Nowy film został dodany.", nameof(MovieUpsertHandler)));
+            return response;
+        }
+
         }
     }
-}

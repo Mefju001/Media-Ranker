@@ -2,35 +2,52 @@
 using Application.Common.DTO.Response;
 using Application.Common.Interfaces;
 using Domain.Entity;
+using Infrastructure.Persistence.UnitOfWork;
+using MediatR;
 
 namespace Infrastructure
 {
     public class ReferenceDataService : IReferenceDataService
     {
-        private IUnitOfWork _unitOfWork;
+        private IUnitOfWork unitOfWork;
         public ReferenceDataService(IUnitOfWork unitOfWork)
         {
-            _unitOfWork = unitOfWork;
+            this.unitOfWork = unitOfWork;
         }
         public async Task<DirectorDomain> GetOrCreateDirectorAsync(DirectorRequest directorRequest)
         {
-            var Director = await _unitOfWork.DirectorRepository.FirstOrDefaultForNameAndSurnameAsync(directorRequest.Name,directorRequest.Surname);
+            var Director = await unitOfWork.DirectorRepository.FirstOrDefaultForNameAndSurnameAsync(directorRequest.Name,directorRequest.Surname);
             if (Director is not null) return Director;
             Director = DirectorDomain.Create(directorRequest.Name, directorRequest.Surname);
-            var result = await _unitOfWork.DirectorRepository.AddAsync(Director);
+            var result = await unitOfWork.DirectorRepository.AddAsync(Director);
             return result;
         }
         public async Task<GenreDomain> GetOrCreateGenreAsync(GenreRequest genreRequest)
         {
-            var genre = await _unitOfWork.GenreRepository.FirstOrDefaultForNameAsync(genreRequest.name);
-            if (genre != null) return genre;
-            genre = GenreDomain.Create(genreRequest.name);
-            var result = await _unitOfWork.GenreRepository.AddAsync(genre);
+            var Genre = await unitOfWork.GenreRepository.FirstOrDefaultForNameAsync(genreRequest.name);
+            if (Genre is not null) return Genre;
+            Genre = GenreDomain.Create(genreRequest.name);
+            var result = await unitOfWork.GenreRepository.AddAsync(Genre);
             return result;
+        }
+        public async Task<Dictionary<string,GenreDomain>> EnsureGenresExistAsync(List<string>names)
+        {
+            var existingGenres = await unitOfWork.GenreRepository.GetByNamesAsync(names);
+            var genresMap = existingGenres.ToDictionary(g => g.name);
+            foreach (var name in names)
+            {
+                if (!genresMap.ContainsKey(name))
+                {
+                    var newGenre = GenreDomain.Create(name);
+                    genresMap.Add(name, newGenre);
+                    await unitOfWork.GenreRepository.AddAsync(newGenre);
+                }
+            }
+            return genresMap;
         }
         public async Task<List<GenreResponse>> GetGenres()
         {
-            GenreDomain genres = null;//await _unitOfWork.Genres.GetAllAsync();
+            GenreDomain genres = null; //await unitOfWork.GenreRepository();
             if (genres is null) return new List<GenreResponse>();
             //var response = genres.Select(GenreMapper.ToResponse).ToList();
             // return response;
@@ -39,8 +56,29 @@ namespace Infrastructure
         public async Task saveToken(TokenDomain token)
         {
             if (token == null) throw new ArgumentNullException();
-            //await _unitOfWork.Tokens.AddAsync(token);
-            await _unitOfWork.CompleteAsync();
+            await unitOfWork.TokenRepository.SaveToken(token);
+            await unitOfWork.CompleteAsync();
+        }
+
+        public async Task<Dictionary<(string,string),DirectorDomain>> EnsureDirectorsExistAsync(List<DirectorRequest> directors)
+        {
+            var uniquePairs = directors.Select(d=> (Name: d.Name.Trim(), Surname: d.Surname.Trim())).Distinct().ToList();
+            var existingDirectors = await unitOfWork.DirectorRepository.findByNames(uniquePairs);
+            var directorMap = existingDirectors.ToDictionary(
+               d => (d.name, d.surname));
+
+            foreach (var pair in uniquePairs)
+            {
+                if (!directorMap.ContainsKey(pair))
+                {
+                    var newDirector = DirectorDomain.Create(pair.Name, pair.Surname);
+                    await unitOfWork.DirectorRepository.AddAsync(newDirector);
+
+                    directorMap.Add(pair, newDirector);
+                }
+            }
+
+            return directorMap;
         }
     }
 }
