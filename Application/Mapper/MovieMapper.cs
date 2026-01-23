@@ -35,8 +35,15 @@ namespace Application.Mapper
             new DirectorResponse(movie.DirectorDomain.Id, movie.DirectorDomain.name, movie.DirectorDomain.surname),
             movie.ReleaseDate,
             movie.Language,
-            movie.Reviews.Select(r => ReviewMapper.ToResponse(r)).ToList(),
-            MediaStatsMapper.ToResponse(movie.Stats),
+            movie.Reviews.Select(r=>new ReviewResponse(
+                r.Id,
+                r.MediaId,
+                r.User.username,
+                r.Rating,
+                r.Comment,
+                r.CreatedAt,
+                r.LastModifiedAt)).ToList(),
+            new MediaStatsResponse(movie.Stats.MediaId,movie.Stats.AverageRating,movie.Stats.ReviewCount,movie.Stats.LastCalculated),
             movie.Duration,
             movie.IsCinemaRelease
         );

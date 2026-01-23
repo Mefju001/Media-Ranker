@@ -24,8 +24,7 @@ namespace Application.Features.TvSeriesServices.GetTvSeriesByCriteria
             var query = await unitOfWork.TvSeriesRepository.AsQueryable();
             query = SortAndFilterService.ApplyFilters(query,request);
             query = SortAndFilterService.ApplySorting(query, request);
-            var movies = await query.ToListAsync(cancellationToken);
-            var Response = movies.Select(m => TvSeriesMapper.ToTvSeriesResponse(m)).ToList();
+            var Response = await query.Select(TvSeriesMapper.ToDto).ToListAsync(cancellationToken);
             return Response;
         }
 

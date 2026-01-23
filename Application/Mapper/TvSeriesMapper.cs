@@ -13,26 +13,27 @@ namespace Application.Mapper
                 tvSeries.Id,
                 tvSeries.Title,
                 tvSeries.Description,
-                new GenreResponse(0, ""),//GenreMapper.ToResponse(tvSeries.g),
+                GenreMapper.ToResponse(tvSeries.GenreDomain),
                 tvSeries.ReleaseDate,
                 tvSeries.Language,
                 tvSeries.Reviews?.Select(r => ReviewMapper.ToResponse(r)).ToList() ?? new List<ReviewResponse>(),
-                new MediaStatsResponse(0, 0.0, 0, DateTime.UtcNow),//MediaStatsMapper.ToResponse(tvSeries.Stats!) ?? new MediaStatsResponse(0, 0, 0, null),
+                MediaStatsMapper.ToResponse(tvSeries.Stats!) ?? new MediaStatsResponse(0, 0, 0, null),
                 tvSeries.Seasons,
                 tvSeries.Episodes,
                 tvSeries.Network,
                 tvSeries.Status);
         }
-        public static Expression<Func<TvSeriesDomain,TvSeriesResponse>> ToDto = tv => new TvSeriesResponse
+        public static Expression<Func<TvSeriesDomain, TvSeriesResponse>> ToDto = tv => new TvSeriesResponse
         (
             tv.Id,
             tv.Title,
             tv.Description,
-            GenreMapper.ToDto(tv.GenreDomain),
+            new GenreResponse
+            (tv.GenreId,tv.GenreDomain.name),
             tv.ReleaseDate,
             tv.Language,
-            tv.Reviews.Select(r => ReviewMapper.ToResponse(r)).ToList(),
-            MediaStatsMapper.ToResponse(tvSeries.Stats!) ?? new MediaStatsResponse(0, 0, 0, null),
+            tv.Reviews.Select(r=> new ReviewResponse(r.Id,r.MediaId,r.User.username,r.Rating,r.Comment,r.CreatedAt,r.LastModifiedAt)).ToList(),
+            new MediaStatsResponse(tv.Stats.MediaId,tv.Stats.AverageRating, tv.Stats.ReviewCount, tv.Stats.LastCalculated),
             tv.Seasons,
             tv.Episodes,
             tv.Network,

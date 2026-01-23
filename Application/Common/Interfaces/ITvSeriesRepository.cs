@@ -12,6 +12,7 @@ namespace Application.Common.Interfaces
         Task<TvSeriesDomain?>GetTvSeriesById(int id);
         Task<List<TvSeriesDomain>> GetAll(CancellationToken cancellationToken);
         Task Delete(TvSeriesDomain tvSeriesDomain);
+        Task AddListOfTvSeries(List<TvSeriesDomain> list);
         Task<TvSeriesDomain>AddTvSeriesAsync(TvSeriesDomain tvSeriesDomain);
         Task<IQueryable<TvSeriesDomain>> AsQueryable();
     }

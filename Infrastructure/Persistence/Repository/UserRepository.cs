@@ -40,5 +40,14 @@ namespace Infrastructure.Persistence.Repository
             if (user == null) throw new NotFoundException("User not found");
             appDbContext.Users.Remove(user);
         }
+        public async Task<bool>IsAnyUserWithUsernameAndEmailLikeThat(string username, string email)
+        {
+            return await appDbContext.Users.AnyAsync(u=>u.username == username&&u.email==email);
+        }
+        public async Task<UserDomain> AddUser(UserDomain user)
+        {
+           var result =  await appDbContext.Users.AddAsync(user);
+            return result.Entity;
+        }
     }
 }

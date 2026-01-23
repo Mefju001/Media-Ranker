@@ -4,5 +4,5 @@ using MediatR;
 
 namespace Application.Features.TvSeriesServices.AddListOfTvSeries
 {
-    public record AddListOfTvSeriesCommand(List<TvSeriesRequest> requests) : IRequest<List<TvSeriesResponse>>;
+    public record AddListOfTvSeriesCommand(List<TvSeriesRequest> tvSeries) : IRequest<List<TvSeriesResponse>>;
 }

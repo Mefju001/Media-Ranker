@@ -6,7 +6,7 @@
         public int Rating { get; private set; }
         public string Comment { get; private set; }
         public int MediaId { get; init; }
-        public int UserId { get; init; }
+        public UserDomain User { get; init; }
         public DateTime CreatedAt { get; init; } = DateTime.UtcNow;
         public DateTime LastModifiedAt { get; private set; } = DateTime.UtcNow;
         private ReviewDomain(int rating, string comment)
@@ -15,12 +15,12 @@
             Rating = rating;
             Comment = comment;
         }
-        public static ReviewDomain Create(int rating, string comment, int media, int user)
+        public static ReviewDomain Create(int rating, string comment, int media, UserDomain user)
         {
             return new ReviewDomain(rating, comment)
             {
                 MediaId = media,
-                UserId = user
+                User = user
             };
         }
         public void Update(int rating, string comment)

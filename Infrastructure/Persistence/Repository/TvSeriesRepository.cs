@@ -43,5 +43,10 @@ namespace Infrastructure.Persistence.Repository
                 .AsNoTracking()
                 .AsQueryable();
         }
+
+        public async Task AddListOfTvSeries(List<TvSeriesDomain> list)
+        {
+            await appDbContext.TvSeries.AddRangeAsync(list);
+        }
     }
 }
