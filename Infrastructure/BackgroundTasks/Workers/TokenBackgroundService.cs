@@ -23,7 +23,6 @@ namespace Infrastructure.BackgroundTasks.Workers
         }
         public Task StartAsync(CancellationToken cancellationToken)
         {
-            logger.LogInformation("Zaczynam czyszczenie bazy danych z tokenów nieaktywnych");
             timer = new Timer(DoWork, null, TimeSpan.FromMinutes(1), _cleanupInterval);
             return Task.CompletedTask;
         }
@@ -32,8 +31,8 @@ namespace Infrastructure.BackgroundTasks.Workers
             logger.LogInformation("Zaczynamy czyszczenie bazy danych z tokenów");
             using (var scope = ServiceProvider.CreateScope())
             {
-                var cleanupService = scope.ServiceProvider.GetRequiredService<ITokenCleanupService>();
-                cleanupService.Cleanup().Wait();
+                var cleanupService = scope.ServiceProvider.GetRequiredService<TokenCleanService.TokenCleanService>();
+                cleanupService.CleanTokens().Wait();
             }
         }
         public Task StopAsync(CancellationToken cancellationToken)

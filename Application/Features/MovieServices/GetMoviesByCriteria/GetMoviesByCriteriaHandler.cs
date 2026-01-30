@@ -1,10 +1,8 @@
 ﻿using Application.Common.DTO.Response;
 using Application.Common.Interfaces;
 using Application.Mapper;
-using Domain.Entity;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
-using System.Linq.Expressions;
 
 
 namespace Application.Features.MovieServices.GetMoviesByCriteria

@@ -2,7 +2,6 @@
 using Application.Common.Interfaces;
 using Application.Mapper;
 using Domain.Entity;
-using Domain.Interfaces;
 using MediatR;
 
 namespace Application.Features.MovieServices.AddListOfMovies
@@ -30,7 +29,7 @@ namespace Application.Features.MovieServices.AddListOfMovies
                                                   movieReq.ReleaseDate, genre, director,
                                                   movieReq.Duration, movieReq.IsCinemaRelease);
             }).ToList();
-            await _unitOfWork.MovieRepository.AddListOfMovies(movies,cancellationToken);
+            await _unitOfWork.MovieRepository.AddListOfMovies(movies, cancellationToken);
             await _unitOfWork.CompleteAsync();
             return movies.Select(MovieMapper.ToMovieResponse).ToList();
         }

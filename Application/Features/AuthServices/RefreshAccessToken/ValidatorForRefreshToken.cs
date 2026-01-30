@@ -55,11 +55,11 @@ namespace Application.Features.AuthServices.RefreshAccessToken
                 var jti = principal.Claims.FirstOrDefault(c => c.Type == JwtRegisteredClaimNames.Jti);
                 if (jti == null)
                     return null;
-               // var dbRefreshToken = await _context.Tokens.FirstOrDefaultAsync(t => t.Jti == jti.Value && !t.IsRevoked && t.ExpiryDate >= DateTime.UtcNow);
-               /* if (dbRefreshToken == null)
-                    return null;
-                dbRefreshToken.IsRevoked = true;
-                dbRefreshToken.RevokedAt = DateTime.UtcNow;*/
+                // var dbRefreshToken = await _context.Tokens.FirstOrDefaultAsync(t => t.Jti == jti.Value && !t.IsRevoked && t.ExpiryDate >= DateTime.UtcNow);
+                /* if (dbRefreshToken == null)
+                     return null;
+                 dbRefreshToken.IsRevoked = true;
+                 dbRefreshToken.RevokedAt = DateTime.UtcNow;*/
                 await _context.CompleteAsync();
                 return principal.Claims.ToList().AsReadOnly();
             }

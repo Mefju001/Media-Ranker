@@ -18,15 +18,15 @@
             return new MediaStatsDomain();
         }
 
-        public void UpdateStatistics(double average, int count)
+        public void UpdateStatistics(double avgRat, int revCount)
         {
-            if (count < 0) throw new ArgumentException("Review count cannot be negative");
+            if (revCount < 0) throw new ArgumentException("Review count cannot be negative");
 
-            if (average < 0 || average > 10)
-                throw new ArgumentOutOfRangeException(nameof(average), "Rating must be between 0 and 10");
+            if (avgRat < 0 || avgRat > 10)
+                throw new ArgumentOutOfRangeException(nameof(AverageRating), "Rating must be between 0 and 10");
 
-            AverageRating = count > 0 ? average : null;
-            ReviewCount = count;
+            AverageRating = revCount > 0 ? avgRat : null;
+            ReviewCount = revCount;
             LastCalculated = DateTime.UtcNow;
         }
 

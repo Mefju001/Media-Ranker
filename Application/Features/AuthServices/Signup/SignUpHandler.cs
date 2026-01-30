@@ -1,6 +1,6 @@
 ﻿using Application.Common.Interfaces;
+using Application.Features.AuthServices.Common;
 using Domain.Entity;
-using Domain.Enums;
 using MediatR;
 using Microsoft.AspNetCore.Identity;
 
@@ -11,17 +11,21 @@ namespace Application.Features.AuthServices.Signup
     {
         private readonly IUnitOfWork unitOfWork;
         private readonly IPasswordHasher<UserDomain> Hasher;
-        public SignUpHandler(IUnitOfWork unitOfWork, IPasswordHasher<UserDomain>hasher)
+        private readonly AccessTokenService accessTokenService;
+        private readonly RefreshTokenService refreshTokenService;
+        public SignUpHandler(IUnitOfWork unitOfWork, IPasswordHasher<UserDomain> hasher, RefreshTokenService refreshTokenService, AccessTokenService access)
         {
             this.unitOfWork = unitOfWork;
             this.Hasher = hasher;
+            this.refreshTokenService = refreshTokenService;
+            this.accessTokenService = access;
         }
 
         public async Task<SignUpResponse> Handle(SignUpCommand request, CancellationToken cancellationToken)
         {
-            bool exists = await unitOfWork.UserRepository.IsAnyUserWithUsernameAndEmailLikeThat(request.username,request.email);
+            bool exists = await unitOfWork.UserRepository.IsAnyUserWithUsernameAndEmailLikeThat(request.username, request.email);
             if (exists)
-                //return false;
+                throw new Exception("User with that username or email already exists");
             var user = UserDomain.Create(request.username,
                 Hasher.HashPassword(null, request.password),
                 request.name,
@@ -32,10 +36,12 @@ namespace Application.Features.AuthServices.Signup
             var role = await unitOfWork.RoleRepository.GetByNameAsync("User");
             if (role != null)
             {
-                user.AddRole(role);
+                user.AddRole(role.Value);
             }
             await unitOfWork.CompleteAsync();
-            //return true;
+            var accessToken = accessTokenService.generateAccessToken(user.Id, user.username, user.UserRoles.ToList());
+            var refreshToken = await refreshTokenService.GenerateRefreshToken(user.Id, user.username);
+            return new SignUpResponse(user.username, accessToken, refreshToken);
         }
     }
 }

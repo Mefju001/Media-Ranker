@@ -17,6 +17,6 @@ namespace Application.Mapper
             g.Id,
             g.name
         );
-        
+
     }
 }

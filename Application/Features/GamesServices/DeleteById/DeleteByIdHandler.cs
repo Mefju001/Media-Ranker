@@ -12,7 +12,7 @@ namespace Application.Features.GamesServices.DeleteById
         }
         public async Task<bool> Handle(DeleteByIdCommand request, CancellationToken cancellationToken)
         {
-            var game = await unitOfWork.GameRepository.GetGameDomainAsync(request.id,cancellationToken);
+            var game = await unitOfWork.GameRepository.GetGameDomainAsync(request.id, cancellationToken);
             if (game is null)
                 return false;
             await unitOfWork.GameRepository.DeleteGame(game);

@@ -1,7 +1,5 @@
 ﻿using Application.Common.DTO.Response;
-using Application.Features.GamesServices.GameUpsert;
 using Domain.Entity;
-using System.Linq.Expressions;
 
 namespace Application.Mapper
 {
@@ -13,7 +11,7 @@ namespace Application.Mapper
                 game.Id,
                 game.Title,
                 game.Description,
-                new GenreResponse(0,""),// GenreMapper.ToResponse(game.genre),
+                new GenreResponse(0, ""),// GenreMapper.ToResponse(game.genre),
                 game.ReleaseDate,
                 game.Language,
                 game.Reviews?.Select(r => ReviewMapper.ToResponse(r)).ToList() ?? new List<ReviewResponse>(),

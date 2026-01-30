@@ -2,7 +2,6 @@
 using Application.Common.Interfaces;
 using Application.Mapper;
 using Domain.Entity;
-using Domain.Interfaces;
 using MediatR;
 
 namespace Application.Features.TvSeriesServices.TvSeriesUpsert
@@ -11,14 +10,12 @@ namespace Application.Features.TvSeriesServices.TvSeriesUpsert
     {
         private readonly IUnitOfWork unitOfWork;
         private readonly IMediator _mediator;
-        private readonly ITvSeriesBuilder tvSeriesBuilder;
         private readonly IReferenceDataService referenceDataService;
 
-        public TvSeriesUpsertHandler(IUnitOfWork unitOfWork, IReferenceDataService referenceDataService, ITvSeriesBuilder tvSeriesBuilder, IMediator mediator)
+        public TvSeriesUpsertHandler(IUnitOfWork unitOfWork, IReferenceDataService referenceDataService, IMediator mediator)
         {
             this.unitOfWork = unitOfWork;
             this._mediator = mediator;
-            this.tvSeriesBuilder = tvSeriesBuilder;
             this.referenceDataService = referenceDataService;
         }
 

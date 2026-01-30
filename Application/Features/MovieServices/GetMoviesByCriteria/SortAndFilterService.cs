@@ -23,9 +23,9 @@ namespace Application.Features.MovieServices.GetMoviesByCriteria
             {
                 query = query.Where(m => m.ReleaseDate.Year == request.ReleaseYear);
             }
-            if (!string.IsNullOrWhiteSpace(request.DirectorSurname)&& !string.IsNullOrWhiteSpace(request.DirectorSurname))
-            { 
-                query = query.Where(m => m.DirectorDomain.name.Contains(request.DirectorName!)&&m.DirectorDomain.surname.Contains(request.DirectorSurname!));
+            if (!string.IsNullOrWhiteSpace(request.DirectorSurname) && !string.IsNullOrWhiteSpace(request.DirectorSurname))
+            {
+                query = query.Where(m => m.DirectorDomain.name.Contains(request.DirectorName!) && m.DirectorDomain.surname.Contains(request.DirectorSurname!));
             }
             return query;
         }
@@ -33,12 +33,12 @@ namespace Application.Features.MovieServices.GetMoviesByCriteria
         {
             if (!string.IsNullOrEmpty(request.SortByField))
             {
-                    var sortAbility = DictionaryOfSortAbility();
-                    sortAbility.TryGetValue(request.SortByField, out var sortExpression);
-                    if (sortExpression == null) return query;
-                    if (request.IsDescending)
-                        return query.OrderByDescending(sortExpression);
-                    return query.OrderBy(sortExpression);
+                var sortAbility = DictionaryOfSortAbility();
+                sortAbility.TryGetValue(request.SortByField, out var sortExpression);
+                if (sortExpression == null) return query;
+                if (request.IsDescending)
+                    return query.OrderByDescending(sortExpression);
+                return query.OrderBy(sortExpression);
             }
             return query;
         }

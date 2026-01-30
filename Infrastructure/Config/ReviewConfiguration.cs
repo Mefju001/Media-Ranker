@@ -12,11 +12,11 @@ namespace Infrastructure.Config
                 .HasKey(r => r.Id);
             builder.HasOne<UserDomain>()
                 .WithMany(u => u.Reviews)
-                .HasForeignKey(r => r.UserId)
+                .HasForeignKey(r => r.User.Id)
                 .OnDelete(DeleteBehavior.Restrict);
             builder.HasOne<MediaDomain>()
                 .WithMany(m => m.Reviews)
-                .HasForeignKey(r => r.MediaId)
+                .HasForeignKey(r => r.Media.Id)
                 .OnDelete(DeleteBehavior.Restrict);
         }
     }

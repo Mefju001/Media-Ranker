@@ -1,5 +1,4 @@
 ﻿using Application.Common.Interfaces;
-using Domain.Entity;
 using MediatR;
 
 namespace Application.Features.TvSeriesServices.DeleteById

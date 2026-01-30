@@ -3,7 +3,6 @@ using Application.Common.Interfaces;
 using Application.Mapper;
 using Application.Notification;
 using Domain.Entity;
-using Domain.Interfaces;
 using MediatR;
 
 namespace Application.Features.MovieServices.MovieUpsert
@@ -63,5 +62,5 @@ namespace Application.Features.MovieServices.MovieUpsert
             return response;
         }
 
-        }
     }
+}

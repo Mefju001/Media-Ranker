@@ -12,13 +12,18 @@ namespace Infrastructure.Persistence.UnitOfWork
         public ITokenRepository TokenRepository { get; }
         public IMovieRepository MovieRepository { get; }
         public IDirectorRepository DirectorRepository { get; }
-        public ILikedMediaRepository LikedMediaRepository => throw new NotImplementedException();
-        public IMediaRepository MediaRepository => throw new NotImplementedException();
+        public ILikedMediaRepository LikedMediaRepository { get; }
+        public IMediaRepository MediaRepository{ get; }
         public IGenreRepository GenreRepository { get; }
         public ITvSeriesRepository TvSeriesRepository { get; }
+        public IRoleRepository RoleRepository { get; }
+        public IReviewRepository ReviewRepository { get; }
         public UnitOfWork(AppDbContext context)
         {
             this.context = context;
+            LikedMediaRepository = new LikedMediaRepository(context);
+            MediaRepository = new MediaRepository(context);
+            RoleRepository = new RoleRepository(context);
             GameRepository = new GameRepository(context);
             UserRepository = new UserRepository(context);
             TokenRepository = new TokenRepository(context);
@@ -26,6 +31,7 @@ namespace Infrastructure.Persistence.UnitOfWork
             DirectorRepository = new DirectorRepository(context);
             GenreRepository = new GenreRepository(context);
             TvSeriesRepository = new TvSeriesRepository(context);
+            ReviewRepository = new ReviewRepository(context);
         }
 
         public async Task<int> CompleteAsync()

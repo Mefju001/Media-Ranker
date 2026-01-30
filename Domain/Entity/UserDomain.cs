@@ -58,7 +58,7 @@ namespace Domain.Entity
         }
         public void AddReview(ReviewDomain review)
         {
-            if (_reviews.Any(r => r.MediaId == review.MediaId))
+            if (_reviews.Any(r => r.Media.Id == review.Media.Id))
                 throw new InvalidOperationException("User has already reviewed this media.");
             _reviews.Add(review);
         }

@@ -19,7 +19,6 @@ namespace Api.Extensions
 
                 options.AddSecurityDefinition("Bearer", securityScheme);
 
-                // 2. Wymagania bezpieczeństwa
                 options.AddSecurityRequirement(new OpenApiSecurityRequirement
                 {
                     {

@@ -51,9 +51,12 @@ namespace Domain.Entity
         }
         public void AddReview(ReviewDomain review)
         {
-            if (Reviews.Any(r => r.UserId == review.UserId))
+            if (Reviews.Any(r => r.User == review.User))
                 throw new DomainException("User already reviewed this media.");
             Reviews.Add(review);
+            var reviewCount = Reviews.Count;
+            var avg = Reviews.Average(r => r.Rating);
+            Stats.UpdateStatistics(avg,reviewCount);
         }
         public void AddGenre(string name)
         {

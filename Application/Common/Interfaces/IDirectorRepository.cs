@@ -8,6 +8,6 @@ namespace Application.Common.Interfaces
         DirectorDomain? Get(int id);
         Task<DirectorDomain?> FirstOrDefaultForNameAndSurnameAsync(string name, string surname);
         Task<DirectorDomain> AddAsync(DirectorDomain directorDomain);
-        Task<List<DirectorDomain>>findByNames(List<(string,string)> names);
+        Task<List<DirectorDomain>> findByNames(List<(string, string)> names);
     }
 }

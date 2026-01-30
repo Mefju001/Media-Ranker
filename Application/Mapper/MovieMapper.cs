@@ -1,5 +1,4 @@
 using Application.Common.DTO.Response;
-using Application.Features.MovieServices.MovieUpsert;
 using Domain.Entity;
 using System.Linq.Expressions;
 
@@ -35,15 +34,15 @@ namespace Application.Mapper
             new DirectorResponse(movie.DirectorDomain.Id, movie.DirectorDomain.name, movie.DirectorDomain.surname),
             movie.ReleaseDate,
             movie.Language,
-            movie.Reviews.Select(r=>new ReviewResponse(
+            movie.Reviews.Select(r => new ReviewResponse(
                 r.Id,
-                r.MediaId,
+                r.Media.Id,
                 r.User.username,
                 r.Rating,
                 r.Comment,
                 r.CreatedAt,
                 r.LastModifiedAt)).ToList(),
-            new MediaStatsResponse(movie.Stats.MediaId,movie.Stats.AverageRating,movie.Stats.ReviewCount,movie.Stats.LastCalculated),
+            new MediaStatsResponse(movie.Stats.MediaId, movie.Stats.AverageRating, movie.Stats.ReviewCount, movie.Stats.LastCalculated),
             movie.Duration,
             movie.IsCinemaRelease
         );

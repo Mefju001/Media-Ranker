@@ -1,7 +1,6 @@
 ﻿using Application.Common.DTO.Response;
 using Application.Common.Interfaces;
 using Application.Mapper;
-using Domain.Entity;
 using MediatR;
 
 namespace Application.Features.TvSeriesServices.GetAll

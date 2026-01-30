@@ -32,5 +32,16 @@ namespace Infrastructure.Persistence.Repository
             }
             return false;
         }
+        public async Task<List<TokenDomain>> GetTokensToCleanUp()
+        {
+            return await appDbContext.Tokens
+                .Where(t => t.IsRevoked == true || t.ExpiryDate < DateTime.UtcNow)
+                .ToListAsync();
+        }
+        public async Task RemoveListOfTokens(List<TokenDomain> tokens)
+        {
+            appDbContext.Tokens.RemoveRange(tokens);
+            await appDbContext.SaveChangesAsync();
+        }
     }
 }

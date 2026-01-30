@@ -1,5 +1,4 @@
 ﻿using Application.Common.DTO.Response;
-using Application.Features.TvSeriesServices.TvSeriesUpsert;
 using Domain.Entity;
 using System.Linq.Expressions;
 
@@ -29,11 +28,11 @@ namespace Application.Mapper
             tv.Title,
             tv.Description,
             new GenreResponse
-            (tv.GenreId,tv.GenreDomain.name),
+            (tv.GenreId, tv.GenreDomain.name),
             tv.ReleaseDate,
             tv.Language,
-            tv.Reviews.Select(r=> new ReviewResponse(r.Id,r.MediaId,r.User.username,r.Rating,r.Comment,r.CreatedAt,r.LastModifiedAt)).ToList(),
-            new MediaStatsResponse(tv.Stats.MediaId,tv.Stats.AverageRating, tv.Stats.ReviewCount, tv.Stats.LastCalculated),
+            tv.Reviews.Select(r => new ReviewResponse(r.Id, r.Media.Id, r.User.username, r.Rating, r.Comment, r.CreatedAt, r.LastModifiedAt)).ToList(),
+            new MediaStatsResponse(tv.Stats.MediaId, tv.Stats.AverageRating, tv.Stats.ReviewCount, tv.Stats.LastCalculated),
             tv.Seasons,
             tv.Episodes,
             tv.Network,

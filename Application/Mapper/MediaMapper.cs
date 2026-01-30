@@ -12,7 +12,7 @@ namespace Application.Mapper
                 media.Id,
                 media.Title,
                 media.Description,
-                new GenreResponse(9,""),//GenreMapper.ToResponse(media.genre) ?? new GenreResponse(0, "Nieznany"),
+                new GenreResponse(9, ""),//GenreMapper.ToResponse(media.genre) ?? new GenreResponse(0, "Nieznany"),
                 media.ReleaseDate,
                 media.Language,
                 media.Reviews?.Select(r => ReviewMapper.ToResponse(r)).ToList() ?? new List<ReviewResponse>());

@@ -32,7 +32,6 @@ namespace Api.Extensions
 
                 if (failures.Any())
                 {
-                    // Wyrzucenie wyjątku walidacji (ValidationException)
                     throw new ValidationException(failures);
                 }
             }

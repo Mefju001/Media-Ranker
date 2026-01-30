@@ -17,7 +17,7 @@ namespace Application.Features.GamesServices.GetGameById
 
         public async Task<GameResponse?> Handle(GetGameByIdQuery request, CancellationToken cancellationToken)
         {
-            var game = await unitOfWork.GameRepository.GetGameDomainAsync(request.id,cancellationToken);
+            var game = await unitOfWork.GameRepository.GetGameDomainAsync(request.id, cancellationToken);
             if (game == null)
             {
                 throw new NotFoundException("not found");

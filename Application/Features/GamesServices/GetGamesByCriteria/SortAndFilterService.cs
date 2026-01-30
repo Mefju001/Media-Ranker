@@ -1,12 +1,5 @@
-﻿using Application.Common.Interfaces;
-using Application.Features.MovieServices.GetMoviesByCriteria;
-using Domain.Entity;
-using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using Domain.Entity;
 using System.Linq.Expressions;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Application.Features.GamesServices.GetGamesByCriteria
 {
@@ -61,4 +54,4 @@ namespace Application.Features.GamesServices.GetGamesByCriteria
         }
     }
 }
-}
+

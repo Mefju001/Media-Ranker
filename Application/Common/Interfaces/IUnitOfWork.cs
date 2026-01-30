@@ -13,11 +13,11 @@ namespace Application.Common.Interfaces
         IDirectorRepository DirectorRepository { get; }
         IGenreRepository GenreRepository { get; }
         ITvSeriesRepository TvSeriesRepository { get; }
+        IRoleRepository RoleRepository { get; }
+        IReviewRepository ReviewRepository { get; }
         /*
         
-        IGenericRepository<Review> Reviews { get; }
-        IGenericRepository<Role> Roles { get; }
-        IGenericRepository<UserRole> UsersRoles { get; }
+       
         IGenericRepository<MediaStats> MediaStats { get; }*/
 
 

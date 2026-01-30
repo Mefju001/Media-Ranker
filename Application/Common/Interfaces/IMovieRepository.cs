@@ -10,6 +10,6 @@ namespace Application.Common.Interfaces
         Task AddAsync(IEnumerable<MovieDomain> movieDomains);
         Task<MovieDomain?> FirstOrDefaultAsync(int movieId);
         Task DeleteMovie(MovieDomain movieDomain);
-        Task AddListOfMovies(List<MovieDomain>movieDomains, CancellationToken cancellationToken);
+        Task AddListOfMovies(List<MovieDomain> movieDomains, CancellationToken cancellationToken);
     }
 }

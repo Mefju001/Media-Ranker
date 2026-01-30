@@ -2,7 +2,6 @@
 using Application.Common.Interfaces;
 using Application.Mapper;
 using Domain.Entity;
-using Domain.Interfaces;
 using MediatR;
 
 namespace Application.Features.GamesServices.AddListOfGames
@@ -18,9 +17,10 @@ namespace Application.Features.GamesServices.AddListOfGames
         }
         public async Task<List<GameResponse>> Handle(AddListOfGamesCommand requests, CancellationToken cancellationToken)
         {
-            var names = requests.games.Select(g=>g.Genre.name).Distinct().ToList();
+            var names = requests.games.Select(g => g.Genre.name).Distinct().ToList();
             var genresMap = await referenceDataService.EnsureGenresExistAsync(names);
-            var games = requests.games.Select(gameReq => {
+            var games = requests.games.Select(gameReq =>
+            {
                 var genre = genresMap[gameReq.Genre.name];
                 return GameDomain.Create(
                         gameReq.Title,

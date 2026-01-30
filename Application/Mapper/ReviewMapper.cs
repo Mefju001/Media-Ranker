@@ -1,5 +1,4 @@
-﻿using Application.Common.DTO.Request;
-using Application.Common.DTO.Response;
+﻿using Application.Common.DTO.Response;
 using Domain.Entity;
 
 namespace Application.Mapper
@@ -10,8 +9,8 @@ namespace Application.Mapper
         {
             return new ReviewResponse(
                 review.Id,
-                review.MediaId,
-                "",//review.User.username ?? "Nieznany użytkownik",
+                review.Media.Id,
+                review.User.username ?? "Nieznany użytkownik",
                 review.Rating,
                 review.Comment,
                 review.CreatedAt,
