@@ -15,7 +15,12 @@ namespace Application.Features.TvSeriesServices.GetAll
         public async Task<List<TvSeriesResponse>> Handle(GetAllTvSeriesQuery request, CancellationToken cancellationToken)
         {
             var tvSeries = await unitOfWork.TvSeriesRepository.GetAll(cancellationToken);
-            var tvSeriesResponses = tvSeries.Select(TvSeriesMapper.ToTvSeriesResponse).ToList();
+            var genres = await unitOfWork.GenreRepository.GetAllAsync(cancellationToken);
+            var genresDict = genres.ToDictionary(g => g.Id, g => g);
+            var tvSeriesResponses = tvSeries.Select(t=> {
+                genresDict.TryGetValue(t.GenreId, out var genreDomain);
+                return TvSeriesMapper.ToTvSeriesResponse(t, genreDomain!);
+                }).ToList();
             return (tvSeriesResponses);
         }
     }

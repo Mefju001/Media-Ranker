@@ -40,7 +40,7 @@ namespace Infrastructure.Persistence.Repository
         public async Task<IQueryable<GameDomain>> AsQueryable()
         {
             return _context.Games
-                .Include(g => g.GenreDomain)
+//                .Include(g => g.GenreDomain)
                 .Include(g => g.Stats)
                 .AsNoTracking()
                 .AsQueryable();

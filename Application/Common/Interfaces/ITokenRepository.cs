@@ -6,5 +6,7 @@ namespace Application.Common.Interfaces
     {
         Task SaveToken(TokenDomain token);
         Task<bool> DeleteTokensFromUserId(int userId);
+        Task<List<TokenDomain>> GetTokensToCleanUp();
+        Task RemoveListOfTokens(List<TokenDomain> tokens);
     }
 }

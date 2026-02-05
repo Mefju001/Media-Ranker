@@ -22,7 +22,12 @@ namespace Application.Features.TvSeriesServices.GetTvSeriesById
             {
                 throw new NotFoundException("not found");
             }
-            var movieResponse = TvSeriesMapper.ToTvSeriesResponse(movie);
+            var genre = await unitOfWork.GenreRepository.Get(movie.GenreId);
+            if (genre == null)
+            {
+                throw new NotFoundException("not found");
+            }
+            var movieResponse = TvSeriesMapper.ToTvSeriesResponse(movie,genre);
             return movieResponse;
         }
     }

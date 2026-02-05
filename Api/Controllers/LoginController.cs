@@ -1,6 +1,7 @@
 ﻿using Application.Common.DTO.Request;
 using Application.Features.AuthServices.Login;
 using Application.Features.AuthServices.Logout;
+using Application.Features.AuthServices.Signup;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -52,11 +53,17 @@ namespace Api.Controllers
             Response.Cookies.Delete("refreshToken");
             return Ok(new { Message = "wylogowano pomyślnie" });
         }
-        /*[AllowAnonymous]
+        [AllowAnonymous]
         [HttpPost("Register")]
         public async Task<IActionResult> Register([FromBody] UserRequest userRequest)
         {
-            return Ok(await userServices.Register(userRequest));
-        }*/
+            var command = new SignUpCommand(
+                userRequest.username,
+                userRequest.email,
+                userRequest.password,
+                userRequest.name,
+                userRequest.surname);
+            return Ok(await mediator.Send(command));
+        }
     }
 }

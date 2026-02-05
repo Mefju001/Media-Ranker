@@ -35,7 +35,7 @@ namespace Application.Features.ReviewServices.UpsertReview
                 }
                 var user = await unitOfWork.UserRepository.GetUserById(request.userId.Value);
                 var media = await  unitOfWork.MediaRepository.GetMediaById(request.mediaId.Value);
-                reviewDomain = ReviewDomain.Create(request.Rating,request.Comment, media, user);
+                reviewDomain = ReviewDomain.Create(request.Rating,request.Comment, media.Id, user.Id);
                 reviewDomain = await unitOfWork.ReviewRepository.AddAsync(reviewDomain);
             }
             await unitOfWork.CompleteAsync();

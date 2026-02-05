@@ -18,11 +18,12 @@ namespace Application.Features.GamesServices.GetGameById
         public async Task<GameResponse?> Handle(GetGameByIdQuery request, CancellationToken cancellationToken)
         {
             var game = await unitOfWork.GameRepository.GetGameDomainAsync(request.id, cancellationToken);
+            var genre = await unitOfWork.GenreRepository.GetGenresDictionary();
             if (game == null)
             {
                 throw new NotFoundException("not found");
             }
-            var gameResponses = GameMapper.ToGameResponse(game);
+            var gameResponses = GameMapper.ToGameResponse(game, genre[game.GenreId]);
             return gameResponses;
         }
     }

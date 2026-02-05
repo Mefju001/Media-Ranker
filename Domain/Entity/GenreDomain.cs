@@ -4,7 +4,7 @@
     {
         public int Id { get; init; }
         public string name { get; private set; }
-
+        private GenreDomain() { }
         private GenreDomain(string name)
         {
             Validate(name);

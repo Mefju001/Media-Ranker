@@ -21,9 +21,18 @@ namespace Application.Features.MovieServices.GetMovieById
             var movie = await unitOfWork.MovieRepository.FirstOrDefaultAsync(request.id);
             if (movie == null)
             {
-                throw new NotFoundException("not found");
+                throw new NotFoundException("Movie not found");
             }
-            var movieResponse = MovieMapper.ToMovieResponse(movie);
+            var genre = await unitOfWork.GenreRepository.Get(movie.GenreId);
+            if (genre == null)
+            {
+                throw new NotFoundException("genre not found");
+            }
+            var director = await unitOfWork.DirectorRepository.Get(movie.DirectorId);
+            if (director == null) {
+                throw new NotFoundException("director not found");
+            }
+            var movieResponse = MovieMapper.ToMovieResponse(movie,genre,director);
             return movieResponse;
         }
     }

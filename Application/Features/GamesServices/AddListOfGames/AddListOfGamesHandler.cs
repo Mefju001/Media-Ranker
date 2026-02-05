@@ -27,14 +27,17 @@ namespace Application.Features.GamesServices.AddListOfGames
                         gameReq.Description,
                         gameReq.Language,
                         gameReq.ReleaseDate.GetValueOrDefault(),
-                        genre,
+                        genre.Id,
                         gameReq.Developer!,
                         gameReq.Platform);
             }).ToList();
             await unitOfWork.GameRepository.AddListOfGames(games, cancellationToken);
             await unitOfWork.CompleteAsync();
 
-            return games.Select(GameMapper.ToGameResponse).ToList();
+            return games.Select(g=> {
+                var genre = genresMap.Values.First(ge => ge.Id == g.GenreId);
+                return GameMapper.ToGameResponse(g, genre);
+                }).ToList();
         }
     }
 }

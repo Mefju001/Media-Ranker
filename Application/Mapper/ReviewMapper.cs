@@ -9,8 +9,8 @@ namespace Application.Mapper
         {
             return new ReviewResponse(
                 review.Id,
-                review.Media.Id,
-                review.User.username ?? "Nieznany użytkownik",
+                review.MediaId,
+                review.UserId.ToString(),
                 review.Rating,
                 review.Comment,
                 review.CreatedAt,

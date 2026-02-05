@@ -9,20 +9,27 @@ namespace Application.Features.GamesServices.GetGamesByCriteria
 {
     public class GetGamesByCriteriaHandler : IRequestHandler<GetGamesByCriteriaQuery, List<GameResponse>>
     {
-        private readonly IUnitOfWork context;
+        private readonly IUnitOfWork unitOfWork;
+        private readonly GameSortAndFilterService SortAndFilterService;
 
-        public GetGamesByCriteriaHandler(IUnitOfWork unitOfWork)
+        public GetGamesByCriteriaHandler(IUnitOfWork unitOfWork, GameSortAndFilterService sortAndFilterService)
         {
-            this.context = unitOfWork;
+            this.unitOfWork = unitOfWork;
+            SortAndFilterService = sortAndFilterService;
         }
 
 
         public async Task<List<GameResponse>> Handle(GetGamesByCriteriaQuery request, CancellationToken cancellationToken)
         {
-            var query = await context.GameRepository.AsQueryable();
+            var query = await unitOfWork.GameRepository.AsQueryable();
             query = SortAndFilterService.ApplyFilters(query, request);
             query = SortAndFilterService.ApplySorting(query, request);
-            var Response = await query.Select(m => GameMapper.ToGameResponse(m)).ToListAsync(cancellationToken);
+            var games = await query.ToListAsync(cancellationToken);
+            var genreDictionary = await unitOfWork.GenreRepository.GetGenresDictionary();
+            var Response = games.Select(m =>{
+                genreDictionary.TryGetValue(m.GenreId, out var genreDomain);
+                return GameMapper.ToGameResponse(m, genreDomain!);
+            }).ToList();
             return Response;
         }
     }

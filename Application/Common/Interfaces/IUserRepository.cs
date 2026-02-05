@@ -4,6 +4,8 @@ namespace Application.Common.Interfaces
 {
     public interface IUserRepository
     {
+        Task<UserDomain> GetUserByUsername(string username);
+        Task<Dictionary<int, UserDomain>>GetByIds(List<int>userIds);
         Task<UserDomain> GetUserIdByUsername(string username);
         Task<UserDomain> GetUserById(int userId);
         Task<bool> IsAnyUserWhoHaveEmailAndId(string email, int id);

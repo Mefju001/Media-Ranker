@@ -5,7 +5,7 @@
         public int Id { get; init; }
         public string name { get; set; }
         public string surname { get; set; }
-
+        private DirectorDomain() { }
         private DirectorDomain(string name, string surname)
         {
             this.name = name;

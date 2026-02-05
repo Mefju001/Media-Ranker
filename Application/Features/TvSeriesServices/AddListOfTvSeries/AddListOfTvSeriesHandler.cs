@@ -23,11 +23,15 @@ namespace Application.Features.TvSeriesServices.AddListOfTvSeries
             var tvSeries = requests.tvSeries.Select(tv =>
             {
                 var genre = genres[tv.genre.name];
-                return TvSeriesDomain.Create(tv.title, tv.description, tv.Language, tv.ReleaseDate, genre, tv.Seasons, tv.Episodes, tv.Network, tv.Status);
+                return TvSeriesDomain.Create(tv.title, tv.description, tv.Language, tv.ReleaseDate, genre.Id, tv.Seasons, tv.Episodes, tv.Network, tv.Status);
             }).ToList();
             await unitOfWork.TvSeriesRepository.AddListOfTvSeries(tvSeries);
             await unitOfWork.CompleteAsync();
-            return tvSeries.Select(TvSeriesMapper.ToTvSeriesResponse).ToList();
+            return tvSeries.Select(m=>
+            {
+                var genreDomain = genres.Values.ToDictionary(g => g.Id);
+                return TvSeriesMapper.ToTvSeriesResponse(m, genreDomain[m.GenreId]);
+            }).ToList();
         }
 
     }

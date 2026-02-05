@@ -6,6 +6,7 @@
         public int userId { get; private set; }
         public int mediaId { get; private set; }
         public DateTime likedDate { get; private set; }
+        private LikedMediaDomain() { }
         private LikedMediaDomain(int userId, int mediaId) 
         {
             Validate(userId, mediaId);
@@ -13,7 +14,6 @@
             this.mediaId = mediaId;
             this.likedDate = DateTime.UtcNow;
         }
-        private LikedMediaDomain() { }
         private LikedMediaDomain(int id, int userId, int mediaId, DateTime likedDate)
         {
             this.id = id;

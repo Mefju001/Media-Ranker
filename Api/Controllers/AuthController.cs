@@ -1,4 +1,7 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using Application.Features.AuthServices.CleanTokens;
+using Application.Features.AuthServices.RefreshAccessToken;
+using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 
@@ -9,33 +12,17 @@ namespace Api.Controllers
     [Route("[controller]")]
     public class AuthController : ControllerBase
     {
-        /*private readonly AuthService authService;
-        private readonly ITokenCleanupService tokenCleanupService;
-        private readonly LogSenderService logSenderService;
-        private readonly AppDbContext appDbContext;
-        private readonly IPasswordHasher<User> passwordHasher;
-        private readonly IGameServices game;
-        public AuthController(LogSenderService logSenderService, AuthService authService, AppDbContext appDbContext, IPasswordHasher<User> password, ITokenCleanupService tokenCleanupService, IGameServices game)
-        {
-            this.logSenderService = logSenderService;
-            this.authService = authService;
-            this.appDbContext = appDbContext;
-            this.passwordHasher = password;
-            this.tokenCleanupService = tokenCleanupService;
-            this.game = game;
-        }
+        private readonly IMediator mediator;
 
-        [HttpPost("SendLogs")]
-        public async Task<IActionResult> SendLogs()
+        public AuthController(IMediator mediator)
         {
-            //testing
-            await logSenderService.SendLogAsync("Information", "Nothing", "admin");
-            return Ok("Dane zostały przesłane. ");
+            this.mediator = mediator;
         }
         [HttpPost("clean-tokens-now")]
         public async Task<IActionResult> CleanTokensNow()
         {
-            await tokenCleanupService.Cleanup();
+            var command = new CleanTokensCommand();
+            await mediator.Send(command);
             return Ok("Czyszczenie tokenów rozpoczęte.");
         }
         [Authorize(Roles = ("User,Admin"))]
@@ -47,7 +34,8 @@ namespace Api.Controllers
             {
                 return Unauthorized();
             }
-            var tokens = await authService.RefreshAccessToken(refreshToken);
+            var command = new RefreshAccessTokenCommand(refreshToken);
+            var tokens = await mediator.Send(command);
             if (tokens is null)
             {
                 throw new Exception("Not found tokens to use");
@@ -60,6 +48,6 @@ namespace Api.Controllers
                 Expires = DateTime.Now.AddDays(7)
             });
             return Ok();
-        }*/
+        }
     }
 }

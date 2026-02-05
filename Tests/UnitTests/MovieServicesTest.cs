@@ -29,10 +29,11 @@ namespace UnitTests
             _unitOfWork = new Mock<IUnitOfWork>();
             referenceMock = new Mock<IReferenceDataService>();
             _mediator = new Mock<IMediator>();
+           // var sortAndFilter = new Mock<MovieSortAndFilterService>();
             movieUpsertHandler = new MovieUpsertHandler(_unitOfWork.Object, referenceMock.Object, _mediator.Object);
             getAllHandler = new GetAllHandler(_unitOfWork.Object);
             addListOfMoviesHandler = new AddListOfMoviesHandler(referenceMock.Object, _unitOfWork.Object);
-            getMoviesByCriteriaHandler = new GetMoviesByCriteriaHandler(_unitOfWork.Object);
+            //getMoviesByCriteriaHandler = new GetMoviesByCriteriaHandler(_unitOfWork.Object, sortAndFilter.Object);
             var transacional = new Mock<IDbContextTransaction>();
             _unitOfWork.Setup(uow => uow.BeginTransactionAsync()).ReturnsAsync(transacional.Object);
         }
@@ -45,12 +46,13 @@ namespace UnitTests
                 MovieDomain.Reconstruct(2,"Interstellar","A journey through space and time","english",new DateTime(2014, 11, 7),2,2,TimeSpan.Zero,false)
 
             };
-            _unitOfWork.Setup(u => u.MovieRepository.GetAllAsync()).ReturnsAsync(movies);
+            _unitOfWork.Setup(u => u.MovieRepository.GetAllAsync(new CancellationToken())).ReturnsAsync(movies);
+            _unitOfWork.Setup(g => g.GenreRepository.Get(It.IsAny<int>())).Returns(Task.FromResult<GenreDomain>(GenreDomain.Reconstruct(1,"Sci-Fci")));
             var query = new GetAllQuery();
             var results = getAllHandler.Handle(query, CancellationToken.None);
             Assert.IsNotNull(results);
             Assert.AreEqual(2, results.Result.Count());
-            _unitOfWork.Verify(u => u.MovieRepository.GetAllAsync(), Times.Once);
+            _unitOfWork.Verify(u => u.MovieRepository.GetAllAsync(new CancellationToken()), Times.Once);
         }
         [TestMethod]
         public void UpsertMovie_AddMovie()
@@ -139,7 +141,7 @@ namespace UnitTests
             _unitOfWork.Verify(m => m.MovieRepository.AddAsync(It.IsAny<List<MovieDomain>>()), Times.Once);
             Assert.IsNotNull(results);
             Assert.HasCount(2, results.Result);
-            Assert.AreEqual(command.requests[0].Title, results.Result[0].Title);
+            Assert.AreEqual(command.movies[0].Title, results.Result[0].Title);
         }
         [TestMethod]
         public async Task GetMoviesByCriteria()
@@ -154,8 +156,8 @@ namespace UnitTests
             };
             movies.AsQueryable();
             _unitOfWork.Setup(u => u.MovieRepository.AsQueryable()).Returns(movies.AsQueryable());
-            _unitOfWork.Setup(g=>g.GenreRepository.Get(It.IsAny<int>())).Returns(GenreDomain.Reconstruct(3,"Sci-Fci"));
-            _unitOfWork.Setup(d=>d.DirectorRepository.Get(It.IsAny<int>())).Returns(DirectorDomain.Reconstruct(1,"Christopher","Nolan"));
+            _unitOfWork.Setup(g=>g.GenreRepository.Get(It.IsAny<int>())).Returns(Task.FromResult<GenreDomain>(GenreDomain.Reconstruct(3,"Sci-Fci")));
+            _unitOfWork.Setup(d=>d.DirectorRepository.Get(It.IsAny<int>())).Returns(Task.FromResult<DirectorDomain>(DirectorDomain.Reconstruct(1,"Christopher","Nolan")));
             //_unitOfWork.Setup(g => g.GenreRepository.FirstOrDefaultForNameAsync(It.IsAny<string>()));//.ReturnsAsync(GenreDomain.Create("Sci-Fci"));
             var query = new GetMoviesByCriteriaQuery();
             query.TitleSearch = "Inception";

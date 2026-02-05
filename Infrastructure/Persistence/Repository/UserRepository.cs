@@ -12,6 +12,14 @@ namespace Infrastructure.Persistence.Repository
         {
             this.appDbContext = appDbContext;
         }
+        public async Task<UserDomain> GetUserByUsername(string username)
+        {
+            var user = await appDbContext.Users
+                .Where(u => u.username == username)
+                .FirstOrDefaultAsync();
+            if (user == null) throw new NotFoundException("User not found");
+            return user;
+        }
         public async Task<UserDomain> GetUserIdByUsername(string username)
         {
             var user = await appDbContext.Users
@@ -48,6 +56,14 @@ namespace Infrastructure.Persistence.Repository
         {
            var result =  await appDbContext.Users.AddAsync(user);
             return result.Entity;
+        }
+
+        public Task<Dictionary<int, UserDomain>> GetByIds(List<int> userIds)
+        {
+            var users = appDbContext.Users
+                .Where(u => userIds.Contains(u.Id))
+                .ToDictionaryAsync(u => u.Id, u => u);
+            return users;
         }
     }
 }

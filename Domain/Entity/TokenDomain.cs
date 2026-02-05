@@ -16,7 +16,7 @@ namespace Domain.Entity
         public string? UserAgent { get; private set; }
         //public bool IsExpired => DateTime.UtcNow >= ExpiryDate;
         //public bool IsActive => !IsRevoked && !IsExpired;
-
+        private TokenDomain() { }
         private TokenDomain(string jti, string refreshToken, int userId, string? createdByIp, string? userAgent)
         {
             Jti = jti;

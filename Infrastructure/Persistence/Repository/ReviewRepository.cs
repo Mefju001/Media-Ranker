@@ -27,11 +27,14 @@ namespace Infrastructure.Persistence.Repository
         }
         public async Task<List<string>> GetTheLastestReviewAsync(CancellationToken cancellation)
         {
+            var media = appDbContext.Medias.AsQueryable();
             return await appDbContext.Reviews
-                .Include(r => r.User)
-                .Include(r => r.Media)
                 .OrderByDescending(r => r.CreatedAt)
                 .Take(10)
+                .Join(media,
+                    review => review.MediaId,
+                    media => media.Id,
+                    (review, media) => new { Review = review, Media = media })
                 .Select(r => r.Media.Title)
                 .Distinct()
                 .ToListAsync(cancellation);
@@ -39,8 +42,6 @@ namespace Infrastructure.Persistence.Repository
         public async Task<List<ReviewDomain>> GetAllReviewsAsync(CancellationToken cancellation)
         {
             return await appDbContext.Reviews
-                .Include(r => r.User)
-                .Include(r => r.Media)
                 .ToListAsync(cancellation);
         }
 

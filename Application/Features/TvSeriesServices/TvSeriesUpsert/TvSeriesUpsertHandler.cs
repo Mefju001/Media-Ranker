@@ -33,7 +33,7 @@ namespace Application.Features.TvSeriesServices.TvSeriesUpsert
                         request.description,
                         request.Language,
                         request.ReleaseDate,
-                        genre,
+                        genre.Id,
                         request.Seasons,
                         request.Episodes,
                         request.Network,
@@ -48,7 +48,7 @@ namespace Application.Features.TvSeriesServices.TvSeriesUpsert
                         request.description,
                         request.Language,
                         request.ReleaseDate,
-                        genre,
+                        genre.Id,
                         request.Seasons,
                         request.Episodes,
                         request.Network,
@@ -57,7 +57,7 @@ namespace Application.Features.TvSeriesServices.TvSeriesUpsert
             }
             await unitOfWork.CompleteAsync();
             if (tvSeries is null) throw new ArgumentNullException(nameof(tvSeries));
-            var response = TvSeriesMapper.ToTvSeriesResponse(tvSeries);
+            var response = TvSeriesMapper.ToTvSeriesResponse(tvSeries,genre);
             return response;
         }
     }

@@ -11,14 +11,15 @@ namespace Domain.Entity
     {
         public string Developer { get; private set; }
         public EPlatform Platform { get; private set; }
+        private GameDomain() { }
         private GameDomain(string Title,
             string Description,
             string Language,
             DateTime ReleaseDate,
-            GenreDomain genreDomain,
+            int genreId,
             string Developer,
             EPlatform Platform)
-            : base(Title, Description, Language, ReleaseDate, genreDomain)
+            : base(Title, Description, Language, ReleaseDate, genreId)
         {
             this.Developer = Developer;
             this.Platform = Platform;
@@ -28,7 +29,7 @@ namespace Domain.Entity
             string Description,
             string Language,
             DateTime ReleaseDate,
-            GenreDomain Genre,
+            int Genre,
             string Developer,
             EPlatform Platform)
         {
@@ -46,7 +47,7 @@ namespace Domain.Entity
             string Description,
             string Language,
             DateTime ReleaseDate,
-            GenreDomain Genre,
+            int Genre,
             string Developer,
             EPlatform Platform, GameDomain game)
         {

@@ -5,7 +5,7 @@ namespace Application.Common.Interfaces
     public interface IMovieRepository
     {
         IQueryable<MovieDomain> AsQueryable();
-        Task<IEnumerable<MovieDomain>> GetAllAsync();
+        Task<List<MovieDomain>> GetAllAsync(CancellationToken cancellationToken);
         Task<MovieDomain> AddAsync(MovieDomain movieDomain);
         Task AddAsync(IEnumerable<MovieDomain> movieDomains);
         Task<MovieDomain?> FirstOrDefaultAsync(int movieId);

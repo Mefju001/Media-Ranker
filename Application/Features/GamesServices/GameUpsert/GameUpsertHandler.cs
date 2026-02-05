@@ -34,7 +34,7 @@ namespace Application.Features.GamesServices.GameUpsert
                         request.Description,
                         request.Language,
                         request.ReleaseDate!.Value,
-                        genre,
+                        genre.Id,
                         request.Developer!,
                         request.Platform,
                         game
@@ -48,13 +48,14 @@ namespace Application.Features.GamesServices.GameUpsert
                     request.Description,
                     request.Language,
                     request.ReleaseDate!.Value,
-                    genre, request.Developer!,
+                    genre.Id, request.Developer!,
                     request.Platform);
                 await unitOfWork.GameRepository.AddGameAsync(game);
             }
             await unitOfWork.CompleteAsync();
             if (game is null) throw new InvalidOperationException(nameof(game));
-            var response = GameMapper.ToGameResponse(game);
+            var genreDomain = await unitOfWork.GenreRepository.Get(genre.Id);
+            var response = GameMapper.ToGameResponse(game,genreDomain!);
             return response;
         }
     }

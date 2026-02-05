@@ -10,11 +10,12 @@ namespace Application.Features.TvSeriesServices.GetTvSeriesByCriteria
     public class GetTvSeriesByCriteriaHandler : IRequestHandler<GetTvSeriesByCriteriaQuery, List<TvSeriesResponse>>
     {
         private readonly IUnitOfWork unitOfWork;
+        private readonly TvSeriesSortAndFilterService SortAndFilterService;
 
-
-        public GetTvSeriesByCriteriaHandler(IUnitOfWork unitOfWork)
+        public GetTvSeriesByCriteriaHandler(IUnitOfWork unitOfWork, TvSeriesSortAndFilterService sortAndFilterService)
         {
             this.unitOfWork = unitOfWork;
+            SortAndFilterService = sortAndFilterService;
         }
 
 
@@ -23,7 +24,12 @@ namespace Application.Features.TvSeriesServices.GetTvSeriesByCriteria
             var query = await unitOfWork.TvSeriesRepository.AsQueryable();
             query = SortAndFilterService.ApplyFilters(query, request);
             query = SortAndFilterService.ApplySorting(query, request);
-            var Response = await query.Select(TvSeriesMapper.ToDto).ToListAsync(cancellationToken);
+            var result = await query.ToListAsync(cancellationToken);
+            var genres = await unitOfWork.GenreRepository.GetGenresDictionary();
+            var Response = result.Select(tvSeries => {
+                var genre = genres[tvSeries.GenreId];
+                return TvSeriesMapper.ToTvSeriesResponse(tvSeries, genre);
+                }).ToList();
             return Response;
         }
 

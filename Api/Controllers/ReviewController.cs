@@ -1,5 +1,13 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using Application.Common.DTO.Request;
+using Application.Features.ReviewServices.DeleteReviewAsync;
+using Application.Features.ReviewServices.GetAllReviewsAsync;
+using Application.Features.ReviewServices.GetByIdReview;
+using Application.Features.ReviewServices.GetTheLastestReview;
+using Application.Features.ReviewServices.UpsertReview;
+using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
 
 namespace Api.Controllers
 {
@@ -8,10 +16,10 @@ namespace Api.Controllers
     [Route("[controller]")]
     public class ReviewController : ControllerBase
     {
-        /*private readonly IReviewServices services;
-        public ReviewController(IReviewServices services)
+        private readonly IMediator mediator;
+        public ReviewController(IMediator mediator)
         {
-            this.services = services;
+            this.mediator = mediator;
         }
         private int? getUserId()
         {
@@ -29,7 +37,8 @@ namespace Api.Controllers
         [HttpGet]
         public async Task<IActionResult> GetAll()
         {
-            var reviews = await services.GetAllAsync();
+            var query = new GetAllReviewsQuery();
+            var reviews = await mediator.Send(query);
             return Ok(reviews);
         }
         [Authorize(Roles = "User, Admin")]
@@ -38,7 +47,15 @@ namespace Api.Controllers
         {
             var userId = getUserId();
             if (userId == null) return Unauthorized();
-            var response = await services.Upsert(null, userId.Value, movieId, reviewRequest);
+            var command = new ReviewUpsertCommand
+            (
+                null,
+                userId.Value,
+                movieId,
+                reviewRequest.Rating,
+                reviewRequest.Comment
+            );
+            var response = await mediator.Send(command);
             return CreatedAtAction(nameof(GetById), new { response.id }, response);
         }
         [Authorize(Roles = "User, Admin")]
@@ -47,21 +64,31 @@ namespace Api.Controllers
         {
             var userId = getUserId();
             if (userId == null) return Unauthorized();
-            var response = await services.Upsert(reviewId, userId.Value, movieId, reviewRequest);
+            var command = new ReviewUpsertCommand
+            (
+                reviewId,
+                userId.Value,
+                movieId,
+                reviewRequest.Rating,
+                reviewRequest.Comment
+            );
+            var response = await mediator.Send(command);
             return Ok(response);
         }
         [AllowAnonymous]
         [HttpGet("TheLatest")]
         public async Task<IActionResult> GetAllSortedByLatestAsync()
         {
-            var reviews = await services.GetTheLatestReviews();
+            var query = new GetTheLastestQuery();
+            var reviews = await mediator.Send(query);
             return Ok(reviews);
         }
         [Authorize(Roles = "User")]
         [HttpGet("{id}")]
         public async Task<IActionResult> GetById(int id)
         {
-            return Ok(await services.GetById(id));
+            var query = new GetByIdReviewQuery(id);
+            return Ok(await mediator.Send(query));
         }
         [Authorize(Roles = "User")]
         [HttpDelete("{id}")]
@@ -69,10 +96,9 @@ namespace Api.Controllers
         {
             var userId = getUserId();
             if (userId == null) return Unauthorized();
-            var deletedReview = await services.Delete(id, userId.Value);
-            if (!deletedReview) return NotFound();
+            var command = new DeleteReviewCommand(id);
+            await mediator.Send(command);
             return NoContent();
-        }*/
-
+        }
     }
 }

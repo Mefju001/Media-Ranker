@@ -25,9 +25,9 @@ namespace Infrastructure.Persistence.Repository
             var director = await context.Directors.AddAsync(directorDomain);
             return director.Entity;
         }
-        public DirectorDomain? Get(int id)
+        public async Task<DirectorDomain?> Get(int id)
         {
-            return context.Directors.Find(id);
+            return await context.Directors.FindAsync(id);
         }
 
         public async Task<List<DirectorDomain>> findByNameAndSurname(List<string>names,List<string>surnames)
@@ -38,6 +38,17 @@ namespace Infrastructure.Persistence.Repository
         public Task<List<DirectorDomain>> findByNames(List<(string, string)> names)
         {
             throw new NotImplementedException();
+        }
+
+        public IQueryable<DirectorDomain> GetAllQueryable()
+        {
+            return context.Directors.AsQueryable();
+        }
+
+        public Task<Dictionary<int, DirectorDomain>> GetDirectorsDictionary()
+        {
+            var directorsDict = context.Directors.ToDictionaryAsync(d => d.Id, d => d);
+            return directorsDict;
         }
     }
 }

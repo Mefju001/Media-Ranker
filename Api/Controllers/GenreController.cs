@@ -1,4 +1,7 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using Application.Common.Interfaces;
+using Application.Features.GenreServices;
+using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Api.Controllers
@@ -8,17 +11,18 @@ namespace Api.Controllers
     [Route("[controller]")]
     public class GenreController : ControllerBase
     {
-        /*private readonly IReferenceDataService referenceDataService;
-        public GenreController(IReferenceDataService referenceDataService)
+        private readonly IMediator mediator;
+        public GenreController(IMediator mediator)
         {
-            this.referenceDataService = referenceDataService;
+            this.mediator = mediator;
         }
         [AllowAnonymous]
         [HttpGet]
         public async Task<IActionResult> GetGenres()
         {
-            var results = await referenceDataService.GetGenres();
+            var query = new GetGenresQuery();
+            var results = await mediator.Send(query);
             return Ok(results);
-        }*/
+        }
     }
 }

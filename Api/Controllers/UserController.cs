@@ -1,5 +1,12 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using Application.Common.DTO.Request;
+using Application.Features.UserServices.ChangeDetails;
+using Application.Features.UserServices.ChangePassword;
+using Application.Features.UserServices.GetBy;
+using Application.Features.UserServices.GetById;
+using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
 
 namespace Api.Controllers
 {
@@ -8,10 +15,10 @@ namespace Api.Controllers
     [Route("[controller]")]
     public class UserController : ControllerBase
     {
-        /*private readonly IUserServices userServices;
-        public UserController(IUserServices userServices)
+        private readonly IMediator mediator;
+        public UserController(IMediator mediator)
         {
-            this.userServices = userServices;
+            this.mediator = mediator;
         }
         private int? getUserId()
         {
@@ -23,23 +30,26 @@ namespace Api.Controllers
             else
                 return null;
         }
-        [Authorize(Roles = "Admin")]
+        /*[Authorize(Roles = "Admin")]
         [HttpGet]
         public async Task<IActionResult> GetUsers()
         {
+            var query = new GetAll
             return Ok(await userServices.GetAllAsync());
-        }
+        }*/
         [Authorize(Roles = "Admin")]
-        [HttpGet("id:{int}")]
+        [HttpGet("id:{id}")]
         public async Task<IActionResult> GetUserById(int id)
         {
-            return Ok(await userServices.GetById(id));
+            var query = new GetByIdQuery(id);
+            return Ok(mediator.Send(query));
         }
         [Authorize(Roles = "Admin")]
         [HttpGet("by-name/{name}")]
         public async Task<IActionResult> GetBy(string name)
         {
-            return Ok(await userServices.GetBy(name));
+            var query = new GetUserByNameQuery(name);
+            return Ok(mediator.Send(query));
         }
         [Authorize(Roles = "Admin,User")]
         [HttpPatch("ChangePassword")]
@@ -50,7 +60,8 @@ namespace Api.Controllers
             {
                 return Unauthorized();
             }
-            await userServices.changePassword(newPassword, confirmPassword, oldPassword, userId.Value);
+            var command = new ChangePasswordCommand(newPassword, confirmPassword, oldPassword, userId.Value);
+            await mediator.Send(command);
             return Ok();
         }
         [Authorize(Roles = "Admin,User")]
@@ -62,8 +73,9 @@ namespace Api.Controllers
             {
                 return Unauthorized();
             }
-            await userServices.changedetails(userId.Value, userDetailsRequest);
+            var command = new ChangeDetailsCommand(userId.Value, userDetailsRequest.name,userDetailsRequest.surname,userDetailsRequest.email);
+            await mediator.Send(command);
             return Ok();
-        }*/
+        }
     }
 }

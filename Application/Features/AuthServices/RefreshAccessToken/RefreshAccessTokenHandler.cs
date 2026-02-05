@@ -3,12 +3,13 @@ using Application.Common.Interfaces;
 using Application.Features.AuthServices.Common;
 using Domain.Entity;
 using Domain.Exceptions;
+using MediatR;
 using System.IdentityModel.Tokens.Jwt;
 
 
 namespace Application.Features.AuthServices.RefreshAccessToken
 {
-    public class RefreshAccessTokenHandler
+    public class RefreshAccessTokenHandler:IRequestHandler<RefreshAccessTokenCommand, TokenResponse?>
     {
         private readonly IUnitOfWork unitOfWork;
         private readonly AccessTokenService accessTokenService;
@@ -23,16 +24,15 @@ namespace Application.Features.AuthServices.RefreshAccessToken
             this.validatorForRefreshToken = validatorForRefreshToken;
         }
 
-        public async Task<TokenResponse?> RefreshAccessToken(string refreshToken)
+        public async Task<TokenResponse?> Handle(RefreshAccessTokenCommand request, CancellationToken cancellationToken)
         {
-            if (string.IsNullOrEmpty(refreshToken))
+            if (string.IsNullOrEmpty(request.accessToken))
             {
                 throw new NotFoundException("Not found your user");
             }
-            var claims = await validatorForRefreshToken.ValidateAndGetPrincipalFromRefreshToken(refreshToken);
+            var claims = await validatorForRefreshToken.ValidateAndGetPrincipalFromRefreshToken(request.accessToken);
             var username = claims.FirstOrDefault(c => c.Type == JwtRegisteredClaimNames.Name) ?? throw new UserClaimNotFoundException("Not found your user in claims");
-            UserDomain user = null;/*await unitOfWork.Users
-                .FirstOrDefaultAsync(u => u.username == username.Value.ToString());*/
+            UserDomain user = await unitOfWork.UserRepository.GetUserByUsername(username.Value.ToString());
             if (user == null)
                 throw new ArgumentNullException(nameof(user));
             var accessToken = accessTokenService.generateAccessToken(user.Id, username.Value.ToString(), user.UserRoles.ToList());

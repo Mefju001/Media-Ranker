@@ -85,7 +85,6 @@ namespace Api.Controllers
         {
 
             var deleted = await mediator.Send(new DeleteByIdCommand(id));
-            //if (!deleted) return NotFound();
             return NoContent();
         }
 

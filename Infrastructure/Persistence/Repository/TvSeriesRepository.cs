@@ -37,7 +37,7 @@ namespace Infrastructure.Persistence.Repository
         public async Task<IQueryable<TvSeriesDomain>> AsQueryable()
         {
             return appDbContext.TvSeries
-                .Include(m => m.GenreDomain)
+//                .Include(m => m.GenreDomain)
                 .Include(m => m.Stats)
                 .AsNoTracking()
                 .AsQueryable();

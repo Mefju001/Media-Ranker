@@ -58,14 +58,14 @@ namespace Domain.Entity
         }
         public void AddReview(ReviewDomain review)
         {
-            if (_reviews.Any(r => r.Media.Id == review.Media.Id))
+            if (_reviews.Any(r => r.MediaId == review.MediaId))
                 throw new InvalidOperationException("User has already reviewed this media.");
             _reviews.Add(review);
         }
-        public void AddRole(ERole role)
+        public void AddRole(RoleDomain roleDomain)
         {
-            if (_userRoles.Any(r => r.role == role)) return;
-            _userRoles.Add(RoleDomain.Create(role));
+            if (_userRoles.Any(r => r.role == roleDomain.role)) return;
+            _userRoles.Add(roleDomain);
         }
         public void RemoveRole(ERole role)
         {

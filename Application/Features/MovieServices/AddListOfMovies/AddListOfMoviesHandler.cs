@@ -20,18 +20,23 @@ namespace Application.Features.MovieServices.AddListOfMovies
             var genreNames = requests.movies.Select(m => m.Genre.name).Distinct().ToList();
             var directors = requests.movies.Select(r => r.Director).ToList();
             var dictionaryDirectors = await referenceDataService.EnsureDirectorsExistAsync(directors);
-            var dictionaryNames = await referenceDataService.EnsureGenresExistAsync(genreNames);
+            var dictionaryGenres = await referenceDataService.EnsureGenresExistAsync(genreNames);
             var movies = requests.movies.Select(movieReq =>
             {
-                var genre = dictionaryNames[movieReq.Genre.name];
+                var genre = dictionaryGenres[movieReq.Genre.name];
                 var director = dictionaryDirectors[(movieReq.Director.Name, movieReq.Director.Surname)];
                 return MovieDomain.Create(movieReq.Title, movieReq.Description, movieReq.Language,
-                                                  movieReq.ReleaseDate, genre, director,
+                                                  movieReq.ReleaseDate, genre.Id, director.Id,
                                                   movieReq.Duration, movieReq.IsCinemaRelease);
             }).ToList();
             await _unitOfWork.MovieRepository.AddListOfMovies(movies, cancellationToken);
             await _unitOfWork.CompleteAsync();
-            return movies.Select(MovieMapper.ToMovieResponse).ToList();
+            return movies.Select(m=>
+            {
+                var directorDomain = dictionaryDirectors.Values.ToDictionary(d => d.Id);
+                var genreDomain = dictionaryGenres.Values.ToDictionary(g => g.Id);
+                return MovieMapper.ToMovieResponse(m, genreDomain[m.GenreId], directorDomain[m.DirectorId]);
+            }).ToList();
         }
     }
 }

@@ -1,11 +1,17 @@
-﻿using Domain.Entity;
+﻿using Application.Common.Interfaces;
+using Domain.Entity;
 using System.Linq.Expressions;
 
 namespace Application.Features.MovieServices.GetMoviesByCriteria
 {
-    internal static class SortAndFilterService
+    public class MovieSortAndFilterService
     {
-        public static IQueryable<MovieDomain> ApplyFilters(IQueryable<MovieDomain> query, GetMoviesByCriteriaQuery request)
+        private readonly IUnitOfWork _unitOfWork;
+        public MovieSortAndFilterService(IUnitOfWork unitOfWork)
+        {
+            _unitOfWork = unitOfWork;
+        }
+        public IQueryable<MovieDomain> ApplyFilters(IQueryable<MovieDomain> query, GetMoviesByCriteriaQuery request)
         {
             if (!string.IsNullOrWhiteSpace(request.TitleSearch))
             {
@@ -13,7 +19,13 @@ namespace Application.Features.MovieServices.GetMoviesByCriteria
             }
             if (!string.IsNullOrWhiteSpace(request.genreName))
             {
-                query = query.Where(m => m.GenreDomain.name.Contains(request.genreName));
+                var genreQuery = _unitOfWork.GenreRepository.GetAllQueryable();
+                query = query.Join(genreQuery,
+                    movie=>movie.GenreId,
+                    genre=>genre.Id,
+                    (movie ,genre)=> new {Movie=movie, Genre = genre })
+                    .Where(mg=>mg.Genre.name.Contains(request.genreName))
+                    .Select(mg=>mg.Movie);
             }
             if (request.MinRating.HasValue)
             {
@@ -25,11 +37,18 @@ namespace Application.Features.MovieServices.GetMoviesByCriteria
             }
             if (!string.IsNullOrWhiteSpace(request.DirectorSurname) && !string.IsNullOrWhiteSpace(request.DirectorSurname))
             {
-                query = query.Where(m => m.DirectorDomain.name.Contains(request.DirectorName!) && m.DirectorDomain.surname.Contains(request.DirectorSurname!));
+                var directorQuery = _unitOfWork.DirectorRepository.GetAllQueryable();
+                query = query.Join(
+                    directorQuery,
+                    movie=>movie.DirectorId,
+                    director=>director.Id,
+                    (movie, directorQuery) => new {Movie = movie,Director = directorQuery})
+                    .Where(md => md.Director.name.Contains(request.DirectorName!) && md.Director.surname.Contains(request.DirectorSurname!))
+                    .Select(md=>md.Movie);
             }
             return query;
         }
-        public static IQueryable<MovieDomain> ApplySorting(IQueryable<MovieDomain> query, GetMoviesByCriteriaQuery request)
+        public IQueryable<MovieDomain> ApplySorting(IQueryable<MovieDomain> query, GetMoviesByCriteriaQuery request)
         {
             if (!string.IsNullOrEmpty(request.SortByField))
             {

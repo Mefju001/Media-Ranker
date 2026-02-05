@@ -1,6 +1,8 @@
 ﻿using Application.Common.Interfaces;
 using Application.Features.AuthServices.Common;
 using Domain.Entity;
+using Domain.Enums;
+using Domain.Exceptions;
 using MediatR;
 using Microsoft.AspNetCore.Identity;
 
@@ -34,9 +36,11 @@ namespace Application.Features.AuthServices.Signup
             );
             user = await unitOfWork.UserRepository.AddUser(user);
             var role = await unitOfWork.RoleRepository.GetByNameAsync("User");
+            if (role == null)
+                throw new NotFoundException("Not found user role");
             if (role != null)
             {
-                user.AddRole(role.Value);
+                user.AddRole(role);
             }
             await unitOfWork.CompleteAsync();
             var accessToken = accessTokenService.generateAccessToken(user.Id, user.username, user.UserRoles.ToList());

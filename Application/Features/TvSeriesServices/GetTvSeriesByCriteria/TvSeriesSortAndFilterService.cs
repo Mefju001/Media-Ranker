@@ -1,11 +1,17 @@
-﻿using Domain.Entity;
+﻿using Application.Common.Interfaces;
+using Domain.Entity;
 using System.Linq.Expressions;
 
 namespace Application.Features.TvSeriesServices.GetTvSeriesByCriteria
 {
-    internal class SortAndFilterService
+    public class TvSeriesSortAndFilterService
     {
-        public static IQueryable<TvSeriesDomain> ApplyFilters(IQueryable<TvSeriesDomain> query, GetTvSeriesByCriteriaQuery request)
+        private readonly IUnitOfWork unitOfWork;
+        public TvSeriesSortAndFilterService(IUnitOfWork unitOfWork)
+        {
+            this.unitOfWork = unitOfWork;
+        }
+        public IQueryable<TvSeriesDomain> ApplyFilters(IQueryable<TvSeriesDomain> query, GetTvSeriesByCriteriaQuery request)
         {
             if (!string.IsNullOrWhiteSpace(request.TitleSearch))
             {
@@ -13,7 +19,13 @@ namespace Application.Features.TvSeriesServices.GetTvSeriesByCriteria
             }
             if (!string.IsNullOrWhiteSpace(request.genreName))
             {
-                query = query.Where(m => m.GenreDomain.name.Contains(request.genreName));
+                var genre = unitOfWork.GenreRepository.GetAllQueryable();
+                query = query.Join(genre,
+                    tv => tv.GenreId,
+                    g => g.Id,
+                    (tv, g) => new { Tv = tv, Genre = g })
+                    .Where(tvg => tvg.Genre.name.Contains(request.genreName))
+                    .Select(tvg => tvg.Tv);
             }
             if (request.MinRating.HasValue)
             {
@@ -29,7 +41,7 @@ namespace Application.Features.TvSeriesServices.GetTvSeriesByCriteria
             }
             return query;
         }
-        public static IQueryable<TvSeriesDomain> ApplySorting(IQueryable<TvSeriesDomain> query, GetTvSeriesByCriteriaQuery request)
+        public IQueryable<TvSeriesDomain> ApplySorting(IQueryable<TvSeriesDomain> query, GetTvSeriesByCriteriaQuery request)
         {
             if (!string.IsNullOrEmpty(request.SortByField))
             {

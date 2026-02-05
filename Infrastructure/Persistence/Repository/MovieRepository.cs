@@ -24,7 +24,7 @@ namespace Infrastructure.Persistence.Repository
             await context.Movies.AddRangeAsync(movieDomains);
         }
 
-        public async Task<IEnumerable<MovieDomain>> GetAllAsync()
+        public async Task<List<MovieDomain>> GetAllAsync(CancellationToken cancellationToken)
         {
             var movies = await context.Movies.ToListAsync();
             return movies;

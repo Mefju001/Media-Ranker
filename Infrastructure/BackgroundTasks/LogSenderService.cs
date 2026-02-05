@@ -2,7 +2,7 @@
 using Microsoft.Extensions.Configuration;
 using System.Text.Json;
 
-namespace WebApplication1.Services
+namespace Infrastructure.BackgroundTasks
 {
     public class LogSenderService
     {

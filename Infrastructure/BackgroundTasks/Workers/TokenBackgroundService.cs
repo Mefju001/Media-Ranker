@@ -1,4 +1,5 @@
 ﻿using Application.Common.Interfaces;
+using Infrastructure.BackgroundTasks.CleanService;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
@@ -8,11 +9,11 @@ namespace Infrastructure.BackgroundTasks.Workers
     public class TokenBackgroundService : IHostedService, IDisposable
     {
         public readonly ILogger<TokenBackgroundService> logger;
-        public readonly IServiceProvider ServiceProvider;
+        public readonly IServiceScopeFactory ServiceProvider;
         private Timer timer;
 
         private readonly TimeSpan _cleanupInterval = TimeSpan.FromDays(30);
-        public TokenBackgroundService(ILogger<TokenBackgroundService> logger, IServiceProvider serviceProvider)
+        public TokenBackgroundService(ILogger<TokenBackgroundService> logger, IServiceScopeFactory serviceProvider)
         {
             this.logger = logger;
             ServiceProvider = serviceProvider;
@@ -31,7 +32,7 @@ namespace Infrastructure.BackgroundTasks.Workers
             logger.LogInformation("Zaczynamy czyszczenie bazy danych z tokenów");
             using (var scope = ServiceProvider.CreateScope())
             {
-                var cleanupService = scope.ServiceProvider.GetRequiredService<TokenCleanService.TokenCleanService>();
+                var cleanupService = scope.ServiceProvider.GetRequiredService<ITokenCleanService>();
                 cleanupService.CleanTokens().Wait();
             }
         }

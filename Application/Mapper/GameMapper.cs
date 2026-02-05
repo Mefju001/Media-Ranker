@@ -5,13 +5,13 @@ namespace Application.Mapper
 {
     public static class GameMapper
     {
-        public static GameResponse ToGameResponse(GameDomain game)
+        public static GameResponse ToGameResponse(GameDomain game, GenreDomain genreDomain)
         {
             return new GameResponse(
                 game.Id,
                 game.Title,
                 game.Description,
-                new GenreResponse(0, ""),// GenreMapper.ToResponse(game.genre),
+                GenreMapper.ToResponse(genreDomain),
                 game.ReleaseDate,
                 game.Language,
                 game.Reviews?.Select(r => ReviewMapper.ToResponse(r)).ToList() ?? new List<ReviewResponse>(),

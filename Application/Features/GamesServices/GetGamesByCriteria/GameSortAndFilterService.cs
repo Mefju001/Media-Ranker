@@ -1,11 +1,17 @@
-﻿using Domain.Entity;
+﻿using Application.Common.Interfaces;
+using Domain.Entity;
 using System.Linq.Expressions;
 
 namespace Application.Features.GamesServices.GetGamesByCriteria
 {
-    internal class SortAndFilterService
+    public class GameSortAndFilterService
     {
-        public static IQueryable<GameDomain> ApplyFilters(IQueryable<GameDomain> query, GetGamesByCriteriaQuery request)
+        private readonly IUnitOfWork unitOfWork;
+        public GameSortAndFilterService(IUnitOfWork unitOfWork)
+        {
+            this.unitOfWork = unitOfWork;
+        }
+        public IQueryable<GameDomain> ApplyFilters(IQueryable<GameDomain> query, GetGamesByCriteriaQuery request)
         {
             if (!string.IsNullOrWhiteSpace(request.title))
             {
@@ -13,7 +19,14 @@ namespace Application.Features.GamesServices.GetGamesByCriteria
             }
             if (!string.IsNullOrWhiteSpace(request.genreName))
             {
-                query = query.Where(m => m.GenreDomain.name.Contains(request.genreName));
+                var genreTable = unitOfWork.GenreRepository.GetAllQueryable();
+                query = query.Join(genreTable,
+                    game=>game.GenreId,
+                    genre => genre.Id,
+                    (game, genre) => new { game, genre }
+                    )
+                    .Where(ge=>ge.genre.name.Contains(request.genreName))
+                    .Select(ge=>ge.game);
             }
             if (request.MinRating.HasValue)
             {
@@ -29,7 +42,7 @@ namespace Application.Features.GamesServices.GetGamesByCriteria
             }
             return query;
         }
-        public static IQueryable<GameDomain> ApplySorting(IQueryable<GameDomain> query, GetGamesByCriteriaQuery request)
+        public IQueryable<GameDomain> ApplySorting(IQueryable<GameDomain> query, GetGamesByCriteriaQuery request)
         {
             if (!string.IsNullOrEmpty(request.sortByField))
             {

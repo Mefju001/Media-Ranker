@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 
-namespace Domain.Config
+namespace Infrastructure.Config
 {
     public class UserConfiguration : IEntityTypeConfiguration<UserDomain>
     {
@@ -17,7 +17,7 @@ namespace Domain.Config
             builder.Property(x => x.email).IsRequired().HasMaxLength(150);
             builder.HasMany(u => u.Reviews)
                .WithOne()
-               .HasForeignKey(r => r.User.Id)
+               .HasForeignKey(r => r.UserId)
                .OnDelete(DeleteBehavior.Cascade);
             builder.HasMany(u => u.UserRoles)
                .WithMany()

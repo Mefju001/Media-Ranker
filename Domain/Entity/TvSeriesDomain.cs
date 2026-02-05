@@ -13,11 +13,12 @@ namespace Domain.Entity
         public int Episodes { get; private set; }
         public string? Network { get; private set; }
         public EStatus Status { get; private set; }
-        public TvSeriesDomain(string Title, 
+        private TvSeriesDomain() { }
+        private TvSeriesDomain(string Title, 
             string Description, 
             string Language, 
             DateTime ReleaseDate, 
-            GenreDomain genre,
+            int genre,
             int Seasons,
             int Episodes,
             string? Network,
@@ -33,7 +34,7 @@ namespace Domain.Entity
             string Description,
             string Language,
             DateTime ReleaseDate,
-            GenreDomain genre,
+            int genre,
             int Seasons,
             int Episodes,
             string? Network,
@@ -55,7 +56,7 @@ namespace Domain.Entity
             string Description,
             string Language,
             DateTime ReleaseDate,
-            GenreDomain genre,
+            int genre,
             int Seasons,
             int Episodes,
             string? Network,

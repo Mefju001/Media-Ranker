@@ -35,8 +35,8 @@ namespace Application.Features.MovieServices.MovieUpsert
                         request.Description,
                         request.Language,
                         request.ReleaseDate!.Value,
-                        genre,
-                        director,
+                        genre.Id,
+                        director.Id,
                         request.Duration,
                         request.IsCinemaRelease,
                         movie);
@@ -48,8 +48,8 @@ namespace Application.Features.MovieServices.MovieUpsert
                                             request.Description,
                                             request.Language,
                                             request.ReleaseDate!.Value,
-                                            genre,
-                                            director,
+                                            genre.Id,
+                                            director.Id,
                                             request.Duration,
                                             request.IsCinemaRelease);
                 await unitOfWork.MovieRepository.AddAsync(movie);
@@ -57,7 +57,7 @@ namespace Application.Features.MovieServices.MovieUpsert
 
             await unitOfWork.CompleteAsync();
             if (movie is null) throw new InvalidOperationException(nameof(movie));
-            var response = MovieMapper.ToMovieResponse(movie);
+            var response = MovieMapper.ToMovieResponse(movie,genre,director);
             await _mediator.Publish(new LogNotification("Information", "Nowy film został dodany.", nameof(MovieUpsertHandler)));
             return response;
         }
