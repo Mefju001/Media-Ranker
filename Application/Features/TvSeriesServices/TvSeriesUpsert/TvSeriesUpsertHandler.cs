@@ -53,7 +53,7 @@ namespace Application.Features.TvSeriesServices.TvSeriesUpsert
                         request.Episodes,
                         request.Network,
                         request.Status);
-                await unitOfWork.TvSeriesRepository.AddTvSeriesAsync(tvSeries);
+                tvSeries = await unitOfWork.TvSeriesRepository.AddTvSeriesAsync(tvSeries);
             }
             await unitOfWork.CompleteAsync();
             if (tvSeries is null) throw new ArgumentNullException(nameof(tvSeries));

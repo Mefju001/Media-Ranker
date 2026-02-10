@@ -18,7 +18,7 @@ namespace Application.Features.MovieServices.AddListOfMovies
         public async Task<List<MovieResponse>> Handle(AddListOfMoviesCommand requests, CancellationToken cancellationToken)
         {
             var genreNames = requests.movies.Select(m => m.Genre.name).Distinct().ToList();
-            var directors = requests.movies.Select(r => r.Director).ToList();
+            var directors = requests.movies.Select(r => r.Director).Distinct().ToList();
             var dictionaryDirectors = await referenceDataService.EnsureDirectorsExistAsync(directors);
             var dictionaryGenres = await referenceDataService.EnsureGenresExistAsync(genreNames);
             var movies = requests.movies.Select(movieReq =>

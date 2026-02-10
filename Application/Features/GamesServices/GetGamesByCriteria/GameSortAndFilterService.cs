@@ -4,15 +4,16 @@ using System.Linq.Expressions;
 
 namespace Application.Features.GamesServices.GetGamesByCriteria
 {
-    public class GameSortAndFilterService
+    public class GameSortAndFilterService:IGameSortAndFilterService
     {
         private readonly IUnitOfWork unitOfWork;
         public GameSortAndFilterService(IUnitOfWork unitOfWork)
         {
             this.unitOfWork = unitOfWork;
         }
-        public IQueryable<GameDomain> ApplyFilters(IQueryable<GameDomain> query, GetGamesByCriteriaQuery request)
+        public async Task<IQueryable<GameDomain>> ApplyFiltersAsync(GetGamesByCriteriaQuery request)
         {
+            var query = await unitOfWork.GameRepository.AsQueryable();
             if (!string.IsNullOrWhiteSpace(request.title))
             {
                 query = query.Where(m => m.Title.Contains(request.title));
@@ -42,7 +43,7 @@ namespace Application.Features.GamesServices.GetGamesByCriteria
             }
             return query;
         }
-        public IQueryable<GameDomain> ApplySorting(IQueryable<GameDomain> query, GetGamesByCriteriaQuery request)
+        public async Task<IQueryable<GameDomain>> ApplySorting(IQueryable<GameDomain> query, GetGamesByCriteriaQuery request)
         {
             if (!string.IsNullOrEmpty(request.sortByField))
             {

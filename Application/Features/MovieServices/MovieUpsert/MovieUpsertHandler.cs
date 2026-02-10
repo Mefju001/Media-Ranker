@@ -52,7 +52,7 @@ namespace Application.Features.MovieServices.MovieUpsert
                                             director.Id,
                                             request.Duration,
                                             request.IsCinemaRelease);
-                await unitOfWork.MovieRepository.AddAsync(movie);
+                movie = await unitOfWork.MovieRepository.AddAsync(movie);
             }
 
             await unitOfWork.CompleteAsync();

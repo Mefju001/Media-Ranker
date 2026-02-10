@@ -16,12 +16,11 @@ namespace Application.Features.MovieServices.GetAll
         public async Task<List<MovieResponse>> Handle(GetAllQuery request, CancellationToken cancellationToken)
         {
             var movies = await unitOfWork.MovieRepository.GetAllAsync(cancellationToken);
-            var genres = await unitOfWork.GenreRepository.GetAllAsync(cancellationToken);
-            var genresDict = genres.ToDictionary(g => g.Id, g => g);
+            var genres = await unitOfWork.GenreRepository.GetGenresDictionary();
             var directorsDict = await unitOfWork.DirectorRepository.GetDirectorsDictionary();
             var movieResponse = movies.Select(m =>
             {
-                genresDict.TryGetValue(m.GenreId, out var genre);
+                genres.TryGetValue(m.GenreId, out var genre);
                 directorsDict.TryGetValue(m.DirectorId, out var director);
                 return MovieMapper.ToMovieResponse(m,genre!,director!);
             }).ToList();

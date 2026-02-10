@@ -23,7 +23,17 @@ namespace Domain.Entity
             this.GenreId = genreDomain;
             this.Stats = MediaStatsDomain.Create();
         }
-        
+        protected MediaDomain(int id,string Title, string Description, string Language, DateTime ReleaseDate, int genreDomain)
+        {
+            Validate(Title, Description, Language);
+            this.Id = id;
+            this.Title = Title;
+            this.Description = Description;
+            this.Language = Language;
+            this.ReleaseDate = ReleaseDate;
+            this.GenreId = genreDomain;
+            this.Stats = MediaStatsDomain.Create();
+        }
         protected void Update(string Title, string Description, string Language, DateTime ReleaseDate, int genreDomain)
         {
             Validate(Title, Description, Language);

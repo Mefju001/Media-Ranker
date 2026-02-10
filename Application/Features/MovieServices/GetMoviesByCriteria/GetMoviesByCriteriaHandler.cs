@@ -11,8 +11,8 @@ namespace Application.Features.MovieServices.GetMoviesByCriteria
     public class GetMoviesByCriteriaHandler : IRequestHandler<GetMoviesByCriteriaQuery, List<MovieResponse>>
     {
         private readonly IUnitOfWork unitOfWork;
-        private readonly MovieSortAndFilterService SortAndFilterService;
-        public GetMoviesByCriteriaHandler(IUnitOfWork appDbContext, MovieSortAndFilterService sortAndFilterService)
+        private readonly IMovieSortAndFilterService SortAndFilterService;
+        public GetMoviesByCriteriaHandler(IUnitOfWork appDbContext, IMovieSortAndFilterService sortAndFilterService)
         {
             unitOfWork = appDbContext;
             SortAndFilterService = sortAndFilterService;
@@ -20,8 +20,7 @@ namespace Application.Features.MovieServices.GetMoviesByCriteria
 
         public async Task<List<MovieResponse>> Handle(GetMoviesByCriteriaQuery request, CancellationToken cancellationToken)
         {
-            var query = unitOfWork.MovieRepository.AsQueryable();
-            query = SortAndFilterService.ApplyFilters(query, request);
+            var query = SortAndFilterService.ApplyFilters(request);
             query = SortAndFilterService.ApplySorting(query, request);
             var movies = await query.ToListAsync(cancellationToken);
             var genres = await unitOfWork.GenreRepository.GetGenresDictionary();

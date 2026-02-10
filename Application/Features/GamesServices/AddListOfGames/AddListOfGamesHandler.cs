@@ -33,7 +33,6 @@ namespace Application.Features.GamesServices.AddListOfGames
             }).ToList();
             await unitOfWork.GameRepository.AddListOfGames(games, cancellationToken);
             await unitOfWork.CompleteAsync();
-
             return games.Select(g=> {
                 var genre = genresMap.Values.First(ge => ge.Id == g.GenreId);
                 return GameMapper.ToGameResponse(g, genre);

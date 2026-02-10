@@ -30,6 +30,23 @@ namespace Domain.Entity
             this.Network = Network;
             this.Status = Status;
         }
+        private TvSeriesDomain(int id,
+            string Title,
+            string Description,
+            string Language,
+            DateTime ReleaseDate,
+            int genre,
+            int Seasons,
+            int Episodes,
+            string? Network,
+            EStatus Status)
+            : base(id,Title, Description, Language, ReleaseDate, genre)
+        {
+            this.Seasons = Seasons;
+            this.Episodes = Episodes;
+            this.Network = Network;
+            this.Status = Status;
+        }
         public static TvSeriesDomain Create(string Title,
             string Description,
             string Language,
@@ -71,6 +88,28 @@ namespace Domain.Entity
             tvSeries.Update(Title, Description,Language,ReleaseDate,genre);
             return tvSeries;
             
+        }
+        public static TvSeriesDomain Reconstruct(int id,
+            string Title,
+            string Description,
+            string Language,
+            DateTime ReleaseDate,
+            int genre,
+            int Seasons,
+            int Episodes,
+            string? Network,
+            EStatus Status)
+        {
+            return new TvSeriesDomain(id,
+                                   Title,
+                                   Description,
+                                   Language,
+                                   ReleaseDate,
+                                   genre,
+                                   Seasons,
+                                   Episodes,
+                                   Network,
+                                   Status);
         }
         public void UpdateSeasons(int seasons)
         {

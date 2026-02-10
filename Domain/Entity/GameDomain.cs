@@ -24,7 +24,19 @@ namespace Domain.Entity
             this.Developer = Developer;
             this.Platform = Platform;
         }
-
+        private GameDomain(int Id, string Title,
+            string Description,
+            string Language,
+            DateTime ReleaseDate,
+            int genreId,
+            string Developer,
+            EPlatform Platform)
+            : base(Title, Description, Language, ReleaseDate, genreId)
+        {
+            this.Developer = Developer;
+            this.Platform = Platform;
+            this.Id = Id;
+        }
         public static GameDomain Create(string Title,
             string Description,
             string Language,
@@ -42,6 +54,25 @@ namespace Domain.Entity
                                    Genre,
                                    Developer,
                                    Platform);
+        }
+        public static GameDomain Reconstruct(int Id, string Title,
+            string Description,
+            string Language,
+            DateTime ReleaseDate,
+            int Genre,
+            string Developer,
+            EPlatform Platform)
+        {
+            Validate(Developer);
+            var game = new GameDomain(Id,
+                                   Title,
+                                   Description,
+                                   Language,
+                                   ReleaseDate,
+                                   Genre,
+                                   Developer,
+                                   Platform);
+            return game;
         }
         public static GameDomain Update(string Title,
             string Description,

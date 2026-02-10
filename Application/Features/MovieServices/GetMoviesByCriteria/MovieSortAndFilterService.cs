@@ -4,15 +4,16 @@ using System.Linq.Expressions;
 
 namespace Application.Features.MovieServices.GetMoviesByCriteria
 {
-    public class MovieSortAndFilterService
+    public class MovieSortAndFilterService: IMovieSortAndFilterService
     {
         private readonly IUnitOfWork _unitOfWork;
         public MovieSortAndFilterService(IUnitOfWork unitOfWork)
         {
             _unitOfWork = unitOfWork;
         }
-        public IQueryable<MovieDomain> ApplyFilters(IQueryable<MovieDomain> query, GetMoviesByCriteriaQuery request)
+        public IQueryable<MovieDomain> ApplyFilters(GetMoviesByCriteriaQuery request)
         {
+            var query = _unitOfWork.MovieRepository.AsQueryable();
             if (!string.IsNullOrWhiteSpace(request.TitleSearch))
             {
                 query = query.Where(m => m.Title.Contains(request.TitleSearch));

@@ -18,7 +18,7 @@ namespace Application.Features.GamesServices.GetAll
             var genres = await unitOfWork.GenreRepository.GetGenresDictionary();
             var gameResponses = games.Select(g=>
                 GameMapper.ToGameResponse(g, genres[g.GenreId])).ToList();
-            return (gameResponses);
+            return gameResponses;
         }
     }
 }

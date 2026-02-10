@@ -1,0 +1,15 @@
+﻿using Domain.Entity;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace Application.Features.MovieServices.GetMoviesByCriteria
+{
+    public interface IMovieSortAndFilterService
+    {
+        IQueryable<MovieDomain> ApplyFilters(GetMoviesByCriteriaQuery request);
+        IQueryable<MovieDomain> ApplySorting(IQueryable<MovieDomain> query, GetMoviesByCriteriaQuery request);
+    }
+}
