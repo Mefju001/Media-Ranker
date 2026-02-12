@@ -20,9 +20,8 @@ namespace Application.Features.MovieServices.GetMoviesByCriteria
 
         public async Task<List<MovieResponse>> Handle(GetMoviesByCriteriaQuery request, CancellationToken cancellationToken)
         {
-            var query = SortAndFilterService.ApplyFilters(request);
-            query = SortAndFilterService.ApplySorting(query, request);
-            var movies = await query.ToListAsync(cancellationToken);
+            var query = await SortAndFilterService.Handler(request);
+            var movies = await unitOfWork.MovieRepository.GetListFromQuery(query,cancellationToken);
             var genres = await unitOfWork.GenreRepository.GetGenresDictionary();
             var directors = await unitOfWork.DirectorRepository.GetDirectorsDictionary();
             var responses = movies.Select(m => {

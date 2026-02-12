@@ -24,7 +24,7 @@ namespace Application.Features.MovieServices.MovieUpsert
         {
             var director = await referenceDataService.GetOrCreateDirectorAsync(request.Director);
             var genre = await referenceDataService.GetOrCreateGenreAsync(request.Genre);
-            MovieDomain? movie = null;
+            MovieDomain? movie;
             if (request.id.HasValue)
             {
                 movie = await unitOfWork.MovieRepository.FirstOrDefaultAsync(request.id.Value);

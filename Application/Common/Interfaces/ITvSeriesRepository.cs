@@ -10,5 +10,6 @@ namespace Application.Common.Interfaces
         Task AddListOfTvSeries(List<TvSeriesDomain> list);
         Task<TvSeriesDomain> AddTvSeriesAsync(TvSeriesDomain tvSeriesDomain);
         Task<IQueryable<TvSeriesDomain>> AsQueryable();
+        Task<List<TvSeriesDomain>> ToListAsync(IQueryable<TvSeriesDomain> query, CancellationToken cancellationToken);
     }
 }

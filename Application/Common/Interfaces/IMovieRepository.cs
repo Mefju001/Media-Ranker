@@ -4,6 +4,7 @@ namespace Application.Common.Interfaces
 {
     public interface IMovieRepository
     {
+        Task<List<MovieDomain>> GetListFromQuery(IQueryable<MovieDomain> query, CancellationToken cancellationToken);
         IQueryable<MovieDomain> AsQueryable();
         Task<List<MovieDomain>> GetAllAsync(CancellationToken cancellationToken);
         Task<MovieDomain> AddAsync(MovieDomain movieDomain);

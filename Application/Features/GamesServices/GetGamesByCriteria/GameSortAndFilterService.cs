@@ -11,7 +11,13 @@ namespace Application.Features.GamesServices.GetGamesByCriteria
         {
             this.unitOfWork = unitOfWork;
         }
-        public async Task<IQueryable<GameDomain>> ApplyFiltersAsync(GetGamesByCriteriaQuery request)
+        public async Task<IQueryable<GameDomain>> GetGamesByCriteriaAsync(GetGamesByCriteriaQuery request)
+        {
+            var filteredGames = await ApplyFiltersAsync(request);
+            var sortedGames = await ApplySorting(filteredGames, request);
+            return sortedGames;
+        }
+        private async Task<IQueryable<GameDomain>> ApplyFiltersAsync(GetGamesByCriteriaQuery request)
         {
             var query = await unitOfWork.GameRepository.AsQueryable();
             if (!string.IsNullOrWhiteSpace(request.title))
@@ -43,7 +49,7 @@ namespace Application.Features.GamesServices.GetGamesByCriteria
             }
             return query;
         }
-        public async Task<IQueryable<GameDomain>> ApplySorting(IQueryable<GameDomain> query, GetGamesByCriteriaQuery request)
+        private async Task<IQueryable<GameDomain>> ApplySorting(IQueryable<GameDomain> query, GetGamesByCriteriaQuery request)
         {
             if (!string.IsNullOrEmpty(request.sortByField))
             {

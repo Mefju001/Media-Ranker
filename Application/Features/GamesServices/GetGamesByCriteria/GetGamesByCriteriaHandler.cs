@@ -21,9 +21,8 @@ namespace Application.Features.GamesServices.GetGamesByCriteria
 
         public async Task<List<GameResponse>> Handle(GetGamesByCriteriaQuery request, CancellationToken cancellationToken)
         {
-            var query = await SortAndFilterService.ApplyFiltersAsync(request);
-            query = await SortAndFilterService.ApplySorting(query, request);
-            var games = await query.ToListAsync(cancellationToken);
+            var query = await SortAndFilterService.GetGamesByCriteriaAsync(request);
+            var games = await unitOfWork.GameRepository.GetListFromQueryAsync(query, cancellationToken);
             var genreDictionary = await unitOfWork.GenreRepository.GetGenresDictionary();
             var Response = games.Select(m =>{
                 genreDictionary.TryGetValue(m.GenreId, out var genreDomain);

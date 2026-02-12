@@ -17,18 +17,18 @@ namespace Application.Features.TvSeriesServices.GetTvSeriesById
 
         public async Task<TvSeriesResponse?> Handle(GetTvSeriesByIdQuery request, CancellationToken cancellationToken)
         {
-            var movie = await unitOfWork.TvSeriesRepository.GetTvSeriesById(request.id);
-            if (movie == null)
+            var tvSeriesDomain = await unitOfWork.TvSeriesRepository.GetTvSeriesById(request.id);
+            if (tvSeriesDomain == null)
             {
                 throw new NotFoundException("not found");
             }
-            var genre = await unitOfWork.GenreRepository.Get(movie.GenreId);
+            var genre = await unitOfWork.GenreRepository.Get(tvSeriesDomain.GenreId);
             if (genre == null)
             {
                 throw new NotFoundException("not found");
             }
-            var movieResponse = TvSeriesMapper.ToTvSeriesResponse(movie,genre);
-            return movieResponse;
+            var tvSeriesResponse = TvSeriesMapper.ToTvSeriesResponse(tvSeriesDomain, genre);
+            return tvSeriesResponse;
         }
     }
 }

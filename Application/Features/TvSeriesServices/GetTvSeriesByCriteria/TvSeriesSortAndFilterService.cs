@@ -4,14 +4,21 @@ using System.Linq.Expressions;
 
 namespace Application.Features.TvSeriesServices.GetTvSeriesByCriteria
 {
-    public class TvSeriesSortAndFilterService
+    public class TvSeriesSortAndFilterService:ITvSeriesSortAndFilterService
     {
         private readonly IUnitOfWork unitOfWork;
         public TvSeriesSortAndFilterService(IUnitOfWork unitOfWork)
         {
             this.unitOfWork = unitOfWork;
         }
-        public IQueryable<TvSeriesDomain> ApplyFilters(IQueryable<TvSeriesDomain> query, GetTvSeriesByCriteriaQuery request)
+        public async Task<IQueryable<TvSeriesDomain>> Handler(GetTvSeriesByCriteriaQuery request)
+        {
+            var query = await unitOfWork.TvSeriesRepository.AsQueryable();
+            query = await ApplyFilters(query, request);
+            query = await ApplySorting(query, request);
+            return query;
+        }
+        private async Task<IQueryable<TvSeriesDomain>> ApplyFilters(IQueryable<TvSeriesDomain> query, GetTvSeriesByCriteriaQuery request)
         {
             if (!string.IsNullOrWhiteSpace(request.TitleSearch))
             {
@@ -41,7 +48,7 @@ namespace Application.Features.TvSeriesServices.GetTvSeriesByCriteria
             }
             return query;
         }
-        public IQueryable<TvSeriesDomain> ApplySorting(IQueryable<TvSeriesDomain> query, GetTvSeriesByCriteriaQuery request)
+        private async Task<IQueryable<TvSeriesDomain>> ApplySorting(IQueryable<TvSeriesDomain> query, GetTvSeriesByCriteriaQuery request)
         {
             if (!string.IsNullOrEmpty(request.SortByField))
             {

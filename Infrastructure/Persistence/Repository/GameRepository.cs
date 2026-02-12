@@ -16,6 +16,10 @@ namespace Infrastructure.Persistence.Repository
         {
             _context = context;
         }
+        public async Task <List<GameDomain>> GetListFromQueryAsync(IQueryable<GameDomain> query, CancellationToken cancellationToken)
+        {
+            return await query.ToListAsync(cancellationToken);
+        }
         public async Task AddListOfGames(List<GameDomain>games,CancellationToken cancellationToken)
         {
             await _context.Games.AddRangeAsync(games,cancellationToken); 
@@ -40,7 +44,6 @@ namespace Infrastructure.Persistence.Repository
         public async Task<IQueryable<GameDomain>> AsQueryable()
         {
             return _context.Games
-//                .Include(g => g.GenreDomain)
                 .Include(g => g.Stats)
                 .AsNoTracking()
                 .AsQueryable();

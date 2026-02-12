@@ -31,6 +31,9 @@ namespace Api.Extensions
             services.AddScoped<ITokenCleanService, TokenCleanService>();
             services.AddScoped<IReferenceDataService, ReferenceDataService>();
             services.AddScoped<ITokenRepository, TokenRepository>();
+            services.AddScoped<ITvSeriesSortAndFilterService, TvSeriesSortAndFilterService>();
+            services.AddScoped<IMovieSortAndFilterService, MovieSortAndFilterService>();
+            services.AddScoped<IGameSortAndFilterService, GameSortAndFilterService>();
             services.AddHostedService<TokenBackgroundService>();
             services.AddScoped<AccessTokenService>();
             services.AddScoped<MovieSortAndFilterService>();

@@ -2,5 +2,5 @@
 
 namespace Application.Common.DTO.Request
 {
-    public record ReviewRequest([Range(1, 10)] int Rating, string Comment);
+    public record ReviewRequest(int Rating, string Comment);
 }

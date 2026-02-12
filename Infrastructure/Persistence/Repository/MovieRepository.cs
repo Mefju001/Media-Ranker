@@ -12,7 +12,10 @@ namespace Infrastructure.Persistence.Repository
         {
             this.context = context;
         }
-
+        public async Task<List<MovieDomain>>GetListFromQuery(IQueryable<MovieDomain> query, CancellationToken cancellationToken)
+        {
+            return await query.ToListAsync(cancellationToken);
+        }
         public async Task<MovieDomain> AddAsync(MovieDomain movieDomain)
         {
             var movie = await context.Movies.AddAsync(movieDomain);

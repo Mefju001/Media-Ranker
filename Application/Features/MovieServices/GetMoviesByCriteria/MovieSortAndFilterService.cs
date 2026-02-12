@@ -11,7 +11,13 @@ namespace Application.Features.MovieServices.GetMoviesByCriteria
         {
             _unitOfWork = unitOfWork;
         }
-        public IQueryable<MovieDomain> ApplyFilters(GetMoviesByCriteriaQuery request)
+        public async Task<IQueryable<MovieDomain>> Handler(GetMoviesByCriteriaQuery request)
+        {
+            var query = ApplyFilters(request);
+            query = ApplySorting(query, request);
+            return query;
+        }
+        private IQueryable<MovieDomain> ApplyFilters(GetMoviesByCriteriaQuery request)
         {
             var query = _unitOfWork.MovieRepository.AsQueryable();
             if (!string.IsNullOrWhiteSpace(request.TitleSearch))
@@ -49,7 +55,7 @@ namespace Application.Features.MovieServices.GetMoviesByCriteria
             }
             return query;
         }
-        public IQueryable<MovieDomain> ApplySorting(IQueryable<MovieDomain> query, GetMoviesByCriteriaQuery request)
+        private IQueryable<MovieDomain> ApplySorting(IQueryable<MovieDomain> query, GetMoviesByCriteriaQuery request)
         {
             if (!string.IsNullOrEmpty(request.SortByField))
             {
