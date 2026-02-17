@@ -5,9 +5,9 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace Infrastructure.Config
 {
-    public class UserConfiguration : IEntityTypeConfiguration<UserDomain>
+    public class UserConfiguration : IEntityTypeConfiguration<User>
     {
-        public void Configure(EntityTypeBuilder<UserDomain> builder)
+        public void Configure(EntityTypeBuilder<User> builder)
         {
             builder.HasKey(x => x.Id);
             builder.Property(x => x.username).IsRequired().UsePropertyAccessMode(PropertyAccessMode.Field).HasMaxLength(50);
@@ -23,10 +23,10 @@ namespace Infrastructure.Config
                .WithMany()
                .UsingEntity<Dictionary<string, object>>(
                "UserRoles",
-               j => j.HasOne<RoleDomain>().WithMany().HasForeignKey("RoleId"),
-               j => j.HasOne<UserDomain>().WithMany().HasForeignKey("UserId")
+               j => j.HasOne<Role>().WithMany().HasForeignKey("RoleId"),
+               j => j.HasOne<User>().WithMany().HasForeignKey("UserId")
                 );
-            builder.Metadata.FindNavigation(nameof(UserDomain.UserRoles))
+            builder.Metadata.FindNavigation(nameof(User.UserRoles))
                ?.SetPropertyAccessMode(PropertyAccessMode.Field);
         }
     }

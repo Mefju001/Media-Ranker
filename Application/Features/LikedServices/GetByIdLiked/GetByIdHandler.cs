@@ -35,9 +35,9 @@ namespace Application.Features.LikedServices.GetByIdLiked
 
             return media switch
             {
-                MovieDomain m => LikedMediaMapper.ToResponse(liked, user, m, genre, await unitOfWork.DirectorRepository.Get(m.DirectorId)),
-                GameDomain g => LikedMediaMapper.ToResponse(liked, user, g, genre),
-                TvSeriesDomain t => LikedMediaMapper.ToResponse(liked, user, t, genre),
+                Movie m => LikedMediaMapper.ToResponse(liked, user, m, genre, await unitOfWork.DirectorRepository.Get(m.DirectorId)),
+                Game g => LikedMediaMapper.ToResponse(liked, user, g, genre),
+                TvSeries t => LikedMediaMapper.ToResponse(liked, user, t, genre),
                 _ => throw new InvalidOperationException("Unknown media type")
             };
         }

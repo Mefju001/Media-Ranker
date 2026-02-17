@@ -26,7 +26,7 @@ namespace Api.Extensions
         {
             services.AddDbContext<AppDbContext>(options =>
             {
-                options.UseLazyLoadingProxies().UseNpgsql(config.GetConnectionString("DefaultConnection"));
+                options.UseNpgsql(config.GetConnectionString("DefaultConnection"));
             });
             services.AddScoped<ITokenCleanService, TokenCleanService>();
             services.AddScoped<IReferenceDataService, ReferenceDataService>();
@@ -42,7 +42,7 @@ namespace Api.Extensions
             services.AddScoped<RefreshTokenService>();
             services.AddScoped<ValidatorForRefreshToken>();
             services.AddHttpClient<LogSenderService>();
-            services.AddScoped<IPasswordHasher<UserDomain>, PasswordHasher<UserDomain>>();
+            services.AddScoped<IPasswordHasher<User>, PasswordHasher<User>>();
             services.AddMediatR(cfg =>
             {
                 cfg.RegisterServicesFromAssembly(typeof(GetAllQuery).Assembly);

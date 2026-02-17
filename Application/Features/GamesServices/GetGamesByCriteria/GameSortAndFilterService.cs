@@ -11,13 +11,13 @@ namespace Application.Features.GamesServices.GetGamesByCriteria
         {
             this.unitOfWork = unitOfWork;
         }
-        public async Task<IQueryable<GameDomain>> GetGamesByCriteriaAsync(GetGamesByCriteriaQuery request)
+        public async Task<IQueryable<Game>> GetGamesByCriteriaAsync(GetGamesByCriteriaQuery request)
         {
             var filteredGames = await ApplyFiltersAsync(request);
             var sortedGames = await ApplySorting(filteredGames, request);
             return sortedGames;
         }
-        private async Task<IQueryable<GameDomain>> ApplyFiltersAsync(GetGamesByCriteriaQuery request)
+        private async Task<IQueryable<Game>> ApplyFiltersAsync(GetGamesByCriteriaQuery request)
         {
             var query = await unitOfWork.GameRepository.AsQueryable();
             if (!string.IsNullOrWhiteSpace(request.title))
@@ -32,7 +32,7 @@ namespace Application.Features.GamesServices.GetGamesByCriteria
                     genre => genre.Id,
                     (game, genre) => new { game, genre }
                     )
-                    .Where(ge=>ge.genre.name.Contains(request.genreName))
+                    .Where(ge=>ge.genre.name.Value.Contains(request.genreName))
                     .Select(ge=>ge.game);
             }
             if (request.MinRating.HasValue)
@@ -41,7 +41,7 @@ namespace Application.Features.GamesServices.GetGamesByCriteria
             }
             if (request.releaseDate.HasValue)
             {
-                query = query.Where(m => m.ReleaseDate.Year == request.releaseDate);
+                query = query.Where(m => m.ReleaseDate.Value.Year == request.releaseDate);
             }
             if (!string.IsNullOrWhiteSpace(request.developer))
             {
@@ -49,7 +49,7 @@ namespace Application.Features.GamesServices.GetGamesByCriteria
             }
             return query;
         }
-        private async Task<IQueryable<GameDomain>> ApplySorting(IQueryable<GameDomain> query, GetGamesByCriteriaQuery request)
+        private async Task<IQueryable<Game>> ApplySorting(IQueryable<Game> query, GetGamesByCriteriaQuery request)
         {
             if (!string.IsNullOrEmpty(request.sortByField))
             {
@@ -62,9 +62,9 @@ namespace Application.Features.GamesServices.GetGamesByCriteria
             }
             return query;
         }
-        private static Dictionary<string, Expression<Func<GameDomain, object>>> DictionaryOfSortAbility()
+        private static Dictionary<string, Expression<Func<Game, object>>> DictionaryOfSortAbility()
         {
-            var columns = new Dictionary<string, Expression<Func<GameDomain, object>>>(StringComparer.OrdinalIgnoreCase)
+            var columns = new Dictionary<string, Expression<Func<Game, object>>>(StringComparer.OrdinalIgnoreCase)
             {
                 ["Title"] = m => m.Title,
                 ["Rating"] = m => m.Stats.AverageRating!,

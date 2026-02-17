@@ -30,9 +30,9 @@ namespace Application.Features.LikedServices.GetAllLikedByUser
                 var genre = genres[media.GenreId];
                 results.Add(media switch
                 {
-                    MovieDomain m => LikedMediaMapper.ToResponse(item, user, m, genre, directors[m.DirectorId]),
-                    GameDomain g => LikedMediaMapper.ToResponse(item, user, g, genre),
-                    TvSeriesDomain t => LikedMediaMapper.ToResponse(item, user, t, genre),
+                    Movie m => LikedMediaMapper.ToResponse(item, user, m, genre, directors[m.DirectorId]),
+                    Game g => LikedMediaMapper.ToResponse(item, user, g, genre),
+                    TvSeries t => LikedMediaMapper.ToResponse(item, user, t, genre),
                     _ => throw new Exception("Unknown media type")
                 });
             }

@@ -12,10 +12,10 @@ namespace Application.Features.AuthServices.Signup
     public class SignUpHandler : IRequestHandler<SignUpCommand, SignUpResponse>
     {
         private readonly IUnitOfWork unitOfWork;
-        private readonly IPasswordHasher<UserDomain> Hasher;
+        private readonly IPasswordHasher<User> Hasher;
         private readonly AccessTokenService accessTokenService;
         private readonly RefreshTokenService refreshTokenService;
-        public SignUpHandler(IUnitOfWork unitOfWork, IPasswordHasher<UserDomain> hasher, RefreshTokenService refreshTokenService, AccessTokenService access)
+        public SignUpHandler(IUnitOfWork unitOfWork, IPasswordHasher<User> hasher, RefreshTokenService refreshTokenService, AccessTokenService access)
         {
             this.unitOfWork = unitOfWork;
             this.Hasher = hasher;
@@ -28,7 +28,7 @@ namespace Application.Features.AuthServices.Signup
             bool exists = await unitOfWork.UserRepository.IsAnyUserWithUsernameAndEmailLikeThat(request.username, request.email);
             if (exists)
                 throw new Exception("User with that username or email already exists");
-            var user = UserDomain.Create(request.username,
+            var user = User.Create(request.username,
                 Hasher.HashPassword(null, request.password),
                 request.name,
                 request.surname,

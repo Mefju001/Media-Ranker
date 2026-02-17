@@ -11,13 +11,13 @@ namespace Application.Features.MovieServices.GetMoviesByCriteria
         {
             _unitOfWork = unitOfWork;
         }
-        public async Task<IQueryable<MovieDomain>> Handler(GetMoviesByCriteriaQuery request)
+        public async Task<IQueryable<Movie>> Handler(GetMoviesByCriteriaQuery request)
         {
             var query = ApplyFilters(request);
             query = ApplySorting(query, request);
             return query;
         }
-        private IQueryable<MovieDomain> ApplyFilters(GetMoviesByCriteriaQuery request)
+        private IQueryable<Movie> ApplyFilters(GetMoviesByCriteriaQuery request)
         {
             var query = _unitOfWork.MovieRepository.AsQueryable();
             if (!string.IsNullOrWhiteSpace(request.TitleSearch))
@@ -31,7 +31,7 @@ namespace Application.Features.MovieServices.GetMoviesByCriteria
                     movie=>movie.GenreId,
                     genre=>genre.Id,
                     (movie ,genre)=> new {Movie=movie, Genre = genre })
-                    .Where(mg=>mg.Genre.name.Contains(request.genreName))
+                    .Where(mg=>mg.Genre.name.Value.Contains(request.genreName))
                     .Select(mg=>mg.Movie);
             }
             if (request.MinRating.HasValue)
@@ -40,7 +40,7 @@ namespace Application.Features.MovieServices.GetMoviesByCriteria
             }
             if (request.ReleaseYear.HasValue)
             {
-                query = query.Where(m => m.ReleaseDate.Year == request.ReleaseYear);
+                query = query.Where(m => m.ReleaseDate.Value.Year == request.ReleaseYear);
             }
             if (!string.IsNullOrWhiteSpace(request.DirectorSurname) && !string.IsNullOrWhiteSpace(request.DirectorSurname))
             {
@@ -55,7 +55,7 @@ namespace Application.Features.MovieServices.GetMoviesByCriteria
             }
             return query;
         }
-        private IQueryable<MovieDomain> ApplySorting(IQueryable<MovieDomain> query, GetMoviesByCriteriaQuery request)
+        private IQueryable<Movie> ApplySorting(IQueryable<Movie> query, GetMoviesByCriteriaQuery request)
         {
             if (!string.IsNullOrEmpty(request.SortByField))
             {
@@ -68,9 +68,9 @@ namespace Application.Features.MovieServices.GetMoviesByCriteria
             }
             return query;
         }
-        private static Dictionary<string, Expression<Func<MovieDomain, object>>> DictionaryOfSortAbility()
+        private static Dictionary<string, Expression<Func<Movie, object>>> DictionaryOfSortAbility()
         {
-            var columns = new Dictionary<string, Expression<Func<MovieDomain, object>>>(StringComparer.OrdinalIgnoreCase)
+            var columns = new Dictionary<string, Expression<Func<Movie, object>>>(StringComparer.OrdinalIgnoreCase)
             {
                 ["Title"] = m => m.Title,
                 ["Rating"] = m => m.Stats.AverageRating!,

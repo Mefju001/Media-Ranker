@@ -15,11 +15,11 @@ namespace Infrastructure.Persistence.Repository
         {
             return await appDbContext.LikedMedias.AnyAsync(lm => lm.userId == userId && lm.mediaId == mediaId);
         }
-        public async Task AddAsync(LikedMediaDomain likedMedia)
+        public async Task AddAsync(LikedMedia likedMedia)
         {
             await appDbContext.LikedMedias.AddAsync(likedMedia);
         }
-        public async Task<LikedMediaDomain?> GetByUserAndMediaId(int userId, int mediaId)
+        public async Task<LikedMedia?> GetByUserAndMediaId(int userId, int mediaId)
         {
             return await appDbContext.LikedMedias
                 .Where(lm => lm.userId == userId && lm.mediaId == mediaId)
@@ -33,23 +33,23 @@ namespace Infrastructure.Persistence.Repository
             appDbContext.LikedMedias.Remove(result);
             return true;
         }
-        public async Task<List<LikedMediaDomain>> GetAll()
+        public async Task<List<LikedMedia>> GetAll()
         {
             return await appDbContext.LikedMedias.ToListAsync();
         }
-        public async Task<List<LikedMediaDomain>> GetAllByUserId(int userId)
+        public async Task<List<LikedMedia>> GetAllByUserId(int userId)
         {
             return await appDbContext.LikedMedias
                 .Where(lm => lm.userId == userId)
                 .ToListAsync();
         }
-        public async Task<LikedMediaDomain?> GetById(int likedMediaId)
+        public async Task<LikedMedia?> GetById(int likedMediaId)
         {
             return await appDbContext.LikedMedias
                 .Where(lm => lm.id == likedMediaId)
                 .FirstOrDefaultAsync();
         }
-        public async Task<List<LikedMediaDomain>> GetLikedForUser(int userId)
+        public async Task<List<LikedMedia>> GetLikedForUser(int userId)
         {
             return await appDbContext.LikedMedias.Where(lm => lm.userId == userId).ToListAsync();
         }

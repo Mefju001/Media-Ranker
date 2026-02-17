@@ -2,6 +2,7 @@
 using Application.Common.Interfaces;
 using Application.Mapper;
 using Domain.Entity;
+using Domain.Value_Object;
 using MediatR;
 
 namespace Application.Features.MovieServices.AddListOfMovies
@@ -25,9 +26,12 @@ namespace Application.Features.MovieServices.AddListOfMovies
             {
                 var genre = dictionaryGenres[movieReq.Genre.name];
                 var director = dictionaryDirectors[(movieReq.Director.Name, movieReq.Director.Surname)];
-                return MovieDomain.Create(movieReq.Title, movieReq.Description, movieReq.Language,
-                                                  movieReq.ReleaseDate, genre.Id, director.Id,
-                                                  movieReq.Duration, movieReq.IsCinemaRelease);
+                var language = new Language(movieReq.Language);
+                var releaseDate = new ReleaseDate(movieReq.ReleaseDate);
+                var duration = new Duration(movieReq.Duration);
+                return Movie.Create(movieReq.Title, movieReq.Description, language,
+                                                  releaseDate, genre.Id, director.Id,
+                                                  duration, movieReq.IsCinemaRelease);
             }).ToList();
             await _unitOfWork.MovieRepository.AddListOfMovies(movies, cancellationToken);
             await _unitOfWork.CompleteAsync();

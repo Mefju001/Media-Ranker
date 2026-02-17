@@ -11,10 +11,10 @@ namespace Application.Features.AuthServices.Login
     public class LoginHandler : IRequestHandler<LoginCommand, TokenResponse?>
     {
         private readonly IUnitOfWork unitOfWork;
-        private readonly IPasswordHasher<UserDomain> passwordHasher;
+        private readonly IPasswordHasher<User> passwordHasher;
         private readonly AccessTokenService accessTokenService;
         private readonly RefreshTokenService refreshTokenService;
-        public LoginHandler(IUnitOfWork unitOfWork, IPasswordHasher<UserDomain> _passwordHasher, AccessTokenService generateAccessToken, RefreshTokenService refreshTokenService)
+        public LoginHandler(IUnitOfWork unitOfWork, IPasswordHasher<User> _passwordHasher, AccessTokenService generateAccessToken, RefreshTokenService refreshTokenService)
         {
             this.unitOfWork = unitOfWork;
             this.passwordHasher = _passwordHasher;

@@ -12,7 +12,7 @@ namespace Infrastructure.Persistence.Repository
         {
             this.appDbContext = appDbContext;
         }
-        public async Task<UserDomain> GetUserByUsername(string username)
+        public async Task<User> GetUserByUsername(string username)
         {
             var user = await appDbContext.Users
                 .Where(u => u.username == username)
@@ -20,7 +20,7 @@ namespace Infrastructure.Persistence.Repository
             if (user == null) throw new NotFoundException("User not found");
             return user;
         }
-        public async Task<UserDomain> GetUserIdByUsername(string username)
+        public async Task<User> GetUserIdByUsername(string username)
         {
             var user = await appDbContext.Users
                 .Where(u => u.username == username)
@@ -28,7 +28,7 @@ namespace Infrastructure.Persistence.Repository
             if (user == null) throw new NotFoundException("User not found");
             return user;
         }
-        public async Task<UserDomain> GetUserById(int userId)
+        public async Task<User> GetUserById(int userId)
         {
             var user = await appDbContext.Users
                 .Where(u => u.Id == userId)
@@ -52,13 +52,13 @@ namespace Infrastructure.Persistence.Repository
         {
             return await appDbContext.Users.AnyAsync(u=>u.username == username&&u.email==email);
         }
-        public async Task<UserDomain> AddUser(UserDomain user)
+        public async Task<User> AddUser(User user)
         {
            var result =  await appDbContext.Users.AddAsync(user);
             return result.Entity;
         }
 
-        public Task<Dictionary<int, UserDomain>> GetByIds(List<int> userIds)
+        public Task<Dictionary<int, User>> GetByIds(List<int> userIds)
         {
             var users = appDbContext.Users
                 .Where(u => userIds.Contains(u.Id))

@@ -44,7 +44,7 @@ namespace Application.Features.AuthServices.Common
             var httpContext = httpContextAccessor.HttpContext;
             string? clientIp = httpContext?.Connection.RemoteIpAddress?.ToString();
             string? userAgent = httpContext?.Request.Headers["User-Agent"].ToString();
-            var token = TokenDomain.CreateToken(
+            var token = Token.CreateToken(
                 jti,
                 refToken,
                 userId,

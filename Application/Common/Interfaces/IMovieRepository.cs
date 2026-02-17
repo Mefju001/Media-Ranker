@@ -4,13 +4,13 @@ namespace Application.Common.Interfaces
 {
     public interface IMovieRepository
     {
-        Task<List<MovieDomain>> GetListFromQuery(IQueryable<MovieDomain> query, CancellationToken cancellationToken);
-        IQueryable<MovieDomain> AsQueryable();
-        Task<List<MovieDomain>> GetAllAsync(CancellationToken cancellationToken);
-        Task<MovieDomain> AddAsync(MovieDomain movieDomain);
-        Task AddAsync(IEnumerable<MovieDomain> movieDomains);
-        Task<MovieDomain?> FirstOrDefaultAsync(int movieId);
-        Task DeleteMovie(MovieDomain movieDomain);
-        Task AddListOfMovies(List<MovieDomain> movieDomains, CancellationToken cancellationToken);
+        Task<List<Movie>> GetListFromQuery(IQueryable<Movie> query, CancellationToken cancellationToken);
+        IQueryable<Movie> AsQueryable();
+        Task<List<Movie>> GetAllAsync(CancellationToken cancellationToken);
+        Task<Movie> AddAsync(Movie movieDomain);
+        Task AddAsync(IEnumerable<Movie> movieDomains);
+        Task<Movie?> FirstOrDefaultAsync(int movieId);
+        Task DeleteMovie(Movie movieDomain);
+        Task AddListOfMovies(List<Movie> movieDomains, CancellationToken cancellationToken);
     }
 }

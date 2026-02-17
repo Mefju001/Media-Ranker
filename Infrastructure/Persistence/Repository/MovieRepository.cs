@@ -12,32 +12,32 @@ namespace Infrastructure.Persistence.Repository
         {
             this.context = context;
         }
-        public async Task<List<MovieDomain>>GetListFromQuery(IQueryable<MovieDomain> query, CancellationToken cancellationToken)
+        public async Task<List<Movie>>GetListFromQuery(IQueryable<Movie> query, CancellationToken cancellationToken)
         {
             return await query.ToListAsync(cancellationToken);
         }
-        public async Task<MovieDomain> AddAsync(MovieDomain movieDomain)
+        public async Task<Movie> AddAsync(Movie movieDomain)
         {
             var movie = await context.Movies.AddAsync(movieDomain);
             return movie.Entity;
         }
 
-        public async Task AddAsync(IEnumerable<MovieDomain> movieDomains)
+        public async Task AddAsync(IEnumerable<Movie> movieDomains)
         {
             await context.Movies.AddRangeAsync(movieDomains);
         }
 
-        public async Task<List<MovieDomain>> GetAllAsync(CancellationToken cancellationToken)
+        public async Task<List<Movie>> GetAllAsync(CancellationToken cancellationToken)
         {
             var movies = await context.Movies.ToListAsync();
             return movies;
         }
-        public async Task<MovieDomain?> FirstOrDefaultAsync(int movieId)
+        public async Task<Movie?> FirstOrDefaultAsync(int movieId)
         {
             return await context.Movies.FirstOrDefaultAsync(m => m.Id == movieId);
         }
 
-        public IQueryable<MovieDomain> AsQueryable()
+        public IQueryable<Movie> AsQueryable()
         {
             return context.Movies
                 .Include(m => m.Stats)
@@ -45,12 +45,12 @@ namespace Infrastructure.Persistence.Repository
                 .AsQueryable();
         }
 
-        public async Task DeleteMovie(MovieDomain movieDomain)
+        public async Task DeleteMovie(Movie movieDomain)
         {
             context.Movies.Remove(movieDomain);
         }
 
-        public async Task AddListOfMovies(List<MovieDomain> movieDomains, CancellationToken cancellationToken)
+        public async Task AddListOfMovies(List<Movie> movieDomains, CancellationToken cancellationToken)
         {
             await context.AddRangeAsync(movieDomains,cancellationToken);
         }

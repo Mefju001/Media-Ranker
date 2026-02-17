@@ -13,7 +13,7 @@ namespace Infrastructure.Persistence.Repository
             this.appDbContext = appDbContext;
         }
 
-        public Task<Dictionary<int, MediaDomain>> GetByIds(List<int> mediaIds)
+        public Task<Dictionary<int, Media>> GetByIds(List<int> mediaIds)
         {
             var medias = appDbContext.Medias
                 .Where(m => mediaIds.Contains(m.Id))
@@ -21,7 +21,7 @@ namespace Infrastructure.Persistence.Repository
             return medias;
         }
 
-        public async Task<MediaDomain> GetMediaById(int mediaId)
+        public async Task<Media> GetMediaById(int mediaId)
         {
             var media = await appDbContext.Medias
                 .Where(m => m.Id == mediaId)

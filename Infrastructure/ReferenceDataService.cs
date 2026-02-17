@@ -14,31 +14,31 @@ namespace Infrastructure
         {
             this.unitOfWork = unitOfWork;
         }
-        public async Task<DirectorDomain> GetOrCreateDirectorAsync(DirectorRequest directorRequest)
+        public async Task<Director> GetOrCreateDirectorAsync(DirectorRequest directorRequest)
         {
             var Director = await unitOfWork.DirectorRepository.FirstOrDefaultForNameAndSurnameAsync(directorRequest.Name,directorRequest.Surname);
             if (Director is not null) return Director;
-            Director = DirectorDomain.Create(directorRequest.Name, directorRequest.Surname);
+            Director = Director.Create(directorRequest.Name, directorRequest.Surname);
             var result = await unitOfWork.DirectorRepository.AddAsync(Director);
             return result;
         }
-        public async Task<GenreDomain> GetOrCreateGenreAsync(GenreRequest genreRequest)
+        public async Task<Genre> GetOrCreateGenreAsync(GenreRequest genreRequest)
         {
             var Genre = await unitOfWork.GenreRepository.FirstOrDefaultForNameAsync(genreRequest.name);
             if (Genre is not null) return Genre;
-            Genre = GenreDomain.Create(genreRequest.name);
+            Genre = Genre.Create(genreRequest.name);
             var result = await unitOfWork.GenreRepository.AddAsync(Genre);
             return result;
         }
-        public async Task<Dictionary<string,GenreDomain>> EnsureGenresExistAsync(List<string>names)
+        public async Task<Dictionary<string,Genre>> EnsureGenresExistAsync(List<string>names)
         {
             var existingGenres = await unitOfWork.GenreRepository.GetByNamesAsync(names);
-            var genresMap = existingGenres.ToDictionary(g => g.name);
+            var genresMap = existingGenres.ToDictionary(g => g.name.Value);
             foreach (var name in names)
             {
                 if (!genresMap.ContainsKey(name))
                 {
-                    var newGenre = GenreDomain.Create(name);
+                    var newGenre = Genre.Create(name);
                     genresMap.Add(name, newGenre);
                     await unitOfWork.GenreRepository.AddAsync(newGenre);
                 }
@@ -47,20 +47,20 @@ namespace Infrastructure
         }
         public async Task<List<GenreResponse>> GetGenres()
         {
-            GenreDomain genres = null; //await unitOfWork.GenreRepository();
+            Genre genres = null; //await unitOfWork.GenreRepository();
             if (genres is null) return new List<GenreResponse>();
             //var response = genres.Select(GenreMapper.ToResponse).ToList();
             // return response;
             throw new NotImplementedException();
         }
-        public async Task saveToken(TokenDomain token)
+        public async Task saveToken(Token token)
         {
             if (token == null) throw new ArgumentNullException();
             await unitOfWork.TokenRepository.SaveToken(token);
             await unitOfWork.CompleteAsync();
         }
 
-        public async Task<Dictionary<(string,string),DirectorDomain>> EnsureDirectorsExistAsync(List<DirectorRequest> directors)
+        public async Task<Dictionary<(string,string),Director>> EnsureDirectorsExistAsync(List<DirectorRequest> directors)
         {
             var uniquePairs = directors.Select(d=> (Name: d.Name.Trim(), Surname: d.Surname.Trim())).Distinct().ToList();
             var existingDirectors = await unitOfWork.DirectorRepository.findByNames(uniquePairs);
@@ -71,7 +71,7 @@ namespace Infrastructure
             {
                 if (!directorMap.ContainsKey(pair))
                 {
-                    var newDirector = DirectorDomain.Create(pair.Name, pair.Surname);
+                    var newDirector = Director.Create(pair.Name, pair.Surname);
                     await unitOfWork.DirectorRepository.AddAsync(newDirector);
 
                     directorMap.Add(pair, newDirector);

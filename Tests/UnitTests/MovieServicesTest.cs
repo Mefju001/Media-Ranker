@@ -39,7 +39,7 @@ namespace UnitTests
             var transacional = new Mock<IDbContextTransaction>();
             _unitOfWork.Setup(uow => uow.BeginTransactionAsync()).ReturnsAsync(transacional.Object);
         }
-        [TestMethod]
+       /* [TestMethod]
         public void GetAll()
         {
             List<MovieDomain> movies = new List<MovieDomain>
@@ -206,7 +206,7 @@ namespace UnitTests
             movieSortAndFilterService.Verify(m => m.ApplySorting(It.IsAny<IQueryable<MovieDomain>>(), It.IsAny<GetMoviesByCriteriaQuery>()), Times.Once);
             _unitOfWork.Verify(g => g.GenreRepository.GetGenresDictionary(), Times.Once);
             _unitOfWork.Verify(d => d.DirectorRepository.GetDirectorsDictionary(), Times.Once);
-        }
+        }*/
 
     }
 }

@@ -9,6 +9,6 @@ namespace Application.Features.TvSeriesServices.GetTvSeriesByCriteria
 {
     public interface ITvSeriesSortAndFilterService
     {
-        Task<IQueryable<TvSeriesDomain>> Handler(GetTvSeriesByCriteriaQuery request);
+        Task<IQueryable<TvSeries>> Handler(GetTvSeriesByCriteriaQuery request);
     }
 }

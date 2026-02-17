@@ -1,4 +1,5 @@
 ﻿using Domain.Enums;
+using Domain.Value_Object;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -7,17 +8,17 @@ using System.Threading.Tasks;
 
 namespace Domain.Entity
 {
-    public class TvSeriesDomain : MediaDomain
+    public class TvSeries : Media
     {
         public int Seasons { get; private set; }
         public int Episodes { get; private set; }
         public string? Network { get; private set; }
         public EStatus Status { get; private set; }
-        private TvSeriesDomain() { }
-        private TvSeriesDomain(string Title, 
+        private TvSeries() { }
+        private TvSeries(string Title, 
             string Description, 
-            string Language, 
-            DateTime ReleaseDate, 
+            Language Language, 
+            ReleaseDate ReleaseDate, 
             int genre,
             int Seasons,
             int Episodes,
@@ -30,27 +31,28 @@ namespace Domain.Entity
             this.Network = Network;
             this.Status = Status;
         }
-        private TvSeriesDomain(int id,
+        private TvSeries(int id,
             string Title,
             string Description,
-            string Language,
-            DateTime ReleaseDate,
+            Language Language,
+            ReleaseDate ReleaseDate,
             int genre,
             int Seasons,
             int Episodes,
             string? Network,
-            EStatus Status)
-            : base(id,Title, Description, Language, ReleaseDate, genre)
+            EStatus Status,
+            MediaStats stats)
+            : base(id,Title, Description, Language, ReleaseDate, genre, stats)
         {
             this.Seasons = Seasons;
             this.Episodes = Episodes;
             this.Network = Network;
             this.Status = Status;
         }
-        public static TvSeriesDomain Create(string Title,
+        public static TvSeries Create(string Title,
             string Description,
-            string Language,
-            DateTime ReleaseDate,
+            Language Language,
+            ReleaseDate ReleaseDate,
             int genre,
             int Seasons,
             int Episodes,
@@ -58,7 +60,7 @@ namespace Domain.Entity
             EStatus Status)
         {
             Validate(Seasons, Episodes);
-            return new TvSeriesDomain(
+            return new TvSeries(
                                    Title,
                                    Description,
                                    Language,
@@ -69,47 +71,46 @@ namespace Domain.Entity
                                    Network,
                                    Status);
         }
-        public static TvSeriesDomain Update(string Title,
+        public void Update(string Title,
             string Description,
-            string Language,
-            DateTime ReleaseDate,
+            Language Language,
+            ReleaseDate ReleaseDate,
+            int genre,
+            int Seasons,
+            int Episodes,
+            string? Network,
+            EStatus Status)
+        {
+            Validate(Seasons, Episodes);
+            this.Seasons = Seasons;
+            this.Episodes = Episodes;
+            this.Network = Network;
+            this.Status = Status;
+            base.Update(Title, Description,Language,ReleaseDate,genre);            
+        }
+        public static TvSeries Reconstruct(int id,
+            string Title,
+            string Description,
+            Language Language,
+            ReleaseDate ReleaseDate,
             int genre,
             int Seasons,
             int Episodes,
             string? Network,
             EStatus Status,
-            TvSeriesDomain tvSeries)
+            MediaStats stats)
         {
-            Validate(Seasons, Episodes);
-            tvSeries.Seasons = Seasons;
-            tvSeries.Episodes = Episodes;
-            tvSeries.Network = Network;
-            tvSeries.Status = Status;
-            tvSeries.Update(Title, Description,Language,ReleaseDate,genre);
-            return tvSeries;
-            
-        }
-        public static TvSeriesDomain Reconstruct(int id,
-            string Title,
-            string Description,
-            string Language,
-            DateTime ReleaseDate,
-            int genre,
-            int Seasons,
-            int Episodes,
-            string? Network,
-            EStatus Status)
-        {
-            return new TvSeriesDomain(id,
-                                   Title,
-                                   Description,
-                                   Language,
-                                   ReleaseDate,
-                                   genre,
-                                   Seasons,
-                                   Episodes,
-                                   Network,
-                                   Status);
+            return new TvSeries(id,
+                                Title,
+                                Description,
+                                Language,
+                                ReleaseDate,
+                                genre,
+                                Seasons,
+                                Episodes,
+                                Network,
+                                Status,
+                                stats);
         }
         public void UpdateSeasons(int seasons)
         {

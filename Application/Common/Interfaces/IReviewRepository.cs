@@ -9,10 +9,10 @@ namespace Application.Common.Interfaces
 {
     public interface IReviewRepository
     {
-        Task<ReviewDomain?> GetReviewByIdAsync(int reviewId);
-        Task<ReviewDomain> AddAsync(ReviewDomain review);
+        Task<Review?> GetReviewByIdAsync(int reviewId);
+        Task<Review> AddAsync(Review review);
         Task<List<string>> GetTheLastestReviewAsync(CancellationToken cancellationToken);
-        Task<List<ReviewDomain>> GetAllReviewsAsync(CancellationToken cancellation);
-        Task DeleteAsync(ReviewDomain review);
+        Task<List<Review>> GetAllReviewsAsync(CancellationToken cancellation);
+        Task DeleteAsync(Review review);
     }
 }

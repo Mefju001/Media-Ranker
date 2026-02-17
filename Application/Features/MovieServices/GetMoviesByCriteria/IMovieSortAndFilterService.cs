@@ -9,6 +9,6 @@ namespace Application.Features.MovieServices.GetMoviesByCriteria
 {
     public interface IMovieSortAndFilterService
     {
-        Task<IQueryable<MovieDomain>> Handler(GetMoviesByCriteriaQuery request);
+        Task<IQueryable<Movie>> Handler(GetMoviesByCriteriaQuery request);
     }
 }

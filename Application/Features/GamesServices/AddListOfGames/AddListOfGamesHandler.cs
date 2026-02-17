@@ -2,6 +2,7 @@
 using Application.Common.Interfaces;
 using Application.Mapper;
 using Domain.Entity;
+using Domain.Value_Object;
 using MediatR;
 
 namespace Application.Features.GamesServices.AddListOfGames
@@ -22,11 +23,11 @@ namespace Application.Features.GamesServices.AddListOfGames
             var games = requests.games.Select(gameReq =>
             {
                 var genre = genresMap[gameReq.Genre.name];
-                return GameDomain.Create(
+                return Game.Create(
                         gameReq.Title,
                         gameReq.Description,
-                        gameReq.Language,
-                        gameReq.ReleaseDate.GetValueOrDefault(),
+                        new Language(gameReq.Language),
+                        new ReleaseDate(gameReq.ReleaseDate.GetValueOrDefault()),
                         genre.Id,
                         gameReq.Developer!,
                         gameReq.Platform);

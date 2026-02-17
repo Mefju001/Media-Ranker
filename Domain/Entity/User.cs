@@ -3,7 +3,7 @@ using System.Xml.Linq;
 
 namespace Domain.Entity
 {
-    public class UserDomain
+    public class User
     {
         public int Id { get; private set; }
         public string username { get; private set; }
@@ -11,13 +11,13 @@ namespace Domain.Entity
         public string name { get; private set; }
         public string surname { get; private set; }
         public string email { get; private set; }
-        private readonly List<RoleDomain> _userRoles = new();
-        public virtual IReadOnlyCollection<RoleDomain> UserRoles => _userRoles.AsReadOnly();
+        private readonly List<Role> _userRoles = new();
+        public virtual IReadOnlyCollection<Role> UserRoles => _userRoles.AsReadOnly();
 
-        private readonly List<ReviewDomain> _reviews = new();
-        public virtual IReadOnlyCollection<ReviewDomain> Reviews => _reviews.AsReadOnly();
-        private UserDomain() { }
-        private UserDomain(string username, string passwordHash, string name, string surname, string email)
+        private readonly List<Review> _reviews = new();
+        public virtual IReadOnlyCollection<Review> Reviews => _reviews.AsReadOnly();
+        private User() { }
+        private User(string username, string passwordHash, string name, string surname, string email)
         {
             this.username = username;
             password = passwordHash;
@@ -25,12 +25,12 @@ namespace Domain.Entity
             this.surname = surname;
             this.email = email;
         }
-        public static UserDomain Create(string username, string passwordHash, string name, string surname, string email)
+        public static User Create(string username, string passwordHash, string name, string surname, string email)
         {
             if (string.IsNullOrWhiteSpace(email) || !email.Contains("@"))
                 throw new ArgumentException("Invalid email format.");
 
-            return new UserDomain(
+            return new User(
                 username,
                 passwordHash,
                 name,
@@ -56,13 +56,13 @@ namespace Domain.Entity
                 throw new ArgumentException("Invalid email format.");
             email = newEmail;
         }
-        public void AddReview(ReviewDomain review)
+        public void AddReview(Review review)
         {
             if (_reviews.Any(r => r.MediaId == review.MediaId))
                 throw new InvalidOperationException("User has already reviewed this media.");
             _reviews.Add(review);
         }
-        public void AddRole(RoleDomain roleDomain)
+        public void AddRole(Role roleDomain)
         {
             if (_userRoles.Any(r => r.role == roleDomain.role)) return;
             _userRoles.Add(roleDomain);

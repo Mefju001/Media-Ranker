@@ -16,32 +16,32 @@ namespace Infrastructure.Persistence.Repository
         {
             _context = context;
         }
-        public async Task <List<GameDomain>> GetListFromQueryAsync(IQueryable<GameDomain> query, CancellationToken cancellationToken)
+        public async Task <List<Game>> GetListFromQueryAsync(IQueryable<Game> query, CancellationToken cancellationToken)
         {
             return await query.ToListAsync(cancellationToken);
         }
-        public async Task AddListOfGames(List<GameDomain>games,CancellationToken cancellationToken)
+        public async Task AddListOfGames(List<Game>games,CancellationToken cancellationToken)
         {
             await _context.Games.AddRangeAsync(games,cancellationToken); 
         }
-        public async Task<GameDomain?> GetGameDomainAsync(int gameId,CancellationToken cancellationToken)
+        public async Task<Game?> GetGameDomainAsync(int gameId,CancellationToken cancellationToken)
         {
             return await _context.Games.FirstOrDefaultAsync(g => g.Id == gameId,cancellationToken);
         }
-        public async Task DeleteGame(GameDomain game)
+        public async Task DeleteGame(Game game)
         {
              _context.Games.Remove(game);
         }
-        public async Task AddGameAsync(GameDomain game)
+        public async Task AddGameAsync(Game game)
         {
             await _context.Games.AddAsync(game);
         }
-        public async Task<List<GameDomain>> GetAllAsync()
+        public async Task<List<Game>> GetAllAsync()
         {
             return await _context.Games.ToListAsync();
         }
 
-        public async Task<IQueryable<GameDomain>> AsQueryable()
+        public async Task<IQueryable<Game>> AsQueryable()
         {
             return _context.Games
                 .Include(g => g.Stats)

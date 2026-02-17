@@ -11,9 +11,9 @@ namespace Application.Features.UserServices.ChangePassword
     public class ChangePasswordHandler : IRequestHandler<ChangePasswordCommand, Unit>
     {
         private readonly IUnitOfWork unitOfWork;
-        private readonly IPasswordHasher<UserDomain> Hasher;
+        private readonly IPasswordHasher<User> Hasher;
 
-        public ChangePasswordHandler(IPasswordHasher<UserDomain> passwordHasher, IUnitOfWork unitOfWork)
+        public ChangePasswordHandler(IPasswordHasher<User> passwordHasher, IUnitOfWork unitOfWork)
         {
             this.unitOfWork = unitOfWork;
             Hasher = passwordHasher;

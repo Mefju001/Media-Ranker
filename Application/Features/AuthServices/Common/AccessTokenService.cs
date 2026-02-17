@@ -17,7 +17,7 @@ namespace Application.Features.AuthServices.Common
             this.configuration = configuration;
         }
 
-        public string generateAccessToken(int id, string username, ICollection<RoleDomain> roles)
+        public string generateAccessToken(int id, string username, ICollection<Role> roles)
         {
             var jti = Guid.NewGuid().ToString();
             var claims = new List<Claim>

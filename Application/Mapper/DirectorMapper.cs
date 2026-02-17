@@ -5,7 +5,7 @@ namespace Application.Mapper
 {
     public class DirectorMapper
     {
-        public static DirectorResponse ToResponse(DirectorDomain director)
+        public static DirectorResponse ToResponse(Director director)
         {
             return new DirectorResponse(
                 director.Id,

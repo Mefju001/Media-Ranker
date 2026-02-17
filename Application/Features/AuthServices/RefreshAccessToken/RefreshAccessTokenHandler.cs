@@ -32,7 +32,7 @@ namespace Application.Features.AuthServices.RefreshAccessToken
             }
             var claims = await validatorForRefreshToken.ValidateAndGetPrincipalFromRefreshToken(request.accessToken);
             var username = claims.FirstOrDefault(c => c.Type == JwtRegisteredClaimNames.Name) ?? throw new UserClaimNotFoundException("Not found your user in claims");
-            UserDomain user = await unitOfWork.UserRepository.GetUserByUsername(username.Value.ToString());
+            User user = await unitOfWork.UserRepository.GetUserByUsername(username.Value.ToString());
             if (user == null)
                 throw new ArgumentNullException(nameof(user));
             var accessToken = accessTokenService.generateAccessToken(user.Id, username.Value.ToString(), user.UserRoles.ToList());

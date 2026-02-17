@@ -5,13 +5,13 @@ namespace Application.Mapper
 {
     public static class ReviewMapper
     {
-        public static ReviewResponse ToResponse(ReviewDomain review)
+        public static ReviewResponse ToResponse(Review review)
         {
             return new ReviewResponse(
                 review.Id,
                 review.MediaId,
                 review.UserId.ToString(),
-                review.Rating,
+                review.Rating.value,
                 review.Comment,
                 review.CreatedAt,
                 review.LastModifiedAt);

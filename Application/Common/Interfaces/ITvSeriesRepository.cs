@@ -4,12 +4,12 @@ namespace Application.Common.Interfaces
 {
     public interface ITvSeriesRepository
     {
-        Task<TvSeriesDomain?> GetTvSeriesById(int id);
-        Task<List<TvSeriesDomain>> GetAll(CancellationToken cancellationToken);
-        Task Delete(TvSeriesDomain tvSeriesDomain);
-        Task AddListOfTvSeries(List<TvSeriesDomain> list);
-        Task<TvSeriesDomain> AddTvSeriesAsync(TvSeriesDomain tvSeriesDomain);
-        Task<IQueryable<TvSeriesDomain>> AsQueryable();
-        Task<List<TvSeriesDomain>> ToListAsync(IQueryable<TvSeriesDomain> query, CancellationToken cancellationToken);
+        Task<TvSeries?> GetTvSeriesById(int id);
+        Task<List<TvSeries>> GetAll(CancellationToken cancellationToken);
+        Task Delete(TvSeries tvSeriesDomain);
+        Task AddListOfTvSeries(List<TvSeries> list);
+        Task<TvSeries> AddTvSeriesAsync(TvSeries tvSeriesDomain);
+        Task<IQueryable<TvSeries>> AsQueryable();
+        Task<List<TvSeries>> ToListAsync(IQueryable<TvSeries> query, CancellationToken cancellationToken);
     }
 }

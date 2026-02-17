@@ -5,7 +5,7 @@ namespace Application.Mapper
 {
     public static class UserMapper
     {
-        public static UserResponse ToResponse(UserDomain user)
+        public static UserResponse ToResponse(User user)
         {
             if (user is null) return null;
             return new UserResponse(

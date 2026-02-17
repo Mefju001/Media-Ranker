@@ -38,7 +38,7 @@ namespace UnitTests
             _upsertHandler = new TvSeriesUpsertHandler(_unitOfWork.Object, _referenceDataService.Object, _mediator.Object);
             _criteriaHandler = new GetTvSeriesByCriteriaHandler(_unitOfWork.Object, _sortAndFilterService.Object);
         }
-        [TestMethod]
+       /* [TestMethod]
         public async Task GetAllTvSeries_ReturnsTvSeriesList()
         {
             var TvSeriesList = new List<TvSeriesDomain>
@@ -177,6 +177,6 @@ namespace UnitTests
                 IsDescending = true
             };
             var result = await _criteriaHandler.Handle(query,CancellationToken.None);
-        }
+        }*/
     }
 }

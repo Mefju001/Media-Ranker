@@ -17,35 +17,35 @@ namespace Infrastructure.Persistence.Repository
             this.appDbContext = appDbContext;
         }
 
-        public async Task<List<TvSeriesDomain>> GetAll(CancellationToken cancellationToken)
+        public async Task<List<TvSeries>> GetAll(CancellationToken cancellationToken)
         {
             return await appDbContext.TvSeries.ToListAsync(cancellationToken);
         }
-        public async Task<TvSeriesDomain?> GetTvSeriesById(int id)
+        public async Task<TvSeries?> GetTvSeriesById(int id)
         {
             return await appDbContext.TvSeries.FirstOrDefaultAsync(tv => tv.Id == id);
         }
-        public async Task Delete(TvSeriesDomain tvSeriesDomain)
+        public async Task Delete(TvSeries tvSeriesDomain)
         {
             appDbContext.TvSeries.Remove(tvSeriesDomain);
         }
-        public async Task<TvSeriesDomain> AddTvSeriesAsync(TvSeriesDomain tvSeriesDomain)
+        public async Task<TvSeries> AddTvSeriesAsync(TvSeries tvSeriesDomain)
         {
             var tvSeries = await appDbContext.TvSeries.AddAsync(tvSeriesDomain);
             return tvSeries.Entity;
         }
-        public async Task<IQueryable<TvSeriesDomain>> AsQueryable()
+        public async Task<IQueryable<TvSeries>> AsQueryable()
         {
             return appDbContext.TvSeries
                 .Include(m => m.Stats)
                 .AsNoTracking()
                 .AsQueryable();
         }
-        public async Task<List<TvSeriesDomain>> ToListAsync(IQueryable<TvSeriesDomain>query,CancellationToken cancellationToken)
+        public async Task<List<TvSeries>> ToListAsync(IQueryable<TvSeries>query,CancellationToken cancellationToken)
         {
             return await query.ToListAsync(cancellationToken);
         }
-        public async Task AddListOfTvSeries(List<TvSeriesDomain> list)
+        public async Task AddListOfTvSeries(List<TvSeries> list)
         {
             await appDbContext.TvSeries.AddRangeAsync(list);
         }

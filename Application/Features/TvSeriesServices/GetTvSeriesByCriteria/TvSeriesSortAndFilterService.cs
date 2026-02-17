@@ -11,14 +11,14 @@ namespace Application.Features.TvSeriesServices.GetTvSeriesByCriteria
         {
             this.unitOfWork = unitOfWork;
         }
-        public async Task<IQueryable<TvSeriesDomain>> Handler(GetTvSeriesByCriteriaQuery request)
+        public async Task<IQueryable<TvSeries>> Handler(GetTvSeriesByCriteriaQuery request)
         {
             var query = await unitOfWork.TvSeriesRepository.AsQueryable();
             query = await ApplyFilters(query, request);
             query = await ApplySorting(query, request);
             return query;
         }
-        private async Task<IQueryable<TvSeriesDomain>> ApplyFilters(IQueryable<TvSeriesDomain> query, GetTvSeriesByCriteriaQuery request)
+        private async Task<IQueryable<TvSeries>> ApplyFilters(IQueryable<TvSeries> query, GetTvSeriesByCriteriaQuery request)
         {
             if (!string.IsNullOrWhiteSpace(request.TitleSearch))
             {
@@ -31,7 +31,7 @@ namespace Application.Features.TvSeriesServices.GetTvSeriesByCriteria
                     tv => tv.GenreId,
                     g => g.Id,
                     (tv, g) => new { Tv = tv, Genre = g })
-                    .Where(tvg => tvg.Genre.name.Contains(request.genreName))
+                    .Where(tvg => tvg.Genre.name.Value.Contains(request.genreName))
                     .Select(tvg => tvg.Tv);
             }
             if (request.MinRating.HasValue)
@@ -40,7 +40,7 @@ namespace Application.Features.TvSeriesServices.GetTvSeriesByCriteria
             }
             if (request.ReleaseYear.HasValue)
             {
-                query = query.Where(m => m.ReleaseDate.Year == request.ReleaseYear);
+                query = query.Where(m => m.ReleaseDate.Value.Year == request.ReleaseYear);
             }
             if (!string.IsNullOrWhiteSpace(request.network))
             {
@@ -48,7 +48,7 @@ namespace Application.Features.TvSeriesServices.GetTvSeriesByCriteria
             }
             return query;
         }
-        private async Task<IQueryable<TvSeriesDomain>> ApplySorting(IQueryable<TvSeriesDomain> query, GetTvSeriesByCriteriaQuery request)
+        private async Task<IQueryable<TvSeries>> ApplySorting(IQueryable<TvSeries> query, GetTvSeriesByCriteriaQuery request)
         {
             if (!string.IsNullOrEmpty(request.SortByField))
             {
@@ -61,9 +61,9 @@ namespace Application.Features.TvSeriesServices.GetTvSeriesByCriteria
             }
             return query;
         }
-        private static Dictionary<string, Expression<Func<TvSeriesDomain, object>>> DictionaryOfSortAbility()
+        private static Dictionary<string, Expression<Func<TvSeries, object>>> DictionaryOfSortAbility()
         {
-            var columns = new Dictionary<string, Expression<Func<TvSeriesDomain, object>>>(StringComparer.OrdinalIgnoreCase)
+            var columns = new Dictionary<string, Expression<Func<TvSeries, object>>>(StringComparer.OrdinalIgnoreCase)
             {
                 ["Title"] = m => m.Title,
                 ["Rating"] = m => m.Stats.AverageRating!,

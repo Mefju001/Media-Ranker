@@ -8,5 +8,5 @@ using System.Threading.Tasks;
 
 namespace Application.Features.ReviewServices.GetAllReviewsAsync
 {
-    public record GetAllReviewsQuery : IRequest<List<ReviewDomain>>;
+    public record GetAllReviewsQuery : IRequest<List<Review>>;
 }

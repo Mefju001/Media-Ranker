@@ -3,6 +3,7 @@ using Application.Common.Interfaces;
 using Application.Mapper;
 using Application.Notification;
 using Domain.Entity;
+using Domain.Value_Object;
 using MediatR;
 
 namespace Application.Features.MovieServices.MovieUpsert
@@ -24,33 +25,33 @@ namespace Application.Features.MovieServices.MovieUpsert
         {
             var director = await referenceDataService.GetOrCreateDirectorAsync(request.Director);
             var genre = await referenceDataService.GetOrCreateGenreAsync(request.Genre);
-            MovieDomain? movie;
+            Movie? movie;
             if (request.id.HasValue)
             {
                 movie = await unitOfWork.MovieRepository.FirstOrDefaultAsync(request.id.Value);
                 if (movie is not null)
                 {
-                    MovieDomain.Update(
+                    movie.Update(
                         request.Title,
                         request.Description,
-                        request.Language,
-                        request.ReleaseDate!.Value,
+                        new Language(request.Language),
+                        new ReleaseDate(request.ReleaseDate.Value),
                         genre.Id,
                         director.Id,
-                        request.Duration,
-                        request.IsCinemaRelease,
-                        movie);
+                        new Duration(request.Duration),
+                        request.IsCinemaRelease
+                        );
                 }
             }
             else
             {
-                movie = MovieDomain.Create(request.Title,
+                movie = Movie.Create(request.Title,
                                             request.Description,
-                                            request.Language,
-                                            request.ReleaseDate!.Value,
+                                            new Language(request.Language),
+                                            new ReleaseDate(request.ReleaseDate.Value),
                                             genre.Id,
                                             director.Id,
-                                            request.Duration,
+                                            new Duration(request.Duration),
                                             request.IsCinemaRelease);
                 movie = await unitOfWork.MovieRepository.AddAsync(movie);
             }

@@ -5,11 +5,11 @@ namespace Application.Common.Interfaces
 {
     public interface IDirectorRepository
     {
-        Task<Dictionary<int, DirectorDomain>> GetDirectorsDictionary();
-        IQueryable<DirectorDomain> GetAllQueryable();
-        Task<DirectorDomain?> Get(int id);
-        Task<DirectorDomain?> FirstOrDefaultForNameAndSurnameAsync(string name, string surname);
-        Task<DirectorDomain> AddAsync(DirectorDomain directorDomain);
-        Task<List<DirectorDomain>> findByNames(List<(string, string)> names);
+        Task<Dictionary<int, Director>> GetDirectorsDictionary();
+        IQueryable<Director> GetAllQueryable();
+        Task<Director?> Get(int id);
+        Task<Director?> FirstOrDefaultForNameAndSurnameAsync(string name, string surname);
+        Task<Director> AddAsync(Director directorDomain);
+        Task<List<Director>> findByNames(List<(string, string)> names);
     }
 }

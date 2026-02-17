@@ -13,7 +13,7 @@ namespace Infrastructure.Persistence.Repository
             this.appDbContext = appDbContext;
         }
 
-        public async Task SaveToken(TokenDomain token)
+        public async Task SaveToken(Token token)
         {
             if (token == null) throw new ArgumentNullException();
             await appDbContext.Tokens.AddAsync(token);
@@ -32,13 +32,13 @@ namespace Infrastructure.Persistence.Repository
             }
             return false;
         }
-        public async Task<List<TokenDomain>> GetTokensToCleanUp()
+        public async Task<List<Token>> GetTokensToCleanUp()
         {
             return await appDbContext.Tokens
                 .Where(t => t.IsRevoked == true || t.ExpiryDate < DateTime.UtcNow)
                 .ToListAsync();
         }
-        public async Task RemoveListOfTokens(List<TokenDomain> tokens)
+        public async Task RemoveListOfTokens(List<Token> tokens)
         {
             appDbContext.Tokens.RemoveRange(tokens);
             await appDbContext.SaveChangesAsync();

@@ -3,6 +3,7 @@ using Application.Common.Interfaces;
 using Application.Mapper;
 using Domain.Entity;
 using Domain.Exceptions;
+using Domain.Value_Object;
 using MediatR;
 
 
@@ -17,7 +18,7 @@ namespace Application.Features.ReviewServices.UpsertReview
         }
         public async Task<ReviewResponse> Handle(ReviewUpsertCommand request, CancellationToken cancellationToken)
         {
-            ReviewDomain? reviewDomain;
+            Review? reviewDomain;
             if (request.id.HasValue)
             {
                 reviewDomain = await unitOfWork.ReviewRepository.GetReviewByIdAsync(request.id.Value);
@@ -25,7 +26,7 @@ namespace Application.Features.ReviewServices.UpsertReview
                 {
                     throw new NotFoundException($"Review for the given id: { request.id.Value } does not exist");
                 }
-                reviewDomain.Update(request.Rating,request.Comment);
+                reviewDomain.Update(new Rating(request.Rating),request.Comment);
             }
             else
             {
@@ -35,7 +36,7 @@ namespace Application.Features.ReviewServices.UpsertReview
                 }
                 var user = await unitOfWork.UserRepository.GetUserById(request.userId.Value);
                 var media = await  unitOfWork.MediaRepository.GetMediaById(request.mediaId.Value);
-                reviewDomain = ReviewDomain.Create(request.Rating,request.Comment, media.Id, user.Id);
+                reviewDomain = Review.Create(new Rating(request.Rating), request.Comment, media.Id, user.Id);
                 reviewDomain = await unitOfWork.ReviewRepository.AddAsync(reviewDomain);
             }
             await unitOfWork.CompleteAsync();

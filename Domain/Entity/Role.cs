@@ -2,12 +2,12 @@
 
 namespace Domain.Entity
 {
-    public class RoleDomain
+    public class Role
     {
         public int Id { get; private set; }
         public ERole role { get; private set; }
-        protected RoleDomain() { }
-        private RoleDomain(ERole role)
+        protected Role() { }
+        private Role(ERole role)
         {
             this.role = role;
         }
@@ -15,9 +15,9 @@ namespace Domain.Entity
         {
             this.role = role;
         }
-        public static RoleDomain Create(ERole role)
+        public static Role Create(ERole role)
         {
-            return new RoleDomain(role);
+            return new Role(role);
         }
 
     }

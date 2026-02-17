@@ -2,6 +2,7 @@
 using Application.Common.Interfaces;
 using Application.Mapper;
 using Domain.Entity;
+using Domain.Value_Object;
 using MediatR;
 
 namespace Application.Features.TvSeriesServices.TvSeriesUpsert
@@ -22,32 +23,32 @@ namespace Application.Features.TvSeriesServices.TvSeriesUpsert
         public async Task<TvSeriesResponse> Handle(UpsertTvSeriesCommand request, CancellationToken cancellationToken)
         {
             var genre = await referenceDataService.GetOrCreateGenreAsync(request.genre);
-            TvSeriesDomain? tvSeries;
+            TvSeries? tvSeries;
             if (request.id is not null)
             {
                 tvSeries = await unitOfWork.TvSeriesRepository.GetTvSeriesById(request.id.Value);
                 if (tvSeries is not null)
                 {
-                    TvSeriesDomain.Update(
+                    tvSeries.Update(
                         request.title,
                         request.description,
-                        request.Language,
-                        request.ReleaseDate,
+                        new Language(request.Language),
+                        new ReleaseDate(request.ReleaseDate),
                         genre.Id,
                         request.Seasons,
                         request.Episodes,
                         request.Network,
-                        request.Status,
-                        tvSeries);
+                        request.Status
+                        );
                 }
             }
             else
             {
-                tvSeries = TvSeriesDomain.Create(
+                tvSeries = TvSeries.Create(
                         request.title,
                         request.description,
-                        request.Language,
-                        request.ReleaseDate,
+                        new Language(request.Language),
+                        new ReleaseDate(request.ReleaseDate),
                         genre.Id,
                         request.Seasons,
                         request.Episodes,

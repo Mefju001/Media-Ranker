@@ -2,6 +2,7 @@
 using Application.Common.Interfaces;
 using Application.Mapper;
 using Domain.Entity;
+using Domain.Value_Object;
 using MediatR;
 
 namespace Application.Features.GamesServices.GameUpsert
@@ -22,32 +23,31 @@ namespace Application.Features.GamesServices.GameUpsert
         public async Task<GameResponse> Handle(UpsertGameCommand request, CancellationToken cancellationToken)
         {
             var genre = await referenceDataService.GetOrCreateGenreAsync(request.Genre);
-            GameDomain? game;
+            Game? game;
             if (request.id.HasValue)
             {
                 game = await unitOfWork.GameRepository.GetGameDomainAsync(request.id.Value, cancellationToken);
                 if (game != null)
                 {
-                    GameDomain.Update
+                    game.Update
                         (
                         request.Title,
                         request.Description,
-                        request.Language,
-                        request.ReleaseDate!.Value,
+                        new Language(request.Language),
+                        new ReleaseDate(request.ReleaseDate!.Value),
                         genre.Id,
                         request.Developer!,
-                        request.Platform,
-                        game
+                        request.Platform
                         );
                 }
             }
             else
             {
-                game = GameDomain.Create(
+                game = Game.Create(
                     request.Title,
                     request.Description,
-                    request.Language,
-                    request.ReleaseDate!.Value,
+                    new Language(request.Language),
+                    new ReleaseDate(request.ReleaseDate!.Value),
                     genre.Id, request.Developer!,
                     request.Platform);
                 await unitOfWork.GameRepository.AddGameAsync(game);

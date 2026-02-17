@@ -3,18 +3,18 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Infrastructure.Config
 {
-    public class LikedMediaConfiguration : IEntityTypeConfiguration<LikedMediaDomain>
+    public class LikedMediaConfiguration : IEntityTypeConfiguration<LikedMedia>
     {
-        public void Configure(Microsoft.EntityFrameworkCore.Metadata.Builders.EntityTypeBuilder<LikedMediaDomain> builder)
+        public void Configure(Microsoft.EntityFrameworkCore.Metadata.Builders.EntityTypeBuilder<LikedMedia> builder)
         {
             builder.HasIndex(lm => new { lm.userId, lm.mediaId })
                 .IsUnique();
             builder
-                .HasOne<UserDomain>()
+                .HasOne<User>()
                 .WithMany()
                 .HasForeignKey(lm => lm.userId);
             builder
-                .HasOne<MediaDomain>()
+                .HasOne<Media>()
                 .WithMany()
                 .HasForeignKey(lm => lm.mediaId);
         }

@@ -2,6 +2,7 @@
 using Application.Common.Interfaces;
 using Application.Mapper;
 using Domain.Entity;
+using Domain.Value_Object;
 using MediatR;
 
 namespace Application.Features.TvSeriesServices.AddListOfTvSeries
@@ -23,7 +24,7 @@ namespace Application.Features.TvSeriesServices.AddListOfTvSeries
             var tvSeries = requests.tvSeries.Select(tv =>
             {
                 var genre = genres[tv.genre.name];
-                return TvSeriesDomain.Create(tv.title, tv.description, tv.Language, tv.ReleaseDate, genre.Id, tv.Seasons, tv.Episodes, tv.Network, tv.Status);
+                return TvSeries.Create(tv.title, tv.description, new Language(tv.Language), new ReleaseDate(tv.ReleaseDate), genre.Id, tv.Seasons, tv.Episodes, tv.Network, tv.Status);
             }).ToList();
             await unitOfWork.TvSeriesRepository.AddListOfTvSeries(tvSeries);
             await unitOfWork.CompleteAsync();

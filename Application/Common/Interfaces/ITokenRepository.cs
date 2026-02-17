@@ -4,9 +4,9 @@ namespace Application.Common.Interfaces
 {
     public interface ITokenRepository
     {
-        Task SaveToken(TokenDomain token);
+        Task SaveToken(Token token);
         Task<bool> DeleteTokensFromUserId(int userId);
-        Task<List<TokenDomain>> GetTokensToCleanUp();
-        Task RemoveListOfTokens(List<TokenDomain> tokens);
+        Task<List<Token>> GetTokensToCleanUp();
+        Task RemoveListOfTokens(List<Token> tokens);
     }
 }

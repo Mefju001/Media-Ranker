@@ -1,39 +1,41 @@
-﻿namespace Domain.Entity
+﻿using Domain.Value_Object;
+
+namespace Domain.Entity
 {
-    public class ReviewDomain
+    public class Review
     {
         public int Id { get; init; }
-        public int Rating { get; private set; }
+        public Rating Rating { get; private set; }
         public string Comment { get; private set; }
         public int MediaId { get; init; }
         public int UserId { get; init; }
         public DateTime CreatedAt { get; init; } = DateTime.UtcNow;
         public DateTime LastModifiedAt { get; private set; } = DateTime.UtcNow;
-        private ReviewDomain() { }
-        private ReviewDomain(int rating, string comment)
+        private Review() { }
+        private Review(Rating rating, string comment)
         {
             Validate(rating, comment);
             Rating = rating;
             Comment = comment;
         }
-        public static ReviewDomain Create(int rating, string comment, int MediaId, int UserId)
+        public static Review Create(Rating rating, string comment, int MediaId, int UserId)
         {
-            return new ReviewDomain(rating, comment)
+            return new Review(rating, comment)
             {
                 MediaId = MediaId,
                 UserId = UserId
             };
         }
-        public void Update(int rating, string comment)
+        public void Update(Rating rating, string comment)
         {
             Validate(rating, comment);
             Rating = rating;
             Comment = comment;
             LastModifiedAt = DateTime.UtcNow;
         }
-        public static void Validate(int rating, string comment)
+        public static void Validate(Rating rating, string comment)
         {
-            if (rating < 1 || rating > 10)
+            if (rating.value < 1 || rating.value > 10)
             {
                 throw new ArgumentOutOfRangeException(nameof(rating), "Rating must be between 1 and 10.");
             }

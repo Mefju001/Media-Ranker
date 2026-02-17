@@ -14,13 +14,13 @@ namespace Infrastructure.Persistence.Repository
             this.appDbContext = appDbContext;
         }
 
-        public async Task<ReviewDomain> AddAsync(ReviewDomain review)
+        public async Task<Review> AddAsync(Review review)
         {
             var createdReview = await appDbContext.Reviews.AddAsync(review);
             return createdReview.Entity;
         }
 
-        public Task<ReviewDomain?> GetReviewByIdAsync(int reviewId)
+        public Task<Review?> GetReviewByIdAsync(int reviewId)
         {
             return appDbContext.Reviews
                 .FirstOrDefaultAsync(r => r.Id == reviewId);
@@ -39,13 +39,13 @@ namespace Infrastructure.Persistence.Repository
                 .Distinct()
                 .ToListAsync(cancellation);
         }
-        public async Task<List<ReviewDomain>> GetAllReviewsAsync(CancellationToken cancellation)
+        public async Task<List<Review>> GetAllReviewsAsync(CancellationToken cancellation)
         {
             return await appDbContext.Reviews
                 .ToListAsync(cancellation);
         }
 
-        public Task DeleteAsync(ReviewDomain review)
+        public Task DeleteAsync(Review review)
         {
             appDbContext.Reviews.Remove(review);
             return Task.CompletedTask;

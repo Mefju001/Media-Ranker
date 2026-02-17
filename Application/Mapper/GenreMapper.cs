@@ -6,17 +6,11 @@ namespace Application.Mapper
 {
     public class GenreMapper
     {
-        public static GenreResponse ToResponse(GenreDomain genre)
+        public static GenreResponse ToResponse(Genre genre)
         {
             return new GenreResponse(
                 genre.Id,
-                genre.name);
+                genre.name.Value);
         }
-        public static Expression<Func<GenreDomain, GenreResponse>> ToDto = g => new GenreResponse
-        (
-            g.Id,
-            g.name
-        );
-
     }
 }

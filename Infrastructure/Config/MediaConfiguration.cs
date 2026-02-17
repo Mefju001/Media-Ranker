@@ -4,25 +4,36 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace Infrastructure.Config
 {
-    public class MediaConfiguration : IEntityTypeConfiguration<MediaDomain>
+    public class MediaConfiguration : IEntityTypeConfiguration<Media>
     {
-        public void Configure(EntityTypeBuilder<MediaDomain> builder)
+        public void Configure(EntityTypeBuilder<Media> builder)
         {
             builder.HasKey(m => m.Id);
-            builder.
-                HasOne<GenreDomain>()
+            builder
+                .HasOne<Genre>()
                 .WithMany()
                 .IsRequired()
-                .HasForeignKey(g => g.GenreId);
-            builder
-                .HasOne<MediaStatsDomain>()
-                .WithOne()
-                .HasForeignKey<MediaStatsDomain>(ms => ms.MediaId);
+                .HasForeignKey(m => m.GenreId);
+            builder.OwnsOne(m => m.Language, d =>
+            {
+                d.Property(x => x.value).HasColumnName("Language");
+            });
+            builder.OwnsOne(m => m.ReleaseDate, d =>
+            {
+                d.Property(x => x.Value).HasColumnName("ReleaseDate");
+            });
+            builder.OwnsOne(m => m.Stats, s => {
+                s.Property<int>("MediaId");
+                s.HasKey("MediaId");
+                s.WithOwner().HasForeignKey("MediaId");
+                s.ToTable("MediaStats");
+            });
             builder
                 .HasDiscriminator<string>("MediaType")
-                .HasValue<MovieDomain>("Movie")
-                .HasValue<TvSeriesDomain>("TvSeries")
-                .HasValue<GameDomain>("Game");
+                .HasValue<Movie>("Movie")
+                .HasValue<TvSeries>("TvSeries")
+                .HasValue<Game>("Game");
+
         }
     }
 }

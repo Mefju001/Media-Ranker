@@ -9,6 +9,6 @@ namespace Application.Features.GamesServices.GetGamesByCriteria
 {
     public interface IGameSortAndFilterService
     {
-        Task<IQueryable<GameDomain>> GetGamesByCriteriaAsync(GetGamesByCriteriaQuery request);
+        Task<IQueryable<Game>> GetGamesByCriteriaAsync(GetGamesByCriteriaQuery request);
     }
 }

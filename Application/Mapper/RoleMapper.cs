@@ -5,7 +5,7 @@ namespace Application.Mapper
 {
     public static class RoleMapper
     {
-        public static RoleResponse ToResponse(RoleDomain role)
+        public static RoleResponse ToResponse(Role role)
         {
             return new RoleResponse(role.role)
             {

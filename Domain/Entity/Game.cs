@@ -1,4 +1,5 @@
 ﻿using Domain.Enums;
+using Domain.Value_Object;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -7,15 +8,15 @@ using System.Threading.Tasks;
 
 namespace Domain.Entity
 {
-    public class GameDomain: MediaDomain
+    public class Game: Media
     {
         public string Developer { get; private set; }
         public EPlatform Platform { get; private set; }
-        private GameDomain() { }
-        private GameDomain(string Title,
+        private Game() { }
+        private Game(string Title,
             string Description,
-            string Language,
-            DateTime ReleaseDate,
+            Language Language,
+            ReleaseDate ReleaseDate,
             int genreId,
             string Developer,
             EPlatform Platform)
@@ -24,29 +25,28 @@ namespace Domain.Entity
             this.Developer = Developer;
             this.Platform = Platform;
         }
-        private GameDomain(int Id, string Title,
+        private Game(int Id, string Title,
             string Description,
-            string Language,
-            DateTime ReleaseDate,
+            Language Language,
+            ReleaseDate ReleaseDate,
             int genreId,
             string Developer,
-            EPlatform Platform)
-            : base(Title, Description, Language, ReleaseDate, genreId)
+            EPlatform Platform, MediaStats stats)
+            : base(Id,Title, Description, Language, ReleaseDate, genreId, stats)
         {
             this.Developer = Developer;
             this.Platform = Platform;
-            this.Id = Id;
         }
-        public static GameDomain Create(string Title,
+        public static Game Create(string Title,
             string Description,
-            string Language,
-            DateTime ReleaseDate,
+            Language Language,
+            ReleaseDate ReleaseDate,
             int Genre,
             string Developer,
             EPlatform Platform)
         {
             Validate(Developer);
-            return new GameDomain(
+            return new Game(
                                    Title,
                                    Description,
                                    Language,
@@ -55,38 +55,39 @@ namespace Domain.Entity
                                    Developer,
                                    Platform);
         }
-        public static GameDomain Reconstruct(int Id, string Title,
+        public static Game Reconstruct(int Id, string Title,
             string Description,
-            string Language,
-            DateTime ReleaseDate,
+            Language Language,
+            ReleaseDate ReleaseDate,
             int Genre,
             string Developer,
-            EPlatform Platform)
+            EPlatform Platform,
+            MediaStats stats)
         {
             Validate(Developer);
-            var game = new GameDomain(Id,
+            var game = new Game(Id,
                                    Title,
                                    Description,
                                    Language,
                                    ReleaseDate,
                                    Genre,
                                    Developer,
-                                   Platform);
+                                   Platform,
+                                   stats);
             return game;
         }
-        public static GameDomain Update(string Title,
+        public void Update(string Title,
             string Description,
-            string Language,
-            DateTime ReleaseDate,
+            Language Language,
+            ReleaseDate ReleaseDate,
             int Genre,
             string Developer,
-            EPlatform Platform, GameDomain game)
+            EPlatform Platform)
         {
             Validate(Developer);
-            game.Developer = Developer;
-            game.Platform = Platform;
-            game.Update(Title, Description, Language, ReleaseDate, Genre);
-            return game;
+            this.Developer = Developer;
+            this.Platform = Platform;
+            base.Update(Title, Description, Language, ReleaseDate, Genre);
         }
         private static void Validate(string Developer)
         {

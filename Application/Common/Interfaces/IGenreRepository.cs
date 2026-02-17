@@ -4,13 +4,13 @@ namespace Application.Common.Interfaces
 {
     public interface IGenreRepository
     {
-        IQueryable<GenreDomain> GetAllQueryable();
+        IQueryable<Genre> GetAllQueryable();
         Task<int?> GetGenreIdByNameAsync(string name, CancellationToken cancellationToken);
-        Task<List<GenreDomain>> GetAllAsync(CancellationToken cancellationToken);
-        Task<GenreDomain?> Get(int id);
-        Task<GenreDomain?> FirstOrDefaultForNameAsync(string name);
-        Task<GenreDomain> AddAsync(GenreDomain genre);
-        Task<List<GenreDomain>> GetByNamesAsync(List<string> names);
-        Task<Dictionary<int, GenreDomain>> GetGenresDictionary();
+        Task<List<Genre>> GetAllAsync(CancellationToken cancellationToken);
+        Task<Genre?> Get(int id);
+        Task<Genre?> FirstOrDefaultForNameAsync(string name);
+        Task<Genre> AddAsync(Genre genre);
+        Task<List<Genre>> GetByNamesAsync(List<string> names);
+        Task<Dictionary<int, Genre>> GetGenresDictionary();
     }
 }

@@ -25,7 +25,7 @@ namespace Application.Features.LikedServices.AddLiked
             var existingLikedMedia = await unitOfWork.LikedMediaRepository.Any(request.UserId, request.MediaId);
             if (existingLikedMedia is true)
                 throw new Exception("already exists");
-            var likedMedia = LikedMediaDomain.Create(
+            var likedMedia = LikedMedia.Create(
                 request.MediaId,
                 request.UserId
             );
@@ -33,9 +33,9 @@ namespace Application.Features.LikedServices.AddLiked
             await unitOfWork.CompleteAsync();
             return media switch
             {
-                MovieDomain m => LikedMediaMapper.ToResponse(likedMedia,user,m,genre,await unitOfWork.DirectorRepository.Get(m.DirectorId)),
-                GameDomain g=> LikedMediaMapper.ToResponse(likedMedia,user,g,genre),
-                TvSeriesDomain tv=> LikedMediaMapper.ToResponse(likedMedia,user,tv,genre),
+                Movie m => LikedMediaMapper.ToResponse(likedMedia,user,m,genre,await unitOfWork.DirectorRepository.Get(m.DirectorId)),
+                Game g=> LikedMediaMapper.ToResponse(likedMedia,user,g,genre),
+                TvSeries tv=> LikedMediaMapper.ToResponse(likedMedia,user,tv,genre),
                 _ => throw new Exception("invalid media type")
             };
         }

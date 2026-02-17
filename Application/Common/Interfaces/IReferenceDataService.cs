@@ -6,11 +6,11 @@ namespace Application.Common.Interfaces
 {
     public interface IReferenceDataService
     {
-        Task<DirectorDomain> GetOrCreateDirectorAsync(DirectorRequest directorRequest);
-        Task<GenreDomain> GetOrCreateGenreAsync(GenreRequest genreRequest);
-        Task<Dictionary<string, GenreDomain>> EnsureGenresExistAsync(List<string> names);
-        Task<Dictionary<(string, string), DirectorDomain>> EnsureDirectorsExistAsync(List<DirectorRequest> directors);
+        Task<Director> GetOrCreateDirectorAsync(DirectorRequest directorRequest);
+        Task<Genre> GetOrCreateGenreAsync(GenreRequest genreRequest);
+        Task<Dictionary<string, Genre>> EnsureGenresExistAsync(List<string> names);
+        Task<Dictionary<(string, string), Director>> EnsureDirectorsExistAsync(List<DirectorRequest> directors);
         Task<List<GenreResponse>> GetGenres();
-        Task saveToken(TokenDomain token);
+        Task saveToken(Token token);
     }
 }

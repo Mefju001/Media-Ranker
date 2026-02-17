@@ -13,7 +13,7 @@ namespace Infrastructure.Persistence.Repository
         {
             this.appDbContext = appDbContext;
         }
-        public async Task<RoleDomain?> GetByNameAsync(string role)
+        public async Task<Role?> GetByNameAsync(string role)
         {
             Enum.TryParse<ERole>(role, out var stringRole);
             if (stringRole == default)
