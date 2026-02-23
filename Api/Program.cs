@@ -1,5 +1,10 @@
 using Api.Controllers;
 using Api.Extensions;
+using Domain.Entity;
+using Infrastructure.DBModels;
+using Infrastructure.Persistence;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Identity;
 using System.Text.Json.Serialization;
 
 var MyAllowSpecificOrigins = "_myAllowSpecificOrigins";
@@ -17,6 +22,11 @@ builder.Services.AddSwaggerConfiguration(builder.Configuration);
 builder.Services.AddSwaggerGen();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+builder.Services.AddAuthentication(options =>
+{
+    options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+    options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+});
 builder.Services.AddCors(options =>
 {
     options.AddPolicy(name: MyAllowSpecificOrigins,
@@ -29,7 +39,9 @@ builder.Services.AddCors(options =>
         });
 });
 
-
+builder.Services.AddIdentity<UserModel, RoleModel>()
+    .AddEntityFrameworkStores<AppDbContext>()
+    .AddDefaultTokenProviders();
 builder.Services.AddHttpContextAccessor();
 
 

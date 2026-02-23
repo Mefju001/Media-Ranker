@@ -11,10 +11,12 @@ namespace Application.Features.TvSeriesServices.AddListOfTvSeries
     {
         private readonly IUnitOfWork unitOfWork;
         private readonly IReferenceDataService referenceDataService;
-        public AddListOfTvSeriesHandler(IReferenceDataService referenceDataService, IUnitOfWork unitOfWork)
+        private readonly ITvSeriesRepository tvSeriesRepository;
+        public AddListOfTvSeriesHandler(IReferenceDataService referenceDataService, IUnitOfWork unitOfWork, ITvSeriesRepository tvSeriesRepository)
         {
             this.referenceDataService = referenceDataService;
             this.unitOfWork = unitOfWork;
+            this.tvSeriesRepository = tvSeriesRepository;
         }
         public async Task<List<TvSeriesResponse>> Handle(AddListOfTvSeriesCommand requests, CancellationToken cancellationToken)
         {
@@ -26,7 +28,7 @@ namespace Application.Features.TvSeriesServices.AddListOfTvSeries
                 var genre = genres[tv.genre.name];
                 return TvSeries.Create(tv.title, tv.description, new Language(tv.Language), new ReleaseDate(tv.ReleaseDate), genre.Id, tv.Seasons, tv.Episodes, tv.Network, tv.Status);
             }).ToList();
-            await unitOfWork.TvSeriesRepository.AddListOfTvSeries(tvSeries);
+            await tvSeriesRepository.AddListOfTvSeries(tvSeries);
             await unitOfWork.CompleteAsync();
             return tvSeries.Select(m=>
             {

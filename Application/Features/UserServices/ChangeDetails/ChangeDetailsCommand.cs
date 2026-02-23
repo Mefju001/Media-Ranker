@@ -2,5 +2,5 @@
 
 namespace Application.Features.UserServices.ChangeDetails
 {
-    public record ChangeDetailsCommand(int userId, string name, string surname, string email) : IRequest<Unit>;
+    public record ChangeDetailsCommand(Guid userId, string name, string surname, string email) : IRequest<Unit>;
 }

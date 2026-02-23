@@ -18,11 +18,11 @@ namespace Api.Controllers
     public class LikedMovieGameTvSeriesController : ControllerBase
     {
         private readonly IMediator mediator;
-        private int? getUserId()
+        private Guid? getUserId()
         {
             var stringUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
             if (String.IsNullOrWhiteSpace(stringUserId)) return null;
-            if (int.TryParse(stringUserId, out int userId))
+            if (Guid.TryParse(stringUserId, out Guid userId))
             {
                 return userId;
             }

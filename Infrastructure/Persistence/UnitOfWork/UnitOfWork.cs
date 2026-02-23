@@ -7,32 +7,8 @@ namespace Infrastructure.Persistence.UnitOfWork
     public class UnitOfWork : IUnitOfWork
     {
         private readonly AppDbContext context;
-        public IGameRepository GameRepository { get; }
-        public IUserRepository UserRepository { get; }
-        public ITokenRepository TokenRepository { get; }
-        public IMovieRepository MovieRepository { get; }
-        public IDirectorRepository DirectorRepository { get; }
-        public ILikedMediaRepository LikedMediaRepository { get; }
-        public IMediaRepository MediaRepository{ get; }
-        public IGenreRepository GenreRepository { get; }
-        public ITvSeriesRepository TvSeriesRepository { get; }
-        public IRoleRepository RoleRepository { get; }
-        public IReviewRepository ReviewRepository { get; }
-        public UnitOfWork(AppDbContext context)
-        {
-            this.context = context;
-            LikedMediaRepository = new LikedMediaRepository(context);
-            MediaRepository = new MediaRepository(context);
-            RoleRepository = new RoleRepository(context);
-            GameRepository = new GameRepository(context);
-            UserRepository = new UserRepository(context);
-            TokenRepository = new TokenRepository(context);
-            MovieRepository = new MovieRepository(context);
-            DirectorRepository = new DirectorRepository(context);
-            GenreRepository = new GenreRepository(context);
-            TvSeriesRepository = new TvSeriesRepository(context);
-            ReviewRepository = new ReviewRepository(context);
-        }
+        
+        public UnitOfWork(AppDbContext context)=>this.context = context;
 
         public async Task<int> CompleteAsync()
         {

@@ -13,14 +13,14 @@ namespace Application.Features.ReviewServices.GetByIdReview
 {
     public class GetByIdReviewHandler : IRequestHandler<GetByIdReviewQuery, ReviewResponse?>
     {
-        private readonly IUnitOfWork _unitOfWork;
-        public GetByIdReviewHandler(IUnitOfWork unitOfWork)
+        private readonly IReviewRepository reviewRepository;
+        public GetByIdReviewHandler(IReviewRepository reviewRepository)
         {
-            _unitOfWork = unitOfWork;
+            this.reviewRepository = reviewRepository;
         }
         public async Task<ReviewResponse?>Handle(GetByIdReviewQuery query, CancellationToken cancellationToken)
         {
-            var review = await _unitOfWork.ReviewRepository.GetReviewByIdAsync(query.reviewId);
+            var review = await reviewRepository.GetReviewByIdAsync(query.reviewId);
             if (review == null)
             {
                 return null;

@@ -7,15 +7,17 @@ namespace Application.Features.MovieServices.DeleteById
     public class DeleteByIdHandler : IRequestHandler<DeleteByIdCommand, Unit>
     {
         private readonly IUnitOfWork unitOfWork;
-        public DeleteByIdHandler(IUnitOfWork unitOfWork)
+        private readonly IMovieRepository movieRepository;
+        public DeleteByIdHandler(IUnitOfWork unitOfWork, IMovieRepository movieRepository)
         {
             this.unitOfWork = unitOfWork;
+            this.movieRepository = movieRepository;
         }
         public async Task<Unit> Handle(DeleteByIdCommand request, CancellationToken cancellationToken)
         {
-            var movie = await unitOfWork.MovieRepository.FirstOrDefaultAsync(request.id);
+            var movie = await movieRepository.FirstOrDefaultAsync(request.id);
             if (movie == null) throw new NotFoundException("Not found movie");
-            await unitOfWork.MovieRepository.DeleteMovie(movie);
+            await movieRepository.DeleteMovie(movie);
             await unitOfWork.CompleteAsync();
             return Unit.Value;
         }

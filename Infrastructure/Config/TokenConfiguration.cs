@@ -1,4 +1,5 @@
 ﻿using Domain.Entity;
+using Infrastructure.DBModels;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
@@ -10,7 +11,7 @@ namespace Infrastructure.Config
         {
             builder.HasKey(t => t.Jti);
             builder
-                .HasOne<User>()
+                .HasOne<UserModel>()
                 .WithMany()
                 .IsRequired()
                 .HasForeignKey(t => t.UserId)

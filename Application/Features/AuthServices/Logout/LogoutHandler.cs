@@ -5,26 +5,19 @@ namespace Application.Features.AuthServices.Logout
 {
     public class LogoutHandler : IRequestHandler<LogoutCommand>
     {
-        private readonly IUnitOfWork _unitOfWork;
-        public LogoutHandler(IUnitOfWork unitOfWork)
+        private readonly IUnitOfWork unitOfWork;
+        private readonly ITokenRepository tokenRepository;
+        private readonly IUserRepository userRepository;
+        public LogoutHandler(IUnitOfWork unitOfWork, ITokenRepository tokenRepository, IUserRepository userRepository)
         {
-            _unitOfWork = unitOfWork;
+            this.unitOfWork = unitOfWork;
+            this.tokenRepository = tokenRepository;
+            this.userRepository = userRepository;
         }
         public async Task Handle(LogoutCommand request, CancellationToken cancellationToken)
         {
-            var userId = ParseUserId(request.stringUserId);
-            var result = await _unitOfWork.TokenRepository.DeleteTokensFromUserId(userId);
-            if ((result == true))
-            {
-                await _unitOfWork.CompleteAsync();
-            }
-        }
-
-        private int ParseUserId(string stringUserId)
-        {
-            if (!int.TryParse(stringUserId, out var userId))
-                throw new InvalidOperationException("Parse from string to int");
-            return userId;
+            var resultOfTokens = await tokenRepository.DeleteTokensFromUserId(request.UserId);
+            await unitOfWork.CompleteAsync();
         }
     }
 }

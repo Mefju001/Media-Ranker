@@ -18,7 +18,7 @@ namespace Domain.Entity
         private TvSeries(string Title, 
             string Description, 
             Language Language, 
-            ReleaseDate ReleaseDate, 
+            ReleaseDate ReleaseDate,
             int genre,
             int Seasons,
             int Episodes,

@@ -3,5 +3,5 @@ using MediatR;
 
 namespace Application.Features.UserServices.GetById
 {
-    public record GetByIdQuery(int id) : IRequest<UserResponse?>;
+    public record GetByIdQuery(Guid id) : IRequest<UserResponse?>;
 }

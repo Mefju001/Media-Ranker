@@ -30,13 +30,6 @@ namespace Api.Controllers
             {
                 return Unauthorized("Nieprawidłowe dane");
             }
-            Response.Cookies.Append("refreshToken", tokens.refreshToken, new CookieOptions
-            {
-                Secure = true,
-                HttpOnly = true,
-                SameSite = SameSiteMode.Lax,
-                Expires = DateTime.Now.AddDays(7)
-            });
             return Ok(new { Message = "Zalogowano pomyślnie. Przekazuje token dostępu: ", Token = tokens.accessToken });
         }
         [Authorize(Roles = "User")]
@@ -48,7 +41,8 @@ namespace Api.Controllers
             {
                 return Unauthorized("Nie znaleziono ID użytkownika w tokenie.");
             }
-            var command = new LogoutCommand(userId);
+            Guid.TryParse(userId, out var id);
+            var command = new LogoutCommand(id);
             await mediator.Send(command);
             Response.Cookies.Delete("refreshToken");
             return Ok(new { Message = "wylogowano pomyślnie" });

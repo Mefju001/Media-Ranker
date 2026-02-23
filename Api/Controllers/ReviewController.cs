@@ -21,12 +21,11 @@ namespace Api.Controllers
         {
             this.mediator = mediator;
         }
-        private int? getUserId()
+        private Guid? getUserId()
         {
             var stringUserId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
             if (stringUserId == null) return null;
-            int id = int.Parse(stringUserId);
-            if (int.TryParse(stringUserId, out int userId))
+            if (Guid.TryParse(stringUserId, out var userId))
             {
                 return userId;
             }
@@ -50,8 +49,8 @@ namespace Api.Controllers
             var command = new ReviewUpsertCommand
             (
                 null,
-                userId.Value,
                 movieId,
+                userId.Value,
                 reviewRequest.Rating,
                 reviewRequest.Comment
             );
@@ -67,8 +66,8 @@ namespace Api.Controllers
             var command = new ReviewUpsertCommand
             (
                 reviewId,
-                userId.Value,
                 movieId,
+                userId.Value,
                 reviewRequest.Rating,
                 reviewRequest.Comment
             );

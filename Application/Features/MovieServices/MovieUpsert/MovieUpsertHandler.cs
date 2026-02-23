@@ -11,14 +11,16 @@ namespace Application.Features.MovieServices.MovieUpsert
     public class MovieUpsertHandler : IRequestHandler<UpsertMovieCommand, MovieResponse>
     {
         private readonly IUnitOfWork unitOfWork;
+        private readonly IMovieRepository movieRepository;
         private readonly IMediator _mediator;
         private readonly IReferenceDataService referenceDataService;
 
-        public MovieUpsertHandler(IUnitOfWork unitOfWork, IReferenceDataService referenceDataService, IMediator mediator)
+        public MovieUpsertHandler(IUnitOfWork unitOfWork, IReferenceDataService referenceDataService, IMediator mediator, IMovieRepository movieRepository)
         {
             this.unitOfWork = unitOfWork;
             this._mediator = mediator;
             this.referenceDataService = referenceDataService;
+            this.movieRepository = movieRepository;
         }
 
         public async Task<MovieResponse> Handle(UpsertMovieCommand request, CancellationToken cancellationToken)
@@ -28,7 +30,7 @@ namespace Application.Features.MovieServices.MovieUpsert
             Movie? movie;
             if (request.id.HasValue)
             {
-                movie = await unitOfWork.MovieRepository.FirstOrDefaultAsync(request.id.Value);
+                movie = await movieRepository.FirstOrDefaultAsync(request.id.Value);
                 if (movie is not null)
                 {
                     movie.Update(
@@ -53,7 +55,7 @@ namespace Application.Features.MovieServices.MovieUpsert
                                             director.Id,
                                             new Duration(request.Duration),
                                             request.IsCinemaRelease);
-                movie = await unitOfWork.MovieRepository.AddAsync(movie);
+                movie = await movieRepository.AddAsync(movie);
             }
 
             await unitOfWork.CompleteAsync();

@@ -6,10 +6,13 @@ namespace Application.Features.MovieServices.GetMoviesByCriteria
 {
     public class MovieSortAndFilterService: IMovieSortAndFilterService
     {
-        private readonly IUnitOfWork _unitOfWork;
+        private readonly IUnitOfWork unitOfWork;
+        private readonly IMovieRepository movieRepository;
+        private readonly IGenreRepository genreRepository;
+        private readonly IDirectorRepository directorRepository;
         public MovieSortAndFilterService(IUnitOfWork unitOfWork)
         {
-            _unitOfWork = unitOfWork;
+            this.unitOfWork = unitOfWork;
         }
         public async Task<IQueryable<Movie>> Handler(GetMoviesByCriteriaQuery request)
         {
@@ -19,14 +22,14 @@ namespace Application.Features.MovieServices.GetMoviesByCriteria
         }
         private IQueryable<Movie> ApplyFilters(GetMoviesByCriteriaQuery request)
         {
-            var query = _unitOfWork.MovieRepository.AsQueryable();
+            var query = movieRepository.AsQueryable();
             if (!string.IsNullOrWhiteSpace(request.TitleSearch))
             {
                 query = query.Where(m => m.Title.Contains(request.TitleSearch));
             }
             if (!string.IsNullOrWhiteSpace(request.genreName))
             {
-                var genreQuery = _unitOfWork.GenreRepository.GetAllQueryable();
+                var genreQuery = genreRepository.GetAllQueryable();
                 query = query.Join(genreQuery,
                     movie=>movie.GenreId,
                     genre=>genre.Id,
@@ -44,7 +47,7 @@ namespace Application.Features.MovieServices.GetMoviesByCriteria
             }
             if (!string.IsNullOrWhiteSpace(request.DirectorSurname) && !string.IsNullOrWhiteSpace(request.DirectorSurname))
             {
-                var directorQuery = _unitOfWork.DirectorRepository.GetAllQueryable();
+                var directorQuery = directorRepository.GetAllQueryable();
                 query = query.Join(
                     directorQuery,
                     movie=>movie.DirectorId,

@@ -1,6 +1,6 @@
 ﻿namespace Application.Common.DTO.Response
 {
-    public record UserResponse(int id, string username, string password, string name,
+    public record UserResponse(Guid id, string username, string password, string name,
     string surname, string email,
-    List<RoleResponse> role, List<ReviewResponse> Reviews);
+    List<RoleResponse> role);
 }

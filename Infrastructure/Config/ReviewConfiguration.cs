@@ -1,4 +1,5 @@
 ﻿using Domain.Entity;
+using Infrastructure.DBModels;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
@@ -10,10 +11,10 @@ namespace Infrastructure.Config
         {
             builder
                 .HasKey(r => r.Id);
-            builder.HasOne<User>()
-                .WithMany(u => u.Reviews)
+            builder.HasOne<UserModel>()
+                .WithMany()
                 .HasForeignKey(r => r.UserId)
-                .OnDelete(DeleteBehavior.Restrict);
+                .OnDelete(DeleteBehavior.Cascade);
             builder.HasOne<Media>()
                 .WithMany(m => m.Reviews)
                 .HasForeignKey(r => r.MediaId)

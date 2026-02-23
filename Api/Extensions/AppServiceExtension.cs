@@ -5,6 +5,7 @@ using Application.Features.GamesServices.GetGamesByCriteria;
 using Application.Features.MovieServices.GetAll;
 using Application.Features.MovieServices.GetMoviesByCriteria;
 using Application.Features.TvSeriesServices.GetTvSeriesByCriteria;
+using Domain.DomainServices;
 using Domain.Entity;
 using FluentValidation;
 using Infrastructure;
@@ -28,6 +29,18 @@ namespace Api.Extensions
             {
                 options.UseNpgsql(config.GetConnectionString("DefaultConnection"));
             });
+            // W Program.cs lub pliku konfiguracji Infrastructure
+            services.AddScoped<IDirectorRepository, DirectorRepository>();
+            services.AddScoped<ITvSeriesRepository, TvSeriesRepository>();
+            services.AddScoped<IGameRepository, GameRepository>();
+            services.AddScoped<IUserRepository, UserRepository>();
+            services.AddScoped<IMovieRepository, MovieRepository>();
+            services.AddScoped<IReviewRepository, ReviewRepository>();
+            services.AddScoped<ILikedMediaRepository, LikedMediaRepository>();
+            services.AddScoped<IGenreRepository, GenreRepository>();
+            services.AddScoped<IMediaRepository, MediaRepository>();
+            services.AddScoped<IUserPasswordService, UserPasswordService>();
+            services.AddScoped<IRoleRepository, RoleRepository>();
             services.AddScoped<ITokenCleanService, TokenCleanService>();
             services.AddScoped<IReferenceDataService, ReferenceDataService>();
             services.AddScoped<ITokenRepository, TokenRepository>();
@@ -35,12 +48,10 @@ namespace Api.Extensions
             services.AddScoped<IMovieSortAndFilterService, MovieSortAndFilterService>();
             services.AddScoped<IGameSortAndFilterService, GameSortAndFilterService>();
             services.AddHostedService<TokenBackgroundService>();
-            services.AddScoped<AccessTokenService>();
             services.AddScoped<MovieSortAndFilterService>();
             services.AddScoped<TvSeriesSortAndFilterService>();
             services.AddScoped<GameSortAndFilterService>();
-            services.AddScoped<RefreshTokenService>();
-            services.AddScoped<ValidatorForRefreshToken>();
+            services.AddScoped<TokenServices>();
             services.AddHttpClient<LogSenderService>();
             services.AddScoped<IPasswordHasher<User>, PasswordHasher<User>>();
             services.AddMediatR(cfg =>

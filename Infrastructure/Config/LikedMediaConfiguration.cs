@@ -1,4 +1,5 @@
 ﻿using Domain.Entity;
+using Infrastructure.DBModels;
 using Microsoft.EntityFrameworkCore;
 
 namespace Infrastructure.Config
@@ -10,7 +11,7 @@ namespace Infrastructure.Config
             builder.HasIndex(lm => new { lm.userId, lm.mediaId })
                 .IsUnique();
             builder
-                .HasOne<User>()
+                .HasOne<UserModel>()
                 .WithMany()
                 .HasForeignKey(lm => lm.userId);
             builder

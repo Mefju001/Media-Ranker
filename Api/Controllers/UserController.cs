@@ -10,6 +10,13 @@ using System.Security.Claims;
 
 namespace Api.Controllers
 {
+    /*            httpContextAccessor.HttpContext!.Response.Cookies.Append("refreshToken", refreshToken, new CookieOptions
+            {
+                Secure = true,
+                HttpOnly = true,
+                SameSite = SameSiteMode.Lax,
+                Expires = DateTime.Now.AddDays(1)
+            });*/
     [Authorize(Roles = "User")]
     [ApiController]
     [Route("[controller]")]
@@ -20,15 +27,12 @@ namespace Api.Controllers
         {
             this.mediator = mediator;
         }
-        private int? getUserId()
+        private Guid? getUserId()
         {
             var stringUserId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-            if (int.TryParse(stringUserId, out int userId))
-            {
-                return userId;
-            }
-            else
-                return null;
+            if (Guid.TryParse(stringUserId, out var userId))
+                throw new ArgumentException();
+            return userId;
         }
         /*[Authorize(Roles = "Admin")]
         [HttpGet]
@@ -37,9 +41,9 @@ namespace Api.Controllers
             var query = new GetAll
             return Ok(await userServices.GetAllAsync());
         }*/
-        [Authorize(Roles = "Admin")]
+    [Authorize(Roles = "Admin")]
         [HttpGet("id:{id}")]
-        public async Task<IActionResult> GetUserById(int id)
+        public async Task<IActionResult> GetUserById(Guid id)
         {
             var query = new GetByIdQuery(id);
             return Ok(mediator.Send(query));

@@ -1,11 +1,7 @@
 ﻿using Application.Common.Interfaces;
 using Domain.Entity;
 using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+
 
 namespace Infrastructure.Persistence.Repository
 {
@@ -24,7 +20,7 @@ namespace Infrastructure.Persistence.Repository
         {
             await _context.Games.AddRangeAsync(games,cancellationToken); 
         }
-        public async Task<Game?> GetGameDomainAsync(int gameId,CancellationToken cancellationToken)
+        public async Task<Game?> GetGameDomainAsync(int gameId, CancellationToken cancellationToken)
         {
             return await _context.Games.FirstOrDefaultAsync(g => g.Id == gameId,cancellationToken);
         }

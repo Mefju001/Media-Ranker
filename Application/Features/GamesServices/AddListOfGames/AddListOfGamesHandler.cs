@@ -11,10 +11,12 @@ namespace Application.Features.GamesServices.AddListOfGames
     {
         private readonly IUnitOfWork unitOfWork;
         private readonly IReferenceDataService referenceDataService;
-        public AddListOfGamesHandler(IReferenceDataService referenceDataService, IUnitOfWork unitOfWork)
+        private readonly IGameRepository gameRepository;
+        public AddListOfGamesHandler(IReferenceDataService referenceDataService, IUnitOfWork unitOfWork, IGameRepository gameRepository)
         {
             this.referenceDataService = referenceDataService;
             this.unitOfWork = unitOfWork;
+            this.gameRepository = gameRepository;
         }
         public async Task<List<GameResponse>> Handle(AddListOfGamesCommand requests, CancellationToken cancellationToken)
         {
@@ -32,7 +34,7 @@ namespace Application.Features.GamesServices.AddListOfGames
                         gameReq.Developer!,
                         gameReq.Platform);
             }).ToList();
-            await unitOfWork.GameRepository.AddListOfGames(games, cancellationToken);
+            await gameRepository.AddListOfGames(games, cancellationToken);
             await unitOfWork.CompleteAsync();
             return games.Select(g=> {
                 var genre = genresMap.Values.First(ge => ge.Id == g.GenreId);

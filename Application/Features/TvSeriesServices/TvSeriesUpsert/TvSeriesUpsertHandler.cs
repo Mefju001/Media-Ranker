@@ -12,12 +12,14 @@ namespace Application.Features.TvSeriesServices.TvSeriesUpsert
         private readonly IUnitOfWork unitOfWork;
         private readonly IMediator _mediator;
         private readonly IReferenceDataService referenceDataService;
+        private readonly ITvSeriesRepository tvSeriesRepository;
 
-        public TvSeriesUpsertHandler(IUnitOfWork unitOfWork, IReferenceDataService referenceDataService, IMediator mediator)
+        public TvSeriesUpsertHandler(IUnitOfWork unitOfWork, IReferenceDataService referenceDataService, IMediator mediator, ITvSeriesRepository tvSeriesRepository)
         {
             this.unitOfWork = unitOfWork;
             this._mediator = mediator;
             this.referenceDataService = referenceDataService;
+            this.tvSeriesRepository = tvSeriesRepository;
         }
 
         public async Task<TvSeriesResponse> Handle(UpsertTvSeriesCommand request, CancellationToken cancellationToken)
@@ -26,7 +28,7 @@ namespace Application.Features.TvSeriesServices.TvSeriesUpsert
             TvSeries? tvSeries;
             if (request.id is not null)
             {
-                tvSeries = await unitOfWork.TvSeriesRepository.GetTvSeriesById(request.id.Value);
+                tvSeries = await tvSeriesRepository.GetTvSeriesById(request.id.Value);
                 if (tvSeries is not null)
                 {
                     tvSeries.Update(
@@ -54,7 +56,7 @@ namespace Application.Features.TvSeriesServices.TvSeriesUpsert
                         request.Episodes,
                         request.Network,
                         request.Status);
-                tvSeries = await unitOfWork.TvSeriesRepository.AddTvSeriesAsync(tvSeries);
+                tvSeries = await tvSeriesRepository.AddTvSeriesAsync(tvSeries);
             }
             await unitOfWork.CompleteAsync();
             if (tvSeries is null) throw new ArgumentNullException(nameof(tvSeries));

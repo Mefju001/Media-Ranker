@@ -1,33 +1,29 @@
 ﻿using Domain.Entity;
+using Infrastructure.DBModels;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 
 namespace Infrastructure.Config
 {
-    public class UserConfiguration : IEntityTypeConfiguration<User>
+    public class UserConfiguration : IEntityTypeConfiguration<UserModel>
     {
-        public void Configure(EntityTypeBuilder<User> builder)
+        public void Configure(EntityTypeBuilder<UserModel> builder)
         {
-            builder.HasKey(x => x.Id);
-            builder.Property(x => x.username).IsRequired().UsePropertyAccessMode(PropertyAccessMode.Field).HasMaxLength(50);
-            builder.Property(x => x.password).IsRequired().HasMaxLength(255);
-            builder.Property(x => x.name).IsRequired().HasMaxLength(100);
-            builder.Property(x => x.surname).IsRequired().HasMaxLength(100);
-            builder.Property(x => x.email).IsRequired().HasMaxLength(150);
-            builder.HasMany(u => u.Reviews)
+            builder.ToTable("AspNetUsers");
+            builder.HasMany<Review>()
                .WithOne()
                .HasForeignKey(r => r.UserId)
                .OnDelete(DeleteBehavior.Cascade);
-            builder.HasMany(u => u.UserRoles)
-               .WithMany()
-               .UsingEntity<Dictionary<string, object>>(
-               "UserRoles",
-               j => j.HasOne<Role>().WithMany().HasForeignKey("RoleId"),
-               j => j.HasOne<User>().WithMany().HasForeignKey("UserId")
-                );
-            builder.Metadata.FindNavigation(nameof(User.UserRoles))
-               ?.SetPropertyAccessMode(PropertyAccessMode.Field);
+            builder.Property(x => x.IsActived).HasColumnName("IsActived").IsRequired();
+            builder.Property(x=>x.Name).HasColumnName("Name").IsRequired();
+            builder.Property(x=>x.Surname).HasColumnName("Surname").IsRequired();
+            builder.Property(x=>x.CreatedAt).HasColumnName("CreatedAt").IsRequired();
+            builder.Property(x => x.IsActived).HasColumnName("IsActived").IsRequired();
+            builder.HasMany(x => x.Roles)
+                .WithOne()
+                .HasForeignKey(ur => ur.UserId)
+                .IsRequired();
         }
     }
 }

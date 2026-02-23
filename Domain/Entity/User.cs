@@ -1,79 +1,77 @@
-﻿using Domain.Enums;
+﻿using Domain.DomainServices;
+using Domain.Enums;
+using Domain.Exceptions;
+using Domain.Value_Object;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Identity;
 using System.Xml.Linq;
 
 namespace Domain.Entity
 {
     public class User
     {
-        public int Id { get; private set; }
-        public string username { get; private set; }
-        public string password { get; private set; }
-        public string name { get; private set; }
-        public string surname { get; private set; }
-        public string email { get; private set; }
-        private readonly List<Role> _userRoles = new();
-        public virtual IReadOnlyCollection<Role> UserRoles => _userRoles.AsReadOnly();
+        public Guid Id { get; private set; }
+        public Username username { get; private set; }
+        public Password password { get; private set; }
+        public Fullname Fullname { get; private set; }
+        public CreatedAt CreatedAt { get; private set; }
+        public bool IsActived { get; private set; }
+        public Email Email { get; private set; }
+        private readonly List<Role> Roles = new();
+        public virtual IReadOnlyCollection<Role> UserRoles => Roles.AsReadOnly();
 
-        private readonly List<Review> _reviews = new();
-        public virtual IReadOnlyCollection<Review> Reviews => _reviews.AsReadOnly();
         private User() { }
-        private User(string username, string passwordHash, string name, string surname, string email)
+        private User(Guid id, Username username, Password passwordHash, Fullname fullname, Email email, CreatedAt createdAt, bool isActived)
         {
+            Id = id;
             this.username = username;
             password = passwordHash;
-            this.name = name;
-            this.surname = surname;
-            this.email = email;
+            Fullname = fullname;
+            Email = email;
+            CreatedAt = createdAt;
+            IsActived = isActived;
         }
-        public static User Create(string username, string passwordHash, string name, string surname, string email)
+        private User(Guid id, Username username, Password passwordHash, Fullname fullname, Email email, CreatedAt createdAt, bool isActived, List<Role> roles)
         {
-            if (string.IsNullOrWhiteSpace(email) || !email.Contains("@"))
-                throw new ArgumentException("Invalid email format.");
-
+            Id = id;
+            this.username = username;
+            password = passwordHash;
+            Fullname = fullname;
+            Email = email;
+            CreatedAt = createdAt;
+            IsActived = isActived;
+            Roles.AddRange(roles);
+        }
+        public static User Create(Username username, Password passwordHash, Fullname fullname, Email email, CreatedAt createdAt, bool IsActived)
+        {
             return new User(
+                Guid.NewGuid(),
                 username,
                 passwordHash,
-                name,
-                surname,
-                email
+                fullname,
+                email,
+                createdAt,
+                IsActived
             );
         }
-        public void ChangeNameAndSurname(string newName, string newSurname)
+        public static User Reconstruct(Guid Id, Username username, Password passwordHash, Fullname fullname, Email email, CreatedAt createdAt, bool IsActived, List<Role>roles)
         {
-            if (string.IsNullOrWhiteSpace(newName)) throw new ArgumentException("Name cannot be empty.");
-            if (string.IsNullOrWhiteSpace(newSurname)) throw new ArgumentException("Surname cannot be empty.");
-            name = newName;
-            surname = newSurname;
+            return new User(Id, username, passwordHash, fullname, email, createdAt, IsActived, roles);
         }
-        public void ChangePassword(string newPasswordHash)
+        public void ChangeNameAndSurname(Fullname fullname)
         {
-            if (string.IsNullOrWhiteSpace(newPasswordHash)) throw new ArgumentException("Password cannot be empty.");
-            password = newPasswordHash;
+            Fullname = fullname;
         }
-        public void ChangeEmail(string newEmail)
+        public void ChangePassword(Password password)
         {
-            if (string.IsNullOrWhiteSpace(newEmail) || !newEmail.Contains("@"))
-                throw new ArgumentException("Invalid email format.");
-            email = newEmail;
+            if (string.IsNullOrWhiteSpace(password.HashValue))
+                throw new ArgumentException("you should fill in these fields with password");
+            this.password = password;
         }
-        public void AddReview(Review review)
+        public void ChangeEmail(Email newEmail)
         {
-            if (_reviews.Any(r => r.MediaId == review.MediaId))
-                throw new InvalidOperationException("User has already reviewed this media.");
-            _reviews.Add(review);
+            Email = newEmail;
         }
-        public void AddRole(Role roleDomain)
-        {
-            if (_userRoles.Any(r => r.role == roleDomain.role)) return;
-            _userRoles.Add(roleDomain);
-        }
-        public void RemoveRole(ERole role)
-        {
-            var roleToRemove = _userRoles.FirstOrDefault(r => r.role == role);
-            if (roleToRemove != null)
-            {
-                _userRoles.Remove(roleToRemove);
-            }
-        }
+
     }
 }

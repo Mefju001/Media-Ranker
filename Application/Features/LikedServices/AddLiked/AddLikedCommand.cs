@@ -3,5 +3,5 @@ using MediatR;
 
 namespace Application.Features.LikedServices.AddLiked
 {
-    public record AddLikedCommand(int UserId, int MediaId) : IRequest<LikedMediaResponse>;
+    public record AddLikedCommand(Guid UserId, int MediaId) : IRequest<LikedMediaResponse>;
 }

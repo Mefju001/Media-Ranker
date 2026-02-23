@@ -9,19 +9,29 @@ namespace Application.Features.LikedServices.GetAllLiked
     public class GetAllHandler : IRequestHandler<GetAllQuery, List<LikedMediaResponse>>
     {
         private readonly IUnitOfWork unitOfWork;
-        public GetAllHandler(IUnitOfWork unitOfWork)
+        private readonly IMediaRepository mediaRepository;
+        private readonly IUserRepository userRepository;
+        private readonly IGenreRepository genreRepository;
+        private readonly IDirectorRepository directorRepository;
+        private readonly ILikedMediaRepository likedMediaRepository;
+        public GetAllHandler(IUnitOfWork unitOfWork, ILikedMediaRepository likedMediaRepository, IMediaRepository mediaRepository, IUserRepository userRepository, IGenreRepository genreRepository, IDirectorRepository directorRepository)
         {
             this.unitOfWork = unitOfWork;
+            this.mediaRepository = mediaRepository;
+            this.genreRepository = genreRepository;
+            this.directorRepository = directorRepository;
+            this.userRepository = userRepository;
+            this.likedMediaRepository = likedMediaRepository;
         }
         public async Task<List<LikedMediaResponse>> Handle(GetAllQuery request, CancellationToken cancellationToken)
         {
-            var likedItems = await unitOfWork.LikedMediaRepository.GetAll();
+            var likedItems = await likedMediaRepository.GetAll();
             var userIds = likedItems.Select(x => x.userId).Distinct().ToList();
             var mediaIds = likedItems.Select(x => x.mediaId).Distinct().ToList();
-            var users = await unitOfWork.UserRepository.GetByIds(userIds);
-            var mediaList = await unitOfWork.MediaRepository.GetByIds(mediaIds);
-            var genres = await unitOfWork.GenreRepository.GetGenresDictionary();
-            var directors = await unitOfWork.DirectorRepository.GetDirectorsDictionary();
+            var users = await userRepository.GetByIds(userIds);
+            var mediaList = await mediaRepository.GetByIds(mediaIds);
+            var genres = await genreRepository.GetGenresDictionary();
+            var directors = await directorRepository.GetDirectorsDictionary();
             var result = new List<LikedMediaResponse>();
             foreach (var lm in likedItems) {
                 var user = users[lm.userId];

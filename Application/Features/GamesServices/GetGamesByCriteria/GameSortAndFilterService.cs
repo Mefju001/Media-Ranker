@@ -7,9 +7,13 @@ namespace Application.Features.GamesServices.GetGamesByCriteria
     public class GameSortAndFilterService:IGameSortAndFilterService
     {
         private readonly IUnitOfWork unitOfWork;
-        public GameSortAndFilterService(IUnitOfWork unitOfWork)
+        private readonly IGameRepository gameRepository;
+        private readonly IGenreRepository genreRepository;
+        public GameSortAndFilterService(IUnitOfWork unitOfWork, IGameRepository gameRepository, IGenreRepository genreRepository)
         {
             this.unitOfWork = unitOfWork;
+            this.gameRepository = gameRepository;
+            this.genreRepository = genreRepository;
         }
         public async Task<IQueryable<Game>> GetGamesByCriteriaAsync(GetGamesByCriteriaQuery request)
         {
@@ -19,14 +23,14 @@ namespace Application.Features.GamesServices.GetGamesByCriteria
         }
         private async Task<IQueryable<Game>> ApplyFiltersAsync(GetGamesByCriteriaQuery request)
         {
-            var query = await unitOfWork.GameRepository.AsQueryable();
+            var query = await gameRepository.AsQueryable();
             if (!string.IsNullOrWhiteSpace(request.title))
             {
                 query = query.Where(m => m.Title.Contains(request.title));
             }
             if (!string.IsNullOrWhiteSpace(request.genreName))
             {
-                var genreTable = unitOfWork.GenreRepository.GetAllQueryable();
+                var genreTable = genreRepository.GetAllQueryable();
                 query = query.Join(genreTable,
                     game=>game.GenreId,
                     genre => genre.Id,

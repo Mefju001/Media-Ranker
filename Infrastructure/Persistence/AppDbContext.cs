@@ -1,11 +1,13 @@
-using Application.Common.Interfaces;
 using Domain.Entity;
 using Infrastructure.Config;
+using Infrastructure.DBModels;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
 namespace Infrastructure.Persistence
 {
-    public class AppDbContext : DbContext
+    public class AppDbContext : IdentityDbContext<UserModel, RoleModel, Guid>
     {
         public AppDbContext(DbContextOptions<AppDbContext> options) : base(options) { }
         public DbSet<Media> Medias { get; set; }
@@ -15,14 +17,11 @@ namespace Infrastructure.Persistence
         public DbSet<Genre> Genres { get; set; }
         public DbSet<Director> Directors { get; set; }
         public DbSet<Review> Reviews { get; set; }
-        public DbSet<User> Users { get; set; }
-        public DbSet<Role> Roles { get; set; }
         public DbSet<Token> Tokens { get; set; }
         public DbSet<LikedMedia> LikedMedias { get; set; }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.ApplyConfigurationsFromAssembly(typeof(MediaConfiguration).Assembly);
-
             base.OnModelCreating(modelBuilder);
         }
     }

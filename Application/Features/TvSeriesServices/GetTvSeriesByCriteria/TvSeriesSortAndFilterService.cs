@@ -7,13 +7,17 @@ namespace Application.Features.TvSeriesServices.GetTvSeriesByCriteria
     public class TvSeriesSortAndFilterService:ITvSeriesSortAndFilterService
     {
         private readonly IUnitOfWork unitOfWork;
-        public TvSeriesSortAndFilterService(IUnitOfWork unitOfWork)
+        private readonly ITvSeriesRepository tvSeriesRepository;
+        private readonly IGenreRepository genreRepository;
+        public TvSeriesSortAndFilterService(IUnitOfWork unitOfWork,ITvSeriesRepository tvSeriesRepository, IGenreRepository genreRepository)
         {
             this.unitOfWork = unitOfWork;
+            this.tvSeriesRepository = tvSeriesRepository;
+            this.genreRepository = genreRepository;
         }
         public async Task<IQueryable<TvSeries>> Handler(GetTvSeriesByCriteriaQuery request)
         {
-            var query = await unitOfWork.TvSeriesRepository.AsQueryable();
+            var query = await tvSeriesRepository.AsQueryable();
             query = await ApplyFilters(query, request);
             query = await ApplySorting(query, request);
             return query;
@@ -26,7 +30,7 @@ namespace Application.Features.TvSeriesServices.GetTvSeriesByCriteria
             }
             if (!string.IsNullOrWhiteSpace(request.genreName))
             {
-                var genre = unitOfWork.GenreRepository.GetAllQueryable();
+                var genre = genreRepository.GetAllQueryable();
                 query = query.Join(genre,
                     tv => tv.GenreId,
                     g => g.Id,

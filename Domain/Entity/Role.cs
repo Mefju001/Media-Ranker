@@ -1,10 +1,11 @@
 ﻿using Domain.Enums;
+using Microsoft.AspNetCore.Identity;
 
 namespace Domain.Entity
 {
     public class Role
     {
-        public int Id { get; private set; }
+        public Guid Id { get; private set; }
         public ERole role { get; private set; }
         protected Role() { }
         private Role(ERole role)
@@ -19,6 +20,14 @@ namespace Domain.Entity
         {
             return new Role(role);
         }
-
+        public static Role Reconstruct(Guid roleId,string name)
+        {
+            Enum.TryParse<ERole>(name, out var role);
+            return new Role
+            {
+                Id = roleId,
+                role = role
+            };
+        }
     }
 }

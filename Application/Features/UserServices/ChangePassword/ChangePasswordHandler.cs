@@ -1,6 +1,8 @@
 ﻿using Application.Common.Interfaces;
+using Domain.DomainServices;
 using Domain.Entity;
 using Domain.Exceptions;
+using Domain.Value_Object;
 using MediatR;
 using Microsoft.AspNetCore.Identity;
 
@@ -11,36 +13,26 @@ namespace Application.Features.UserServices.ChangePassword
     public class ChangePasswordHandler : IRequestHandler<ChangePasswordCommand, Unit>
     {
         private readonly IUnitOfWork unitOfWork;
-        private readonly IPasswordHasher<User> Hasher;
+        private readonly IUserRepository userRepository;
+        private readonly IUserPasswordService userPasswordService;
 
-        public ChangePasswordHandler(IPasswordHasher<User> passwordHasher, IUnitOfWork unitOfWork)
+        public ChangePasswordHandler(IUnitOfWork unitOfWork, IUserRepository userRepository, IUserPasswordService userPasswordService)
         {
             this.unitOfWork = unitOfWork;
-            Hasher = passwordHasher;
+            this.userRepository = userRepository;
+            this.userPasswordService = userPasswordService;
         }
         public async Task<Unit> Handle(ChangePasswordCommand request, CancellationToken cancellationToken)
         {
-            if (string.IsNullOrWhiteSpace(request.newPassword) ||
-                string.IsNullOrWhiteSpace(request.confirmPassword) ||
-                string.IsNullOrWhiteSpace(request.oldPassword))
-            {
-                throw new ArgumentException("you should fill in these fields with passwords");
-            }
-            if (string.Equals(request.oldPassword, request.newPassword, StringComparison.Ordinal))
-                throw new NewPasswordIsSameAsOldException("The new password is too similar to the old one");
-            if (!string.Equals(request.newPassword, request.confirmPassword, StringComparison.Ordinal))
-            {
-                throw new PasswordMismatchException("The new password differed from the confirmation password");
-            }
-            var user = await unitOfWork.UserRepository.GetUserById(request.userId);
+            if (request.newPassword != request.confirmPassword)
+                throw new PasswordMismatchException("The passwords provided are different.");
+            var user = await userRepository.GetUserById(request.userId);
             if (user is null)
             {
                 throw new InvalidCredentialsException("Invalid user or password.");
             }
-            var passwordVerificationResult = Hasher.VerifyHashedPassword(user, user.password, request.oldPassword);
-            if (passwordVerificationResult is not PasswordVerificationResult.Success)
-                throw new InvalidCredentialsException("You write wrong old password");
-            user.ChangePassword(Hasher.HashPassword(user, request.newPassword));
+            var password = userPasswordService.GenerateNewPassword(user,request.oldPassword,request.newPassword);
+            user.ChangePassword(password);
             await unitOfWork.CompleteAsync();
             return Unit.Value;
         }

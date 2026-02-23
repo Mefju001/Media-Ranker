@@ -9,20 +9,24 @@ namespace Application.Features.TvSeriesServices.GetTvSeriesById
     public class GetTvSeriesByIdHandler : IRequestHandler<GetTvSeriesByIdQuery, TvSeriesResponse?>
     {
         private readonly IUnitOfWork unitOfWork;
+        private readonly ITvSeriesRepository tvSeriesRepository;
+        private readonly IGenreRepository genreRepository;
 
-        public GetTvSeriesByIdHandler(IUnitOfWork unitOfWork)
+        public GetTvSeriesByIdHandler(IUnitOfWork unitOfWork, ITvSeriesRepository tvSeriesRepository, IGenreRepository genreRepository)
         {
             this.unitOfWork = unitOfWork;
+            this.tvSeriesRepository = tvSeriesRepository;
+            this.genreRepository = genreRepository;
         }
 
         public async Task<TvSeriesResponse?> Handle(GetTvSeriesByIdQuery request, CancellationToken cancellationToken)
         {
-            var tvSeriesDomain = await unitOfWork.TvSeriesRepository.GetTvSeriesById(request.id);
+            var tvSeriesDomain = await tvSeriesRepository.GetTvSeriesById(request.id);
             if (tvSeriesDomain == null)
             {
                 throw new NotFoundException("not found");
             }
-            var genre = await unitOfWork.GenreRepository.Get(tvSeriesDomain.GenreId);
+            var genre = await genreRepository.Get(tvSeriesDomain.GenreId);
             if (genre == null)
             {
                 throw new NotFoundException("not found");

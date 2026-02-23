@@ -1,4 +1,4 @@
 ﻿namespace Application.Common.DTO.Response
 {
-    public record TokenResponse(string accessToken, string refreshToken);
+    public record TokenResponse(Guid userId, string username, string accessToken, string refreshToken);
 }

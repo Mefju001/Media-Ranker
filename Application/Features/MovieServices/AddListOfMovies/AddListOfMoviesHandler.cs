@@ -11,10 +11,12 @@ namespace Application.Features.MovieServices.AddListOfMovies
     {
         private readonly IUnitOfWork _unitOfWork;
         private readonly IReferenceDataService referenceDataService;
-        public AddListOfMoviesHandler(IReferenceDataService referenceDataService, IUnitOfWork unitOfWork)
+        private readonly IMovieRepository movieRepository;
+        public AddListOfMoviesHandler(IMovieRepository movieRepository, IReferenceDataService referenceDataService, IUnitOfWork unitOfWork)
         {
             this.referenceDataService = referenceDataService;
             this._unitOfWork = unitOfWork;
+            this.movieRepository = movieRepository;
         }
         public async Task<List<MovieResponse>> Handle(AddListOfMoviesCommand requests, CancellationToken cancellationToken)
         {
@@ -33,7 +35,7 @@ namespace Application.Features.MovieServices.AddListOfMovies
                                                   releaseDate, genre.Id, director.Id,
                                                   duration, movieReq.IsCinemaRelease);
             }).ToList();
-            await _unitOfWork.MovieRepository.AddListOfMovies(movies, cancellationToken);
+            await movieRepository.AddListOfMovies(movies, cancellationToken);
             await _unitOfWork.CompleteAsync();
             return movies.Select(m=>
             {

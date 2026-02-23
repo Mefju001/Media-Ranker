@@ -11,14 +11,14 @@ namespace Application.Features.ReviewServices.GetTheLastestReview
 {
     public class GetTheLastestHandler:IRequestHandler<GetTheLastestQuery,List<string>>
     {
-        private readonly IUnitOfWork _unitOfWork;
-        public GetTheLastestHandler(IUnitOfWork unitOfWork)
+        private readonly IReviewRepository reviewRepository;
+        public GetTheLastestHandler(IReviewRepository reviewRepository)
         {
-            _unitOfWork = unitOfWork;
+            this.reviewRepository = reviewRepository;
         }
         public async Task<List<string>> Handle(GetTheLastestQuery request, CancellationToken cancellationToken)
         {
-            var review = await _unitOfWork.ReviewRepository.GetTheLastestReviewAsync(cancellationToken);
+            var review = await reviewRepository.GetTheLastestReviewAsync(cancellationToken);
             return review;
         }
     }

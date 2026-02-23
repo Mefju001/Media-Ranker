@@ -10,10 +10,12 @@ namespace Application.Features.GamesServices.GameUpsert
     public class GameUpsertHandler : IRequestHandler<UpsertGameCommand, GameResponse>
     {
         private readonly IUnitOfWork unitOfWork;
+        private readonly IGameRepository gameRepository;
+        private readonly IGenreRepository genreRepository;
         private readonly IMediator _mediator;
         private readonly IReferenceDataService referenceDataService;
 
-        public GameUpsertHandler(IUnitOfWork unitOfWork, IReferenceDataService referenceDataService, IMediator mediator)
+        public GameUpsertHandler(IUnitOfWork unitOfWork, IReferenceDataService referenceDataService, IMediator mediator, IGameRepository gameRepository, IGenreRepository genreRepository)
         {
             this.unitOfWork = unitOfWork;
             this._mediator = mediator;
@@ -26,7 +28,7 @@ namespace Application.Features.GamesServices.GameUpsert
             Game? game;
             if (request.id.HasValue)
             {
-                game = await unitOfWork.GameRepository.GetGameDomainAsync(request.id.Value, cancellationToken);
+                game = await gameRepository.GetGameDomainAsync(request.id.Value, cancellationToken);
                 if (game != null)
                 {
                     game.Update
@@ -50,11 +52,11 @@ namespace Application.Features.GamesServices.GameUpsert
                     new ReleaseDate(request.ReleaseDate!.Value),
                     genre.Id, request.Developer!,
                     request.Platform);
-                await unitOfWork.GameRepository.AddGameAsync(game);
+                await gameRepository.AddGameAsync(game);
             }
             await unitOfWork.CompleteAsync();
             if (game is null) throw new InvalidOperationException(nameof(game));
-            var genreDomain = await unitOfWork.GenreRepository.Get(genre.Id);
+            var genreDomain = await genreRepository.Get(genre.Id);
             var response = GameMapper.ToGameResponse(game,genreDomain!);
             return response;
         }

@@ -10,20 +10,24 @@ namespace Application.Features.MovieServices.GetMoviesByCriteria
 {
     public class GetMoviesByCriteriaHandler : IRequestHandler<GetMoviesByCriteriaQuery, List<MovieResponse>>
     {
-        private readonly IUnitOfWork unitOfWork;
         private readonly IMovieSortAndFilterService SortAndFilterService;
-        public GetMoviesByCriteriaHandler(IUnitOfWork appDbContext, IMovieSortAndFilterService sortAndFilterService)
+        private readonly IMovieRepository movieRepository;
+        private readonly IGenreRepository genreRepository;
+        private readonly IDirectorRepository directorRepository;
+        public GetMoviesByCriteriaHandler(IMovieSortAndFilterService sortAndFilterService,IMovieRepository movieRepository, IGenreRepository genreRepository, IDirectorRepository directorRepository)
         {
-            unitOfWork = appDbContext;
             SortAndFilterService = sortAndFilterService;
+            this.movieRepository = movieRepository;
+            this.genreRepository = genreRepository;
+            this.directorRepository = directorRepository;
         }
 
         public async Task<List<MovieResponse>> Handle(GetMoviesByCriteriaQuery request, CancellationToken cancellationToken)
         {
             var query = await SortAndFilterService.Handler(request);
-            var movies = await unitOfWork.MovieRepository.GetListFromQuery(query,cancellationToken);
-            var genres = await unitOfWork.GenreRepository.GetGenresDictionary();
-            var directors = await unitOfWork.DirectorRepository.GetDirectorsDictionary();
+            var movies = await movieRepository.GetListFromQuery(query,cancellationToken);
+            var genres = await genreRepository.GetGenresDictionary();
+            var directors = await directorRepository.GetDirectorsDictionary();
             var responses = movies.Select(m => {
                 genres.TryGetValue(m.GenreId, out var genreDomain);
                 directors.TryGetValue(m.DirectorId, out var directorDomain);

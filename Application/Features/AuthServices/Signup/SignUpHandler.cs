@@ -3,6 +3,7 @@ using Application.Features.AuthServices.Common;
 using Domain.Entity;
 using Domain.Enums;
 using Domain.Exceptions;
+using Domain.Value_Object;
 using MediatR;
 using Microsoft.AspNetCore.Identity;
 
@@ -11,41 +12,34 @@ namespace Application.Features.AuthServices.Signup
 {
     public class SignUpHandler : IRequestHandler<SignUpCommand, SignUpResponse>
     {
-        private readonly IUnitOfWork unitOfWork;
-        private readonly IPasswordHasher<User> Hasher;
-        private readonly AccessTokenService accessTokenService;
-        private readonly RefreshTokenService refreshTokenService;
-        public SignUpHandler(IUnitOfWork unitOfWork, IPasswordHasher<User> hasher, RefreshTokenService refreshTokenService, AccessTokenService access)
+        private readonly IUserRepository userRepository;
+        private readonly TokenServices tokenServices;
+        public SignUpHandler(IUserRepository userRepository, TokenServices tokenServices)
         {
-            this.unitOfWork = unitOfWork;
-            this.Hasher = hasher;
-            this.refreshTokenService = refreshTokenService;
-            this.accessTokenService = access;
+            this.userRepository = userRepository;
+            this.tokenServices = tokenServices;
         }
 
         public async Task<SignUpResponse> Handle(SignUpCommand request, CancellationToken cancellationToken)
         {
-            bool exists = await unitOfWork.UserRepository.IsAnyUserWithUsernameAndEmailLikeThat(request.username, request.email);
+            bool exists = await userRepository.IsAnyUserWithUsernameAndEmailLikeThat(request.username, request.email);
             if (exists)
                 throw new Exception("User with that username or email already exists");
-            var user = User.Create(request.username,
-                Hasher.HashPassword(null, request.password),
-                request.name,
-                request.surname,
-                request.email
+            var user = User.Create(
+                new Username(request.username),
+                new Password(request.password),
+                new Fullname(request.name,
+                request.surname),
+                new Email(request.email),
+                new CreatedAt(DateTime.UtcNow),
+                true
             );
-            user = await unitOfWork.UserRepository.AddUser(user);
-            var role = await unitOfWork.RoleRepository.GetByNameAsync("User");
-            if (role == null)
-                throw new NotFoundException("Not found user role");
-            if (role != null)
-            {
-                user.AddRole(role);
-            }
-            await unitOfWork.CompleteAsync();
-            var accessToken = accessTokenService.generateAccessToken(user.Id, user.username, user.UserRoles.ToList());
-            var refreshToken = await refreshTokenService.GenerateRefreshToken(user.Id, user.username);
-            return new SignUpResponse(user.username, accessToken, refreshToken);
+
+            await userRepository.CreateUserWithDefaultRole(user);
+            var roles = new List<string> { "User" };
+            var accessToken = tokenServices.generateAccessToken(user.Id, user.username.Value, roles);
+            var refreshToken = await tokenServices.GenerateRefreshToken(user.Id, user.username.Value);
+            return new SignUpResponse(user.username.Value, accessToken, refreshToken);
         }
     }
 }

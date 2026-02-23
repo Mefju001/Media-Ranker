@@ -1,6 +1,7 @@
 ﻿using Application.Common.Interfaces;
 using Domain.Entity;
 using Microsoft.EntityFrameworkCore;
+using System.Security.Claims;
 
 namespace Infrastructure.Persistence.Repository
 {
@@ -20,10 +21,10 @@ namespace Infrastructure.Persistence.Repository
             await appDbContext.SaveChangesAsync();
         }
 
-        public async Task<bool> DeleteTokensFromUserId(int userId)
+        public async Task<bool> DeleteTokensFromUserId(Guid userId)
         {
             var userRefreshTokens = await appDbContext.Tokens
-                .Where(t => t.UserId == userId)
+                .Where(t => t.UserId.Equals(userId))
                 .ToListAsync();
             if (userRefreshTokens.Any())
             {
@@ -42,6 +43,12 @@ namespace Infrastructure.Persistence.Repository
         {
             appDbContext.Tokens.RemoveRange(tokens);
             await appDbContext.SaveChangesAsync();
+        }
+
+        public async Task<Token?> GetByJtiAsync(Claim jti)
+        {
+            var result = await appDbContext.Tokens.FirstOrDefaultAsync(t => t.Jti == jti.Value && !t.IsRevoked && t.ExpiryDate >= DateTime.UtcNow);
+            return result;
         }
     }
 }
