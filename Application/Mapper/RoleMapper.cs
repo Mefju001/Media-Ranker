@@ -1,15 +1,16 @@
 ﻿using Application.Common.DTO.Response;
 using Domain.Entity;
+using Domain.Enums;
 
 namespace Application.Mapper
 {
     public static class RoleMapper
     {
-        public static RoleResponse ToResponse(Role role)
+        public static RoleResponse ToResponse(ERole role)
         {
-            return new RoleResponse(role.role)
+            return new RoleResponse(role)
             {
-                role = role.role
+                name = role
             };
         }
     }

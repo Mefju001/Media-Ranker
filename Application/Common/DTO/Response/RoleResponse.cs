@@ -2,5 +2,5 @@
 
 namespace Application.Common.DTO.Response
 {
-    public record RoleResponse(ERole role);
+    public record RoleResponse(ERole name);
 }

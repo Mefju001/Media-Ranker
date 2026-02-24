@@ -21,7 +21,7 @@ namespace Application.Features.AuthServices.Login
         {
             var user = await userRepository.AuthenticateAsync(command.username,command.password);
             if (user is null) throw new InvalidCredentialsException("Wrong username or password");
-            var username = user.username.Value;
+            var username = user.Username.Value;
             var roles = await userRepository.getUserRoles(username);
             var accessToken = tokenServices.generateAccessToken(user.Id, username, roles);
             var refreshToken = await tokenServices.GenerateRefreshToken(user.Id, username);

@@ -17,7 +17,7 @@ namespace Api.Controllers
                 SameSite = SameSiteMode.Lax,
                 Expires = DateTime.Now.AddDays(1)
             });*/
-    [Authorize(Roles = "User")]
+    [Authorize(Roles = "Admin,User")]
     [ApiController]
     [Route("[controller]")]
     public class UserController : ControllerBase
@@ -41,7 +41,7 @@ namespace Api.Controllers
             var query = new GetAll
             return Ok(await userServices.GetAllAsync());
         }*/
-    [Authorize(Roles = "Admin")]
+        [Authorize(Roles = "Admin")]
         [HttpGet("id:{id}")]
         public async Task<IActionResult> GetUserById(Guid id)
         {
@@ -53,7 +53,14 @@ namespace Api.Controllers
         public async Task<IActionResult> GetBy(string name)
         {
             var query = new GetUserByNameQuery(name);
-            return Ok(mediator.Send(query));
+            var result = await mediator.Send(query);
+
+            if (result == null)
+            {
+                return NotFound();
+            }
+
+            return Ok(result);
         }
         [Authorize(Roles = "Admin,User")]
         [HttpPatch("ChangePassword")]

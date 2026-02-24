@@ -1,5 +1,6 @@
 ﻿using Application.Common.Interfaces;
 using Domain.Entity;
+using Domain.Enums;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -26,7 +27,7 @@ namespace Application.Features.AuthServices.Common
             this.context = context;
             this.tokenRepository = tokenRepository;
         }
-        public string generateAccessToken(Guid id, string username, IList<string> roles)
+        public string generateAccessToken(Guid id, string username, IReadOnlyCollection<ERole>roles)
         {
             var jti = Guid.NewGuid().ToString();
             var claims = new List<Claim>
@@ -37,7 +38,7 @@ namespace Application.Features.AuthServices.Common
             };
             foreach (var role in roles)
             {
-                claims.Add(new Claim(ClaimTypes.Role, role));
+                claims.Add(new Claim(ClaimTypes.Role, role.ToString()));
             }
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(configuration["Jwt:Key"]!));
             var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);

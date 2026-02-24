@@ -15,7 +15,7 @@ namespace Infrastructure.Persistence.Repository
             this.appDbContext = appDbContext;
             
         }
-        public async Task<Role?> GetByNameAsync(string role)
+        public async Task<ERole?> GetByNameAsync(string role)
         {
             throw new NotImplementedException();
             /*var result = await appDbContext.Roles.FirstOrDefaultAsync(r => r.Name == role);

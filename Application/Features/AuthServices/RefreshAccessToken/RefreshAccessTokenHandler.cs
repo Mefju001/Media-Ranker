@@ -29,11 +29,9 @@ namespace Application.Features.AuthServices.RefreshAccessToken
             }
             
             var claims = await tokenServices.ValidateAndGetPrincipalFromRefreshToken(request.accessToken);
-            var stringId = claims.FirstOrDefault(c=>c.Type == JwtRegisteredClaimNames.Sub).Value ?? throw new UserClaimNotFoundException("Not found your id in claims");
-            Guid.TryParse(stringId, out var id);
-            var username = await userRepository.GetUsernameById(id);
-            var roles = await userRepository.getUserRoles(username);
-            var accessToken = tokenServices.generateAccessToken(id, username, roles);
+            var username = claims.FirstOrDefault(c => c.Type == JwtRegisteredClaimNames.Name).Value;
+            var user = await userRepository.GetUserByUsername(username);
+            var accessToken = tokenServices.generateAccessToken(user.Id, username, user.UserRoles);
             var RefreshToken = await tokenServices.GenerateRefreshToken(id, username);
             return new TokenResponse(id, username, accessToken, RefreshToken);
         }

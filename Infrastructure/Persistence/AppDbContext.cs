@@ -23,6 +23,8 @@ namespace Infrastructure.Persistence
         {
             modelBuilder.ApplyConfigurationsFromAssembly(typeof(MediaConfiguration).Assembly);
             base.OnModelCreating(modelBuilder);
+            modelBuilder.ApplyConfiguration(new UserConfiguration());
+            modelBuilder.ApplyConfiguration(new UserRoleConfiguration());
         }
     }
 }

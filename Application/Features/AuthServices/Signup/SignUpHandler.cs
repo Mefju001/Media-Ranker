@@ -30,16 +30,14 @@ namespace Application.Features.AuthServices.Signup
                 new Password(request.password),
                 new Fullname(request.name,
                 request.surname),
-                new Email(request.email),
-                new CreatedAt(DateTime.UtcNow),
-                true
+                new Email(request.email)
             );
 
             await userRepository.CreateUserWithDefaultRole(user);
             var roles = new List<string> { "User" };
-            var accessToken = tokenServices.generateAccessToken(user.Id, user.username.Value, roles);
-            var refreshToken = await tokenServices.GenerateRefreshToken(user.Id, user.username.Value);
-            return new SignUpResponse(user.username.Value, accessToken, refreshToken);
+            var accessToken = tokenServices.generateAccessToken(user.Id, user.Username.Value, roles);
+            var refreshToken = await tokenServices.GenerateRefreshToken(user.Id, user.Username.Value);
+            return new SignUpResponse(user.Username.Value, accessToken, refreshToken);
         }
     }
 }

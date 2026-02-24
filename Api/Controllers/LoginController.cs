@@ -15,7 +15,6 @@ namespace Api.Controllers
     public class LoginController : ControllerBase
     {
         private readonly IMediator mediator;
-
         public LoginController(IMediator mediator)
         {
             this.mediator = mediator;
@@ -30,6 +29,13 @@ namespace Api.Controllers
             {
                 return Unauthorized("Nieprawidłowe dane");
             }
+            Response.Cookies.Append("refreshToken", tokens.refreshToken, new CookieOptions
+            {
+                Secure = true,
+                HttpOnly = true,
+                SameSite = SameSiteMode.Lax,
+                Expires = DateTime.Now.AddDays(1)
+            });
             return Ok(new { Message = "Zalogowano pomyślnie. Przekazuje token dostępu: ", Token = tokens.accessToken });
         }
         [Authorize(Roles = "User")]
@@ -57,7 +63,15 @@ namespace Api.Controllers
                 userRequest.password,
                 userRequest.name,
                 userRequest.surname);
-            return Ok(await mediator.Send(command));
+            var result = await mediator.Send(command);
+            Response.Cookies.Append("refreshToken", result.refreshToken!, new CookieOptions
+             {
+                 Secure = true,
+                 HttpOnly = true,
+                 SameSite = SameSiteMode.Lax,
+                 Expires = DateTime.Now.AddDays(1)
+             });
+            return Ok(new {Message = $"Rejestracja użytkownika o nazwie {result.username} przebiegła pomyślnie. token dostępu: ", Token= result.accessToken});
         }
     }
 }

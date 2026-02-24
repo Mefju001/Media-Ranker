@@ -10,8 +10,8 @@ namespace Application.Mapper
             if (user is null) return null;
             return new UserResponse(
                 user.Id,
-                user.username.Value,
-                user.password.HashValue,
+                user.Username.Value,
+                user.Password.HashValue,
                 user.Fullname.Name,
                 user.Fullname.Surname,
                 user.Email.Value,

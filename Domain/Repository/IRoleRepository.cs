@@ -5,6 +5,6 @@ namespace Application.Common.Interfaces
 {
     public interface IRoleRepository
     {
-        Task<Role?> GetByNameAsync(string role);
+        Task<ERole?> GetByNameAsync(string role);
     }
 }

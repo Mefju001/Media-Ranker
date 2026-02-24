@@ -7,11 +7,9 @@ namespace Application.Features.UserServices.GetById
 {
     public class GetByIdHandler : IRequestHandler<GetByIdQuery, UserResponse?>
     {
-        private readonly IUnitOfWork unitOfWork;
         private readonly IUserRepository userRepository;
-        public GetByIdHandler(IUnitOfWork unitOfWork, IUserRepository userRepository)
+        public GetByIdHandler(IUserRepository userRepository)
         {
-            this.unitOfWork = unitOfWork;
             this.userRepository = userRepository;
         }
         public async Task<UserResponse?> Handle(GetByIdQuery request, CancellationToken cancellationToken)

@@ -1,60 +1,60 @@
-﻿using Domain.DomainServices;
-using Domain.Enums;
-using Domain.Exceptions;
+﻿using Domain.Enums;
 using Domain.Value_Object;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Identity;
-using System.Xml.Linq;
+
 
 namespace Domain.Entity
 {
     public class User
     {
         public Guid Id { get; private set; }
-        public Username username { get; private set; }
-        public Password password { get; private set; }
+        public Username Username { get; private set; }
+        public Password Password { get; private set; }
         public Fullname Fullname { get; private set; }
         public CreatedAt CreatedAt { get; private set; }
-        public bool IsActived { get; private set; }
+        public bool IsActive { get; private set; }
         public Email Email { get; private set; }
-        private readonly List<Role> Roles = new();
-        public virtual IReadOnlyCollection<Role> UserRoles => Roles.AsReadOnly();
+        
+        private readonly HashSet<ERole> Roles = new();
+        public virtual IReadOnlyCollection<ERole> UserRoles => Roles.ToList();
 
         private User() { }
         private User(Guid id, Username username, Password passwordHash, Fullname fullname, Email email, CreatedAt createdAt, bool isActived)
         {
             Id = id;
-            this.username = username;
-            password = passwordHash;
+            Username = username;
+            Password = passwordHash;
             Fullname = fullname;
             Email = email;
             CreatedAt = createdAt;
-            IsActived = isActived;
+            IsActive = isActived;
         }
-        private User(Guid id, Username username, Password passwordHash, Fullname fullname, Email email, CreatedAt createdAt, bool isActived, List<Role> roles)
+        private User(Guid id, Username username, Password passwordHash, Fullname fullname, Email email, CreatedAt createdAt, bool isActived, List<ERole> roles)
         {
             Id = id;
-            this.username = username;
-            password = passwordHash;
+            Username = username;
+            Password = passwordHash;
             Fullname = fullname;
             Email = email;
             CreatedAt = createdAt;
-            IsActived = isActived;
-            Roles.AddRange(roles);
+            IsActive = isActived;
+            Roles = roles.ToHashSet();
         }
-        public static User Create(Username username, Password passwordHash, Fullname fullname, Email email, CreatedAt createdAt, bool IsActived)
+        public static User Create(Username username, Password passwordHash, Fullname fullname, Email email)
         {
-            return new User(
+            var user = new User(
                 Guid.NewGuid(),
                 username,
                 passwordHash,
                 fullname,
                 email,
-                createdAt,
-                IsActived
+                new CreatedAt(DateTime.UtcNow),
+                true
             );
+
+            user.Roles.Add(ERole.User);
+            return user;
         }
-        public static User Reconstruct(Guid Id, Username username, Password passwordHash, Fullname fullname, Email email, CreatedAt createdAt, bool IsActived, List<Role>roles)
+        public static User Reconstruct(Guid Id, Username username, Password passwordHash, Fullname fullname, Email email, CreatedAt createdAt, bool IsActived, List<ERole>roles)
         {
             return new User(Id, username, passwordHash, fullname, email, createdAt, IsActived, roles);
         }
@@ -66,12 +66,55 @@ namespace Domain.Entity
         {
             if (string.IsNullOrWhiteSpace(password.HashValue))
                 throw new ArgumentException("you should fill in these fields with password");
-            this.password = password;
+            Password = password;
         }
         public void ChangeEmail(Email newEmail)
         {
             Email = newEmail;
         }
-
+        public void PromotionToManager()
+        {
+            if (Roles.Contains(ERole.Admin))
+            {
+                throw new InvalidOperationException("Nie można awansować użytkownika, który już jest Adminem.");
+            }
+            Roles.Add(ERole.Manager);
+        }
+        public void PromotionToAdmin()
+        {
+            if (!Roles.Contains(ERole.Manager))
+            {
+                throw new InvalidOperationException("Nie można awansować użytkownika do Admina bez posiadania roli Manager.");
+            }
+            Roles.Add(ERole.Admin);
+        }
+        public void DemotionFromAdmin()
+        {
+            if (!Roles.Contains(ERole.Admin))
+            {
+                throw new InvalidOperationException("Nie można zdegradować użytkownika, który nie jest Adminem.");
+            }
+            Roles.Remove(ERole.Admin);
+        }
+        public void DemotionFromManager()
+        {
+            if (!Roles.Contains(ERole.Manager))
+            {
+                throw new InvalidOperationException("Nie można zdegradować użytkownika, który nie jest Managerem.");
+            }
+            if (Roles.Contains(ERole.Admin))
+            {
+                throw new InvalidOperationException("Nie można zdegradować użytkownika z roli Manager, ponieważ posiada on rolę Admin. Najpierw zdegraduj go z roli Admin.");
+            }
+            Roles.Remove(ERole.Manager);
+        }
+        public void RemoveRole(ERole role)
+        {
+            if (role == ERole.User)
+            {
+                throw new InvalidOperationException("Nie można odebrać podstawowej roli User.");
+            }
+            Roles.Remove(role);
+        }
     }
 }

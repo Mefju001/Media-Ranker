@@ -28,5 +28,17 @@ namespace Infrastructure.DBModels
             CreatedAt = createdAt;
             IsActived = isActived;
         }
+        public UserModel(Guid id, string username, string password, string name, string surname, string email, DateTime createdAt, bool isActived, ICollection<IdentityUserRole<Guid>> Roles)
+        {
+            Id = id;
+            UserName = username;
+            PasswordHash = password;
+            Name = name;
+            Surname = surname;
+            Email = email;
+            CreatedAt = createdAt;
+            IsActived = isActived;
+            this.Roles = Roles;
+        }
     }
 }

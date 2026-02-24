@@ -15,7 +15,7 @@ namespace Domain.DomainServices
         }
         public Password GenerateNewPassword(User user, string oldPassword, string newPassword)
         {
-            var verification = Hasher.VerifyHashedPassword(user, user.password.HashValue, oldPassword);
+            var verification = Hasher.VerifyHashedPassword(user, user.Password.HashValue, oldPassword);
             if (verification == PasswordVerificationResult.Failed)
                 throw new InvalidCredentialsException("You write wrong Password");
 

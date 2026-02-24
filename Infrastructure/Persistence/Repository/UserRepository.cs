@@ -29,7 +29,7 @@ namespace Infrastructure.Persistence.Repository
             if (user == null) return null;
             var roles = await userManager.GetRolesAsync(user);
             var domainRoles = roles.Select(r =>
-                Enum.TryParse<ERole>(r, out var role)? Role.Create(role):null).Where(r=>r!=null).ToList();
+                Enum.TryParse<ERole>(r, out var role)? (ERole?)role:null).OfType<ERole>().ToList();
             return user.ToDomain(domainRoles);
         }
         public async Task<User?> AuthenticateAsync(string username, string password)
@@ -40,7 +40,7 @@ namespace Infrastructure.Persistence.Repository
             if (result == false) return null;
             var roles = await userManager.GetRolesAsync(user);
             var domainRoles = roles.Select(r =>
-            Enum.TryParse<ERole>(r, out var role) ? Role.Create(role) : null).Where(r => r != null).ToList();
+                Enum.TryParse<ERole>(r, out var role) ? (ERole?)role : null).OfType<ERole>().ToList();
             return user.ToDomain(domainRoles);
         }
         public async Task<IList<string>> getUserRoles(string username)
@@ -56,7 +56,7 @@ namespace Infrastructure.Persistence.Repository
             if (user == null) return null;
             var roles = await userManager.GetRolesAsync(user);
             var domainRoles = roles.Select(r =>
-                Enum.TryParse<ERole>(r, out var role) ? Role.Create(role) : null).Where(r => r != null).ToList();
+                Enum.TryParse<ERole>(r, out var role) ? (ERole?)role : null).OfType<ERole>().ToList();
             return user.ToDomain(domainRoles);
         }
         public async Task<bool> IsAnyUserWhoHaveEmailAndId(string email, Guid id)
@@ -78,20 +78,26 @@ namespace Infrastructure.Persistence.Repository
         public async Task CreateUserWithDefaultRole(User user)
         {
             var identityUser = user.ToModel();
-            var result = await userManager.CreateAsync(identityUser, user.password.HashValue);
-
+            var result = await userManager.CreateAsync(identityUser, user.Password.HashValue);
             if (!result.Succeeded) throw new Exception("User creation failed");
-
-            await userManager.AddToRoleAsync(identityUser, "User");
+            await userManager.AddToRoleAsync(identityUser, user.UserRoles.ToString()!);
         }
         public async Task<Dictionary<Guid, User>> GetByIds(List<Guid> userIds)
         {
-            throw new NotImplementedException();
-            /*var results = await userManager.Users
+            var identityUsers = await userManager.Users
                 .Where(u => userIds.Contains(u.Id))
-                .Select(u=>u.ToDomain())
-                .ToDictionaryAsync(u => u.Id, u => u);
-            return results;*/
+                .ToListAsync();
+            var userDictionary = new Dictionary<Guid, User>();
+            foreach (var user in identityUsers)
+            {
+                var roles = await userManager.GetRolesAsync(user);
+                var domainRoles = roles
+                    .Select(r => Enum.TryParse<ERole>(r, out var role) ? (ERole?)role : null)
+                    .OfType<ERole>()
+                    .ToList();
+                userDictionary[user.Id] = user.ToDomain(domainRoles);
+            }
+            return userDictionary;
         }
 
         public async Task<string> GetUsernameById(Guid id)
