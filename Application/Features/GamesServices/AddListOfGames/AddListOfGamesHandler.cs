@@ -36,10 +36,11 @@ namespace Application.Features.GamesServices.AddListOfGames
             }).ToList();
             await gameRepository.AddListOfGames(games, cancellationToken);
             await unitOfWork.CompleteAsync();
-            return games.Select(g=> {
+            return games.Select(g =>
+            {
                 var genre = genresMap.Values.First(ge => ge.Id == g.GenreId);
                 return GameMapper.ToGameResponse(g, genre);
-                }).ToList();
+            }).ToList();
         }
     }
 }

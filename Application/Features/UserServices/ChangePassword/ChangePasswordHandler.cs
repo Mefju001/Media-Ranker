@@ -1,10 +1,7 @@
 ﻿using Application.Common.Interfaces;
 using Domain.DomainServices;
-using Domain.Entity;
 using Domain.Exceptions;
-using Domain.Value_Object;
 using MediatR;
-using Microsoft.AspNetCore.Identity;
 
 
 
@@ -31,7 +28,7 @@ namespace Application.Features.UserServices.ChangePassword
             {
                 throw new InvalidCredentialsException("Invalid user or password.");
             }
-            var password = userPasswordService.GenerateNewPassword(user,request.oldPassword,request.newPassword);
+            var password = userPasswordService.GenerateNewPassword(user, request.oldPassword, request.newPassword);
             user.ChangePassword(password);
             await unitOfWork.CompleteAsync();
             return Unit.Value;

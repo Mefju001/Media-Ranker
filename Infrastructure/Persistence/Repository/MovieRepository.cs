@@ -1,6 +1,5 @@
 ﻿using Application.Common.Interfaces;
 using Domain.Entity;
-using Domain.Exceptions;
 using Microsoft.EntityFrameworkCore;
 
 namespace Infrastructure.Persistence.Repository
@@ -12,7 +11,7 @@ namespace Infrastructure.Persistence.Repository
         {
             this.context = context;
         }
-        public async Task<List<Movie>>GetListFromQuery(IQueryable<Movie> query, CancellationToken cancellationToken)
+        public async Task<List<Movie>> GetListFromQuery(IQueryable<Movie> query, CancellationToken cancellationToken)
         {
             return await query.ToListAsync(cancellationToken);
         }
@@ -52,7 +51,7 @@ namespace Infrastructure.Persistence.Repository
 
         public async Task AddListOfMovies(List<Movie> movieDomains, CancellationToken cancellationToken)
         {
-            await context.AddRangeAsync(movieDomains,cancellationToken);
+            await context.AddRangeAsync(movieDomains, cancellationToken);
         }
     }
 }

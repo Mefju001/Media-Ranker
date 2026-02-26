@@ -1,46 +1,45 @@
-﻿using Application.Common.Interfaces;
-using Infrastructure.BackgroundTasks.CleanService;
+﻿using Infrastructure.BackgroundTasks.CleanService;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 
 namespace Infrastructure.BackgroundTasks.Workers
 {
-    public class TokenBackgroundService : IHostedService, IDisposable
+    public class TokenBackgroundService : BackgroundService
     {
-        public readonly ILogger<TokenBackgroundService> logger;
-        public readonly IServiceScopeFactory ServiceProvider;
-        private Timer timer;
+        private readonly ILogger<TokenBackgroundService> logger;
+        private readonly IServiceScopeFactory scopeFactory;
+        private readonly TimeSpan cleanupInterval = TimeSpan.FromDays(30);
 
-        private readonly TimeSpan _cleanupInterval = TimeSpan.FromDays(30);
-        public TokenBackgroundService(ILogger<TokenBackgroundService> logger, IServiceScopeFactory serviceProvider)
+        public TokenBackgroundService(ILogger<TokenBackgroundService> logger, IServiceScopeFactory scopeFactory)
         {
             this.logger = logger;
-            ServiceProvider = serviceProvider;
+            this.scopeFactory = scopeFactory;
         }
-        public void Dispose()
+        protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
-            timer?.Dispose();
-        }
-        public Task StartAsync(CancellationToken cancellationToken)
-        {
-            timer = new Timer(DoWork, null, TimeSpan.FromMinutes(1), _cleanupInterval);
-            return Task.CompletedTask;
-        }
-        private void DoWork(object? state)
-        {
-            logger.LogInformation("Zaczynamy czyszczenie bazy danych z tokenów");
-            using (var scope = ServiceProvider.CreateScope())
+            logger.LogInformation("TokenBackgroundService is starting.");
+            await DoCleanupWork(stoppingToken);
+            using PeriodicTimer timer = new(cleanupInterval);
+            while (await timer.WaitForNextTickAsync(stoppingToken))
             {
-                var cleanupService = scope.ServiceProvider.GetRequiredService<ITokenCleanService>();
-                cleanupService.CleanTokens().Wait();
+                await DoCleanupWork(stoppingToken);
             }
         }
-        public Task StopAsync(CancellationToken cancellationToken)
+        private async Task DoCleanupWork(CancellationToken stoppingToken)
         {
-            logger.LogInformation("zatrzymanie czyszczenia bazy danych z tokenów nieaktywnych");
-            timer.Change(Timeout.Infinite, 0);
-            return Task.CompletedTask;
+            try
+            {
+                logger.LogInformation("TokenBackgroundService is running cleanup task.");
+                using var scope = scopeFactory.CreateScope();
+                var tokenCleanService = scope.ServiceProvider.GetRequiredService<ITokenCleanService>();
+                await tokenCleanService.CleanTokens();
+                logger.LogInformation("TokenBackgroundService completed cleanup task.");
+            }
+            catch (Exception ex)
+            {
+                logger.LogError(ex, "An error occurred while cleaning tokens.");
+            }
         }
     }
 }

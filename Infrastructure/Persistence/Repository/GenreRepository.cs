@@ -1,11 +1,6 @@
 ﻿using Application.Common.Interfaces;
 using Domain.Entity;
 using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Infrastructure.Persistence.Repository
 {
@@ -16,7 +11,7 @@ namespace Infrastructure.Persistence.Repository
         {
             _context = context;
         }
-        public  IQueryable<Genre> GetAllQueryable()
+        public IQueryable<Genre> GetAllQueryable()
         {
             return _context.Genres.AsQueryable();
         }
@@ -36,7 +31,7 @@ namespace Infrastructure.Persistence.Repository
 
         public async Task<List<Genre>> GetByNamesAsync(List<string> names)
         {
-            return await _context.Genres.Where(g=>names.Contains(g.name.Value)).ToListAsync();
+            return await _context.Genres.Where(g => names.Contains(g.name.Value)).ToListAsync();
         }
 
         public async Task<List<Genre>> GetAllAsync(CancellationToken cancellationToken)

@@ -1,6 +1,5 @@
 ﻿using Domain.Exceptions;
 using Domain.Value_Object;
-using static System.Net.WebRequestMethods;
 
 namespace Domain.Entity
 {
@@ -24,9 +23,9 @@ namespace Domain.Entity
             this.Language = Language;
             this.ReleaseDate = ReleaseDate;
             this.GenreId = genreDomain;
-            this.Stats = new MediaStats(0,0);
+            this.Stats = new MediaStats(0, 0);
         }
-        protected Media(int id,string Title, string Description, Language Language, ReleaseDate ReleaseDate, int genreDomain, MediaStats stats)
+        protected Media(int id, string Title, string Description, Language Language, ReleaseDate ReleaseDate, int genreDomain, MediaStats stats)
         {
             Validate(Title, Description);
             this.Id = id;
@@ -67,11 +66,11 @@ namespace Domain.Entity
             _reviews.Add(review);
             var reviewCount = Reviews.Count;
             var avg = Reviews.Average(r => r.Rating.value);
-            this.UpdateStatistic(reviewCount,avg);
+            this.UpdateStatistic(reviewCount, avg);
         }
         public void UpdateStatistic(int reviewCount, double avg)
         {
-            this.Stats = new MediaStats(avg,reviewCount);
+            this.Stats = new MediaStats(avg, reviewCount);
         }
     }
 }

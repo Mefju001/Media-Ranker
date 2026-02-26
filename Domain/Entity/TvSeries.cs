@@ -1,10 +1,5 @@
 ﻿using Domain.Enums;
 using Domain.Value_Object;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Domain.Entity
 {
@@ -15,15 +10,15 @@ namespace Domain.Entity
         public string? Network { get; private set; }
         public EStatus Status { get; private set; }
         private TvSeries() { }
-        private TvSeries(string Title, 
-            string Description, 
-            Language Language, 
+        private TvSeries(string Title,
+            string Description,
+            Language Language,
             ReleaseDate ReleaseDate,
             int genre,
             int Seasons,
             int Episodes,
             string? Network,
-            EStatus Status) 
+            EStatus Status)
             : base(Title, Description, Language, ReleaseDate, genre)
         {
             this.Seasons = Seasons;
@@ -42,7 +37,7 @@ namespace Domain.Entity
             string? Network,
             EStatus Status,
             MediaStats stats)
-            : base(id,Title, Description, Language, ReleaseDate, genre, stats)
+            : base(id, Title, Description, Language, ReleaseDate, genre, stats)
         {
             this.Seasons = Seasons;
             this.Episodes = Episodes;
@@ -86,7 +81,7 @@ namespace Domain.Entity
             this.Episodes = Episodes;
             this.Network = Network;
             this.Status = Status;
-            base.Update(Title, Description,Language,ReleaseDate,genre);            
+            base.Update(Title, Description, Language, ReleaseDate, genre);
         }
         public static TvSeries Reconstruct(int id,
             string Title,

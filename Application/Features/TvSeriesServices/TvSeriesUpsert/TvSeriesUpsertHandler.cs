@@ -60,7 +60,7 @@ namespace Application.Features.TvSeriesServices.TvSeriesUpsert
             }
             await unitOfWork.CompleteAsync();
             if (tvSeries is null) throw new ArgumentNullException(nameof(tvSeries));
-            var response = TvSeriesMapper.ToTvSeriesResponse(tvSeries,genre);
+            var response = TvSeriesMapper.ToTvSeriesResponse(tvSeries, genre);
             return response;
         }
     }

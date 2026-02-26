@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Identity;
 
 namespace Domain.DomainServices
 {
-    public class UserPasswordService:IUserPasswordService
+    public class UserPasswordService : IUserPasswordService
     {
         private readonly IPasswordHasher<User> Hasher;
         public UserPasswordService(IPasswordHasher<User> hasher)

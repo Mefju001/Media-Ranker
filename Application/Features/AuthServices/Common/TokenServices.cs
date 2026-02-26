@@ -2,8 +2,8 @@
 using Domain.Entity;
 using Domain.Enums;
 using Microsoft.AspNetCore.Http;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
@@ -18,22 +18,26 @@ namespace Application.Features.AuthServices.Common
         private readonly IConfiguration configuration;
         private readonly IHttpContextAccessor httpContextAccessor;
         private readonly IReferenceDataService referenceDataService;
+        private readonly ILogger<TokenServices> logger;
 
-        public TokenServices(IConfiguration configuration, IHttpContextAccessor httpContextAccessor, IReferenceDataService referenceDataService, IUnitOfWork context, ITokenRepository tokenRepository)
+        public TokenServices(ILogger<TokenServices> tokenServices, IConfiguration configuration, IHttpContextAccessor httpContextAccessor, IReferenceDataService referenceDataService, IUnitOfWork context, ITokenRepository tokenRepository)
         {
             this.configuration = configuration;
             this.httpContextAccessor = httpContextAccessor;
             this.referenceDataService = referenceDataService;
             this.context = context;
             this.tokenRepository = tokenRepository;
+            this.logger = tokenServices;
         }
-        public string generateAccessToken(Guid id, string username, IReadOnlyCollection<ERole>roles)
+        public string generateAccessToken(Guid id, string username, IReadOnlyCollection<ERole> roles)
         {
+            if (id == Guid.Empty) throw new ArgumentException("User ID cannot be empty.");
+            if (string.IsNullOrEmpty(username)) throw new ArgumentException("Username cannot be empty.");
             var jti = Guid.NewGuid().ToString();
             var claims = new List<Claim>
             {
-                new(JwtRegisteredClaimNames.Sub, id.ToString()),
-                new(JwtRegisteredClaimNames.Name, username),
+                new(ClaimTypes.NameIdentifier, id.ToString()),
+                new(ClaimTypes.Name, username),
                 new(JwtRegisteredClaimNames.Jti,jti)
             };
             foreach (var role in roles)
@@ -52,16 +56,18 @@ namespace Application.Features.AuthServices.Common
             var accessToken = new JwtSecurityTokenHandler().WriteToken(token);
             return accessToken;
         }
+
+        //Opaque token implementation could be added here in the future if needed, currently we are using JWT for both access and refresh tokens for simplicity.
         public async Task<string> GenerateRefreshToken(Guid userId, string username)
         {
             var jti = Guid.NewGuid().ToString();
             var claims = new List<Claim>
             {
-                new(JwtRegisteredClaimNames.Sub, userId.ToString()),
-                new(JwtRegisteredClaimNames.Name, username),
+                new(ClaimTypes.NameIdentifier, userId.ToString()),
+                new(ClaimTypes.Name, username),
                 new(JwtRegisteredClaimNames.Jti,jti)
             };
-            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(configuration["Jwt:Key"]!));
+            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(configuration["Jwt:Key2"]!));
             var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
             var refreshToken = new JwtSecurityToken(
                 issuer: configuration["Jwt:Issuer"],
@@ -91,11 +97,9 @@ namespace Application.Features.AuthServices.Common
                 return null;
             }
             var handler = new JwtSecurityTokenHandler();
-            SecurityToken validatedToken;
-            ClaimsPrincipal principal;
             try
             {
-                var secretKey = configuration["Jwt:Key"];
+                var secretKey = configuration["Jwt:Key2"];
                 var issuer = configuration["Jwt:Issuer"];
                 var audience = configuration["Jwt:Audience"];
 
@@ -112,22 +116,35 @@ namespace Application.Features.AuthServices.Common
                     ValidateAudience = true,
                     ValidAudience = audience,
                     ValidateLifetime = true,
-                    ClockSkew = TimeSpan.FromSeconds(5)
+                    ClockSkew = TimeSpan.Zero
                 };
-                principal = handler.ValidateToken(token, tokenValidationParameters, out validatedToken);
-                var jti = principal.Claims.FirstOrDefault(c => c.Type == JwtRegisteredClaimNames.Jti);
+                var principal = handler.ValidateToken(token, tokenValidationParameters, out var validatedToken);
+                if (validatedToken is not JwtSecurityToken jwtToken || !jwtToken.Header.Alg.Equals(SecurityAlgorithms.HmacSha256, StringComparison.InvariantCultureIgnoreCase))
+                {
+                    logger.LogWarning("Niepoprawny algorytm tokena.");
+                    return null;
+                }
+                var jti = principal.FindFirstValue(JwtRegisteredClaimNames.Jti);
                 if (jti == null)
                     return null;
                 var dbRefreshToken = await tokenRepository.GetByJtiAsync(jti);
-                if (dbRefreshToken == null)
-                     return null;
+                if (dbRefreshToken == null || dbRefreshToken.IsRevoked || dbRefreshToken.ExpiryDate < DateTime.UtcNow)
+                {
+                    logger.LogWarning("Token JTI: {Jti} jest nieważny, unieważniony lub nie istnieje.", jti);
+                    return null;
+                }
                 dbRefreshToken.Revoke();
                 await context.CompleteAsync();
                 return principal.Claims.ToList().AsReadOnly();
             }
+            catch (SecurityTokenExpiredException)
+            {
+                logger.LogInformation("Próba użycia wygasłego Refresh Tokena.");
+                return null;
+            }
             catch (Exception ex)
             {
-                Console.WriteLine(ex.Message);
+                logger.LogError(ex, "Błąd podczas walidacji tokenu odświeżania.");
                 return null;
             }
         }

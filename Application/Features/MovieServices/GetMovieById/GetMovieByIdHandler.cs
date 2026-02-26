@@ -35,10 +35,11 @@ namespace Application.Features.MovieServices.GetMovieById
                 throw new NotFoundException("genre not found");
             }
             var director = await directorRepository.Get(movie.DirectorId);
-            if (director == null) {
+            if (director == null)
+            {
                 throw new NotFoundException("director not found");
             }
-            var movieResponse = MovieMapper.ToMovieResponse(movie,genre,director);
+            var movieResponse = MovieMapper.ToMovieResponse(movie, genre, director);
             return movieResponse;
         }
     }

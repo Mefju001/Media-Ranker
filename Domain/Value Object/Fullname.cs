@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Domain.Value_Object
+﻿namespace Domain.Value_Object
 {
     public class Fullname
     {
@@ -20,7 +14,7 @@ namespace Domain.Value_Object
             Surname = surname;
         }
 
-        
+
         public override string ToString() => $"{Name} {Surname}";
     }
 }

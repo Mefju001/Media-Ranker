@@ -1,39 +1,54 @@
 ﻿using Application.Common.DTO.Response;
 using Application.Common.Interfaces;
 using Application.Features.AuthServices.Common;
-using Domain.Entity;
 using Domain.Exceptions;
+using Domain.Value_Object;
 using MediatR;
-using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Logging;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 
 
 namespace Application.Features.AuthServices.RefreshAccessToken
 {
-    public class RefreshAccessTokenHandler:IRequestHandler<RefreshAccessTokenCommand, TokenResponse?>
+    public class RefreshAccessTokenHandler : IRequestHandler<RefreshAccessTokenCommand, TokenResponse?>
     {
         private readonly IUserRepository userRepository;
         private readonly TokenServices tokenServices;
-        public RefreshAccessTokenHandler(IUserRepository userRepository, TokenServices refreshAccessToken)
+        private readonly ILogger<RefreshAccessTokenHandler> logger;
+        public RefreshAccessTokenHandler(IUserRepository userRepository, TokenServices refreshAccessToken, ILogger<RefreshAccessTokenHandler> logger)
         {
             this.userRepository = userRepository;
             this.tokenServices = refreshAccessToken;
+            this.logger = logger;
         }
 
         public async Task<TokenResponse?> Handle(RefreshAccessTokenCommand request, CancellationToken cancellationToken)
         {
-            if (string.IsNullOrEmpty(request.accessToken))
+            if (string.IsNullOrEmpty(request.RefreshToken))
             {
-                throw new NotFoundException("Not found your user");
+                logger.LogWarning("Próba odświeżenia tokena bez podania RefreshToken.");
+                throw new UnauthorizedException("Refresh token is required.");
             }
-            
-            var claims = await tokenServices.ValidateAndGetPrincipalFromRefreshToken(request.accessToken);
-            var username = claims.FirstOrDefault(c => c.Type == JwtRegisteredClaimNames.Name).Value;
-            var user = await userRepository.GetUserByUsername(username);
-            var accessToken = tokenServices.generateAccessToken(user.Id, username, user.UserRoles);
-            var RefreshToken = await tokenServices.GenerateRefreshToken(id, username);
-            return new TokenResponse(id, username, accessToken, RefreshToken);
+            var claims = await tokenServices.ValidateAndGetPrincipalFromRefreshToken(request.RefreshToken);
+            if (claims == null)
+            {
+                logger.LogWarning("Nieudana walidacja RefreshToken. Możliwa próba ataku lub wygasła sesja.");
+                throw new UnauthorizedException("Token is invalid or has expired.");
+            }
+            var userIdClaim = claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier)?.Value;
+            if (string.IsNullOrEmpty(userIdClaim) || !Guid.TryParse(userIdClaim, out Guid userId))
+                throw new UnauthorizedException("Invalid token payload.");
+            var user = await userRepository.GetUserById(userId);
+            if (user == null)
+            {
+                logger.LogWarning("Użytkownik o ID {UserId} nie istnieje, mimo poprawnego tokena.", userId);
+                throw new NotFoundException("User no longer exists.");
+            }
+            var accessToken = tokenServices.generateAccessToken(userId, user.Username.Value, user.UserRoles);
+            var newRefreshToken = await tokenServices.GenerateRefreshToken(userId, user.Username.Value);
+            logger.LogInformation("Pomyślnie odświeżono token dla użytkownika: {UserId}", userId);
+            return new TokenResponse(userId, user.Username.Value, accessToken, newRefreshToken);
         }
     }
 }

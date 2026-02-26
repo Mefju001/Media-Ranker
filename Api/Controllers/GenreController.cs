@@ -1,5 +1,4 @@
-﻿using Application.Common.Interfaces;
-using Application.Features.GenreServices;
+﻿using Application.Features.GenreServices;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;

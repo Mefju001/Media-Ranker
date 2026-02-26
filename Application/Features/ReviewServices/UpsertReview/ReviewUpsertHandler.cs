@@ -30,13 +30,13 @@ namespace Application.Features.ReviewServices.UpsertReview
                 reviewDomain = await reviewRepository.GetReviewByIdAsync(request.id.Value);
                 if (reviewDomain is null)
                 {
-                    throw new NotFoundException($"Review for the given id: { request.id.Value } does not exist");
+                    throw new NotFoundException($"Review for the given id: {request.id.Value} does not exist");
                 }
-                reviewDomain.Update(new Rating(request.Rating),request.Comment);
+                reviewDomain.Update(new Rating(request.Rating), request.Comment);
             }
             else
             {
-                if(!request.userId.HasValue || !request.mediaId.HasValue)
+                if (!request.userId.HasValue || !request.mediaId.HasValue)
                 {
                     throw new ArgumentException("UserId and MediaId must be provided for creating a new review.");
                 }

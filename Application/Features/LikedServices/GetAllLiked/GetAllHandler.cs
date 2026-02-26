@@ -33,13 +33,14 @@ namespace Application.Features.LikedServices.GetAllLiked
             var genres = await genreRepository.GetGenresDictionary();
             var directors = await directorRepository.GetDirectorsDictionary();
             var result = new List<LikedMediaResponse>();
-            foreach (var lm in likedItems) {
+            foreach (var lm in likedItems)
+            {
                 var user = users[lm.userId];
                 var media = mediaList[lm.mediaId];
                 var genre = genres[media.GenreId];
                 result.Add(media switch
                 {
-                    Movie m=> LikedMediaMapper.ToResponse(lm, user, m, genre, directors[m.DirectorId]),
+                    Movie m => LikedMediaMapper.ToResponse(lm, user, m, genre, directors[m.DirectorId]),
                     Game g => LikedMediaMapper.ToResponse(lm, user, g, genre),
                     TvSeries t => LikedMediaMapper.ToResponse(lm, user, t, genre),
                     _ => throw new Exception("Unknown media type")

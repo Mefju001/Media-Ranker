@@ -16,9 +16,9 @@ namespace Infrastructure.Config
                .HasForeignKey(r => r.UserId)
                .OnDelete(DeleteBehavior.Cascade);
             builder.Property(x => x.IsActived).HasColumnName("IsActived").IsRequired();
-            builder.Property(x=>x.Name).HasColumnName("Name").IsRequired();
-            builder.Property(x=>x.Surname).HasColumnName("Surname").IsRequired();
-            builder.Property(x=>x.CreatedAt).HasColumnName("CreatedAt").IsRequired();
+            builder.Property(x => x.Name).HasColumnName("Name").IsRequired();
+            builder.Property(x => x.Surname).HasColumnName("Surname").IsRequired();
+            builder.Property(x => x.CreatedAt).HasColumnName("CreatedAt").IsRequired();
             builder.Property(x => x.IsActived).HasColumnName("IsActived").IsRequired();
             builder.HasMany(x => x.Roles)
                 .WithOne()

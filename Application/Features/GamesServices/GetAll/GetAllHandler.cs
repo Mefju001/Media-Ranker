@@ -20,7 +20,7 @@ namespace Application.Features.GamesServices.GetAll
         {
             var games = await gameRepository.GetAllAsync();
             var genres = await genreRepository.GetGenresDictionary();
-            var gameResponses = games.Select(g=>
+            var gameResponses = games.Select(g =>
                 GameMapper.ToGameResponse(g, genres[g.GenreId])).ToList();
             return gameResponses;
         }

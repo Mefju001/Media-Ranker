@@ -19,7 +19,7 @@ namespace Infrastructure.Config
                 .WithMany(m => m.Reviews)
                 .HasForeignKey(r => r.MediaId)
                 .OnDelete(DeleteBehavior.Restrict);
-            builder.OwnsOne(r => r.Rating, d => 
+            builder.OwnsOne(r => r.Rating, d =>
             {
                 d.Property(x => x.value).HasColumnName("Rating");
             });

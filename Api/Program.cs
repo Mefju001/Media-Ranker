@@ -1,6 +1,5 @@
 using Api.Controllers;
 using Api.Extensions;
-using Domain.Entity;
 using Infrastructure.DBModels;
 using Infrastructure.Persistence;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -33,7 +32,7 @@ builder.Services.AddCors(options =>
                   .AllowCredentials();
         });
 });
-
+builder.Services.AddHttpContextAccessor();
 builder.Services.AddIdentity<UserModel, RoleModel>()
     .AddEntityFrameworkStores<AppDbContext>()
     .AddDefaultTokenProviders();

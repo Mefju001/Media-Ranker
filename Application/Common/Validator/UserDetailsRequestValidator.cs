@@ -1,14 +1,9 @@
 ﻿using Application.Common.DTO.Request;
 using FluentValidation;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Application.Common.Validator
 {
-    public class UserDetailsRequestValidator:AbstractValidator<UserDetailsRequest>
+    public class UserDetailsRequestValidator : AbstractValidator<UserDetailsRequest>
     {
         public UserDetailsRequestValidator()
         {

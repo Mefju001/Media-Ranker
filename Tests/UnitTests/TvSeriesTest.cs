@@ -1,18 +1,9 @@
-﻿using Application.Common.DTO.Request;
-using Application.Common.Interfaces;
+﻿using Application.Common.Interfaces;
 using Application.Features.TvSeriesServices.GetAll;
 using Application.Features.TvSeriesServices.GetTvSeriesByCriteria;
 using Application.Features.TvSeriesServices.TvSeriesUpsert;
-using Domain.Entity;
-using Domain.Enums;
 using MediatR;
-using MockQueryable;
 using Moq;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace UnitTests
 {

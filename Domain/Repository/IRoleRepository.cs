@@ -1,5 +1,4 @@
-﻿using Domain.Entity;
-using Domain.Enums;
+﻿using Domain.Enums;
 
 namespace Application.Common.Interfaces
 {

@@ -4,13 +4,13 @@ using Domain.Enums;
 using Domain.Exceptions;
 using Infrastructure.DBModels;
 using Infrastructure.DBModels.Extensions;
-using MediatR;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using System.Data;
 
 namespace Infrastructure.Persistence.Repository
 {
+
     public class UserRepository : IUserRepository
     {
         private readonly AppDbContext appDbContext;
@@ -22,14 +22,14 @@ namespace Infrastructure.Persistence.Repository
             this.userManager = userManager;
 
         }
-        
+
         public async Task<User> GetUserByUsername(string username)
         {
             var user = await userManager.FindByNameAsync(username);
             if (user == null) return null;
             var roles = await userManager.GetRolesAsync(user);
             var domainRoles = roles.Select(r =>
-                Enum.TryParse<ERole>(r, out var role)? (ERole?)role:null).OfType<ERole>().ToList();
+                Enum.TryParse<ERole>(r, out var role) ? (ERole?)role : null).OfType<ERole>().ToList();
             return user.ToDomain(domainRoles);
         }
         public async Task<User?> AuthenticateAsync(string username, string password)
@@ -71,16 +71,18 @@ namespace Infrastructure.Persistence.Repository
             if (user == null) throw new NotFoundException("User not found");
             appDbContext.Users.Remove(user);
         }
-        public async Task<bool>IsAnyUserWithUsernameAndEmailLikeThat(string username, string email)
+        public async Task<bool> IsAnyUserWithUsernameAndEmailLikeThat(string username, string email)
         {
-            return await appDbContext.Users.AnyAsync(u=>u.UserName == username&&u.Email ==email);
+            return await appDbContext.Users.AnyAsync(u => u.UserName == username || u.Email == email);
         }
+        // edycja czy powienien zwracać Usera czy void? niby powinno wiec dodam jutro 
         public async Task CreateUserWithDefaultRole(User user)
         {
             var identityUser = user.ToModel();
             var result = await userManager.CreateAsync(identityUser, user.Password.HashValue);
-            if (!result.Succeeded) throw new Exception("User creation failed");
+            if (!result.Succeeded) throw new Exception("User creation failed: "+result.Errors.Select(e=>e.Description));
             await userManager.AddToRoleAsync(identityUser, user.UserRoles.ToString()!);
+           // return identityUser.ToDomain();
         }
         public async Task<Dictionary<Guid, User>> GetByIds(List<Guid> userIds)
         {
@@ -103,7 +105,7 @@ namespace Infrastructure.Persistence.Repository
         public async Task<string> GetUsernameById(Guid id)
         {
             var user = await userManager.FindByIdAsync(id.ToString());
-            if(user == null)return null;
+            if (user == null) return null;
             return user.UserName!;
         }
     }

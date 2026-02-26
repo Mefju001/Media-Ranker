@@ -13,7 +13,7 @@ namespace Domain.Entity
         public CreatedAt CreatedAt { get; private set; }
         public bool IsActive { get; private set; }
         public Email Email { get; private set; }
-        
+
         private readonly HashSet<ERole> Roles = new();
         public virtual IReadOnlyCollection<ERole> UserRoles => Roles.ToList();
 
@@ -54,7 +54,7 @@ namespace Domain.Entity
             user.Roles.Add(ERole.User);
             return user;
         }
-        public static User Reconstruct(Guid Id, Username username, Password passwordHash, Fullname fullname, Email email, CreatedAt createdAt, bool IsActived, List<ERole>roles)
+        public static User Reconstruct(Guid Id, Username username, Password passwordHash, Fullname fullname, Email email, CreatedAt createdAt, bool IsActived, List<ERole> roles)
         {
             return new User(Id, username, passwordHash, fullname, email, createdAt, IsActived, roles);
         }

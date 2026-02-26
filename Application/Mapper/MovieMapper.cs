@@ -1,12 +1,11 @@
 using Application.Common.DTO.Response;
 using Domain.Entity;
-using System.Linq.Expressions;
 
 namespace Application.Mapper
 {
     public static class MovieMapper
     {
-        public static MovieResponse ToMovieResponse(Movie movieDomain,Genre genreDomain,Director director)
+        public static MovieResponse ToMovieResponse(Movie movieDomain, Genre genreDomain, Director director)
         {
             return new MovieResponse(
                 movieDomain.Id,

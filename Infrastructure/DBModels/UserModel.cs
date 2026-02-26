@@ -1,15 +1,8 @@
-﻿using Domain.Entity;
-using Domain.Value_Object;
-using Microsoft.AspNetCore.Identity;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Microsoft.AspNetCore.Identity;
 
 namespace Infrastructure.DBModels
 {
-    public class UserModel:IdentityUser<Guid>
+    public class UserModel : IdentityUser<Guid>
     {
         public string Name { get; set; }
         public string Surname { get; set; }

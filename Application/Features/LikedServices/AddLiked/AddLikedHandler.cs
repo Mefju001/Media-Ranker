@@ -15,7 +15,7 @@ namespace Application.Features.LikedServices.AddLiked
         private readonly IDirectorRepository directorRepository;
         private readonly ILikedMediaRepository likedMediaRepository;
 
-        public AddLikedHandler(IUnitOfWork unitOfWork, ILikedMediaRepository likedMediaRepository, IDirectorRepository directorRepository, IMediaRepository mediaRepository, IUserRepository userRepository, IGenreRepository genreRepository )
+        public AddLikedHandler(IUnitOfWork unitOfWork, ILikedMediaRepository likedMediaRepository, IDirectorRepository directorRepository, IMediaRepository mediaRepository, IUserRepository userRepository, IGenreRepository genreRepository)
         {
             this.unitOfWork = unitOfWork;
             this.mediaRepository = mediaRepository;
@@ -28,11 +28,11 @@ namespace Application.Features.LikedServices.AddLiked
         public async Task<LikedMediaResponse> Handle(AddLikedCommand request, CancellationToken cancellationToken)
         {
             var media = await mediaRepository.GetMediaById(request.MediaId);
-            var user = await  userRepository.GetUserById(request.UserId);
+            var user = await userRepository.GetUserById(request.UserId);
             var genre = await genreRepository.Get(media.GenreId);
-            if (media is null || user is null||genre is null)
+            if (media is null || user is null || genre is null)
                 throw new Exception("is empty");
-            var existingLikedMedia = await  likedMediaRepository.Any(request.UserId, request.MediaId);
+            var existingLikedMedia = await likedMediaRepository.Any(request.UserId, request.MediaId);
             if (existingLikedMedia is true)
                 throw new Exception("already exists");
             var likedMedia = LikedMedia.Create(
@@ -43,9 +43,9 @@ namespace Application.Features.LikedServices.AddLiked
             await unitOfWork.CompleteAsync();
             return media switch
             {
-                Movie m => LikedMediaMapper.ToResponse(likedMedia,user,m,genre,await directorRepository.Get(m.DirectorId)),
-                Game g=> LikedMediaMapper.ToResponse(likedMedia,user,g,genre),
-                TvSeries tv=> LikedMediaMapper.ToResponse(likedMedia,user,tv,genre),
+                Movie m => LikedMediaMapper.ToResponse(likedMedia, user, m, genre, await directorRepository.Get(m.DirectorId)),
+                Game g => LikedMediaMapper.ToResponse(likedMedia, user, g, genre),
+                TvSeries tv => LikedMediaMapper.ToResponse(likedMedia, user, tv, genre),
                 _ => throw new Exception("invalid media type")
             };
         }

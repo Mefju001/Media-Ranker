@@ -2,7 +2,6 @@
 using Application.Common.Interfaces;
 using Application.Mapper;
 using MediatR;
-using Microsoft.EntityFrameworkCore;
 
 namespace Application.Features.MovieServices.GetAll
 {
@@ -28,7 +27,7 @@ namespace Application.Features.MovieServices.GetAll
             {
                 genres.TryGetValue(m.GenreId, out var genre);
                 directorsDict.TryGetValue(m.DirectorId, out var director);
-                return MovieMapper.ToMovieResponse(m,genre!,director!);
+                return MovieMapper.ToMovieResponse(m, genre!, director!);
             }).ToList();
             return movieResponse;
         }

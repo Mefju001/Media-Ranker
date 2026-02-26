@@ -1,5 +1,4 @@
 ﻿using Domain.Entity;
-using Microsoft.AspNetCore.Identity;
 
 namespace Application.Common.Interfaces
 {
@@ -7,7 +6,7 @@ namespace Application.Common.Interfaces
     {
         Task<string> GetUsernameById(Guid id);
         Task<User> GetUserByUsername(string username);
-        Task<Dictionary<Guid, User>>GetByIds(List<Guid> userIds);
+        Task<Dictionary<Guid, User>> GetByIds(List<Guid> userIds);
         Task<User?> AuthenticateAsync(string username, string password);
         Task<IList<string>> getUserRoles(string username);
         Task<User> GetUserById(Guid userId);

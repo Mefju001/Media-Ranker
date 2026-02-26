@@ -5,12 +5,12 @@ namespace Application.Mapper
 {
     public class LikedMediaMapper
     {
-        public static LikedMediaResponse ToResponse(LikedMedia likedMedia,User userDomain,Movie movieDomain,Genre genreDomain,Director director)
+        public static LikedMediaResponse ToResponse(LikedMedia likedMedia, User userDomain, Movie movieDomain, Genre genreDomain, Director director)
         {
             return new LikedMediaResponse(
                 likedMedia.id,
                 UserMapper.ToResponse(userDomain),
-                MovieMapper.ToMovieResponse(movieDomain, genreDomain,director),
+                MovieMapper.ToMovieResponse(movieDomain, genreDomain, director),
                 likedMedia.likedDate
             );
         }

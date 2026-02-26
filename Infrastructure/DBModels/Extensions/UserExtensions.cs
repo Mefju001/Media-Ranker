@@ -7,7 +7,7 @@ namespace Infrastructure.DBModels.Extensions
 {
     public static class UserExtensions
     {
-        public static User ToDomain(this UserModel model,List<ERole>roles)
+        public static User ToDomain(this UserModel model, List<ERole> roles)
         {
             return User.Reconstruct(
                 model.Id,
@@ -23,7 +23,7 @@ namespace Infrastructure.DBModels.Extensions
         public static UserModel ToModel(this User user)
         {
             return new UserModel(
-                user.Id, 
+                user.Id,
                 user.Username.Value,
                 user.Password.HashValue,
                 user.Fullname.Name,

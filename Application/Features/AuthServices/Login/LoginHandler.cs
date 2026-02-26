@@ -3,7 +3,7 @@ using Application.Common.Interfaces;
 using Application.Features.AuthServices.Common;
 using Domain.Exceptions;
 using MediatR;
-using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Logging;
 
 namespace Application.Features.AuthServices.Login
 {
@@ -11,21 +11,27 @@ namespace Application.Features.AuthServices.Login
     {
         private readonly IUserRepository userRepository;
         private readonly TokenServices tokenServices;
-        public LoginHandler(IUserRepository userRepository, TokenServices refreshTokenService)
+        private readonly ILogger<LoginHandler> logger;
+        public LoginHandler(IUserRepository userRepository, TokenServices tokenServices,ILogger<LoginHandler> logger)
         {
             this.userRepository = userRepository;
-            this.tokenServices = refreshTokenService;
+            this.tokenServices = tokenServices;
+            this.logger = logger;
         }
 
         public async Task<TokenResponse?> Handle(LoginCommand command, CancellationToken cancellationToken)
         {
-            var user = await userRepository.AuthenticateAsync(command.username,command.password);
-            if (user is null) throw new InvalidCredentialsException("Wrong username or password");
+            var user = await userRepository.AuthenticateAsync(command.username, command.password);
+            if (user is null)
+            {
+                logger.LogWarning("Failed login attempt for username: {Username}", command.username);
+                throw new InvalidCredentialsException("Wrong username or password");
+            }
             var username = user.Username.Value;
-            var roles = await userRepository.getUserRoles(username);
-            var accessToken = tokenServices.generateAccessToken(user.Id, username, roles);
+            var accessToken = tokenServices.generateAccessToken(user.Id, username, user.UserRoles);
             var refreshToken = await tokenServices.GenerateRefreshToken(user.Id, username);
-            return new TokenResponse(user.Id,username, accessToken,refreshToken);
+            logger.LogInformation("User {Username} logged in successfully", username);
+            return new TokenResponse(user.Id, username, accessToken, refreshToken);
         }
     }
 }

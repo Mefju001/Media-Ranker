@@ -30,7 +30,7 @@ namespace Application.Features.TvSeriesServices.AddListOfTvSeries
             }).ToList();
             await tvSeriesRepository.AddListOfTvSeries(tvSeries);
             await unitOfWork.CompleteAsync();
-            return tvSeries.Select(m=>
+            return tvSeries.Select(m =>
             {
                 var genreDomain = genres.Values.ToDictionary(g => g.Id);
                 return TvSeriesMapper.ToTvSeriesResponse(m, genreDomain[m.GenreId]);

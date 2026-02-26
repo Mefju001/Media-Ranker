@@ -4,7 +4,7 @@ using System.Linq.Expressions;
 
 namespace Application.Features.MovieServices.GetMoviesByCriteria
 {
-    public class MovieSortAndFilterService: IMovieSortAndFilterService
+    public class MovieSortAndFilterService : IMovieSortAndFilterService
     {
         private readonly IUnitOfWork unitOfWork;
         private readonly IMovieRepository movieRepository;
@@ -31,11 +31,11 @@ namespace Application.Features.MovieServices.GetMoviesByCriteria
             {
                 var genreQuery = genreRepository.GetAllQueryable();
                 query = query.Join(genreQuery,
-                    movie=>movie.GenreId,
-                    genre=>genre.Id,
-                    (movie ,genre)=> new {Movie=movie, Genre = genre })
-                    .Where(mg=>mg.Genre.name.Value.Contains(request.genreName))
-                    .Select(mg=>mg.Movie);
+                    movie => movie.GenreId,
+                    genre => genre.Id,
+                    (movie, genre) => new { Movie = movie, Genre = genre })
+                    .Where(mg => mg.Genre.name.Value.Contains(request.genreName))
+                    .Select(mg => mg.Movie);
             }
             if (request.MinRating.HasValue)
             {
@@ -50,11 +50,11 @@ namespace Application.Features.MovieServices.GetMoviesByCriteria
                 var directorQuery = directorRepository.GetAllQueryable();
                 query = query.Join(
                     directorQuery,
-                    movie=>movie.DirectorId,
-                    director=>director.Id,
-                    (movie, directorQuery) => new {Movie = movie,Director = directorQuery})
+                    movie => movie.DirectorId,
+                    director => director.Id,
+                    (movie, directorQuery) => new { Movie = movie, Director = directorQuery })
                     .Where(md => md.Director.name.Contains(request.DirectorName!) && md.Director.surname.Contains(request.DirectorSurname!))
-                    .Select(md=>md.Movie);
+                    .Select(md => md.Movie);
             }
             return query;
         }

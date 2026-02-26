@@ -1,11 +1,11 @@
-﻿using FluentValidation;
-using Application.Common.DTO.Request;
+﻿using Application.Common.DTO.Request;
+using FluentValidation;
 
 namespace Application.Common.Validator
 {
-    public class LoginRequestValidator:AbstractValidator<LoginRequest>
+    public class LoginRequestValidator : AbstractValidator<LoginRequest>
     {
-        public LoginRequestValidator() 
+        public LoginRequestValidator()
         {
             RuleFor(x => x.username)
                 .NotEmpty().WithMessage("Username is required.")

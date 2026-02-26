@@ -1,9 +1,9 @@
-﻿using FluentValidation;
-using Application.Common.DTO.Request;
+﻿using Application.Common.DTO.Request;
+using FluentValidation;
 
 namespace Application.Common.Validator
 {
-    public class DirectorRequestValidator:AbstractValidator<DirectorRequest>
+    public class DirectorRequestValidator : AbstractValidator<DirectorRequest>
     {
         public DirectorRequestValidator()
         {

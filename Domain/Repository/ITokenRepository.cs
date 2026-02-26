@@ -5,10 +5,10 @@ namespace Application.Common.Interfaces
 {
     public interface ITokenRepository
     {
-        Task<Token?> GetByJtiAsync(Claim jti);
+        Task<Token?> GetByJtiAsync(string jti);
         Task SaveToken(Token token);
-        Task<bool> DeleteTokensFromUserId(Guid userId);
+        Task<int> DeleteTokensFromUserId(Guid userId, string? jti);
         Task<List<Token>> GetTokensToCleanUp();
-        Task RemoveListOfTokens(List<Token> tokens);
+        Task<int> CleanUpTokensAsync();
     }
 }

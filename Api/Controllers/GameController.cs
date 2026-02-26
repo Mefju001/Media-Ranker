@@ -1,4 +1,5 @@
 ﻿using Application.Common.DTO.Request;
+using Application.Features.GamesServices.AddListOfGames;
 using Application.Features.GamesServices.DeleteById;
 using Application.Features.GamesServices.GameUpsert;
 using Application.Features.GamesServices.GetAll;
@@ -57,6 +58,14 @@ namespace Api.Controllers
                 gameRequest.Platform);
             var created = await mediator.Send(command);
             return CreatedAtAction(nameof(GetById), new { id = created.id }, created);
+        }
+        [Authorize(Roles = "Admin")]
+        [HttpPost]
+        public async Task<IActionResult> AddListOfGames([FromBody] List<GameRequest> gameRequests)
+        {
+            var command = new AddListOfGamesCommand(gameRequests);
+            var createdGames = await mediator.Send(command);
+            return StatusCode(StatusCodes.Status201Created, createdGames);
         }
         [Authorize(Roles = "Admin")]
         [HttpPut("UpdateGameById/{id}")]

@@ -2,7 +2,6 @@
 using Application.Common.Interfaces;
 using Application.Mapper;
 using MediatR;
-using Microsoft.EntityFrameworkCore;
 
 
 namespace Application.Features.TvSeriesServices.GetTvSeriesByCriteria
@@ -26,12 +25,13 @@ namespace Application.Features.TvSeriesServices.GetTvSeriesByCriteria
         public async Task<List<TvSeriesResponse>> Handle(GetTvSeriesByCriteriaQuery request, CancellationToken cancellationToken)
         {
             var query = await SortAndFilterService.Handler(request);
-            var result = await tvSeriesRepository.ToListAsync(query,cancellationToken);
+            var result = await tvSeriesRepository.ToListAsync(query, cancellationToken);
             var genres = await genreRepository.GetGenresDictionary();
-            var Response = result.Select(tvSeries => {
+            var Response = result.Select(tvSeries =>
+            {
                 var genre = genres[tvSeries.GenreId];
                 return TvSeriesMapper.ToTvSeriesResponse(tvSeries, genre);
-                }).ToList();
+            }).ToList();
             return Response;
         }
 

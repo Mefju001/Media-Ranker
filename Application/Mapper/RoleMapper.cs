@@ -1,5 +1,4 @@
 ﻿using Application.Common.DTO.Response;
-using Domain.Entity;
 using Domain.Enums;
 
 namespace Application.Mapper

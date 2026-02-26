@@ -1,4 +1,5 @@
 using Application.Common.DTO.Request;
+using Application.Features.MovieServices.AddListOfMovies;
 using Application.Features.MovieServices.DeleteById;
 using Application.Features.MovieServices.GetAll;
 using Application.Features.MovieServices.GetMovieById;
@@ -61,6 +62,14 @@ namespace Api.Controllers
                 movie.IsCinemaRelease);
             var created = await mediator.Send(command);
             return CreatedAtAction(nameof(GetById), new { id = created.id }, created);
+        }
+        [Authorize(Roles = "Admin")]
+        [HttpPost]
+        public async Task<IActionResult> AddMovies([FromBody] List<MovieRequest> movies)
+        {
+            var command = new AddListOfMoviesCommand(movies);
+            var created = await mediator.Send(command);
+            return CreatedAtAction(nameof(GetAll), created);
         }
         [Authorize(Roles = "Admin")]
         [HttpPut("updateById/{id}")]

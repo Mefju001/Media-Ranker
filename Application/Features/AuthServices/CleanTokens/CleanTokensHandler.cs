@@ -4,7 +4,7 @@ using MediatR;
 
 namespace Application.Features.AuthServices.CleanTokens
 {
-    public class CleanTokensHandler:IRequestHandler<CleanTokensCommand,Unit>
+    public class CleanTokensHandler : IRequestHandler<CleanTokensCommand, Unit>
     {
         private readonly ITokenCleanService tokenCleanupService;
         public CleanTokensHandler(ITokenCleanService tokenCleanupService)
@@ -16,5 +16,5 @@ namespace Application.Features.AuthServices.CleanTokens
             await tokenCleanupService.CleanTokens();
             return Unit.Value;
         }
-    }   
+    }
 }

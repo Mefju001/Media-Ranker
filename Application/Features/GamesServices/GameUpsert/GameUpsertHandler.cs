@@ -57,7 +57,7 @@ namespace Application.Features.GamesServices.GameUpsert
             await unitOfWork.CompleteAsync();
             if (game is null) throw new InvalidOperationException(nameof(game));
             var genreDomain = await genreRepository.Get(genre.Id);
-            var response = GameMapper.ToGameResponse(game,genreDomain!);
+            var response = GameMapper.ToGameResponse(game, genreDomain!);
             return response;
         }
     }

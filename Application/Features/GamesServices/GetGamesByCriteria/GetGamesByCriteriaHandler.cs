@@ -2,7 +2,6 @@
 using Application.Common.Interfaces;
 using Application.Mapper;
 using MediatR;
-using Microsoft.EntityFrameworkCore;
 
 
 namespace Application.Features.GamesServices.GetGamesByCriteria
@@ -28,7 +27,8 @@ namespace Application.Features.GamesServices.GetGamesByCriteria
             var query = await SortAndFilterService.GetGamesByCriteriaAsync(request);
             var games = await gameRepository.GetListFromQueryAsync(query, cancellationToken);
             var genreDictionary = await genreRepository.GetGenresDictionary();
-            var Response = games.Select(m =>{
+            var Response = games.Select(m =>
+            {
                 genreDictionary.TryGetValue(m.GenreId, out var genreDomain);
                 return GameMapper.ToGameResponse(m, genreDomain!);
             }).ToList();

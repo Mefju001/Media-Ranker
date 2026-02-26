@@ -1,6 +1,6 @@
 ﻿using Application.Common.Interfaces;
+using Application.Common.UserContext;
 using Application.Features.AuthServices.Common;
-using Application.Features.AuthServices.RefreshAccessToken;
 using Application.Features.GamesServices.GetGamesByCriteria;
 using Application.Features.MovieServices.GetAll;
 using Application.Features.MovieServices.GetMoviesByCriteria;
@@ -29,7 +29,6 @@ namespace Api.Extensions
             {
                 options.UseNpgsql(config.GetConnectionString("DefaultConnection"));
             });
-            // W Program.cs lub pliku konfiguracji Infrastructure
             services.AddScoped<IDirectorRepository, DirectorRepository>();
             services.AddScoped<ITvSeriesRepository, TvSeriesRepository>();
             services.AddScoped<IGameRepository, GameRepository>();
@@ -44,6 +43,7 @@ namespace Api.Extensions
             services.AddScoped<ITokenCleanService, TokenCleanService>();
             services.AddScoped<IReferenceDataService, ReferenceDataService>();
             services.AddScoped<ITokenRepository, TokenRepository>();
+            services.AddScoped<ICurrentUserContext, CurrentUserContext>();
             services.AddScoped<ITvSeriesSortAndFilterService, TvSeriesSortAndFilterService>();
             services.AddScoped<IMovieSortAndFilterService, MovieSortAndFilterService>();
             services.AddScoped<IGameSortAndFilterService, GameSortAndFilterService>();

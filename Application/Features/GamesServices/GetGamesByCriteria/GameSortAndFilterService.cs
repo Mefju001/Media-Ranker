@@ -4,7 +4,7 @@ using System.Linq.Expressions;
 
 namespace Application.Features.GamesServices.GetGamesByCriteria
 {
-    public class GameSortAndFilterService:IGameSortAndFilterService
+    public class GameSortAndFilterService : IGameSortAndFilterService
     {
         private readonly IUnitOfWork unitOfWork;
         private readonly IGameRepository gameRepository;
@@ -32,12 +32,12 @@ namespace Application.Features.GamesServices.GetGamesByCriteria
             {
                 var genreTable = genreRepository.GetAllQueryable();
                 query = query.Join(genreTable,
-                    game=>game.GenreId,
+                    game => game.GenreId,
                     genre => genre.Id,
                     (game, genre) => new { game, genre }
                     )
-                    .Where(ge=>ge.genre.name.Value.Contains(request.genreName))
-                    .Select(ge=>ge.game);
+                    .Where(ge => ge.genre.name.Value.Contains(request.genreName))
+                    .Select(ge => ge.game);
             }
             if (request.MinRating.HasValue)
             {

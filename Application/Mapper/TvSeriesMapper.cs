@@ -1,12 +1,11 @@
 ﻿using Application.Common.DTO.Response;
 using Domain.Entity;
-using System.Linq.Expressions;
 
 namespace Application.Mapper
 {
     public class TvSeriesMapper
     {
-        public static TvSeriesResponse ToTvSeriesResponse(TvSeries tvSeries,Genre genreDomain)
+        public static TvSeriesResponse ToTvSeriesResponse(TvSeries tvSeries, Genre genreDomain)
         {
             return new TvSeriesResponse(
                 tvSeries.Id,

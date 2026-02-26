@@ -1,15 +1,9 @@
-﻿using Application.Common.DTO.Request;
-using Application.Common.Interfaces;
+﻿using Application.Common.Interfaces;
 using Application.Features.GamesServices.AddListOfGames;
 using Application.Features.GamesServices.GameUpsert;
 using Application.Features.GamesServices.GetAll;
 using Application.Features.GamesServices.GetGamesByCriteria;
-using Application.Features.MovieServices.GetMoviesByCriteria;
-using Domain.Entity;
-using Domain.Enums;
-using Domain.Value_Object;
 using MediatR;
-using MockQueryable;
 using Moq;
 
 namespace UnitTests

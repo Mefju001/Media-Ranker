@@ -1,4 +1,5 @@
 ﻿using Application.Common.DTO.Request;
+using Application.Features.TvSeriesServices.AddListOfTvSeries;
 using Application.Features.TvSeriesServices.DeleteById;
 using Application.Features.TvSeriesServices.GetAll;
 using Application.Features.TvSeriesServices.GetTvSeriesByCriteria;
@@ -60,6 +61,14 @@ namespace Api.Controllers
                 tvSeriesRequest.Status);
             var created = await mediator.Send(command);
             return CreatedAtAction(nameof(GetById), new { id = created.id }, created);
+        }
+        [Authorize(Roles = "Admin")]
+        [HttpPost]
+        public async Task<IActionResult> AddListOfSeries(List<TvSeriesRequest> tvSeriesRequests)
+        {
+            var command = new AddListOfTvSeriesCommand(tvSeriesRequests);
+            var created = await mediator.Send(command);
+            return CreatedAtAction(nameof(GetAll), created);
         }
         [Authorize(Roles = "Admin")]
         [HttpPut("UpdateById/{id}")]

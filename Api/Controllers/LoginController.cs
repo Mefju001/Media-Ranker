@@ -65,13 +65,13 @@ namespace Api.Controllers
                 userRequest.surname);
             var result = await mediator.Send(command);
             Response.Cookies.Append("refreshToken", result.refreshToken!, new CookieOptions
-             {
-                 Secure = true,
-                 HttpOnly = true,
-                 SameSite = SameSiteMode.Lax,
-                 Expires = DateTime.Now.AddDays(1)
-             });
-            return Ok(new {Message = $"Rejestracja użytkownika o nazwie {result.username} przebiegła pomyślnie. token dostępu: ", Token= result.accessToken});
+            {
+                Secure = true,
+                HttpOnly = true,
+                SameSite = SameSiteMode.Lax,
+                Expires = DateTime.Now.AddDays(1)
+            });
+            return Ok(new { Message = $"Rejestracja użytkownika o nazwie {result.username} przebiegła pomyślnie. token dostępu: ", Token = result.accessToken });
         }
     }
 }

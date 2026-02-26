@@ -21,17 +21,15 @@ namespace Infrastructure.Persistence.Repository
             await appDbContext.SaveChangesAsync();
         }
 
-        public async Task<bool> DeleteTokensFromUserId(Guid userId)
+        public async Task<int> DeleteTokensFromUserId(Guid userId, string? jti)
         {
-            var userRefreshTokens = await appDbContext.Tokens
-                .Where(t => t.UserId.Equals(userId))
-                .ToListAsync();
-            if (userRefreshTokens.Any())
+            var query = appDbContext.Tokens
+                .Where(t => t.UserId == userId);
+            if(!string.IsNullOrEmpty(jti))
             {
-                appDbContext.Tokens.RemoveRange(userRefreshTokens);
-                return true;
+                query = query.Where(t => t.Jti == jti);
             }
-            return false;
+            return await query.ExecuteDeleteAsync();
         }
         public async Task<List<Token>> GetTokensToCleanUp()
         {
@@ -39,15 +37,14 @@ namespace Infrastructure.Persistence.Repository
                 .Where(t => t.IsRevoked == true || t.ExpiryDate < DateTime.UtcNow)
                 .ToListAsync();
         }
-        public async Task RemoveListOfTokens(List<Token> tokens)
+        public async Task<int> CleanUpTokensAsync()
         {
-            appDbContext.Tokens.RemoveRange(tokens);
-            await appDbContext.SaveChangesAsync();
+            return appDbContext.Tokens.Where(x=>x.IsRevoked == true || x.ExpiryDate < DateTime.UtcNow).ExecuteDelete();
         }
 
-        public async Task<Token?> GetByJtiAsync(Claim jti)
+        public async Task<Token?> GetByJtiAsync(string jti)
         {
-            var result = await appDbContext.Tokens.FirstOrDefaultAsync(t => t.Jti == jti.Value && !t.IsRevoked && t.ExpiryDate >= DateTime.UtcNow);
+            var result = await appDbContext.Tokens.FirstOrDefaultAsync(t => t.Jti == jti && !t.IsRevoked && t.ExpiryDate >= DateTime.UtcNow);
             return result;
         }
     }

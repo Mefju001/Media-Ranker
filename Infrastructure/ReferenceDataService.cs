@@ -2,8 +2,6 @@
 using Application.Common.DTO.Response;
 using Application.Common.Interfaces;
 using Domain.Entity;
-using Infrastructure.Persistence.UnitOfWork;
-using MediatR;
 
 namespace Infrastructure
 {
@@ -22,7 +20,7 @@ namespace Infrastructure
         }
         public async Task<Director> GetOrCreateDirectorAsync(DirectorRequest directorRequest)
         {
-            var Director = await directorRepository.FirstOrDefaultForNameAndSurnameAsync(directorRequest.Name,directorRequest.Surname);
+            var Director = await directorRepository.FirstOrDefaultForNameAndSurnameAsync(directorRequest.Name, directorRequest.Surname);
             if (Director is not null) return Director;
             Director = Director.Create(directorRequest.Name, directorRequest.Surname);
             var result = await directorRepository.AddAsync(Director);
@@ -36,7 +34,7 @@ namespace Infrastructure
             var result = await genreRepository.AddAsync(Genre);
             return result;
         }
-        public async Task<Dictionary<string,Genre>> EnsureGenresExistAsync(List<string>names)
+        public async Task<Dictionary<string, Genre>> EnsureGenresExistAsync(List<string> names)
         {
             var existingGenres = await genreRepository.GetByNamesAsync(names);
             var genresMap = existingGenres.ToDictionary(g => g.name.Value);
@@ -66,9 +64,9 @@ namespace Infrastructure
             await unitOfWork.CompleteAsync();
         }
 
-        public async Task<Dictionary<(string,string),Director>> EnsureDirectorsExistAsync(List<DirectorRequest> directors)
+        public async Task<Dictionary<(string, string), Director>> EnsureDirectorsExistAsync(List<DirectorRequest> directors)
         {
-            var uniquePairs = directors.Select(d=> (Name: d.Name.Trim(), Surname: d.Surname.Trim())).Distinct().ToList();
+            var uniquePairs = directors.Select(d => (Name: d.Name.Trim(), Surname: d.Surname.Trim())).Distinct().ToList();
             var existingDirectors = await directorRepository.findByNames(uniquePairs);
             var directorMap = existingDirectors.ToDictionary(
                d => (d.name, d.surname));

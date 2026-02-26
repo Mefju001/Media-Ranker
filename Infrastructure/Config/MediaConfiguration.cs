@@ -22,7 +22,8 @@ namespace Infrastructure.Config
             {
                 d.Property(x => x.Value).HasColumnName("ReleaseDate");
             });
-            builder.OwnsOne(m => m.Stats, s => {
+            builder.OwnsOne(m => m.Stats, s =>
+            {
                 s.Property<int>("MediaId");
                 s.HasKey("MediaId");
                 s.WithOwner().HasForeignKey("MediaId");

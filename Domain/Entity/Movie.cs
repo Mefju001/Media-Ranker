@@ -5,7 +5,7 @@ namespace Domain.Entity
     public class Movie : Media
     {
         public int DirectorId { get; private set; }
-        public Duration Duration { get; private  set; }
+        public Duration Duration { get; private set; }
         public bool IsCinemaRelease { get; private set; } = false;
         private Movie()
         {
@@ -17,8 +17,8 @@ namespace Domain.Entity
             this.IsCinemaRelease = IsCinemaRelease;
             this.DirectorId = directorId;
         }
-        private Movie(int id, string Title, string Description, Language Language, ReleaseDate ReleaseDate, int genre, int director, Duration Duration, bool IsCinemaRelease,MediaStats stats)
-            : base(id,Title, Description, Language, ReleaseDate, genre, stats)
+        private Movie(int id, string Title, string Description, Language Language, ReleaseDate ReleaseDate, int genre, int director, Duration Duration, bool IsCinemaRelease, MediaStats stats)
+            : base(id, Title, Description, Language, ReleaseDate, genre, stats)
         {
             this.Duration = Duration;
             this.IsCinemaRelease = IsCinemaRelease;
@@ -66,7 +66,7 @@ namespace Domain.Entity
         }
         private static void Validate(int Director)
         {
-            if (Director<=0)
+            if (Director <= 0)
                 throw new ArgumentException("Director must be greater than zero.");
         }
         public static Movie Reconstruct(int Id,

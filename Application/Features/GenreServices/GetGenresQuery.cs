@@ -4,7 +4,7 @@ using MediatR;
 
 namespace Application.Features.GenreServices
 {
-    public record GetGenresQuery: IRequest<List<GenreResponse>>
+    public record GetGenresQuery : IRequest<List<GenreResponse>>
     {
     }
 }

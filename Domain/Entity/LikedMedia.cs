@@ -7,7 +7,7 @@
         public int mediaId { get; private set; }
         public DateTime likedDate { get; private set; }
         private LikedMedia() { }
-        private LikedMedia(Guid userId, int mediaId) 
+        private LikedMedia(Guid userId, int mediaId)
         {
             //Validate(userId, mediaId);
             this.userId = userId;

@@ -1,40 +1,37 @@
 ﻿using Application.Common.Interfaces;
-using Infrastructure.Persistence.Repository;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using Microsoft.IdentityModel.Tokens;
 
 
 namespace Infrastructure.BackgroundTasks.CleanService
 {
-    public class TokenCleanService: ITokenCleanService
+    public class TokenCleanService : ITokenCleanService
     {
-        private readonly ILogger<TokenCleanService> _logger;
-        private readonly IServiceScopeFactory _scopeFactory;
-        public TokenCleanService(IServiceScopeFactory serviceScopeFactory, ILogger<TokenCleanService>logger)
+        private readonly ILogger<TokenCleanService> logger;
+        private readonly ITokenRepository tokenRepository;
+        public TokenCleanService(ILogger<TokenCleanService> logger, ITokenRepository tokenRepository)
         {
-            _scopeFactory = serviceScopeFactory;
-            _logger = logger;
+            this.logger = logger;
+            this.tokenRepository = tokenRepository;
         }
         public async Task CleanTokens()
         {
-            using (var scope = _scopeFactory.CreateScope())
+            logger.LogInformation("Starting refresh token cleanup process.");
+            try
             {
-                var context = scope.ServiceProvider.GetRequiredService<ITokenRepository>();
-                if (context is null) throw new ArgumentNullException(nameof(context));
-                _logger.LogInformation("Starting refresh token cleanup process.");
-                var tokensToDelete = await context.GetTokensToCleanUp();
-                if (tokensToDelete.Any())
+                var deletedCount =await tokenRepository.CleanUpTokensAsync();
+                if (deletedCount > 0)
                 {
-                    _logger.LogInformation($"Found {tokensToDelete.Count} tokens to delete.");
-                    await context.RemoveListOfTokens(tokensToDelete);
+                    logger.LogInformation("Cleanup finished successfully. Deleted {Count} expired tokens.", deletedCount);
                 }
-                else if (tokensToDelete.Count == 0)
-                    _logger.LogInformation("There is no tokens to delete.");
                 else
                 {
-                    _logger.LogError("An error occurred during token cleanup");
+                    logger.LogInformation("Cleanup finished. No tokens required removal.");
                 }
+            }
+            catch (Exception ex)
+            {
+                logger.LogError(ex,"An error occurred during token cleanup");
+                throw;
             }
         }
     }

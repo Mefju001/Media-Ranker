@@ -1,14 +1,9 @@
 ﻿using Domain.Enums;
 using Domain.Value_Object;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Domain.Entity
 {
-    public class Game: Media
+    public class Game : Media
     {
         public string Developer { get; private set; }
         public EPlatform Platform { get; private set; }
@@ -32,7 +27,7 @@ namespace Domain.Entity
             int genreId,
             string Developer,
             EPlatform Platform, MediaStats stats)
-            : base(Id,Title, Description, Language, ReleaseDate, genreId, stats)
+            : base(Id, Title, Description, Language, ReleaseDate, genreId, stats)
         {
             this.Developer = Developer;
             this.Platform = Platform;

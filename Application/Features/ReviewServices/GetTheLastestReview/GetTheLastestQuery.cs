@@ -1,11 +1,6 @@
 ﻿using MediatR;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Application.Features.ReviewServices.GetTheLastestReview
 {
-    public record GetTheLastestQuery:IRequest<List<string>>;
+    public record GetTheLastestQuery : IRequest<List<string>>;
 }

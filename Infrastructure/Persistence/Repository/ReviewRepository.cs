@@ -1,12 +1,11 @@
 ﻿using Application.Common.Interfaces;
 using Domain.Entity;
-using Domain.Exceptions;
 using Microsoft.EntityFrameworkCore;
 
 
 namespace Infrastructure.Persistence.Repository
 {
-    public class ReviewRepository:IReviewRepository
+    public class ReviewRepository : IReviewRepository
     {
         private readonly AppDbContext appDbContext;
         public ReviewRepository(AppDbContext appDbContext)

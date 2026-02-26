@@ -1,11 +1,6 @@
 ﻿using Application.Common.Interfaces;
 using Domain.Entity;
 using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Infrastructure.Persistence.Repository
 {
@@ -41,7 +36,7 @@ namespace Infrastructure.Persistence.Repository
                 .AsNoTracking()
                 .AsQueryable();
         }
-        public async Task<List<TvSeries>> ToListAsync(IQueryable<TvSeries>query,CancellationToken cancellationToken)
+        public async Task<List<TvSeries>> ToListAsync(IQueryable<TvSeries> query, CancellationToken cancellationToken)
         {
             return await query.ToListAsync(cancellationToken);
         }

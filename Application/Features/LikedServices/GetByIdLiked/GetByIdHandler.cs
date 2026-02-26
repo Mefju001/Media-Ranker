@@ -41,7 +41,7 @@ namespace Application.Features.LikedServices.GetByIdLiked
             if (media == null) throw new NotFoundException("Associated media not found");
 
             var genre = await genreRepository.Get(media.GenreId);
-            if(genre is null) throw new NotFoundException("Genre not found");
+            if (genre is null) throw new NotFoundException("Genre not found");
 
             return media switch
             {

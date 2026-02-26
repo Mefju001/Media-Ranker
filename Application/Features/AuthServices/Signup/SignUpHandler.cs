@@ -1,11 +1,8 @@
 ﻿using Application.Common.Interfaces;
 using Application.Features.AuthServices.Common;
 using Domain.Entity;
-using Domain.Enums;
-using Domain.Exceptions;
 using Domain.Value_Object;
 using MediatR;
-using Microsoft.AspNetCore.Identity;
 
 
 namespace Application.Features.AuthServices.Signup
@@ -32,10 +29,8 @@ namespace Application.Features.AuthServices.Signup
                 request.surname),
                 new Email(request.email)
             );
-
-            await userRepository.CreateUserWithDefaultRole(user);
-            var roles = new List<string> { "User" };
-            var accessToken = tokenServices.generateAccessToken(user.Id, user.Username.Value, roles);
+            user = await userRepository.CreateUserWithDefaultRole(user);
+            var accessToken = tokenServices.generateAccessToken(user.Id, user.Username.Value, user.UserRoles);
             var refreshToken = await tokenServices.GenerateRefreshToken(user.Id, user.Username.Value);
             return new SignUpResponse(user.Username.Value, accessToken, refreshToken);
         }

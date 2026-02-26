@@ -20,10 +20,11 @@ namespace Application.Features.TvSeriesServices.GetAll
         {
             var tvSeries = await tvSeriesRepository.GetAll(cancellationToken);
             var genres = await genreRepository.GetGenresDictionary();
-            var tvSeriesResponses = tvSeries.Select(t=> {
+            var tvSeriesResponses = tvSeries.Select(t =>
+            {
                 genres.TryGetValue(t.GenreId, out var genreDomain);
                 return TvSeriesMapper.ToTvSeriesResponse(t, genreDomain!);
-                }).ToList();
+            }).ToList();
             return (tvSeriesResponses);
         }
     }

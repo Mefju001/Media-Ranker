@@ -1,11 +1,6 @@
 ﻿using Application.Common.Interfaces;
 using Domain.Entity;
 using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Infrastructure.Persistence.Repository
 {
@@ -18,7 +13,7 @@ namespace Infrastructure.Persistence.Repository
         }
         public async Task<Director?> FirstOrDefaultForNameAndSurnameAsync(string name, string surname)
         {
-            return await context.Directors.FirstOrDefaultAsync(d => d.name == name&&d.surname == surname);
+            return await context.Directors.FirstOrDefaultAsync(d => d.name == name && d.surname == surname);
         }
         public async Task<Director> AddAsync(Director directorDomain)
         {
@@ -30,9 +25,9 @@ namespace Infrastructure.Persistence.Repository
             return await context.Directors.FindAsync(id);
         }
 
-        public async Task<List<Director>> findByNameAndSurname(List<string>names,List<string>surnames)
+        public async Task<List<Director>> findByNameAndSurname(List<string> names, List<string> surnames)
         {
-            return await context.Directors.Where(d=>names.Contains(d.name)&&surnames.Contains(d.surname)).ToListAsync();
+            return await context.Directors.Where(d => names.Contains(d.name) && surnames.Contains(d.surname)).ToListAsync();
         }
 
         public Task<List<Director>> findByNames(List<(string, string)> names)

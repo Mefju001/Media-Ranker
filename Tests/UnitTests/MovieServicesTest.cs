@@ -1,16 +1,10 @@
-﻿using Application.Common.DTO.Request;
-using Application.Common.Interfaces;
+﻿using Application.Common.Interfaces;
 using Application.Features.MovieServices.AddListOfMovies;
 using Application.Features.MovieServices.GetAll;
 using Application.Features.MovieServices.GetMoviesByCriteria;
 using Application.Features.MovieServices.MovieUpsert;
-using Application.Mapper;
-using Domain.Entity;
 using MediatR;
-using Microsoft.EntityFrameworkCore.Infrastructure;
-using Microsoft.EntityFrameworkCore.Storage;
 using Moq;
-using MockQueryable;
 
 namespace UnitTests
 {

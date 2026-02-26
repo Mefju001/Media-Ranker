@@ -37,7 +37,7 @@ namespace Application.Features.MovieServices.AddListOfMovies
             }).ToList();
             await movieRepository.AddListOfMovies(movies, cancellationToken);
             await _unitOfWork.CompleteAsync();
-            return movies.Select(m=>
+            return movies.Select(m =>
             {
                 var directorDomain = dictionaryDirectors.Values.ToDictionary(d => d.Id);
                 var genreDomain = dictionaryGenres.Values.ToDictionary(g => g.Id);

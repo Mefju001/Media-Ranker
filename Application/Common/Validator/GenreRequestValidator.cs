@@ -1,11 +1,11 @@
-﻿using FluentValidation;
-using Application.Common.DTO.Request;
+﻿using Application.Common.DTO.Request;
+using FluentValidation;
 
 namespace Application.Common.Validator
 {
-    public class GenreRequestValidator:AbstractValidator<GenreRequest>
+    public class GenreRequestValidator : AbstractValidator<GenreRequest>
     {
-        public GenreRequestValidator() 
+        public GenreRequestValidator()
         {
             RuleFor(x => x.name).NotEmpty().WithMessage("Genre name is required.");
         }

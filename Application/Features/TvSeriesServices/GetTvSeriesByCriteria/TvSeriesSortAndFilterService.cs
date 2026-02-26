@@ -4,12 +4,12 @@ using System.Linq.Expressions;
 
 namespace Application.Features.TvSeriesServices.GetTvSeriesByCriteria
 {
-    public class TvSeriesSortAndFilterService:ITvSeriesSortAndFilterService
+    public class TvSeriesSortAndFilterService : ITvSeriesSortAndFilterService
     {
         private readonly IUnitOfWork unitOfWork;
         private readonly ITvSeriesRepository tvSeriesRepository;
         private readonly IGenreRepository genreRepository;
-        public TvSeriesSortAndFilterService(IUnitOfWork unitOfWork,ITvSeriesRepository tvSeriesRepository, IGenreRepository genreRepository)
+        public TvSeriesSortAndFilterService(IUnitOfWork unitOfWork, ITvSeriesRepository tvSeriesRepository, IGenreRepository genreRepository)
         {
             this.unitOfWork = unitOfWork;
             this.tvSeriesRepository = tvSeriesRepository;
