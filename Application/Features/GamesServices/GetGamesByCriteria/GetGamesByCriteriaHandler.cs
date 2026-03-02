@@ -8,14 +8,12 @@ namespace Application.Features.GamesServices.GetGamesByCriteria
 {
     public class GetGamesByCriteriaHandler : IRequestHandler<GetGamesByCriteriaQuery, List<GameResponse>>
     {
-        private readonly IUnitOfWork unitOfWork;
         private readonly IGameSortAndFilterService SortAndFilterService;
         private readonly IGameRepository gameRepository;
         private readonly IGenreRepository genreRepository;
 
-        public GetGamesByCriteriaHandler(IUnitOfWork unitOfWork, IGameSortAndFilterService sortAndFilterService, IGameRepository gameRepository, IGenreRepository genreRepository)
+        public GetGamesByCriteriaHandler(IGameSortAndFilterService sortAndFilterService, IGameRepository gameRepository, IGenreRepository genreRepository)
         {
-            this.unitOfWork = unitOfWork;
             SortAndFilterService = sortAndFilterService;
             this.gameRepository = gameRepository;
             this.genreRepository = genreRepository;
@@ -24,7 +22,7 @@ namespace Application.Features.GamesServices.GetGamesByCriteria
 
         public async Task<List<GameResponse>> Handle(GetGamesByCriteriaQuery request, CancellationToken cancellationToken)
         {
-            var query = await SortAndFilterService.GetGamesByCriteriaAsync(request);
+            var query = SortAndFilterService.GetGamesByCriteriaAsync(request);
             var games = await gameRepository.GetListFromQueryAsync(query, cancellationToken);
             var genreDictionary = await genreRepository.GetGenresDictionary();
             var Response = games.Select(m =>

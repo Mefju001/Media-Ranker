@@ -2,17 +2,16 @@
 using Application.Common.Interfaces;
 using Application.Mapper;
 using MediatR;
+using Microsoft.Extensions.Logging;
 
 namespace Application.Features.GamesServices.GetAll
 {
     public class GetAllHandler : IRequestHandler<GetAllQuery, List<GameResponse>>
     {
-        private readonly IUnitOfWork unitOfWork;
         private readonly IGameRepository gameRepository;
         private readonly IGenreRepository genreRepository;
-        public GetAllHandler(IUnitOfWork unitOfWork, IGameRepository gameRepository, IGenreRepository genreRepository)
+        public GetAllHandler(IGameRepository gameRepository, IGenreRepository genreRepository)
         {
-            this.unitOfWork = unitOfWork;
             this.gameRepository = gameRepository;
             this.genreRepository = genreRepository;
         }

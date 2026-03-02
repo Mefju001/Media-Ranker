@@ -36,7 +36,7 @@ namespace Infrastructure.Persistence.Repository
 
         public async Task<List<Genre>> GetAllAsync(CancellationToken cancellationToken)
         {
-            return await _context.Genres.ToListAsync(cancellationToken);
+            return await _context.Genres.AsNoTracking().ToListAsync(cancellationToken);
         }
 
         public async Task<int?> GetGenreIdByNameAsync(string name, CancellationToken cancellationToken)

@@ -34,10 +34,10 @@ namespace Infrastructure.Persistence.Repository
         }
         public async Task<List<Game>> GetAllAsync()
         {
-            return await _context.Games.ToListAsync();
+            return await _context.Games.AsNoTracking().ToListAsync();
         }
 
-        public async Task<IQueryable<Game>> AsQueryable()
+        public IQueryable<Game> AsQueryable()
         {
             return _context.Games
                 .Include(g => g.Stats)

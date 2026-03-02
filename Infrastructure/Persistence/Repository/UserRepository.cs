@@ -75,14 +75,13 @@ namespace Infrastructure.Persistence.Repository
         {
             return await appDbContext.Users.AnyAsync(u => u.UserName == username || u.Email == email);
         }
-        // edycja czy powienien zwracać Usera czy void? niby powinno wiec dodam jutro 
-        public async Task CreateUserWithDefaultRole(User user)
+        public async Task<User> CreateUserWithDefaultRole(User user)
         {
             var identityUser = user.ToModel();
             var result = await userManager.CreateAsync(identityUser, user.Password.HashValue);
             if (!result.Succeeded) throw new Exception("User creation failed: "+result.Errors.Select(e=>e.Description));
-            await userManager.AddToRoleAsync(identityUser, user.UserRoles.ToString()!);
-           // return identityUser.ToDomain();
+            await userManager.AddToRoleAsync(identityUser, ERole.User.ToString());
+            return await GetUserById(identityUser.Id);
         }
         public async Task<Dictionary<Guid, User>> GetByIds(List<Guid> userIds)
         {

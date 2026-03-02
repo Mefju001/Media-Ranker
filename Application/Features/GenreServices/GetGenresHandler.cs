@@ -7,11 +7,9 @@ namespace Application.Features.GenreServices
 {
     public class GetGenresHandler : IRequestHandler<GetGenresQuery, List<GenreResponse>>
     {
-        private readonly IUnitOfWork unitOfWork;
         private readonly IGenreRepository genreRepository;
-        public GetGenresHandler(IUnitOfWork unitOfWork, IGenreRepository genreRepository)
+        public GetGenresHandler(IGenreRepository genreRepository)
         {
-            this.unitOfWork = unitOfWork;
             this.genreRepository = genreRepository;
         }
 

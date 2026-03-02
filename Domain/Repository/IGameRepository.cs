@@ -10,6 +10,6 @@ namespace Application.Common.Interfaces
         Task<Game?> GetGameDomainAsync(int gameId, CancellationToken cancellationToken);
         Task DeleteGame(Game game);
         Task<List<Game>> GetAllAsync();
-        Task<IQueryable<Game>> AsQueryable();
+        IQueryable<Game> AsQueryable();
     }
 }

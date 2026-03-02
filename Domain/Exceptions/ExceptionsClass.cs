@@ -49,4 +49,9 @@
         public UnauthorizedException(string message) : base(message) { }
         public int ErrorCode { get; } = 4009;
     }
+    public class BadRequestException:Exception
+    {
+        public BadRequestException(string message) : base(message) { }
+        public int ErrorCode { get; } = 4010;
+    }
 }

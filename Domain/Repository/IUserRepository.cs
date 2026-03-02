@@ -13,6 +13,6 @@ namespace Application.Common.Interfaces
         Task<bool> IsAnyUserWhoHaveEmailAndId(string email, Guid id);
         Task DeleteUser(Guid userId);
         Task<bool> IsAnyUserWithUsernameAndEmailLikeThat(string username, string email);
-        Task CreateUserWithDefaultRole(User user);
+        Task<User> CreateUserWithDefaultRole(User user);
     }
 }
