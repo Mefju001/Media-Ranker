@@ -4,7 +4,7 @@ namespace Application.Common.Interfaces
 {
     public interface IUnitOfWork : IDisposable
     {
-        Task<IDbContextTransaction> BeginTransactionAsync();
-        Task<int> CompleteAsync();
+        Task<IDbContextTransaction> BeginTransactionAsync(CancellationToken cancellationToken);
+        Task<int> CompleteAsync(CancellationToken cancellationToken);
     }
 }

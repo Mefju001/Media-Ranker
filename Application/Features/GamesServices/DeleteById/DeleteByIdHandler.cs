@@ -26,7 +26,7 @@ namespace Application.Features.GamesServices.DeleteById
             try
             {
                 await gameRepository.DeleteGame(game);
-                await unitOfWork.CompleteAsync();
+                await unitOfWork.CompleteAsync(cancellationToken);
                 logger.LogInformation("Game with id {id} successfully deleted.", request.id);
                 return true;
             }

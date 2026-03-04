@@ -21,8 +21,10 @@ namespace Application.Features.MovieServices.GetAll
         public async Task<List<MovieResponse>> Handle(GetAllQuery request, CancellationToken cancellationToken)
         {
             var movies = await movieRepository.GetAllAsync(cancellationToken);
-            var genres = await genreRepository.GetGenresDictionary();
-            var directorsDict = await directorRepository.GetDirectorsDictionary();
+            // Selective fetching of genres and directors to avoid N+1 problem in future
+            var genres = await genreRepository.GetGenresDictionary(cancellationToken);
+            var directorsDict = await directorRepository.GetDirectorsDictionary(cancellationToken);
+
             var movieResponse = movies.Select(m =>
             {
                 genres.TryGetValue(m.GenreId, out var genre);

@@ -28,7 +28,10 @@ namespace Infrastructure.Persistence.Repository
         {
             return await _context.Genres.FindAsync(id);
         }
-
+        public async Task<Dictionary<int,Genre>> GetByIdsAsync(List<int> ids, CancellationToken cancellationToken)
+        {
+            return await _context.Genres.Where(g => ids.Contains(g.Id)).ToDictionaryAsync(g=>g.Id,cancellationToken);
+        }
         public async Task<List<Genre>> GetByNamesAsync(List<string> names)
         {
             return await _context.Genres.Where(g => names.Contains(g.name.Value)).ToListAsync();

@@ -42,13 +42,13 @@ namespace Application.Features.LikedServices.AddLiked
             if (existingLikedMedia is true)
             {
                 logger.LogWarning("Media already in liked list. UserId: {UserId}, MediaId: {MediaId}", request.UserId, request.MediaId);
-                throw new Exception("Media already in liked list."); // zmienić 
+                throw new NotFoundException("Media already in liked list.");
             }
             var genre = await genreRepository.Get(media.GenreId);
             if (genre is null)
             {
                 logger.LogWarning("Genre not found for MediaId: {MediaId}, GenreId: {GenreId}", request.MediaId, media.GenreId);
-                throw new Exception("genre not found");//zmienić na not found exception
+                throw new NotFoundException("genre not found");
             }
             Director? director = null;
             if(media is Movie movie)

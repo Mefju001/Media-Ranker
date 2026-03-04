@@ -3,21 +3,20 @@ using Application.Common.Interfaces;
 using Application.Mapper;
 using Domain.Entity;
 using MediatR;
+using Domain.Exceptions;
 
 namespace Application.Features.LikedServices.GetAllLikedByUser
 {
     public class GetAllLikedByUserHandler : IRequestHandler<GetAllLikedByUserQuery, List<LikedMediaResponse>>
     {
-        private readonly IUnitOfWork unitOfWork;
         private readonly IMediaRepository mediaRepository;
         private readonly IUserRepository userRepository;
         private readonly IGenreRepository genreRepository;
         private readonly IDirectorRepository directorRepository;
         private readonly ILikedMediaRepository likedMediaRepository;
 
-        public GetAllLikedByUserHandler(IUnitOfWork unitOfWork, IMediaRepository mediaRepository, IUserRepository userRepository, IGenreRepository genreRepository, IDirectorRepository directorRepository, ILikedMediaRepository likedMediaRepository)
+        public GetAllLikedByUserHandler(IMediaRepository mediaRepository, IUserRepository userRepository, IGenreRepository genreRepository, IDirectorRepository directorRepository, ILikedMediaRepository likedMediaRepository)
         {
-            this.unitOfWork = unitOfWork;
             this.likedMediaRepository = likedMediaRepository;
             this.userRepository = userRepository;
             this.mediaRepository = mediaRepository;
@@ -28,22 +27,30 @@ namespace Application.Features.LikedServices.GetAllLikedByUser
         public async Task<List<LikedMediaResponse>> Handle(GetAllLikedByUserQuery request, CancellationToken cancellationToken)
         {
             var likedItems = await likedMediaRepository.GetLikedForUser(request.userId);
-            var user = await userRepository.GetUserById(request.userId);
+            if(!likedItems.Any())
+                return new List<LikedMediaResponse>();
+            var user = await userRepository.GetUserById(request.userId,cancellationToken);
+            if (user == null) throw new NotFoundException("User not found");
             var mediaIds = likedItems.Select(r => r.mediaId).Distinct().ToList();
             var medias = await mediaRepository.GetByIds(mediaIds);
-            var genres = await genreRepository.GetGenresDictionary();
-            var directors = await directorRepository.GetDirectorsDictionary();
+            var genresIds = medias.Values.Select(m=>m.GenreId).Distinct().ToList();
+            var genres = await genreRepository.GetByIdsAsync(genresIds,cancellationToken);
+            var directorIds = medias.Values.OfType<Movie>().Select(m => m.DirectorId).Distinct().ToList();
+            var directors = await directorRepository.GetByIds(directorIds,cancellationToken);
             var results = new List<LikedMediaResponse>();
             foreach (var item in likedItems)
             {
-                var media = medias[item.mediaId];
-                var genre = genres[media.GenreId];
+                if (!medias.TryGetValue(item.mediaId, out var media)) continue;
+
+                genres.TryGetValue(media.GenreId, out var genre);
+
                 results.Add(media switch
                 {
-                    Movie m => LikedMediaMapper.ToResponse(item, user, m, genre, directors[m.DirectorId]),
-                    Game g => LikedMediaMapper.ToResponse(item, user, g, genre),
-                    TvSeries t => LikedMediaMapper.ToResponse(item, user, t, genre),
-                    _ => throw new Exception("Unknown media type")
+                    Movie m => LikedMediaMapper.ToResponse(item, user, m, genre!,
+                        directors.TryGetValue(m.DirectorId, out var d) ? d : null!),
+                    Game g => LikedMediaMapper.ToResponse(item, user, g, genre!),
+                    TvSeries t => LikedMediaMapper.ToResponse(item, user, t, genre!),
+                    _ => throw new InvalidOperationException($"Unknown media type for ID: {media.Id}")
                 });
             }
             return results;

@@ -5,9 +5,9 @@ namespace Application.Common.Interfaces
 {
     public interface ITokenRepository
     {
-        Task<Token?> GetByJtiAsync(string jti);
-        Task SaveToken(Token token);
-        Task<int> DeleteTokensFromUserId(Guid userId, string? jti);
+        Task<Token?> GetByJtiAsync(string jti, CancellationToken cancellationToken);
+        Task SaveToken(Token token, CancellationToken cancellationToken);
+        Task<int> DeleteTokensFromUserId(Guid userId, string? jti, CancellationToken cancellationToken);
         Task<List<Token>> GetTokensToCleanUp();
         Task<int> CleanUpTokensAsync();
     }

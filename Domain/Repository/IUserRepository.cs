@@ -9,7 +9,7 @@ namespace Application.Common.Interfaces
         Task<Dictionary<Guid, User>> GetByIds(List<Guid> userIds);
         Task<User?> AuthenticateAsync(string username, string password);
         Task<IList<string>> getUserRoles(string username);
-        Task<User> GetUserById(Guid userId);
+        Task<User> GetUserById(Guid userId, CancellationToken cancellationToken);
         Task<bool> IsAnyUserWhoHaveEmailAndId(string email, Guid id);
         Task DeleteUser(Guid userId);
         Task<bool> IsAnyUserWithUsernameAndEmailLikeThat(string username, string email);

@@ -7,10 +7,10 @@ namespace Application.Common.Interfaces
         Task<List<Movie>> GetListFromQuery(IQueryable<Movie> query, CancellationToken cancellationToken);
         IQueryable<Movie> AsQueryable();
         Task<List<Movie>> GetAllAsync(CancellationToken cancellationToken);
-        Task<Movie> AddAsync(Movie movieDomain);
-        Task AddAsync(IEnumerable<Movie> movieDomains);
-        Task<Movie?> FirstOrDefaultAsync(int movieId);
-        Task DeleteMovie(Movie movieDomain);
+        Task<Movie> AddAsync(Movie movieDomain, CancellationToken cancellationToken);
+        Task AddAsync(IEnumerable<Movie> movieDomains, CancellationToken cancellationToken);
+        Task<Movie?> FirstOrDefaultAsync(int movieId, CancellationToken cancellationToken);
+        Task DeleteMovie(Movie movieDomain, CancellationToken cancellationToken);
         Task AddListOfMovies(List<Movie> movieDomains, CancellationToken cancellationToken);
     }
 }

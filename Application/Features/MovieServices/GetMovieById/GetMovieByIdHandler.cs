@@ -24,23 +24,22 @@ namespace Application.Features.MovieServices.GetMovieById
 
         public async Task<MovieResponse?> Handle(GetMovieByIdQuery request, CancellationToken cancellationToken)
         {
-            var movie = await movieRepository.FirstOrDefaultAsync(request.id);
+            var movie = await movieRepository.FirstOrDefaultAsync(request.id, cancellationToken);
             if (movie == null)
             {
                 throw new NotFoundException("Movie not found");
             }
-            var genre = await genreRepository.Get(movie.GenreId);
-            if (genre == null)
-            {
-                throw new NotFoundException("genre not found");
-            }
-            var director = await directorRepository.Get(movie.DirectorId);
-            if (director == null)
-            {
-                throw new NotFoundException("director not found");
-            }
-            var movieResponse = MovieMapper.ToMovieResponse(movie, genre, director);
-            return movieResponse;
+            var genreTask = genreRepository.Get(movie.GenreId, cancellationToken);
+            var directorTask = directorRepository.Get(movie.DirectorId, cancellationToken);
+
+            await Task.WhenAll(genreTask, directorTask);
+            
+            var genre = await genreTask;
+            var director = await directorTask;
+
+            if (genre == null) throw new NotFoundException("Genre not found");
+            if (director == null) throw new NotFoundException("Director not found");
+            return MovieMapper.ToMovieResponse(movie, genre, director);
         }
     }
 }

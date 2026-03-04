@@ -1,13 +1,11 @@
 ﻿using Application.Common.DTO.Response;
 using Application.Common.Interfaces;
-using Application.Features.MovieServices.MovieUpsert;
 using Application.Mapper;
 using Application.Notification;
 using Domain.Entity;
 using Domain.Exceptions;
 using Domain.Value_Object;
 using MediatR;
-using Microsoft.AspNetCore.Components.Forms;
 using Microsoft.Extensions.Logging;
 
 namespace Application.Features.GamesServices.AddListOfGames
@@ -33,7 +31,7 @@ namespace Application.Features.GamesServices.AddListOfGames
                 throw new BadRequestException("The package is too large. Maximum 500 games at a time.");
             logger.LogInformation("Rozpoczęto dodawanie listy gier. Liczba elementów: {Count}", requests.games.Count);
             var names = requests.games.Select(g => g.Genre.name).Distinct().ToList();
-            var genresMap = await referenceDataService.EnsureGenresExistAsync(names);
+            var genresMap = await referenceDataService.EnsureGenresExistAsync(names, cancellationToken);
             var games = requests.games.Select(gameReq =>
             {
                 var genre = genresMap[gameReq.Genre.name];
@@ -47,7 +45,7 @@ namespace Application.Features.GamesServices.AddListOfGames
                         gameReq.Platform);
             }).ToList();
             await gameRepository.AddListOfGames(games, cancellationToken);
-            await unitOfWork.CompleteAsync();
+            await unitOfWork.CompleteAsync(cancellationToken);
             logger.LogInformation("Pomyślnie dodano {Count} gier do bazy.", games.Count);
             await mediator.Publish(new LogNotification("Information", "Nowa lista gier została dodana.", nameof(AddListOfGamesHandler)));
             return games.Select(g =>

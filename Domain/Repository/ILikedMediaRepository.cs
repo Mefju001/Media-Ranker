@@ -8,7 +8,7 @@ namespace Application.Common.Interfaces
         Task AddAsync(LikedMedia likedMedia);
         Task<LikedMedia?> GetByUserAndMediaId(Guid userId, int mediaId);
         Task<bool> DeleteByLikedMedia(Guid userId, int mediaId);
-        Task<LikedMedia?> GetById(int likedMediaId);
+        Task<LikedMedia?> GetById(int likedMediaId, CancellationToken cancellationToken);
         Task<List<LikedMedia>> GetLikedForUser(Guid userId);
         Task<List<LikedMedia>> GetAll();
     }
