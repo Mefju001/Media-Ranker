@@ -5,6 +5,7 @@ using Domain.Entity;
 using Domain.Exceptions;
 using Domain.Value_Object;
 using MediatR;
+using Microsoft.Extensions.Logging;
 
 
 namespace Application.Features.ReviewServices.UpsertReview
@@ -15,8 +16,10 @@ namespace Application.Features.ReviewServices.UpsertReview
         private readonly IReviewRepository reviewRepository;
         private readonly IUserRepository userRepository;
         private readonly IMediaRepository mediaRepository;
-        public ReviewUpsertHandler(IUnitOfWork unitOfWork, IReviewRepository reviewRepository, IUserRepository userRepository, IMediaRepository mediaRepository)
+        private readonly ILogger<ReviewUpsertHandler> logger;
+        public ReviewUpsertHandler(IUnitOfWork unitOfWork, ILogger<ReviewUpsertHandler> logger, IReviewRepository reviewRepository, IUserRepository userRepository, IMediaRepository mediaRepository)
         {
+            this.logger = logger;
             this.unitOfWork = unitOfWork;
             this.reviewRepository = reviewRepository;
             this.userRepository = userRepository;
@@ -24,14 +27,14 @@ namespace Application.Features.ReviewServices.UpsertReview
         }
         public async Task<ReviewResponse> Handle(ReviewUpsertCommand request, CancellationToken cancellationToken)
         {
-            Review? reviewDomain;
+            Review? reviewDomain = null;
             if (request.id.HasValue)
             {
-                reviewDomain = await reviewRepository.GetReviewByIdAsync(request.id.Value);
-                if (reviewDomain is null)
-                {
-                    throw new NotFoundException($"Review for the given id: {request.id.Value} does not exist");
-                }
+                reviewDomain = await reviewRepository.GetReviewByIdAsync(request.id.Value, cancellationToken);
+            }
+            if (reviewDomain is not null)
+            {
+                logger.LogInformation("Updating review with id {ReviewId}", reviewDomain.Id);
                 reviewDomain.Update(new Rating(request.Rating), request.Comment);
             }
             else
@@ -40,12 +43,24 @@ namespace Application.Features.ReviewServices.UpsertReview
                 {
                     throw new ArgumentException("UserId and MediaId must be provided for creating a new review.");
                 }
-                var user = await userRepository.GetUserById(request.userId.Value);
-                var media = await mediaRepository.GetMediaById(request.mediaId.Value);
+                var userTask = userRepository.GetUserById(request.userId.Value, cancellationToken);
+                var mediaTask = mediaRepository.GetMediaById(request.mediaId.Value, cancellationToken);
+                await Task.WhenAll(userTask, mediaTask);
+                var user = await userTask;
+                var media = await mediaTask;
+                if(user is null)
+                {
+                    throw new NotFoundException($"User with id {request.userId.Value} not found.");
+                }
+                if(media is null)
+                {
+                    throw new NotFoundException($"Media with id {request.mediaId.Value} not found.");
+                }
                 reviewDomain = Review.Create(new Rating(request.Rating), request.Comment, media.Id, user.Id);
-                reviewDomain = await reviewRepository.AddAsync(reviewDomain);
+                reviewDomain = await reviewRepository.AddAsync(reviewDomain, cancellationToken);
+                logger.LogInformation("Created new review with id {ReviewId}", reviewDomain.Id);
             }
-            await unitOfWork.CompleteAsync();
+            await unitOfWork.CompleteAsync(cancellationToken);
             return ReviewMapper.ToResponse(reviewDomain);
         }
     }

@@ -6,19 +6,20 @@ namespace Application.Features.MovieServices.GetMoviesByCriteria
 {
     public class MovieSortAndFilterService : IMovieSortAndFilterService
     {
-        private readonly IUnitOfWork unitOfWork;
         private readonly IMovieRepository movieRepository;
         private readonly IGenreRepository genreRepository;
         private readonly IDirectorRepository directorRepository;
-        public MovieSortAndFilterService(IUnitOfWork unitOfWork)
+        public MovieSortAndFilterService(IMovieRepository movieRepository, IGenreRepository genreRepository, IDirectorRepository directorRepository)
         {
-            this.unitOfWork = unitOfWork;
+            this.movieRepository = movieRepository;
+            this.genreRepository = genreRepository;
+            this.directorRepository = directorRepository;
         }
         public async Task<IQueryable<Movie>> Handler(GetMoviesByCriteriaQuery request)
         {
-            var query = ApplyFilters(request);
-            query = ApplySorting(query, request);
-            return query;
+            var filteredMovies = ApplyFilters(request);
+            var sortedMovies = ApplySorting(filteredMovies, request);
+            return sortedMovies;
         }
         private IQueryable<Movie> ApplyFilters(GetMoviesByCriteriaQuery request)
         {
@@ -43,7 +44,7 @@ namespace Application.Features.MovieServices.GetMoviesByCriteria
             }
             if (request.ReleaseYear.HasValue)
             {
-                query = query.Where(m => m.ReleaseDate.Value.Year == request.ReleaseYear);
+                query = query.Where(m => m.ReleaseDate!.Value.Year == request.ReleaseYear);
             }
             if (!string.IsNullOrWhiteSpace(request.DirectorSurname) && !string.IsNullOrWhiteSpace(request.DirectorSurname))
             {
@@ -60,27 +61,21 @@ namespace Application.Features.MovieServices.GetMoviesByCriteria
         }
         private IQueryable<Movie> ApplySorting(IQueryable<Movie> query, GetMoviesByCriteriaQuery request)
         {
-            if (!string.IsNullOrEmpty(request.SortByField))
+            if (!string.IsNullOrEmpty(request.SortByField)&&sortColumns.TryGetValue(request.SortByField, out var sortExpression))
             {
-                var sortAbility = DictionaryOfSortAbility();
-                sortAbility.TryGetValue(request.SortByField, out var sortExpression);
-                if (sortExpression == null) return query;
-                if (request.IsDescending)
-                    return query.OrderByDescending(sortExpression);
-                return query.OrderBy(sortExpression);
+                return request.IsDescending 
+                    ? query.OrderByDescending(sortExpression) 
+                    : query.OrderBy(sortExpression);
             }
             return query;
         }
-        private static Dictionary<string, Expression<Func<Movie, object>>> DictionaryOfSortAbility()
-        {
-            var columns = new Dictionary<string, Expression<Func<Movie, object>>>(StringComparer.OrdinalIgnoreCase)
+        private static readonly Dictionary<string, Expression<Func<Movie, object>>> sortColumns =
+            new(StringComparer.OrdinalIgnoreCase)
             {
                 ["Title"] = m => m.Title,
                 ["Rating"] = m => m.Stats.AverageRating!,
-                ["Date"] = m => m.ReleaseDate,
+                ["Date"] = m => m.ReleaseDate!,
                 ["Director"] = m => m.DirectorId
             };
-            return columns;
-        }
     }
 }

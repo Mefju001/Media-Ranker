@@ -24,12 +24,12 @@ namespace Application.Features.MovieServices.GetMoviesByCriteria
         {
             var query = await SortAndFilterService.Handler(request);
             var movies = await movieRepository.GetListFromQuery(query, cancellationToken);
-            var genres = await genreRepository.GetGenresDictionary();
-            var directors = await directorRepository.GetDirectorsDictionary();
+            var genresDictionary = await genreRepository.GetGenresDictionary(cancellationToken);
+            var directorsDictionary = await directorRepository.GetDirectorsDictionary(cancellationToken);
             var responses = movies.Select(m =>
             {
-                genres.TryGetValue(m.GenreId, out var genreDomain);
-                directors.TryGetValue(m.DirectorId, out var directorDomain);
+                genresDictionary.TryGetValue(m.GenreId, out var genreDomain);
+                directorsDictionary.TryGetValue(m.DirectorId, out var directorDomain);
                 return MovieMapper.ToMovieResponse(m, genreDomain!, directorDomain!);
             }).ToList();
             return responses;

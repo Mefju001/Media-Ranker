@@ -15,25 +15,25 @@ namespace Infrastructure.Persistence.Repository
         {
             return await query.ToListAsync(cancellationToken);
         }
-        public async Task<Movie> AddAsync(Movie movieDomain)
+        public async Task<Movie> AddAsync(Movie movieDomain, CancellationToken cancellationToken)
         {
-            var movie = await context.Movies.AddAsync(movieDomain);
+            var movie = await context.Movies.AddAsync(movieDomain, cancellationToken);
             return movie.Entity;
         }
 
-        public async Task AddAsync(IEnumerable<Movie> movieDomains)
+        public async Task AddAsync(IEnumerable<Movie> movieDomains, CancellationToken cancellationToken)
         {
-            await context.Movies.AddRangeAsync(movieDomains);
+            await context.Movies.AddRangeAsync(movieDomains, cancellationToken);
         }
 
         public async Task<List<Movie>> GetAllAsync(CancellationToken cancellationToken)
         {
-            var movies = await context.Movies.ToListAsync();
+            var movies = await context.Movies.AsNoTracking().ToListAsync(cancellationToken);
             return movies;
         }
-        public async Task<Movie?> FirstOrDefaultAsync(int movieId)
+        public async Task<Movie?> FirstOrDefaultAsync(int movieId, CancellationToken cancellationToken)
         {
-            return await context.Movies.FirstOrDefaultAsync(m => m.Id == movieId);
+            return await context.Movies.AsNoTracking().FirstOrDefaultAsync(m => m.Id == movieId, cancellationToken);
         }
 
         public IQueryable<Movie> AsQueryable()

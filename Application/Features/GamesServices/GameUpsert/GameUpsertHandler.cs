@@ -29,7 +29,7 @@ namespace Application.Features.GamesServices.GameUpsert
 
         public async Task<GameResponse> Handle(UpsertGameCommand request, CancellationToken cancellationToken)
         {
-            var genre = await referenceDataService.GetOrCreateGenreAsync(request.Genre);
+            var genre = await referenceDataService.GetOrCreateGenreAsync(request.Genre, cancellationToken);
             Game? game =null;
             if (request.id.HasValue)
             {
@@ -58,10 +58,10 @@ namespace Application.Features.GamesServices.GameUpsert
                     new ReleaseDate(request.ReleaseDate!.Value),
                     genre.Id, request.Developer!,
                     request.Platform);
-                await gameRepository.AddGameAsync(game);
+                game = await gameRepository.AddGameAsync(game);
                 logger.LogInformation("Creating new game with title {GameTitle}", game.Title);
             }
-            await unitOfWork.CompleteAsync();
+            await unitOfWork.CompleteAsync(cancellationToken);
             if (game is null) throw new InvalidOperationException(nameof(game));
             var response = GameMapper.ToGameResponse(game, genre);
             logger.LogInformation("Game with id {GameId} has been upserted successfully", game.Id);

@@ -24,7 +24,7 @@ namespace Application.Features.GamesServices.GetGamesByCriteria
         {
             var query = SortAndFilterService.GetGamesByCriteriaAsync(request);
             var games = await gameRepository.GetListFromQueryAsync(query, cancellationToken);
-            var genreDictionary = await genreRepository.GetGenresDictionary();
+            var genreDictionary = await genreRepository.GetGenresDictionary(cancellationToken);
             var Response = games.Select(m =>
             {
                 genreDictionary.TryGetValue(m.GenreId, out var genreDomain);

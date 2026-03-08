@@ -18,7 +18,7 @@ namespace Application.Features.GamesServices.GetAll
         public async Task<List<GameResponse>> Handle(GetAllQuery request, CancellationToken cancellationToken)
         {
             var games = await gameRepository.GetAllAsync();
-            var genres = await genreRepository.GetGenresDictionary();
+            var genres = await genreRepository.GetGenresDictionary(cancellationToken);
             var gameResponses = games.Select(g =>
                 GameMapper.ToGameResponse(g, genres[g.GenreId])).ToList();
             return gameResponses;

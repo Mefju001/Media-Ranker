@@ -2,5 +2,5 @@
 
 namespace Application.Features.ReviewServices.DeleteReviewAsync
 {
-    public record DeleteReviewCommand(int reviewId) : IRequest<Unit>;
+    public record DeleteReviewCommand(int reviewId) : IRequest<bool>;
 }

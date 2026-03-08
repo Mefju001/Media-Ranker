@@ -28,9 +28,10 @@ namespace Infrastructure.Persistence.Repository
         {
             _context.Games.Remove(game);
         }
-        public async Task AddGameAsync(Game game)
+        public async Task<Game> AddGameAsync(Game game)
         {
-            await _context.Games.AddAsync(game);
+            var createdGame = await _context.Games.AddAsync(game);
+            return createdGame.Entity;
         }
         public async Task<List<Game>> GetAllAsync()
         {

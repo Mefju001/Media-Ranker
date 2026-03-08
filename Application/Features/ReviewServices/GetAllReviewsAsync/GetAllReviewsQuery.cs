@@ -1,7 +1,8 @@
-﻿using Domain.Entity;
+﻿using Application.Common.DTO.Response;
+using Domain.Entity;
 using MediatR;
 
 namespace Application.Features.ReviewServices.GetAllReviewsAsync
 {
-    public record GetAllReviewsQuery : IRequest<List<Review>>;
+    public record GetAllReviewsQuery : IRequest<List<ReviewResponse>>;
 }

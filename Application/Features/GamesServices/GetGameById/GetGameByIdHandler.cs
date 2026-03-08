@@ -28,7 +28,7 @@ namespace Application.Features.GamesServices.GetGameById
                 logger.LogWarning("Game with ID {GameId} was not found.", request.id);
                 throw new NotFoundException("not found");
             }
-            var genre = await genreRepository.Get(game.GenreId);
+            var genre = await genreRepository.Get(game.GenreId, cancellationToken);
             if (genre == null)
             {
                 logger.LogWarning("Genre with ID {GenreId} was not found for Game ID {GameId}.", game.GenreId, request.id);

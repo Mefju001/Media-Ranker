@@ -29,7 +29,7 @@ namespace Application.Features.GamesServices.AddListOfGames
         {
             if (requests.games.Count > 500)
                 throw new BadRequestException("The package is too large. Maximum 500 games at a time.");
-            logger.LogInformation("Rozpoczęto dodawanie listy gier. Liczba elementów: {Count}", requests.games.Count);
+            logger.LogInformation("Received request to add a list of games. Games count: {GamesCount}", requests.games.Count);
             var names = requests.games.Select(g => g.Genre.name).Distinct().ToList();
             var genresMap = await referenceDataService.EnsureGenresExistAsync(names, cancellationToken);
             var games = requests.games.Select(gameReq =>
@@ -46,7 +46,7 @@ namespace Application.Features.GamesServices.AddListOfGames
             }).ToList();
             await gameRepository.AddListOfGames(games, cancellationToken);
             await unitOfWork.CompleteAsync(cancellationToken);
-            logger.LogInformation("Pomyślnie dodano {Count} gier do bazy.", games.Count);
+            logger.LogInformation("Added list of games to the repository. Games count: {GamesCount}", games.Count);
             await mediator.Publish(new LogNotification("Information", "Nowa lista gier została dodana.", nameof(AddListOfGamesHandler)));
             return games.Select(g =>
             {

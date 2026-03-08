@@ -1,5 +1,8 @@
 ﻿using Application.Common.Interfaces;
+using Application.Features.GamesServices.GameUpsert;
+using Application.Notification;
 using MediatR;
+using Microsoft.AspNetCore.Components.Forms;
 using Microsoft.Extensions.Logging;
 
 namespace Application.Features.GamesServices.DeleteById
@@ -9,11 +12,13 @@ namespace Application.Features.GamesServices.DeleteById
         private readonly IUnitOfWork unitOfWork;
         private readonly IGameRepository gameRepository;
         private readonly ILogger<DeleteByIdHandler> logger;
-        public DeleteByIdHandler(IUnitOfWork unitOfWork, IGameRepository gameRepository, ILogger<DeleteByIdHandler>logger)
+        private readonly IMediator mediator;
+        public DeleteByIdHandler(IUnitOfWork unitOfWork, IGameRepository gameRepository, ILogger<DeleteByIdHandler>logger, IMediator mediator)
         {
             this.unitOfWork = unitOfWork;
             this.gameRepository = gameRepository;
             this.logger = logger;
+            this.mediator = mediator;
         }
         public async Task<bool> Handle(DeleteByIdCommand request, CancellationToken cancellationToken)
         {
@@ -23,18 +28,11 @@ namespace Application.Features.GamesServices.DeleteById
                 logger.LogWarning("Game with id {id} not found for deletion.", request.id);
                 return false;
             }
-            try
-            {
-                await gameRepository.DeleteGame(game);
-                await unitOfWork.CompleteAsync(cancellationToken);
-                logger.LogInformation("Game with id {id} successfully deleted.", request.id);
-                return true;
-            }
-            catch (Exception ex)
-            {
-                logger.LogError(ex, "Error occurred while deleting game with id {id}.", request.id);
-                throw;
-            }
+            await gameRepository.DeleteGame(game);
+            await unitOfWork.CompleteAsync(cancellationToken);
+            logger.LogInformation("Game with id {id} successfully deleted.", request.id);
+            await mediator.Publish(new LogNotification("Information", $"Usuwanie gry o id: {request.id}", nameof(GameUpsertHandler)));
+            return true;
         }
     }
 }
