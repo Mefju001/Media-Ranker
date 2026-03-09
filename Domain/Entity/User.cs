@@ -1,5 +1,6 @@
 ﻿using Domain.Enums;
 using Domain.Value_Object;
+using System.Runtime.CompilerServices;
 
 
 namespace Domain.Entity
@@ -53,6 +54,13 @@ namespace Domain.Entity
 
             user.Roles.Add(ERole.User);
             return user;
+        }
+        public void Update(string name, string surname, Email email)
+        {
+            if (string.IsNullOrWhiteSpace(name) || string.IsNullOrWhiteSpace(surname))
+                throw new ArgumentException("you should fill in these fields with name and surname");
+            Fullname = new Fullname(name, surname);
+            Email = email;
         }
         public static User Reconstruct(Guid Id, Username username, Password passwordHash, Fullname fullname, Email email, CreatedAt createdAt, bool IsActived, List<ERole> roles)
         {

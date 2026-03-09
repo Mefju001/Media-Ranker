@@ -1,5 +1,6 @@
 ﻿using Application.Common.Interfaces;
 using Domain.Exceptions;
+using Domain.Value_Object;
 using MediatR;
 
 
@@ -16,13 +17,13 @@ namespace Application.Features.UserServices.ChangeDetails
         }
         public async Task<Unit> Handle(ChangeDetailsCommand request, CancellationToken cancellationToken)
         {
-            //if (request.userId < 0) throw new ArgumentOutOfRangeException("userId");
             if (request == null)
                 throw new ArgumentException("you should fill that field");
-            var user = await userRepository.GetUserById(request.userId) ?? throw new UserNotFoundException("Not found user");
+            var user = await userRepository.GetUserById(request.userId, cancellationToken) ?? throw new UserNotFoundException("Not found user");
             var emailExist = await userRepository.IsAnyUserWhoHaveEmailAndId(request.email, request.userId);
             if (emailExist) throw new EmailAlreadyExistsException("This email is taken.");
-            await unitOfWork.CompleteAsync();
+            user.Update(request.name, request.surname, new Email(request.email));
+            await unitOfWork.CompleteAsync(cancellationToken);
             return Unit.Value;
         }
     }

@@ -7,11 +7,9 @@ namespace Application.Features.UserServices.GetBy
 {
     public class GetUserByNameHandler : IRequestHandler<GetUserByNameQuery, UserResponse?>
     {
-        private readonly IUnitOfWork unitOfWork;
         private readonly IUserRepository userRepository;
-        public GetUserByNameHandler(IUnitOfWork unitOfWork, IUserRepository userRepository)
+        public GetUserByNameHandler(IUserRepository userRepository)
         {
-            this.unitOfWork = unitOfWork;
             this.userRepository = userRepository;
         }
         public async Task<UserResponse?> Handle(GetUserByNameQuery request, CancellationToken cancellationToken)

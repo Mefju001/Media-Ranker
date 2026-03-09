@@ -20,9 +20,13 @@ namespace Infrastructure.Persistence.Repository
         {
             this.appDbContext = appDbContext;
             this.userManager = userManager;
-
         }
-
+        public async Task<IdentityResult> ChangePassword(Guid userId, string currentPassword, string newPassword)
+        {
+            var user = await userManager.FindByIdAsync(userId.ToString());
+            if (user == null) return IdentityResult.Failed(new IdentityError { Description = "User not found" });
+            return await userManager.ChangePasswordAsync(user, currentPassword, newPassword);
+        }
         public async Task<User> GetUserByUsername(string username)
         {
             var user = await userManager.FindByNameAsync(username);
@@ -50,7 +54,7 @@ namespace Infrastructure.Persistence.Repository
             var results = await userManager.GetRolesAsync(user);
             return results;
         }
-        public async Task<User> GetUserById(Guid userId)
+        public async Task<User> GetUserById(Guid userId, CancellationToken cancellationToken)
         {
             var user = await userManager.FindByIdAsync(userId.ToString());
             if (user == null) return null;
@@ -61,27 +65,25 @@ namespace Infrastructure.Persistence.Repository
         }
         public async Task<bool> IsAnyUserWhoHaveEmailAndId(string email, Guid id)
         {
-            return await appDbContext.Users.AnyAsync(u => u.Email == email && u.Id == id);
+            return await appDbContext.Users.AnyAsync(u => u.Email == email && u.Id != id);
         }
-        public async Task DeleteUser(Guid userId)
+        public async Task<IdentityResult?> DeleteUser(User user)
         {
-            var user = await appDbContext.Users
-                .Where(u => u.Id == userId)
-                .FirstOrDefaultAsync();
-            if (user == null) throw new NotFoundException("User not found");
-            appDbContext.Users.Remove(user);
+            var userModel = user.ToModel();
+            var result = await userManager.DeleteAsync(userModel);
+            return result;
         }
         public async Task<bool> IsAnyUserWithUsernameAndEmailLikeThat(string username, string email)
         {
             return await appDbContext.Users.AnyAsync(u => u.UserName == username || u.Email == email);
         }
-        public async Task<User> CreateUserWithDefaultRole(User user)
+        public async Task<User> CreateUserWithDefaultRole(User user, CancellationToken cancellationToken)
         {
             var identityUser = user.ToModel();
             var result = await userManager.CreateAsync(identityUser, user.Password.HashValue);
             if (!result.Succeeded) throw new Exception("User creation failed: "+result.Errors.Select(e=>e.Description));
             await userManager.AddToRoleAsync(identityUser, ERole.User.ToString());
-            return await GetUserById(identityUser.Id);
+            return await GetUserById(identityUser.Id, cancellationToken);
         }
         public async Task<Dictionary<Guid, User>> GetByIds(List<Guid> userIds)
         {

@@ -2,6 +2,7 @@
 using Domain.DomainServices;
 using Domain.Exceptions;
 using MediatR;
+using Microsoft.Extensions.Logging;
 
 
 
@@ -9,28 +10,26 @@ namespace Application.Features.UserServices.ChangePassword
 {
     public class ChangePasswordHandler : IRequestHandler<ChangePasswordCommand, Unit>
     {
-        private readonly IUnitOfWork unitOfWork;
         private readonly IUserRepository userRepository;
-        private readonly IUserPasswordService userPasswordService;
+        private readonly ILogger<ChangePasswordHandler> logger;
 
-        public ChangePasswordHandler(IUnitOfWork unitOfWork, IUserRepository userRepository, IUserPasswordService userPasswordService)
+        public ChangePasswordHandler(IUserRepository userRepository, ILogger<ChangePasswordHandler>logger)
         {
-            this.unitOfWork = unitOfWork;
             this.userRepository = userRepository;
-            this.userPasswordService = userPasswordService;
+            this.logger = logger;
         }
         public async Task<Unit> Handle(ChangePasswordCommand request, CancellationToken cancellationToken)
         {
             if (request.newPassword != request.confirmPassword)
                 throw new PasswordMismatchException("The passwords provided are different.");
-            var user = await userRepository.GetUserById(request.userId);
-            if (user is null)
+            var result = await userRepository.ChangePassword(request.userId, request.oldPassword, request.newPassword);
+            if (!result.Succeeded)
             {
-                throw new InvalidCredentialsException("Invalid user or password.");
+                var error = result.Errors.FirstOrDefault()?.Description ?? "Operation failed";
+                logger.LogWarning("Password change failed for user {UserId}: {Error}", request.userId, error);
+                throw new InvalidCredentialsException($"Password change failed: {error}");
             }
-            var password = userPasswordService.GenerateNewPassword(user, request.oldPassword, request.newPassword);
-            user.ChangePassword(password);
-            await unitOfWork.CompleteAsync();
+            logger.LogInformation("Password changed successfully for user {UserId}", request.userId);
             return Unit.Value;
         }
     }

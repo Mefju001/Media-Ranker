@@ -15,26 +15,26 @@ namespace Infrastructure.Persistence.Repository
         {
             return _context.Genres.AsQueryable();
         }
-        public async Task<Genre?> FirstOrDefaultForNameAsync(string name)
+        public async Task<Genre?> FirstOrDefaultForNameAsync(string name, CancellationToken cancellationToken)
         {
-            return await _context.Genres.FirstOrDefaultAsync(g => g.name.Value == name);
+            return await _context.Genres.FirstOrDefaultAsync(g => g.name.Value == name, cancellationToken);
         }
-        public async Task<Genre> AddAsync(Genre genre)
+        public async Task<Genre> AddAsync(Genre genre, CancellationToken cancellationToken)
         {
-            var entityEntry = await _context.Genres.AddAsync(genre);
+            var entityEntry = await _context.Genres.AddAsync(genre, cancellationToken);
             return entityEntry.Entity;
         }
-        public async Task<Genre?> Get(int id)
+        public async Task<Genre?> Get(int id, CancellationToken cancellationToken)
         {
-            return await _context.Genres.FindAsync(id);
+            return await _context.Genres.FindAsync(id, cancellationToken);
         }
         public async Task<Dictionary<int,Genre>> GetByIdsAsync(List<int> ids, CancellationToken cancellationToken)
         {
             return await _context.Genres.Where(g => ids.Contains(g.Id)).ToDictionaryAsync(g=>g.Id,cancellationToken);
         }
-        public async Task<List<Genre>> GetByNamesAsync(List<string> names)
+        public async Task<List<Genre>> GetByNamesAsync(List<string> names, CancellationToken cancellationToken)
         {
-            return await _context.Genres.Where(g => names.Contains(g.name.Value)).ToListAsync();
+            return await _context.Genres.Where(g => names.Contains(g.name.Value)).ToListAsync(cancellationToken);
         }
 
         public async Task<List<Genre>> GetAllAsync(CancellationToken cancellationToken)
@@ -48,9 +48,9 @@ namespace Infrastructure.Persistence.Repository
             return genre?.Id;
         }
 
-        public async Task<Dictionary<int, Genre>> GetGenresDictionary()
+        public async Task<Dictionary<int, Genre>> GetGenresDictionary(CancellationToken cancellationToken)
         {
-            var genresDict = await _context.Genres.ToDictionaryAsync(g => g.Id, g => g);
+            var genresDict = await _context.Genres.ToDictionaryAsync(g => g.Id, g => g, cancellationToken);
             return genresDict;
         }
     }

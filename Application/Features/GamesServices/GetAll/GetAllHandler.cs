@@ -2,7 +2,6 @@
 using Application.Common.Interfaces;
 using Application.Mapper;
 using MediatR;
-using Microsoft.Extensions.Logging;
 
 namespace Application.Features.GamesServices.GetAll
 {

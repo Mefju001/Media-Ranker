@@ -30,7 +30,7 @@ namespace Application.Features.TvSeriesServices.DeleteById
             await tvSeriesRepository.Delete(tvSeries);
             await unitOfWork.CompleteAsync(cancellationToken);
             logger.LogInformation("TvSeries with id {id} successfully deleted.", request.id);
-            await mediator.Publish(new LogNotification("Information", $"Usuwanie gry o id: {request.id}", nameof(GameUpsertHandler)));
+            await mediator.Publish(new LogNotification("Information", $"Usuwanie serialu o id: {request.id}", nameof(GameUpsertHandler)));
             return true;
         }
     }

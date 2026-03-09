@@ -13,20 +13,19 @@ namespace Infrastructure.Persistence.Repository
             this.appDbContext = appDbContext;
         }
 
-        public Task<Dictionary<int, Media>> GetByIds(List<int> mediaIds)
+        public Task<Dictionary<int, Media>> GetByIds(List<int> mediaIds, CancellationToken cancellationToken)
         {
             var medias = appDbContext.Medias
                 .Where(m => mediaIds.Contains(m.Id))
-                .ToDictionaryAsync(m => m.Id, m => m);
+                .ToDictionaryAsync(m => m.Id, m => m, cancellationToken);
             return medias;
         }
 
-        public async Task<Media> GetMediaById(int mediaId)
+        public async Task<Media?> GetMediaById(int mediaId, CancellationToken cancellationToken)
         {
             var media = await appDbContext.Medias
                 .Where(m => m.Id == mediaId)
-                .FirstOrDefaultAsync();
-            if (media == null) throw new Exception("Media not found");
+                .FirstOrDefaultAsync(cancellationToken);
             return media;
         }
     }
