@@ -8,7 +8,6 @@ using Application.Features.TvSeriesServices.GetTvSeriesByCriteria;
 using Domain.DomainServices;
 using Domain.Entity;
 using FluentValidation;
-using Infrastructure;
 using Infrastructure.BackgroundTasks;
 using Infrastructure.BackgroundTasks.CleanService;
 using Infrastructure.BackgroundTasks.Workers;

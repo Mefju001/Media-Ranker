@@ -8,6 +8,6 @@ namespace Application.Common.Interfaces
         Task<Review> AddAsync(Review review, CancellationToken cancellationToken);
         Task<List<string>> GetTheLastestReviewAsync(CancellationToken cancellationToken);
         Task<List<Review>> GetAllReviewsAsync(CancellationToken cancellation);
-        Task DeleteAsync(Review review);
+        Task DeleteAsync(int id, CancellationToken cancellationToken);
     }
 }

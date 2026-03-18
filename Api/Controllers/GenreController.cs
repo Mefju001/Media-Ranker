@@ -7,7 +7,7 @@ namespace Api.Controllers
 {
     [Authorize(Roles = "User")]
     [ApiController]
-    [Route("[controller]")]
+    [Route("api/[controller]")]
     public class GenreController : ControllerBase
     {
         private readonly IMediator mediator;

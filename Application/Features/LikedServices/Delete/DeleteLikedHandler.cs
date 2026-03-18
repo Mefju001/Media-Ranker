@@ -20,13 +20,13 @@ namespace Application.Features.LikedServices.Delete
 
         public async Task<bool> Handle(DeleteLikedCommand request, CancellationToken cancellationToken)
         {
-            var result = await likedMediaRepository.DeleteByLikedMedia(request.userId, request.mediaId);
+            var result = await likedMediaRepository.DeleteByLikedMedia(request.userId, request.mediaId, cancellationToken);
             if (!result)
             {
                 logger.LogWarning("Liked media with UserId: {UserId} and MediaId: {MediaId} not found for deletion.", request.userId, request.mediaId);
                 throw new NotFoundException("Liked media not found");
             }
-            await unitOfWork.CompleteAsync();
+            await unitOfWork.CompleteAsync(cancellationToken);
             logger.LogInformation("Liked media with UserId: {UserId} and MediaId: {MediaId} successfully deleted.", request.userId, request.mediaId);
             return true;
         }

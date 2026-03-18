@@ -13,7 +13,7 @@ namespace Application.Features.AuthServices.CleanTokens
         }
         public async Task<Unit> Handle(CleanTokensCommand request, CancellationToken cancellationToken)
         {
-            await tokenCleanupService.CleanTokens();
+            await tokenCleanupService.CleanTokens(cancellationToken);
             return Unit.Value;
         }
     }

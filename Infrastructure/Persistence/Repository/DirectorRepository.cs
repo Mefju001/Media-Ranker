@@ -1,7 +1,6 @@
 ﻿using Application.Common.Interfaces;
 using Domain.Entity;
 using Microsoft.EntityFrameworkCore;
-using Swashbuckle.AspNetCore.SwaggerGen;
 
 namespace Infrastructure.Persistence.Repository
 {
@@ -14,7 +13,7 @@ namespace Infrastructure.Persistence.Repository
         }
         public async Task<Director?> FirstOrDefaultForNameAndSurnameAsync(string name, string surname, CancellationToken cancellationToken)
         {
-            return await context.Directors.FirstOrDefaultAsync(d => d.name == name && d.surname == surname, cancellationToken);
+            return await context.Directors.AsNoTracking().FirstOrDefaultAsync(d => d.name == name && d.surname == surname, cancellationToken);
         }
         public async Task<Director> AddAsync(Director directorDomain, CancellationToken cancellationToken)
         {
@@ -23,17 +22,14 @@ namespace Infrastructure.Persistence.Repository
         }
         public async Task<Director?> Get(int id, CancellationToken cancellationToken)
         {
-            return await context.Directors.FindAsync(id,cancellationToken);
+            return await context.Directors.AsNoTrackingWithIdentityResolution().FirstOrDefaultAsync(t=>t.Id == id,cancellationToken);
         }
-
-        public async Task<List<Director>> findByNameAndSurname(List<string> names, List<string> surnames, CancellationToken cancellationToken)
+        public async Task<List<Director>> findByNames(List<(string, string)> fullnames, CancellationToken cancellationToken)
         {
-            return await context.Directors.Where(d => names.Contains(d.name) && surnames.Contains(d.surname)).ToListAsync(cancellationToken);
-        }
-
-        public Task<List<Director>> findByNames(List<(string, string)> names, CancellationToken cancellationToken)
-        {
-            throw new NotImplementedException();
+            var names = fullnames.Select(x => x.Item1).Distinct().ToList();
+            var surnames = fullnames.Select(x => x.Item2).Distinct().ToList();
+            var results = await context.Directors.Where(d=>names.Contains(d.name)&&surnames.Contains(d.surname)).AsNoTracking().ToListAsync(cancellationToken);
+            return results;
         }
 
         public IQueryable<Director> GetAllQueryable()
@@ -43,13 +39,13 @@ namespace Infrastructure.Persistence.Repository
 
         public Task<Dictionary<int, Director>> GetDirectorsDictionary(CancellationToken cancellationToken)
         {
-            var directorsDict = context.Directors.ToDictionaryAsync(d => d.Id, d => d, cancellationToken);
+            var directorsDict = context.Directors.AsNoTracking().ToDictionaryAsync(d => d.Id, d => d, cancellationToken);
             return directorsDict;
         }
 
         public async Task<Dictionary<int,Director>> GetByIds(List<int> ids, CancellationToken cancellationToken)
         {
-            return await context.Directors.Where(d => ids.Contains(d.Id)).ToDictionaryAsync(m=>m.Id,cancellationToken);
+            return await context.Directors.Where(d => ids.Distinct().Contains(d.Id)).AsNoTracking().ToDictionaryAsync(d=>d.Id, d=>d, cancellationToken);
         }
     }
 }

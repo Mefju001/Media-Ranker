@@ -85,11 +85,11 @@ namespace Infrastructure.Persistence.Repository
             await userManager.AddToRoleAsync(identityUser, ERole.User.ToString());
             return await GetUserById(identityUser.Id, cancellationToken);
         }
-        public async Task<Dictionary<Guid, User>> GetByIds(List<Guid> userIds)
+        public async Task<Dictionary<Guid, User>> GetByIds(List<Guid> userIds, CancellationToken cancellationToken)
         {
             var identityUsers = await userManager.Users
                 .Where(u => userIds.Contains(u.Id))
-                .ToListAsync();
+                .ToListAsync(cancellationToken);
             var userDictionary = new Dictionary<Guid, User>();
             foreach (var user in identityUsers)
             {

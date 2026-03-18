@@ -17,7 +17,7 @@ namespace Application.Features.AuthServices.Logout
         }
         public async Task Handle(LogoutCommand request, CancellationToken cancellationToken)
         {
-            var deletedCount = await tokenRepository.DeleteTokensFromUserId(request.UserId, request.jti);
+            var deletedCount = await tokenRepository.DeleteTokensFromUserId(request.UserId, request.jti, cancellationToken);
             if (deletedCount > 0)
             {
                 logger.LogInformation("User {UserId} logged out (Scope: {Scope})",

@@ -4,7 +4,7 @@ using Application.Common.Interfaces;
 using Application.Mapper;
 using Domain.Entity;
 
-namespace Infrastructure
+namespace Infrastructure.Persistence
 {
     public class ReferenceDataService : IReferenceDataService
     {
@@ -48,6 +48,7 @@ namespace Infrastructure
                     await genreRepository.AddAsync(newGenre, cancellationToken);
                 }
             }
+            await unitOfWork.CompleteAsync(cancellationToken);
             return genresMap;
         }
         public async Task<List<GenreResponse>> GetGenres(CancellationToken cancellationToken)
@@ -61,7 +62,7 @@ namespace Infrastructure
         {
             if (token == null) throw new ArgumentNullException();
             await tokenRepository.SaveToken(token, cancellationToken);
-            await unitOfWork.CompleteAsync();
+            await unitOfWork.CompleteAsync(cancellationToken);
         }
 
         public async Task<Dictionary<(string, string), Director>> EnsureDirectorsExistAsync(List<DirectorRequest> directors, CancellationToken cancellationToken)
@@ -82,6 +83,7 @@ namespace Infrastructure
                     directorMap.Add(pair, newDirector);
                 }
             }
+            await unitOfWork.CompleteAsync(cancellationToken);
             return directorMap;
         }
     }

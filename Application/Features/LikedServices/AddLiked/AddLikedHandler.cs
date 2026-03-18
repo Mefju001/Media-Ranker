@@ -31,20 +31,20 @@ namespace Application.Features.LikedServices.AddLiked
 
         public async Task<LikedMediaResponse> Handle(AddLikedCommand request, CancellationToken cancellationToken)
         {
-            var media = await mediaRepository.GetMediaById(request.MediaId);
-            var user = await userRepository.GetUserById(request.UserId);
+            var media = await mediaRepository.GetMediaById(request.MediaId, cancellationToken);
+            var user = await userRepository.GetUserById(request.UserId, cancellationToken);
             if (media is null || user is null)
             {
                 logger.LogWarning("User or Media not found. UserId: {UserId}, MediaId: {MediaId}", request.UserId, request.MediaId);
                 throw new NotFoundException("User or Media not found.");
             }
-            var existingLikedMedia = await likedMediaRepository.Any(request.UserId, request.MediaId);
+            var existingLikedMedia = await likedMediaRepository.Any(request.UserId, request.MediaId, cancellationToken);
             if (existingLikedMedia is true)
             {
                 logger.LogWarning("Media already in liked list. UserId: {UserId}, MediaId: {MediaId}", request.UserId, request.MediaId);
                 throw new NotFoundException("Media already in liked list.");
             }
-            var genre = await genreRepository.Get(media.GenreId);
+            var genre = await genreRepository.Get(media.GenreId, cancellationToken);
             if (genre is null)
             {
                 logger.LogWarning("Genre not found for MediaId: {MediaId}, GenreId: {GenreId}", request.MediaId, media.GenreId);
@@ -53,14 +53,14 @@ namespace Application.Features.LikedServices.AddLiked
             Director? director = null;
             if(media is Movie movie)
             {
-                director = await directorRepository.Get(movie.DirectorId);
+                director = await directorRepository.Get(movie.DirectorId, cancellationToken);
             }
             var likedMedia = LikedMedia.Create(
                 request.UserId,
                 request.MediaId
             );
-            await likedMediaRepository.AddAsync(likedMedia);
-            await unitOfWork.CompleteAsync();
+            await likedMediaRepository.AddAsync(likedMedia, cancellationToken);
+            await unitOfWork.CompleteAsync(cancellationToken);
             logger.LogInformation("Media added to liked list. UserId: {UserId}, MediaId: {MediaId}", request.UserId, request.MediaId);
             return media switch
             {

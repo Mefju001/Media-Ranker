@@ -8,7 +8,7 @@ namespace Application.Common.Interfaces
         Task<Token?> GetByJtiAsync(string jti, CancellationToken cancellationToken);
         Task SaveToken(Token token, CancellationToken cancellationToken);
         Task<int> DeleteTokensFromUserId(Guid userId, string? jti, CancellationToken cancellationToken);
-        Task<List<Token>> GetTokensToCleanUp();
-        Task<int> CleanUpTokensAsync();
+        Task<List<Token>> GetTokensToCleanUp(CancellationToken cancellationToken);
+        Task<int> CleanUpTokensAsync(CancellationToken cancellationToken);
     }
 }

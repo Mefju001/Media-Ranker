@@ -8,7 +8,7 @@ namespace Application.Common.Interfaces
         Task<IdentityResult> ChangePassword(Guid userId, string currentPassword, string newPassword);
         Task<string> GetUsernameById(Guid id);
         Task<User> GetUserByUsername(string username);
-        Task<Dictionary<Guid, User>> GetByIds(List<Guid> userIds);
+        Task<Dictionary<Guid, User>> GetByIds(List<Guid> userIds, CancellationToken cancellationToken);
         Task<User?> AuthenticateAsync(string username, string password);
         Task<IList<string>> getUserRoles(string username);
         Task<User> GetUserById(Guid userId, CancellationToken cancellationToken);

@@ -24,12 +24,12 @@ namespace Application.Features.MovieServices.DeleteById
         public async Task<bool> Handle(DeleteByIdCommand request, CancellationToken cancellationToken)
         {
             var movie = await movieRepository.FirstOrDefaultAsync(request.id, cancellationToken);
-            if (movie == null)
+            if(movie == null)
             {
-                logger.LogWarning("Movie with id {id} not found for deletion.", request.id);
-                throw new NotFoundException($"Movie with id {request.id} not found.");
+                logger.LogWarning("Movie with id {id} does not exist.",request.id);
+                throw new NotFoundException($"Movie withid {request.id} does not exist.");
             }
-            await movieRepository.DeleteMovie(movie, cancellationToken);
+            movieRepository.DeleteMovie(movie);
             await unitOfWork.CompleteAsync(cancellationToken);
             logger.LogInformation("Game with id {id} successfully deleted.", request.id);
             await mediator.Publish(new LogNotification("Information", $"Usuwanie filmu o id: {request.id}", nameof(GameUpsertHandler)));

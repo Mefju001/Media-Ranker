@@ -25,17 +25,17 @@ namespace Application.Features.LikedServices.GetAllLiked
         }
         public async Task<List<LikedMediaResponse>> Handle(GetAllQuery request, CancellationToken cancellationToken)
         {
-            var likedItems = await likedMediaRepository.GetAll();
+            var likedItems = await likedMediaRepository.GetAll(cancellationToken);
             if(!likedItems.Any()) return new List<LikedMediaResponse>();
 
             var userIds = likedItems.Select(x => x.userId).Distinct().ToList();
             var mediaIds = likedItems.Select(x => x.mediaId).Distinct().ToList();
 
-            var users = await userRepository.GetByIds(userIds);
-            var mediaList = await mediaRepository.GetByIds(mediaIds);
+            var users = await userRepository.GetByIds(userIds, cancellationToken);
+            var mediaList = await mediaRepository.GetByIds(mediaIds, cancellationToken);
             //zwracac genre i directors poprzez id wcześniej wyszukane
-            var genres = await genreRepository.GetGenresDictionary();
-            var directors = await directorRepository.GetDirectorsDictionary();
+            var genres = await genreRepository.GetGenresDictionary(cancellationToken);
+            var directors = await directorRepository.GetDirectorsDictionary(cancellationToken);
 
             var result = new List<LikedMediaResponse>();
             foreach (var lm in likedItems)

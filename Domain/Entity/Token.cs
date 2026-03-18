@@ -30,7 +30,6 @@
         {
             if (string.IsNullOrWhiteSpace(jti)) throw new ArgumentException("JTI cannot be empty");
             if (string.IsNullOrWhiteSpace(token)) throw new ArgumentException("Token cannot be empty");
-            //if (userId <= 0) throw new ArgumentException("Invalid UserId");
 
             return new Token(jti, token, userId, createdByIp, userAgent);
         }

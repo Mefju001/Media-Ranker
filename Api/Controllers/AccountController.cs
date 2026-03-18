@@ -1,4 +1,5 @@
 ﻿using Application.Common.DTO.Request;
+using Application.Common.Interfaces;
 using Application.Features.AuthServices.Login;
 using Application.Features.AuthServices.Logout;
 using Application.Features.AuthServices.Signup;
@@ -11,13 +12,21 @@ namespace Api.Controllers
 {
     [Authorize]
     [ApiController]
-    [Route("api")]
-    public class LoginController : ControllerBase
+    [Route("api/[controller]")]
+    public class AccountController : ControllerBase
     {
         private readonly IMediator mediator;
-        public LoginController(IMediator mediator)
+        private readonly ICurrentUserContext currentUserContext;
+        public AccountController(IMediator mediator, ICurrentUserContext currentUserContext)
         {
             this.mediator = mediator;
+            this.currentUserContext = currentUserContext;
+        }
+        private Guid GetCurrentUserId()
+        {
+            var userId = currentUserContext.UserId;
+            if (userId is null) throw new UnauthorizedAccessException();
+            return userId.Value;
         }
         [AllowAnonymous]
         [HttpPost("Login")]
@@ -42,13 +51,9 @@ namespace Api.Controllers
         [HttpPost("Logout")]
         public async Task<IActionResult> Logout()
         {
-            var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-            if (string.IsNullOrEmpty(userId))
-            {
-                return Unauthorized("Nie znaleziono ID użytkownika w tokenie.");
-            }
-            Guid.TryParse(userId, out var id);
-            var command = new LogoutCommand(id);
+            var userId = GetCurrentUserId();
+            var jti = User.FindFirst("jti")?.Value;
+            var command = new LogoutCommand(userId, jti);
             await mediator.Send(command);
             Response.Cookies.Delete("refreshToken");
             return Ok(new { Message = "wylogowano pomyślnie" });

@@ -13,21 +13,21 @@ namespace Infrastructure.Persistence.Repository
             this.appDbContext = appDbContext;
         }
 
-        public async Task<Review> AddAsync(Review review)
+        public async Task<Review> AddAsync(Review review, CancellationToken cancellationToken)
         {
-            var createdReview = await appDbContext.Reviews.AddAsync(review);
+            var createdReview = await appDbContext.Reviews.AddAsync(review, cancellationToken);
             return createdReview.Entity;
         }
 
-        public Task<Review?> GetReviewByIdAsync(int reviewId)
+        public Task<Review?> GetReviewByIdAsync(int reviewId, CancellationToken cancellationToken)
         {
-            return appDbContext.Reviews
-                .FirstOrDefaultAsync(r => r.Id == reviewId);
+            return appDbContext.Reviews.AsNoTracking().FirstOrDefaultAsync(r => r.Id == reviewId, cancellationToken);
         }
         public async Task<List<string>> GetTheLastestReviewAsync(CancellationToken cancellation)
         {
             var media = appDbContext.Medias.AsQueryable();
             return await appDbContext.Reviews
+                .AsNoTrackingWithIdentityResolution()
                 .OrderByDescending(r => r.CreatedAt)
                 .Take(10)
                 .Join(media,
@@ -40,14 +40,13 @@ namespace Infrastructure.Persistence.Repository
         }
         public async Task<List<Review>> GetAllReviewsAsync(CancellationToken cancellation)
         {
-            return await appDbContext.Reviews
+            return await appDbContext.Reviews.AsNoTrackingWithIdentityResolution()
                 .ToListAsync(cancellation);
         }
 
-        public Task DeleteAsync(Review review)
+        public async Task DeleteAsync(int id, CancellationToken cancellationToken)
         {
-            appDbContext.Reviews.Remove(review);
-            return Task.CompletedTask;
+            await appDbContext.Reviews.Where(r => r.Id == id).ExecuteDeleteAsync(cancellationToken);
         }
     }
 }

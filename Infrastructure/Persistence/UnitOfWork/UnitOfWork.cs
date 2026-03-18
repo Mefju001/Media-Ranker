@@ -9,7 +9,7 @@ namespace Infrastructure.Persistence.UnitOfWork
 
         public UnitOfWork(AppDbContext context) => this.context = context;
 
-        public async Task<int> CompleteAsync()
+        public async Task<int> CompleteAsync(CancellationToken cancellationToken)
         {
             return await context.SaveChangesAsync();
         }
@@ -19,7 +19,7 @@ namespace Infrastructure.Persistence.UnitOfWork
             context.Dispose();
         }
 
-        public Task<IDbContextTransaction> BeginTransactionAsync()
+        public Task<IDbContextTransaction> BeginTransactionAsync(CancellationToken cancellationToken)
         {
             return context.Database.BeginTransactionAsync();
         }

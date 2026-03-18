@@ -4,11 +4,11 @@ namespace Application.Common.Interfaces
 {
     public interface ITvSeriesRepository
     {
-        Task<TvSeries?> GetTvSeriesById(int id);
+        Task<TvSeries?> GetTvSeriesById(int id, CancellationToken cancellationToken);
         Task<List<TvSeries>> GetAll(CancellationToken cancellationToken);
-        Task Delete(TvSeries tvSeriesDomain);
-        Task AddListOfTvSeries(List<TvSeries> list);
-        Task<TvSeries> AddTvSeriesAsync(TvSeries tvSeriesDomain);
+        void Delete(TvSeries tv);
+        Task AddListOfTvSeries(List<TvSeries> list, CancellationToken cancellationToken);
+        Task<TvSeries> AddTvSeriesAsync(TvSeries tvSeriesDomain, CancellationToken cancellationToken);
         IQueryable<TvSeries> AsQueryable();
         Task<List<TvSeries>> ToListAsync(IQueryable<TvSeries> query, CancellationToken cancellationToken);
     }

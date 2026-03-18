@@ -1,5 +1,6 @@
 ﻿using Application.Common.DTO.Request;
 using Application.Common.DTO.Response;
+using Application.Common.Interfaces;
 using Application.Features.LikedServices.AddLiked;
 using Application.Features.LikedServices.Delete;
 using Application.Features.LikedServices.GetAllLiked;
@@ -8,48 +9,41 @@ using Application.Features.LikedServices.GetByIdLiked;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using System.Security.Claims;
 
 namespace Api.Controllers
 {
-    [Authorize]
-    [ApiController]
-    [Route("Api/Liked")]
-    public class LikedMovieGameTvSeriesController : ControllerBase
+    [Authorize(Roles = "User")]
+    [ApiController()]
+    [Route("api/[controller]")]
+    public class LikedController : ControllerBase
     {
         private readonly IMediator mediator;
-        private Guid? getUserId()
-        {
-            var stringUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            if (String.IsNullOrWhiteSpace(stringUserId)) return null;
-            if (Guid.TryParse(stringUserId, out Guid userId))
-            {
-                return userId;
-            }
-            else
-                return null;
-        }
-        public LikedMovieGameTvSeriesController(IMediator mediator)
+        private readonly ICurrentUserContext currentUserContext;
+        public LikedController(IMediator mediator, ICurrentUserContext currentUserContext)
         {
             this.mediator = mediator;
+            this.currentUserContext = currentUserContext;
         }
-        [HttpGet()]
+        private Guid GetCurrentUserId()
+        {
+            var userId = currentUserContext.UserId;
+            if (userId is null) throw new UnauthorizedAccessException();
+            return userId.Value;
+        }
+        [HttpGet]
         public async Task<IActionResult> GetAll()
         {
             var query = new GetAllQuery();
             var movies = await mediator.Send(query);
             return Ok(movies);
         }
-        [Authorize(Roles = "User")]
-        [HttpGet("getLikedByUser")]
+        [HttpGet("ForUser")]
         public async Task<IActionResult> GetLikedByUser()
         {
-            var userId = getUserId();
-            if (userId is null) return Unauthorized();
-            var query = new GetAllLikedByUserQuery(userId.Value);
+            var userId = GetCurrentUserId();
+            var query = new GetAllLikedByUserQuery(userId);
             return Ok(await mediator.Send(query));
         }
-        [Authorize(Roles = "User")]
         [HttpGet("{id:int}")]
         [ProducesResponseType(typeof(LikedMediaResponse), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -63,24 +57,20 @@ namespace Api.Controllers
             }
             return Ok(response);
         }
-        [Authorize(Roles = "Admin,User")]
         [ProducesResponseType(typeof(LikedMediaRequest), StatusCodes.Status201Created)]
-        [HttpPost("Add")]
+        [HttpPost]
         public async Task<IActionResult> AddLiked([FromBody] LikedMediaRequest liked)
         {
-            var userId = getUserId();
-            if (userId is null) return Unauthorized();
-            var command = new AddLikedCommand(userId.Value, liked.MediaId);
+            var userId = GetCurrentUserId();
+            var command = new AddLikedCommand(userId, liked.MediaId);
             var response = await mediator.Send(command);
             return CreatedAtAction(nameof(GetById), new { id = response.id }, response);
         }
-        [Authorize(Roles = "Admin,User")]
-        [HttpDelete("delete/{id}")]
+        [HttpDelete("{id:int}")]
         public async Task<IActionResult> DeleteLikedMovie([FromRoute] int id)
         {
-            var userId = getUserId();
-            if (userId is null) return Unauthorized();
-            var command = new DeleteLikedCommand(userId.Value, id);
+            var userId = GetCurrentUserId();
+            var command = new DeleteLikedCommand(userId, id);
             await mediator.Send(command);
             return NoContent();
         }

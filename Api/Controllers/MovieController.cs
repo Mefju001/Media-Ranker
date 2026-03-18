@@ -13,7 +13,7 @@ namespace Api.Controllers
 {
     [Authorize]
     [ApiController]
-    [Route("[controller]")]
+    [Route("api/[controller]")]
     public class MovieController : ControllerBase
     {
         private readonly IMediator mediator;
@@ -22,23 +22,16 @@ namespace Api.Controllers
         {
             this.mediator = mediator;
         }
+
         [AllowAnonymous]
         [HttpGet]
-        public async Task<IActionResult> GetAll()
-        {
-            var query = new GetAllQuery();
-            var movies = await mediator.Send(query);
-            return Ok(movies);
-        }
-        [AllowAnonymous]
-        [HttpGet("FilterBy")]
-        public async Task<IActionResult> GetMovies([FromQuery] GetMoviesByCriteriaQuery moviesQuery)
+        public async Task<IActionResult> Get([FromQuery] GetMoviesByCriteriaQuery moviesQuery)
         {
             var movies = await mediator.Send(moviesQuery);
             return Ok(movies);
         }
         [AllowAnonymous]
-        [HttpGet("id/{id}")]
+        [HttpGet("{id:int}")]
         public async Task<IActionResult> GetById([FromRoute] int id)
         {
             var query = new GetMovieByIdQuery(id);
@@ -64,15 +57,15 @@ namespace Api.Controllers
             return CreatedAtAction(nameof(GetById), new { id = created.id }, created);
         }
         [Authorize(Roles = "Admin")]
-        [HttpPost]
+        [HttpPost("Bulk")]
         public async Task<IActionResult> AddMovies([FromBody] List<MovieRequest> movies)
         {
             var command = new AddListOfMoviesCommand(movies);
             var created = await mediator.Send(command);
-            return CreatedAtAction(nameof(GetAll), created);
+            return Ok(created);
         }
         [Authorize(Roles = "Admin")]
-        [HttpPut("updateById/{id}")]
+        [HttpPut("{id:int}")]
         public async Task<IActionResult> UpdateMovie([FromRoute] int id, [FromBody] MovieRequest movie)
         {
             var command = new UpsertMovieCommand(
@@ -89,10 +82,9 @@ namespace Api.Controllers
             return Ok(updated);
         }
         [Authorize(Roles = "Admin")]
-        [HttpDelete("deleteById/{id}")]
+        [HttpDelete("{id:int}")]
         public async Task<IActionResult> Delete([FromRoute] int id)
         {
-
             var deleted = await mediator.Send(new DeleteByIdCommand(id));
             return NoContent();
         }

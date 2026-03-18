@@ -1,6 +1,7 @@
 ﻿using Application.Common.Interfaces;
 using Application.Features.GamesServices.GameUpsert;
 using Application.Notification;
+using Domain.Exceptions;
 using MediatR;
 using Microsoft.Extensions.Logging;
 
@@ -21,13 +22,13 @@ namespace Application.Features.TvSeriesServices.DeleteById
         }
         public async Task<bool> Handle(DeleteByIdCommand request, CancellationToken cancellationToken)
         {
-            var tvSeries = await tvSeriesRepository.GetTvSeriesById(request.id);
-            if (tvSeries is null)
+            var tvseries = await tvSeriesRepository.GetTvSeriesById(request.id,cancellationToken);
+            if (tvseries == null)
             {
                 logger.LogWarning("TvSeries with id {id} not found.", request.id);
-                return false;
+                throw new NotFoundException($"TvSeries with id {request.id} not found.");
             }
-            await tvSeriesRepository.Delete(tvSeries);
+            tvSeriesRepository.Delete(tvseries);
             await unitOfWork.CompleteAsync(cancellationToken);
             logger.LogInformation("TvSeries with id {id} successfully deleted.", request.id);
             await mediator.Publish(new LogNotification("Information", $"Usuwanie serialu o id: {request.id}", nameof(GameUpsertHandler)));

@@ -23,7 +23,7 @@ namespace Application.Features.TvSeriesServices.GetTvSeriesById
 
         public async Task<TvSeriesResponse?> Handle(GetTvSeriesByIdQuery request, CancellationToken cancellationToken)
         {
-            var tvSeriesDomain = await tvSeriesRepository.GetTvSeriesById(request.id);
+            var tvSeriesDomain = await tvSeriesRepository.GetTvSeriesById(request.id, cancellationToken);
             if (tvSeriesDomain == null)
             {
                 logger.LogWarning("Tv Series with ID {TvSeriesId} was not found.", request.id);

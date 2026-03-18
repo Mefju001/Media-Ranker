@@ -1,57 +1,51 @@
 ﻿namespace Domain.Exceptions
 {
-    public class NotFoundException : Exception
+    public class BaseException:Exception
+    {
+        public BaseException(string message) : base(message) { }
+    }
+    public class NotFoundException : BaseException
     {
         public NotFoundException(string message) : base(message) { }
     }
-    public class InvalidRefreshTokenException : Exception
+    public class InvalidRefreshTokenException : BaseException
     {
         public InvalidRefreshTokenException(string message) : base(message) { }
-        public int ErrorCode { get; } = 4001;
     }
-    public class UserClaimNotFoundException : Exception
+    public class UserClaimNotFoundException : BaseException
     {
         public UserClaimNotFoundException(string message) : base(message) { }
-        public int ErrorCode { get; } = 4002;
     }
-    public class InvalidCredentialsException : Exception
+    public class InvalidCredentialsException : BaseException
     {
         public InvalidCredentialsException(string message) : base(message) { }
-        public int ErrorCode { get; } = 4003;
     }
-    public class UserNotFoundException : Exception
+    public class UserNotFoundException : BaseException
     {
         public UserNotFoundException(string message) : base(message) { }
-        public int ErrorCode { get; } = 4004;
     }
-    public class PasswordMismatchException : Exception
+    public class PasswordMismatchException : BaseException
     {
         public PasswordMismatchException(string message) : base(message) { }
-        public int ErrorCode { get; } = 4005;
     }
-    public class NewPasswordIsSameAsOldException : Exception
+    public class NewPasswordIsSameAsOldException : BaseException
     {
         public NewPasswordIsSameAsOldException(string message) : base(message) { }
-        public int ErrorCode { get; } = 4006;
     }
-    public class EmailAlreadyExistsException : Exception
+    public class EmailAlreadyExistsException : BaseException
     {
         public EmailAlreadyExistsException(string message) : base(message) { }
-        public int ErrorCode { get; } = 4007;
     }
-    public class DomainException : Exception
+    public class DomainException : BaseException
     {
         public DomainException(string message) : base(message) { }
-        public int ErrorCode { get; } = 4008;
     }
-    public class UnauthorizedException : Exception
+    public class UnauthorizedException : BaseException
     {
         public UnauthorizedException(string message) : base(message) { }
-        public int ErrorCode { get; } = 4009;
     }
-    public class BadRequestException:Exception
+    public class BadRequestException: BaseException
     {
         public BadRequestException(string message) : base(message) { }
-        public int ErrorCode { get; } = 4010;
     }
 }

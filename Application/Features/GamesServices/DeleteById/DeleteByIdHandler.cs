@@ -1,6 +1,7 @@
 ﻿using Application.Common.Interfaces;
 using Application.Features.GamesServices.GameUpsert;
 using Application.Notification;
+using Domain.Exceptions;
 using MediatR;
 using Microsoft.AspNetCore.Components.Forms;
 using Microsoft.Extensions.Logging;
@@ -25,10 +26,10 @@ namespace Application.Features.GamesServices.DeleteById
             var game = await gameRepository.GetGameDomainAsync(request.id, cancellationToken);
             if (game is null)
             {
-                logger.LogWarning("Game with id {id} not found for deletion.", request.id);
-                return false;
+                logger.LogWarning("Game with id {id} not found.", request.id);
+                throw new NotFoundException($"The game with ID {request.id} does not exist");
             }
-            await gameRepository.DeleteGame(game);
+            gameRepository.DeleteGame(game);
             await unitOfWork.CompleteAsync(cancellationToken);
             logger.LogInformation("Game with id {id} successfully deleted.", request.id);
             await mediator.Publish(new LogNotification("Information", $"Usuwanie gry o id: {request.id}", nameof(GameUpsertHandler)));

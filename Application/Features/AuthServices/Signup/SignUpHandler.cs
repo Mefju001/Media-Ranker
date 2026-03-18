@@ -38,10 +38,10 @@ namespace Application.Features.AuthServices.Signup
                     request.surname),
                     new Email(request.email)
                 );
-                user = await userRepository.CreateUserWithDefaultRole(user);
+                user = await userRepository.CreateUserWithDefaultRole(user, cancellationToken);
                 logger.LogInformation("Użytkownik {Username} został pomyślnie zarejestrowany z ID: {UserId}", user.Username.Value, user.Id);
                 var accessToken = tokenServices.generateAccessToken(user.Id, user.Username.Value, user.UserRoles);
-                var refreshToken = await tokenServices.GenerateRefreshToken(user.Id, user.Username.Value);
+                var refreshToken = await tokenServices.GenerateRefreshToken(user.Id, user.Username.Value, cancellationToken);
                 return new SignUpResponse(user.Username.Value, accessToken, refreshToken);
             }
             catch (Exception ex)

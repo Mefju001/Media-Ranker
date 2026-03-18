@@ -29,7 +29,7 @@ namespace Application.Features.AuthServices.Login
             }
             var username = user.Username.Value;
             var accessToken = tokenServices.generateAccessToken(user.Id, username, user.UserRoles);
-            var refreshToken = await tokenServices.GenerateRefreshToken(user.Id, username);
+            var refreshToken = await tokenServices.GenerateRefreshToken(user.Id, username, cancellationToken);
             logger.LogInformation("User {Username} logged in successfully", username);
             return new TokenResponse(user.Id, username, accessToken, refreshToken);
         }

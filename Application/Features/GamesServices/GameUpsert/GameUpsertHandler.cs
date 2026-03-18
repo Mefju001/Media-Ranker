@@ -58,7 +58,7 @@ namespace Application.Features.GamesServices.GameUpsert
                     new ReleaseDate(request.ReleaseDate!.Value),
                     genre.Id, request.Developer!,
                     request.Platform);
-                game = await gameRepository.AddGameAsync(game);
+                game = await gameRepository.AddGameAsync(game, cancellationToken);
                 logger.LogInformation("Creating new game with title {GameTitle}", game.Title);
             }
             await unitOfWork.CompleteAsync(cancellationToken);

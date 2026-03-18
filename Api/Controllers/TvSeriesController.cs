@@ -1,7 +1,6 @@
 ﻿using Application.Common.DTO.Request;
 using Application.Features.TvSeriesServices.AddListOfTvSeries;
 using Application.Features.TvSeriesServices.DeleteById;
-using Application.Features.TvSeriesServices.GetAll;
 using Application.Features.TvSeriesServices.GetTvSeriesByCriteria;
 using Application.Features.TvSeriesServices.GetTvSeriesById;
 using Application.Features.TvSeriesServices.TvSeriesUpsert;
@@ -13,7 +12,7 @@ namespace Api.Controllers
 {
     [Authorize]
     [ApiController]
-    [Route("[controller]")]
+    [Route("api/[controller]")]
     public class TvSeriesController : ControllerBase
     {
         private readonly IMediator mediator;
@@ -24,22 +23,14 @@ namespace Api.Controllers
         }
         [AllowAnonymous]
         [HttpGet]
-        public async Task<IActionResult> GetAll()
-        {
-            var query = new GetAllTvSeriesQuery();
-            var movies = await mediator.Send(query);
-            return Ok(movies);
-        }
-        [AllowAnonymous]
-        [HttpGet("FilterBy")]
-        public async Task<IActionResult> GetTvSeries([FromQuery] GetTvSeriesByCriteriaQuery tvSeriesQuery)
+        public async Task<IActionResult> Get([FromQuery] GetTvSeriesByCriteriaQuery tvSeriesQuery)
         {
             var movies = await mediator.Send(tvSeriesQuery);
             return Ok(movies);
         }
         [AllowAnonymous]
-        [HttpGet("id/{id}")]
-        public async Task<IActionResult> GetById(int id)
+        [HttpGet("{id:int}")]
+        public async Task<IActionResult> GetById([FromRoute]int id)
         {
             var query = new GetTvSeriesByIdQuery(id);
             var movie = await mediator.Send(query);
@@ -63,16 +54,16 @@ namespace Api.Controllers
             return CreatedAtAction(nameof(GetById), new { id = created.id }, created);
         }
         [Authorize(Roles = "Admin")]
-        [HttpPost]
+        [HttpPost("Bulk")]
         public async Task<IActionResult> AddListOfSeries(List<TvSeriesRequest> tvSeriesRequests)
         {
             var command = new AddListOfTvSeriesCommand(tvSeriesRequests);
             var created = await mediator.Send(command);
-            return CreatedAtAction(nameof(GetAll), created);
+            return Ok(created);
         }
         [Authorize(Roles = "Admin")]
-        [HttpPut("UpdateById/{id}")]
-        public async Task<IActionResult> UpdateTvSeries(int id, TvSeriesRequest tvSeriesRequest)
+        [HttpPut("{id:int}")]
+        public async Task<IActionResult> UpdateTvSeries([FromRoute]int id, TvSeriesRequest tvSeriesRequest)
         {
             var command = new UpsertTvSeriesCommand(id,
                 tvSeriesRequest.title,
@@ -88,8 +79,8 @@ namespace Api.Controllers
             return Ok(updated);
         }
         [Authorize(Roles = "Admin")]
-        [HttpDelete("{id}")]
-        public async Task<IActionResult> Delete(int id)
+        [HttpDelete("{id:int}")]
+        public async Task<IActionResult> Delete([FromRoute]int id)
         {
             var command = new DeleteByIdCommand(id);
             var deleted = await mediator.Send(command);

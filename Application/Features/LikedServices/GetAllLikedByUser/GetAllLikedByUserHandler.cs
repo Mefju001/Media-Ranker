@@ -26,13 +26,13 @@ namespace Application.Features.LikedServices.GetAllLikedByUser
 
         public async Task<List<LikedMediaResponse>> Handle(GetAllLikedByUserQuery request, CancellationToken cancellationToken)
         {
-            var likedItems = await likedMediaRepository.GetLikedForUser(request.userId);
+            var likedItems = await likedMediaRepository.GetLikedForUser(request.userId, cancellationToken);
             if(!likedItems.Any())
                 return new List<LikedMediaResponse>();
             var user = await userRepository.GetUserById(request.userId,cancellationToken);
             if (user == null) throw new NotFoundException("User not found");
             var mediaIds = likedItems.Select(r => r.mediaId).Distinct().ToList();
-            var medias = await mediaRepository.GetByIds(mediaIds);
+            var medias = await mediaRepository.GetByIds(mediaIds, cancellationToken);
             var genresIds = medias.Values.Select(m=>m.GenreId).Distinct().ToList();
             var genres = await genreRepository.GetByIdsAsync(genresIds,cancellationToken);
             var directorIds = medias.Values.OfType<Movie>().Select(m => m.DirectorId).Distinct().ToList();

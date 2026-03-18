@@ -13,12 +13,12 @@ namespace Infrastructure.BackgroundTasks.CleanService
             this.logger = logger;
             this.tokenRepository = tokenRepository;
         }
-        public async Task CleanTokens()
+        public async Task CleanTokens(CancellationToken cancellationToken)
         {
             logger.LogInformation("Starting refresh token cleanup process.");
             try
             {
-                var deletedCount =await tokenRepository.CleanUpTokensAsync();
+                var deletedCount =await tokenRepository.CleanUpTokensAsync(cancellationToken);
                 if (deletedCount > 0)
                 {
                     logger.LogInformation("Cleanup finished successfully. Deleted {Count} expired tokens.", deletedCount);

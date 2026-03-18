@@ -6,10 +6,10 @@ namespace Application.Common.Interfaces
     {
         Task<List<Game>> GetListFromQueryAsync(IQueryable<Game> query, CancellationToken cancellationToken);
         Task AddListOfGames(List<Game> games, CancellationToken cancellationToken);
-        Task<Game> AddGameAsync(Game game);
+        Task<Game> AddGameAsync(Game game, CancellationToken cancellationToken);
         Task<Game?> GetGameDomainAsync(int gameId, CancellationToken cancellationToken);
-        Task DeleteGame(Game game);
-        Task<List<Game>> GetAllAsync();
+        void DeleteGame(Game game);
+        Task<List<Game>> GetAllAsync(CancellationToken cancellationToken);
         IQueryable<Game> AsQueryable();
     }
 }

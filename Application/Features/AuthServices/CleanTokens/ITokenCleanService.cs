@@ -2,6 +2,6 @@
 {
     public interface ITokenCleanService
     {
-        Task CleanTokens();
+        Task CleanTokens(CancellationToken cancellationToken);
     }
 }

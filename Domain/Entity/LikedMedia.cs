@@ -9,7 +9,6 @@
         private LikedMedia() { }
         private LikedMedia(Guid userId, int mediaId)
         {
-            //Validate(userId, mediaId);
             this.userId = userId;
             this.mediaId = mediaId;
             this.likedDate = DateTime.UtcNow;
@@ -25,16 +24,5 @@
         {
             return new LikedMedia(userId, mediaId);
         }
-        /*private static void Validate(Guid userId, Guid mediaId)
-        {
-            if (userId <= 0)
-            {
-                throw new ArgumentException("User ID must be a positive integer.", nameof(userId));
-            }
-            if (mediaId <= 0)
-            {
-                throw new ArgumentException("Media ID must be a positive integer.", nameof(mediaId));
-            }
-        }*/
     }
 }

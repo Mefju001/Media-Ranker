@@ -17,6 +17,7 @@ namespace Infrastructure.Persistence.Repository
         {
             var medias = appDbContext.Medias
                 .Where(m => mediaIds.Contains(m.Id))
+                .AsNoTrackingWithIdentityResolution()
                 .ToDictionaryAsync(m => m.Id, m => m, cancellationToken);
             return medias;
         }
@@ -25,6 +26,7 @@ namespace Infrastructure.Persistence.Repository
         {
             var media = await appDbContext.Medias
                 .Where(m => m.Id == mediaId)
+                .AsNoTracking()
                 .FirstOrDefaultAsync(cancellationToken);
             return media;
         }

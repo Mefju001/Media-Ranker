@@ -41,7 +41,7 @@ namespace Application.Features.TvSeriesServices.AddListOfTvSeries
                 var genre = genres[tv.genre.name];
                 return TvSeries.Create(tv.title, tv.description, new Language(tv.Language), new ReleaseDate(tv.ReleaseDate), genre.Id, tv.Seasons, tv.Episodes, tv.Network, tv.Status);
             }).ToList();
-            await tvSeriesRepository.AddListOfTvSeries(tvSeries);
+            await tvSeriesRepository.AddListOfTvSeries(tvSeries, cancellationToken);
             await unitOfWork.CompleteAsync(cancellationToken);
             logger.LogInformation("Added list of TV series to the repository. TV series count: {TvSeriesCount}", tvSeries.Count);
             await mediator.Publish(new LogNotification("Information", "Nowa lista seriali została dodana.", nameof(AddListOfTvSeriesHandler)));

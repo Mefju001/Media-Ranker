@@ -33,7 +33,7 @@ namespace Application.Features.TvSeriesServices.TvSeriesUpsert
             TvSeries? tvSeries =null;
             if (request.id is not null)
             {
-                tvSeries = await tvSeriesRepository.GetTvSeriesById(request.id.Value);
+                tvSeries = await tvSeriesRepository.GetTvSeriesById(request.id.Value, cancellationToken);
 
             } 
             if (tvSeries is not null)
@@ -63,7 +63,7 @@ namespace Application.Features.TvSeriesServices.TvSeriesUpsert
                         request.Episodes,
                         request.Network,
                         request.Status);
-                tvSeries = await tvSeriesRepository.AddTvSeriesAsync(tvSeries);
+                tvSeries = await tvSeriesRepository.AddTvSeriesAsync(tvSeries, cancellationToken);
                 logger.LogInformation("Creating new TvSeries with id {TvSeriesId}", tvSeries.Id);
             }
             await unitOfWork.CompleteAsync(cancellationToken);

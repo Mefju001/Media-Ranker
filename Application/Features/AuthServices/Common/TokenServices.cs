@@ -58,7 +58,7 @@ namespace Application.Features.AuthServices.Common
         }
 
         //Opaque token implementation could be added here in the future if needed, currently we are using JWT for both access and refresh tokens for simplicity.
-        public async Task<string> GenerateRefreshToken(Guid userId, string username)
+        public async Task<string> GenerateRefreshToken(Guid userId, string username, CancellationToken cancellationToken)
         {
             var jti = Guid.NewGuid().ToString();
             var claims = new List<Claim>
@@ -87,10 +87,10 @@ namespace Application.Features.AuthServices.Common
                 clientIp,
                 userAgent
             );
-            await referenceDataService.saveToken(token);
+            await referenceDataService.saveToken(token, cancellationToken);
             return refToken;
         }
-        public async Task<IReadOnlyList<Claim>> ValidateAndGetPrincipalFromRefreshToken(string token)
+        public async Task<IReadOnlyList<Claim>> ValidateAndGetPrincipalFromRefreshToken(string token, CancellationToken cancellationToken)
         {
             if (string.IsNullOrEmpty(token))
             {
@@ -127,14 +127,14 @@ namespace Application.Features.AuthServices.Common
                 var jti = principal.FindFirstValue(JwtRegisteredClaimNames.Jti);
                 if (jti == null)
                     return null;
-                var dbRefreshToken = await tokenRepository.GetByJtiAsync(jti);
+                var dbRefreshToken = await tokenRepository.GetByJtiAsync(jti, cancellationToken);
                 if (dbRefreshToken == null || dbRefreshToken.IsRevoked || dbRefreshToken.ExpiryDate < DateTime.UtcNow)
                 {
                     logger.LogWarning("Token JTI: {Jti} jest nieważny, unieważniony lub nie istnieje.", jti);
                     return null;
                 }
                 dbRefreshToken.Revoke();
-                await context.CompleteAsync();
+                await context.CompleteAsync(cancellationToken);
                 return principal.Claims.ToList().AsReadOnly();
             }
             catch (SecurityTokenExpiredException)

@@ -7,26 +7,26 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Api.Controllers
 {
-    [Authorize(Roles = "Admin")]
+    [Authorize]
     [ApiController]
-    [Route("[controller]")]
+    [Route("api/[controller]")]
     public class AuthController : ControllerBase
     {
         private readonly IMediator mediator;
-
         public AuthController(IMediator mediator)
         {
             this.mediator = mediator;
         }
-        [HttpPost("clean-tokens-now")]
+        [Authorize(Roles = "Admin")]
+        [HttpPost("tokens/cleanup")]
         public async Task<IActionResult> CleanTokensNow()
         {
             var command = new CleanTokensCommand();
             await mediator.Send(command);
-            return Ok("Czyszczenie tokenów rozpoczęte.");
+            return NoContent();
         }
-        [Authorize(Roles = ("User,Admin"))]
-        [HttpPost("refreshToken")]
+        [AllowAnonymous]
+        [HttpPost("RefreshToken")]
         public async Task<IActionResult> RefreshToken()
         {
             var refreshToken = Request.Cookies["refreshToken"];
@@ -47,7 +47,7 @@ namespace Api.Controllers
                 SameSite = SameSiteMode.Lax,
                 Expires = DateTime.Now.AddDays(7)
             });
-            return Ok();
+            return Ok(new {AccessToken = tokens.accessToken});
         }
     }
 }

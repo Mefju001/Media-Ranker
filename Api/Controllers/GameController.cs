@@ -12,32 +12,23 @@ using Microsoft.AspNetCore.Mvc;
 namespace Api.Controllers
 {
     [Authorize]
-    [Route("[controller]")]
+    [Route("api/[controller]")]
     [ApiController]
     public class GameController : ControllerBase
     {
         private readonly IMediator mediator;
-
         public GameController(IMediator mediator)
         {
             this.mediator = mediator;
         }
         [AllowAnonymous]
         [HttpGet]
-        public async Task<IActionResult> GetAll()
-        {
-            var query = new GetAllQuery();
-            var games = await mediator.Send(query);
-            return Ok(games);
-        }
-        [AllowAnonymous]
-        [HttpGet("FilterBy")]
-        public async Task<IActionResult> GetGames([FromQuery] GetGamesByCriteriaQuery gameQuery)
+        public async Task<IActionResult> Get([FromQuery] GetGamesByCriteriaQuery gameQuery)
         {
             var games = await mediator.Send(gameQuery);
             return Ok(games);
         }
-        [HttpGet("FindById/{id}")]
+        [HttpGet("{id:int}")]
         public async Task<IActionResult> GetById([FromRoute] int id)
         {
             var query = new GetGameByIdQuery(id);
@@ -60,7 +51,7 @@ namespace Api.Controllers
             return CreatedAtAction(nameof(GetById), new { id = created.id }, created);
         }
         [Authorize(Roles = "Admin")]
-        [HttpPost]
+        [HttpPost("Bulk")]
         public async Task<IActionResult> AddListOfGames([FromBody] List<GameRequest> gameRequests)
         {
             var command = new AddListOfGamesCommand(gameRequests);
@@ -68,7 +59,7 @@ namespace Api.Controllers
             return StatusCode(StatusCodes.Status201Created, createdGames);
         }
         [Authorize(Roles = "Admin")]
-        [HttpPut("UpdateGameById/{id}")]
+        [HttpPut("{id:int}")]
         public async Task<IActionResult> UpdateGame([FromRoute] int id, [FromBody] GameRequest gameRequest)
         {
             var command = new UpsertGameCommand(id,
@@ -83,7 +74,7 @@ namespace Api.Controllers
             return Ok(updated);
         }
         [Authorize(Roles = "Admin")]
-        [HttpDelete("DeleteById/{id}")]
+        [HttpDelete("{id:int}")]
         public async Task<IActionResult> Delete([FromRoute] int id)
         {
             var command = new DeleteByIdCommand(id);

@@ -13,7 +13,7 @@ namespace Infrastructure.Persistence.Repository
         }
         public async Task<List<Movie>> GetListFromQuery(IQueryable<Movie> query, CancellationToken cancellationToken)
         {
-            return await query.ToListAsync(cancellationToken);
+            return await query.AsNoTrackingWithIdentityResolution().ToListAsync(cancellationToken);
         }
         public async Task<Movie> AddAsync(Movie movieDomain, CancellationToken cancellationToken)
         {
@@ -28,7 +28,7 @@ namespace Infrastructure.Persistence.Repository
 
         public async Task<List<Movie>> GetAllAsync(CancellationToken cancellationToken)
         {
-            var movies = await context.Movies.AsNoTracking().ToListAsync(cancellationToken);
+            var movies = await context.Movies.AsNoTrackingWithIdentityResolution().ToListAsync(cancellationToken);
             return movies;
         }
         public async Task<Movie?> FirstOrDefaultAsync(int movieId, CancellationToken cancellationToken)
@@ -44,9 +44,9 @@ namespace Infrastructure.Persistence.Repository
                 .AsQueryable();
         }
 
-        public async Task DeleteMovie(Movie movieDomain)
+        public void DeleteMovie(Movie movie)
         {
-            context.Movies.Remove(movieDomain);
+            context.Movies.Remove(movie);
         }
 
         public async Task AddListOfMovies(List<Movie> movieDomains, CancellationToken cancellationToken)

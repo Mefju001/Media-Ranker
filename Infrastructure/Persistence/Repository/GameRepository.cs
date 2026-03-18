@@ -7,43 +7,39 @@ namespace Infrastructure.Persistence.Repository
 {
     public class GameRepository : IGameRepository
     {
-        private readonly AppDbContext _context;
+        private readonly AppDbContext context;
         public GameRepository(AppDbContext context)
         {
-            _context = context;
+            this.context = context;
         }
         public async Task<List<Game>> GetListFromQueryAsync(IQueryable<Game> query, CancellationToken cancellationToken)
         {
-            return await query.ToListAsync(cancellationToken);
+            return await query.AsNoTrackingWithIdentityResolution().ToListAsync(cancellationToken);
         }
         public async Task AddListOfGames(List<Game> games, CancellationToken cancellationToken)
         {
-            await _context.Games.AddRangeAsync(games, cancellationToken);
+            await context.Games.AddRangeAsync(games, cancellationToken);
         }
         public async Task<Game?> GetGameDomainAsync(int gameId, CancellationToken cancellationToken)
         {
-            return await _context.Games.FirstOrDefaultAsync(g => g.Id == gameId, cancellationToken);
+            return await context.Games.Include(g => g.Stats).FirstOrDefaultAsync(g => g.Id == gameId, cancellationToken);
         }
-        public async Task DeleteGame(Game game)
+        public void DeleteGame(Game game)
         {
-            _context.Games.Remove(game);
+            context.Games.Remove(game);
         }
-        public async Task<Game> AddGameAsync(Game game)
+        public async Task<Game> AddGameAsync(Game game, CancellationToken cancellationToken)
         {
-            var createdGame = await _context.Games.AddAsync(game);
+            var createdGame = await context.Games.AddAsync(game, cancellationToken);
             return createdGame.Entity;
         }
-        public async Task<List<Game>> GetAllAsync()
+        public async Task<List<Game>> GetAllAsync(CancellationToken cancellation)
         {
-            return await _context.Games.AsNoTracking().ToListAsync();
+            return await context.Games.AsNoTrackingWithIdentityResolution().ToListAsync(cancellation);
         }
-
         public IQueryable<Game> AsQueryable()
         {
-            return _context.Games
-                .Include(g => g.Stats)
-                .AsNoTracking()
-                .AsQueryable();
+            return context.Games.AsQueryable();
         }
     }
 }

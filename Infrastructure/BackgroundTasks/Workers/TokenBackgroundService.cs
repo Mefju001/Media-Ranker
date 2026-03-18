@@ -33,7 +33,7 @@ namespace Infrastructure.BackgroundTasks.Workers
                 logger.LogInformation("TokenBackgroundService is running cleanup task.");
                 using var scope = scopeFactory.CreateScope();
                 var tokenCleanService = scope.ServiceProvider.GetRequiredService<ITokenCleanService>();
-                await tokenCleanService.CleanTokens();
+                await tokenCleanService.CleanTokens(stoppingToken);
                 logger.LogInformation("TokenBackgroundService completed cleanup task.");
             }
             catch (Exception ex)
