@@ -1,7 +1,6 @@
 ﻿using Application.Common.Interfaces;
 using Domain.Entity;
 using Microsoft.EntityFrameworkCore;
-using System.Security.Claims;
 
 namespace Infrastructure.Persistence.Repository
 {
@@ -25,7 +24,7 @@ namespace Infrastructure.Persistence.Repository
         {
             var query = appDbContext.Tokens
                 .Where(t => t.UserId == userId);
-            if(!string.IsNullOrEmpty(jti))
+            if (!string.IsNullOrEmpty(jti))
             {
                 query = query.Where(t => t.Jti == jti);
             }
@@ -39,7 +38,7 @@ namespace Infrastructure.Persistence.Repository
         }
         public async Task<int> CleanUpTokensAsync(CancellationToken cancellationToken)
         {
-            return await appDbContext.Tokens.Where(x=>x.IsRevoked == true || x.ExpiryDate < DateTime.UtcNow).ExecuteDeleteAsync(cancellationToken);
+            return await appDbContext.Tokens.Where(x => x.IsRevoked == true || x.ExpiryDate < DateTime.UtcNow).ExecuteDeleteAsync(cancellationToken);
         }
 
         public async Task<Token?> GetByJtiAsync(string jti, CancellationToken cancellationToken)

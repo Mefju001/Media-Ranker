@@ -8,9 +8,11 @@ namespace Application.Features.ReviewServices.GetByIdReview
     public class GetByIdReviewHandler : IRequestHandler<GetByIdReviewQuery, ReviewResponse?>
     {
         private readonly IReviewRepository reviewRepository;
-        public GetByIdReviewHandler(IReviewRepository reviewRepository)
+        private readonly IUserRepository userRepository;
+        public GetByIdReviewHandler(IReviewRepository reviewRepository, IUserRepository userRepository)
         {
             this.reviewRepository = reviewRepository;
+            this.userRepository = userRepository;
         }
         public async Task<ReviewResponse?> Handle(GetByIdReviewQuery query, CancellationToken cancellationToken)
         {

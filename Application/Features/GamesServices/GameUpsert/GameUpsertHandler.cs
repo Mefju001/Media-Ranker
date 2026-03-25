@@ -1,6 +1,5 @@
 ﻿using Application.Common.DTO.Response;
 using Application.Common.Interfaces;
-using Application.Features.MovieServices.MovieUpsert;
 using Application.Mapper;
 using Application.Notification;
 using Domain.Entity;
@@ -18,7 +17,7 @@ namespace Application.Features.GamesServices.GameUpsert
         private readonly IReferenceDataService referenceDataService;
         private readonly ILogger<GameUpsertHandler> logger;
 
-        public GameUpsertHandler(IUnitOfWork unitOfWork, IReferenceDataService referenceDataService, IMediator mediator, IGameRepository gameRepository, ILogger<GameUpsertHandler>logger)
+        public GameUpsertHandler(IUnitOfWork unitOfWork, IReferenceDataService referenceDataService, IMediator mediator, IGameRepository gameRepository, ILogger<GameUpsertHandler> logger)
         {
             this.gameRepository = gameRepository;
             this.unitOfWork = unitOfWork;
@@ -30,7 +29,7 @@ namespace Application.Features.GamesServices.GameUpsert
         public async Task<GameResponse> Handle(UpsertGameCommand request, CancellationToken cancellationToken)
         {
             var genre = await referenceDataService.GetOrCreateGenreAsync(request.Genre, cancellationToken);
-            Game? game =null;
+            Game? game = null;
             if (request.id.HasValue)
             {
                 game = await gameRepository.GetGameDomainAsync(request.id.Value, cancellationToken);

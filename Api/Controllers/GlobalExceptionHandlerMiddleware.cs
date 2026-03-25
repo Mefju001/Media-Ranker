@@ -1,5 +1,4 @@
-﻿using Castle.Core.Logging;
-using Domain.Exceptions;
+﻿using Domain.Exceptions;
 using System.ComponentModel.DataAnnotations;
 
 namespace Api.Controllers
@@ -19,7 +18,7 @@ namespace Api.Controllers
             {
                 await next(context);
             }
-            catch(OperationCanceledException) 
+            catch (OperationCanceledException)
             {
                 logger.LogWarning("Request was cancelled by the client.");
                 await HandleExceptionAsync(context, "Request was cancelled", "OperationCanceledException", 499);

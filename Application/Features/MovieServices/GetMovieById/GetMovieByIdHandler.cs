@@ -33,7 +33,7 @@ namespace Application.Features.MovieServices.GetMovieById
             var directorTask = directorRepository.Get(movie.DirectorId, cancellationToken);
 
             await Task.WhenAll(genreTask, directorTask);
-            
+
             var genre = await genreTask;
             var director = await directorTask;
 

@@ -7,7 +7,6 @@ using Application.Features.UserServices.GetById;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using System.Security.Claims;
 
 namespace Api.Controllers
 {
@@ -32,14 +31,14 @@ namespace Api.Controllers
         }
         [Authorize(Roles = "Admin")]
         [HttpGet("{id:int}")]
-        public async Task<IActionResult> GetUserById([FromRoute]Guid id)
+        public async Task<IActionResult> GetUserById([FromRoute] Guid id)
         {
             var query = new GetByIdQuery(id);
             return Ok(mediator.Send(query));
         }
         [Authorize(Roles = "Admin")]
         [HttpGet("{name}")]
-        public async Task<IActionResult> GetBy([FromRoute]string name)
+        public async Task<IActionResult> GetBy([FromRoute] string name)
         {
             var query = new GetUserByNameQuery(name);
             var result = await mediator.Send(query);

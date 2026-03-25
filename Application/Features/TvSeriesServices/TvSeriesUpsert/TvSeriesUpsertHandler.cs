@@ -1,6 +1,5 @@
 ﻿using Application.Common.DTO.Response;
 using Application.Common.Interfaces;
-using Application.Features.GamesServices.GameUpsert;
 using Application.Mapper;
 using Application.Notification;
 using Domain.Entity;
@@ -18,7 +17,7 @@ namespace Application.Features.TvSeriesServices.TvSeriesUpsert
         private readonly ITvSeriesRepository tvSeriesRepository;
         private readonly ILogger<TvSeriesUpsertHandler> logger;
 
-        public TvSeriesUpsertHandler(IUnitOfWork unitOfWork, IReferenceDataService referenceDataService, IMediator mediator, ITvSeriesRepository tvSeriesRepository, ILogger<TvSeriesUpsertHandler>logger)
+        public TvSeriesUpsertHandler(IUnitOfWork unitOfWork, IReferenceDataService referenceDataService, IMediator mediator, ITvSeriesRepository tvSeriesRepository, ILogger<TvSeriesUpsertHandler> logger)
         {
             this.unitOfWork = unitOfWork;
             this.mediator = mediator;
@@ -30,12 +29,12 @@ namespace Application.Features.TvSeriesServices.TvSeriesUpsert
         public async Task<TvSeriesResponse> Handle(UpsertTvSeriesCommand request, CancellationToken cancellationToken)
         {
             var genre = await referenceDataService.GetOrCreateGenreAsync(request.genre, cancellationToken);
-            TvSeries? tvSeries =null;
+            TvSeries? tvSeries = null;
             if (request.id is not null)
             {
                 tvSeries = await tvSeriesRepository.GetTvSeriesById(request.id.Value, cancellationToken);
 
-            } 
+            }
             if (tvSeries is not null)
             {
                 tvSeries.Update(

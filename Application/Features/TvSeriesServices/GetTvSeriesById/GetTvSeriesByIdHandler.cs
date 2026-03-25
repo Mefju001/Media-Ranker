@@ -1,7 +1,6 @@
 ﻿using Application.Common.DTO.Response;
 using Application.Common.Interfaces;
 using Application.Mapper;
-using Domain.Entity;
 using Domain.Exceptions;
 using MediatR;
 using Microsoft.Extensions.Logging;
@@ -14,7 +13,7 @@ namespace Application.Features.TvSeriesServices.GetTvSeriesById
         private readonly IGenreRepository genreRepository;
         private readonly ILogger<GetTvSeriesByIdHandler> logger;
 
-        public GetTvSeriesByIdHandler(ITvSeriesRepository tvSeriesRepository, IGenreRepository genreRepository, ILogger<GetTvSeriesByIdHandler>logger)
+        public GetTvSeriesByIdHandler(ITvSeriesRepository tvSeriesRepository, IGenreRepository genreRepository, ILogger<GetTvSeriesByIdHandler> logger)
         {
             this.tvSeriesRepository = tvSeriesRepository;
             this.genreRepository = genreRepository;

@@ -12,7 +12,7 @@ namespace Application.Features.AuthServices.Login
         private readonly IUserRepository userRepository;
         private readonly TokenServices tokenServices;
         private readonly ILogger<LoginHandler> logger;
-        public LoginHandler(IUserRepository userRepository, TokenServices tokenServices,ILogger<LoginHandler> logger)
+        public LoginHandler(IUserRepository userRepository, TokenServices tokenServices, ILogger<LoginHandler> logger)
         {
             this.userRepository = userRepository;
             this.tokenServices = tokenServices;

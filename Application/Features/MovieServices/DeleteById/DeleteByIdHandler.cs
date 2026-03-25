@@ -3,7 +3,6 @@ using Application.Features.GamesServices.GameUpsert;
 using Application.Notification;
 using Domain.Exceptions;
 using MediatR;
-using Microsoft.AspNetCore.Components.Forms;
 using Microsoft.Extensions.Logging;
 
 namespace Application.Features.MovieServices.DeleteById
@@ -14,7 +13,7 @@ namespace Application.Features.MovieServices.DeleteById
         private readonly IMovieRepository movieRepository;
         private readonly ILogger<DeleteByIdHandler> logger;
         private readonly IMediator mediator;
-        public DeleteByIdHandler(IUnitOfWork unitOfWork, IMovieRepository movieRepository, ILogger<DeleteByIdHandler>logger, IMediator mediator)
+        public DeleteByIdHandler(IUnitOfWork unitOfWork, IMovieRepository movieRepository, ILogger<DeleteByIdHandler> logger, IMediator mediator)
         {
             this.unitOfWork = unitOfWork;
             this.movieRepository = movieRepository;
@@ -24,9 +23,9 @@ namespace Application.Features.MovieServices.DeleteById
         public async Task<bool> Handle(DeleteByIdCommand request, CancellationToken cancellationToken)
         {
             var movie = await movieRepository.FirstOrDefaultAsync(request.id, cancellationToken);
-            if(movie == null)
+            if (movie == null)
             {
-                logger.LogWarning("Movie with id {id} does not exist.",request.id);
+                logger.LogWarning("Movie with id {id} does not exist.", request.id);
                 throw new NotFoundException($"Movie withid {request.id} does not exist.");
             }
             movieRepository.DeleteMovie(movie);

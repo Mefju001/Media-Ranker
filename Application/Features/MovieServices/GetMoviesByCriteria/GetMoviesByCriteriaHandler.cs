@@ -22,7 +22,7 @@ namespace Application.Features.MovieServices.GetMoviesByCriteria
 
         public async Task<List<MovieResponse>> Handle(GetMoviesByCriteriaQuery request, CancellationToken cancellationToken)
         {
-            var query = await SortAndFilterService.Handler(request);
+            var query = SortAndFilterService.Handler(request);
             var movies = await movieRepository.GetListFromQuery(query, cancellationToken);
             var genresDictionary = await genreRepository.GetGenresDictionary(cancellationToken);
             var directorsDictionary = await directorRepository.GetDirectorsDictionary(cancellationToken);

@@ -3,7 +3,6 @@ using Application.Features.GamesServices.GameUpsert;
 using Application.Notification;
 using Domain.Exceptions;
 using MediatR;
-using Microsoft.AspNetCore.Components.Forms;
 using Microsoft.Extensions.Logging;
 
 namespace Application.Features.GamesServices.DeleteById
@@ -14,7 +13,7 @@ namespace Application.Features.GamesServices.DeleteById
         private readonly IGameRepository gameRepository;
         private readonly ILogger<DeleteByIdHandler> logger;
         private readonly IMediator mediator;
-        public DeleteByIdHandler(IUnitOfWork unitOfWork, IGameRepository gameRepository, ILogger<DeleteByIdHandler>logger, IMediator mediator)
+        public DeleteByIdHandler(IUnitOfWork unitOfWork, IGameRepository gameRepository, ILogger<DeleteByIdHandler> logger, IMediator mediator)
         {
             this.unitOfWork = unitOfWork;
             this.gameRepository = gameRepository;

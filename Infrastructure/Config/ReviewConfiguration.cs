@@ -23,6 +23,10 @@ namespace Infrastructure.Config
             {
                 d.Property(x => x.value).HasColumnName("Rating");
             });
+            builder.OwnsOne(r => r.Username, d =>
+            {
+                d.Property(x => x.Value).HasColumnName("Username");
+            });
         }
     }
 }

@@ -5,8 +5,9 @@ namespace Application.Common.Interfaces
 {
     public interface IUserRepository
     {
+        Task<Dictionary<Guid, string>> GetUsernamesByIds(List<Guid> ids, CancellationToken cancellationToken);
         Task<IdentityResult> ChangePassword(Guid userId, string currentPassword, string newPassword);
-        Task<string> GetUsernameById(Guid id);
+        Task<string> GetUsernameById(Guid id, CancellationToken cancellationToken);
         Task<User> GetUserByUsername(string username);
         Task<Dictionary<Guid, User>> GetByIds(List<Guid> userIds, CancellationToken cancellationToken);
         Task<User?> AuthenticateAsync(string username, string password);

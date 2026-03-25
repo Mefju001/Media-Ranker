@@ -6,7 +6,6 @@ using Application.Features.AuthServices.Signup;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using System.Security.Claims;
 
 namespace Api.Controllers
 {

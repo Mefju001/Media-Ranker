@@ -18,7 +18,6 @@ namespace Infrastructure.Persistence.Repository
             var createdReview = await appDbContext.Reviews.AddAsync(review, cancellationToken);
             return createdReview.Entity;
         }
-
         public Task<Review?> GetReviewByIdAsync(int reviewId, CancellationToken cancellationToken)
         {
             return appDbContext.Reviews.AsNoTracking().FirstOrDefaultAsync(r => r.Id == reviewId, cancellationToken);

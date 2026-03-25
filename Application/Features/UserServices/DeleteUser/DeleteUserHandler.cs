@@ -11,7 +11,7 @@ namespace Application.Features.UserServices.DeleteUser
         private readonly IUserRepository userRepository;
         private readonly ILogger<DeleteUserHandler> logger;
 
-        public DeleteUserHandler(IUserRepository userRepository, ILogger<DeleteUserHandler>logger)
+        public DeleteUserHandler(IUserRepository userRepository, ILogger<DeleteUserHandler> logger)
         {
             this.userRepository = userRepository;
             this.logger = logger;
@@ -20,7 +20,7 @@ namespace Application.Features.UserServices.DeleteUser
         public async Task<Unit> Handle(DeleteUserCommand request, CancellationToken cancellationToken)
         {
             var user = await userRepository.GetUserById(request.id, cancellationToken);
-            if(user is null)
+            if (user is null)
             {
                 logger.LogWarning("User with id {id} not found.", request.id);
                 throw new NotFoundException($"User with id {request.id} not found.");

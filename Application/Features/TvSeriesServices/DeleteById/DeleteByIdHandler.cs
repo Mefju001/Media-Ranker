@@ -13,7 +13,7 @@ namespace Application.Features.TvSeriesServices.DeleteById
         private readonly ITvSeriesRepository tvSeriesRepository;
         private readonly ILogger<DeleteByIdHandler> logger;
         private readonly IMediator mediator;
-        public DeleteByIdHandler(IUnitOfWork unitOfWork, ITvSeriesRepository tvSeriesRepository, ILogger<DeleteByIdHandler>logger, IMediator mediator)
+        public DeleteByIdHandler(IUnitOfWork unitOfWork, ITvSeriesRepository tvSeriesRepository, ILogger<DeleteByIdHandler> logger, IMediator mediator)
         {
             this.unitOfWork = unitOfWork;
             this.tvSeriesRepository = tvSeriesRepository;
@@ -22,7 +22,7 @@ namespace Application.Features.TvSeriesServices.DeleteById
         }
         public async Task<bool> Handle(DeleteByIdCommand request, CancellationToken cancellationToken)
         {
-            var tvseries = await tvSeriesRepository.GetTvSeriesById(request.id,cancellationToken);
+            var tvseries = await tvSeriesRepository.GetTvSeriesById(request.id, cancellationToken);
             if (tvseries == null)
             {
                 logger.LogWarning("TvSeries with id {id} not found.", request.id);

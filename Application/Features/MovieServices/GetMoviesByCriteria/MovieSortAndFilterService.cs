@@ -15,7 +15,7 @@ namespace Application.Features.MovieServices.GetMoviesByCriteria
             this.genreRepository = genreRepository;
             this.directorRepository = directorRepository;
         }
-        public async Task<IQueryable<Movie>> Handler(GetMoviesByCriteriaQuery request)
+        public IQueryable<Movie> Handler(GetMoviesByCriteriaQuery request)
         {
             var filteredMovies = ApplyFilters(request);
             var sortedMovies = ApplySorting(filteredMovies, request);
@@ -61,10 +61,10 @@ namespace Application.Features.MovieServices.GetMoviesByCriteria
         }
         private IQueryable<Movie> ApplySorting(IQueryable<Movie> query, GetMoviesByCriteriaQuery request)
         {
-            if (!string.IsNullOrEmpty(request.SortByField)&&sortColumns.TryGetValue(request.SortByField, out var sortExpression))
+            if (!string.IsNullOrEmpty(request.SortByField) && sortColumns.TryGetValue(request.SortByField, out var sortExpression))
             {
-                return request.IsDescending 
-                    ? query.OrderByDescending(sortExpression) 
+                return request.IsDescending
+                    ? query.OrderByDescending(sortExpression)
                     : query.OrderBy(sortExpression);
             }
             return query;

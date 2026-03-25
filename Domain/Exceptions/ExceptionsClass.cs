@@ -1,6 +1,6 @@
 ﻿namespace Domain.Exceptions
 {
-    public class BaseException:Exception
+    public class BaseException : Exception
     {
         public BaseException(string message) : base(message) { }
     }
@@ -44,7 +44,7 @@
     {
         public UnauthorizedException(string message) : base(message) { }
     }
-    public class BadRequestException: BaseException
+    public class BadRequestException : BaseException
     {
         public BadRequestException(string message) : base(message) { }
     }

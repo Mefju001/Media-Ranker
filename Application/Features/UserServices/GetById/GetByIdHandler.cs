@@ -14,7 +14,7 @@ namespace Application.Features.UserServices.GetById
         }
         public async Task<UserResponse?> Handle(GetByIdQuery request, CancellationToken cancellationToken)
         {
-            var user = await userRepository.GetUserById(request.id,cancellationToken);
+            var user = await userRepository.GetUserById(request.id, cancellationToken);
             if (user is null) return null;
             return UserMapper.ToResponse(user);
         }

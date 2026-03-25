@@ -1,6 +1,5 @@
 ﻿using Domain.Enums;
 using Domain.Value_Object;
-using System.Runtime.CompilerServices;
 
 
 namespace Domain.Entity

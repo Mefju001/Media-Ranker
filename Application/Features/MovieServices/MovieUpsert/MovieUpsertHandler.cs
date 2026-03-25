@@ -29,11 +29,11 @@ namespace Application.Features.MovieServices.MovieUpsert
         public async Task<MovieResponse> Handle(UpsertMovieCommand request, CancellationToken cancellationToken)
         {
             var director = await referenceDataService.GetOrCreateDirectorAsync(request.Director, cancellationToken);
-            var genre = await referenceDataService.GetOrCreateGenreAsync(request.Genre,cancellationToken);
+            var genre = await referenceDataService.GetOrCreateGenreAsync(request.Genre, cancellationToken);
             Movie? movie = null;
             if (request.id.HasValue)
             {
-                movie = await movieRepository.FirstOrDefaultAsync(request.id.Value,cancellationToken);
+                movie = await movieRepository.FirstOrDefaultAsync(request.id.Value, cancellationToken);
             }
             if (movie is not null)
             {

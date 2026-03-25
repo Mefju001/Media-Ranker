@@ -1,7 +1,6 @@
 using Application.Common.DTO.Request;
 using Application.Features.MovieServices.AddListOfMovies;
 using Application.Features.MovieServices.DeleteById;
-using Application.Features.MovieServices.GetAll;
 using Application.Features.MovieServices.GetMovieById;
 using Application.Features.MovieServices.GetMoviesByCriteria;
 using Application.Features.MovieServices.MovieUpsert;

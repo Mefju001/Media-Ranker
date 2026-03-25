@@ -1,7 +1,6 @@
 ﻿using Application.Common.Interfaces;
 using Domain.Entity;
 using Domain.Enums;
-using Domain.Exceptions;
 using Infrastructure.DBModels;
 using Infrastructure.DBModels.Extensions;
 using Microsoft.AspNetCore.Identity;
@@ -81,7 +80,7 @@ namespace Infrastructure.Persistence.Repository
         {
             var identityUser = user.ToModel();
             var result = await userManager.CreateAsync(identityUser, user.Password.HashValue);
-            if (!result.Succeeded) throw new Exception("User creation failed: "+result.Errors.Select(e=>e.Description));
+            if (!result.Succeeded) throw new Exception("User creation failed: " + result.Errors.Select(e => e.Description));
             await userManager.AddToRoleAsync(identityUser, ERole.User.ToString());
             return await GetUserById(identityUser.Id, cancellationToken);
         }
@@ -103,11 +102,16 @@ namespace Infrastructure.Persistence.Repository
             return userDictionary;
         }
 
-        public async Task<string> GetUsernameById(Guid id)
+        public async Task<string> GetUsernameById(Guid id, CancellationToken cancellationToken)
         {
             var user = await userManager.FindByIdAsync(id.ToString());
             if (user == null) return null;
             return user.UserName!;
+        }
+        public async Task<Dictionary<Guid, string>> GetUsernamesByIds(List<Guid> ids, CancellationToken cancellationToken)
+        {
+            var users = await userManager.Users.Where(u => ids.Contains(u.Id)).ToDictionaryAsync(u => u.Id, u => u.UserName, cancellationToken);
+            return users!;
         }
     }
 }

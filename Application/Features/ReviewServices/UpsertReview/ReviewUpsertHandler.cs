@@ -48,15 +48,15 @@ namespace Application.Features.ReviewServices.UpsertReview
                 await Task.WhenAll(userTask, mediaTask);
                 var user = await userTask;
                 var media = await mediaTask;
-                if(user is null)
+                if (user is null)
                 {
                     throw new NotFoundException($"User with id {request.userId.Value} not found.");
                 }
-                if(media is null)
+                if (media is null)
                 {
                     throw new NotFoundException($"Media with id {request.mediaId.Value} not found.");
                 }
-                reviewDomain = Review.Create(new Rating(request.Rating), request.Comment, media.Id, user.Id);
+                reviewDomain = Review.Create(new Rating(request.Rating), request.Comment, media.Id, user.Id, new Username(user.Username.ToString()));
                 reviewDomain = await reviewRepository.AddAsync(reviewDomain, cancellationToken);
                 logger.LogInformation("Created new review with id {ReviewId}", reviewDomain.Id);
             }

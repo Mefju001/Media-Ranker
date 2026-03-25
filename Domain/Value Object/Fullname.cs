@@ -14,7 +14,6 @@
             Surname = surname;
         }
 
-
         public override string ToString() => $"{Name} {Surname}";
     }
 }

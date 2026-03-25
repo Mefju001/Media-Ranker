@@ -17,7 +17,7 @@ namespace Application.Features.GamesServices.AddListOfGames
         private readonly IGameRepository gameRepository;
         private readonly ILogger<AddListOfGamesHandler> logger;
         private readonly IMediator mediator;
-        public AddListOfGamesHandler(IMediator mediator, IReferenceDataService referenceDataService, IUnitOfWork unitOfWork, IGameRepository gameRepository, ILogger<AddListOfGamesHandler>logger)
+        public AddListOfGamesHandler(IMediator mediator, IReferenceDataService referenceDataService, IUnitOfWork unitOfWork, IGameRepository gameRepository, ILogger<AddListOfGamesHandler> logger)
         {
             this.mediator = mediator;
             this.referenceDataService = referenceDataService;
@@ -39,7 +39,7 @@ namespace Application.Features.GamesServices.AddListOfGames
                         gameReq.Title,
                         gameReq.Description,
                         new Language(gameReq.Language),
-                        new ReleaseDate(gameReq.ReleaseDate??DateTime.UtcNow),
+                        new ReleaseDate(gameReq.ReleaseDate ?? DateTime.UtcNow),
                         genre.Id,
                         gameReq.Developer!,
                         gameReq.Platform);

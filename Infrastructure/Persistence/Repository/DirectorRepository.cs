@@ -17,18 +17,18 @@ namespace Infrastructure.Persistence.Repository
         }
         public async Task<Director> AddAsync(Director directorDomain, CancellationToken cancellationToken)
         {
-            var director = await context.Directors.AddAsync(directorDomain,cancellationToken);
+            var director = await context.Directors.AddAsync(directorDomain, cancellationToken);
             return director.Entity;
         }
         public async Task<Director?> Get(int id, CancellationToken cancellationToken)
         {
-            return await context.Directors.AsNoTrackingWithIdentityResolution().FirstOrDefaultAsync(t=>t.Id == id,cancellationToken);
+            return await context.Directors.AsNoTrackingWithIdentityResolution().FirstOrDefaultAsync(t => t.Id == id, cancellationToken);
         }
         public async Task<List<Director>> findByNames(List<(string, string)> fullnames, CancellationToken cancellationToken)
         {
             var names = fullnames.Select(x => x.Item1).Distinct().ToList();
             var surnames = fullnames.Select(x => x.Item2).Distinct().ToList();
-            var results = await context.Directors.Where(d=>names.Contains(d.name)&&surnames.Contains(d.surname)).AsNoTracking().ToListAsync(cancellationToken);
+            var results = await context.Directors.Where(d => names.Contains(d.name) && surnames.Contains(d.surname)).AsNoTracking().ToListAsync(cancellationToken);
             return results;
         }
 
@@ -43,9 +43,9 @@ namespace Infrastructure.Persistence.Repository
             return directorsDict;
         }
 
-        public async Task<Dictionary<int,Director>> GetByIds(List<int> ids, CancellationToken cancellationToken)
+        public async Task<Dictionary<int, Director>> GetByIds(List<int> ids, CancellationToken cancellationToken)
         {
-            return await context.Directors.Where(d => ids.Distinct().Contains(d.Id)).AsNoTracking().ToDictionaryAsync(d=>d.Id, d=>d, cancellationToken);
+            return await context.Directors.Where(d => ids.Distinct().Contains(d.Id)).AsNoTracking().ToDictionaryAsync(d => d.Id, d => d, cancellationToken);
         }
     }
 }

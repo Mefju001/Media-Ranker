@@ -18,7 +18,7 @@ namespace Application.Features.MovieServices.AddListOfMovies
         private readonly IMovieRepository movieRepository;
         private readonly ILogger<AddListOfMoviesHandler> logger;
         private readonly IMediator mediator;
-        public AddListOfMoviesHandler(ILogger<AddListOfMoviesHandler>logger ,IMovieRepository movieRepository, IReferenceDataService referenceDataService, IUnitOfWork unitOfWork, IMediator mediator)
+        public AddListOfMoviesHandler(ILogger<AddListOfMoviesHandler> logger, IMovieRepository movieRepository, IReferenceDataService referenceDataService, IUnitOfWork unitOfWork, IMediator mediator)
         {
             this.referenceDataService = referenceDataService;
             this.unitOfWork = unitOfWork;
@@ -33,21 +33,21 @@ namespace Application.Features.MovieServices.AddListOfMovies
             logger.LogInformation("Rozpoczęto dodawanie listy gier. Liczba elementów: {Count}", requests.movies.Count);
             var genreNames = requests.movies.Select(m => m.Genre.name).Distinct().ToList();
             var directors = requests.movies.Select(r => r.Director).Distinct().ToList();
-            
+
             var dictionaryDirectors = await referenceDataService.EnsureDirectorsExistAsync(directors, cancellationToken);
             var dictionaryGenres = await referenceDataService.EnsureGenresExistAsync(genreNames, cancellationToken);
-            
+
             var movies = requests.movies.Select(movieReq =>
             {
                 var genre = dictionaryGenres[movieReq.Genre.name];
                 var director = dictionaryDirectors[(movieReq.Director.Name, movieReq.Director.Surname)];
-                return Movie.Create(movieReq.Title, 
+                return Movie.Create(movieReq.Title,
                     movieReq.Description,
                     new Language(movieReq.Language),
-                    new ReleaseDate(movieReq.ReleaseDate), 
-                    genre.Id, 
+                    new ReleaseDate(movieReq.ReleaseDate),
+                    genre.Id,
                     director.Id,
-                    new Duration(movieReq.Duration), 
+                    new Duration(movieReq.Duration),
                     movieReq.IsCinemaRelease);
             }).ToList();
             await movieRepository.AddListOfMovies(movies, cancellationToken);

@@ -47,7 +47,7 @@ namespace Api.Controllers
                 SameSite = SameSiteMode.Lax,
                 Expires = DateTime.Now.AddDays(7)
             });
-            return Ok(new {AccessToken = tokens.accessToken});
+            return Ok(new { AccessToken = tokens.accessToken });
         }
     }
 }

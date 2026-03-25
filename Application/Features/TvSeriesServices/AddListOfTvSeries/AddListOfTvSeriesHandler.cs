@@ -1,13 +1,11 @@
 ﻿using Application.Common.DTO.Response;
 using Application.Common.Interfaces;
-using Application.Features.GamesServices.AddListOfGames;
 using Application.Mapper;
 using Application.Notification;
 using Domain.Entity;
 using Domain.Exceptions;
 using Domain.Value_Object;
 using MediatR;
-using Microsoft.AspNetCore.Components.Forms;
 using Microsoft.Extensions.Logging;
 
 namespace Application.Features.TvSeriesServices.AddListOfTvSeries
@@ -30,11 +28,11 @@ namespace Application.Features.TvSeriesServices.AddListOfTvSeries
         public async Task<List<TvSeriesResponse>> Handle(AddListOfTvSeriesCommand requests, CancellationToken cancellationToken)
         {
             ArgumentNullException.ThrowIfNull(requests);
-            if (requests.tvSeries.Count> 500)
+            if (requests.tvSeries.Count > 500)
                 throw new BadRequestException("The package is too large. Maximum 500 series at a time.");
             logger.LogInformation("Received request to add a list of TV series. TV series count: {TvSeriesCount}", requests.tvSeries.Count);
             var genreNames = requests.tvSeries.Select(t => t.genre.name).Distinct().ToList();
-            var genres = await referenceDataService.EnsureGenresExistAsync(genreNames,cancellationToken);
+            var genres = await referenceDataService.EnsureGenresExistAsync(genreNames, cancellationToken);
             logger.LogInformation("Ensured genres exist for the provided TV series. Genre count: {GenreCount}", genres.Count);
             var tvSeries = requests.tvSeries.Select(tv =>
             {

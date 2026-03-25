@@ -7,13 +7,11 @@ namespace Application.Features.MovieServices.GetAll
 {
     public class GetAllHandler : IRequestHandler<GetAllQuery, List<MovieResponse>>
     {
-        private readonly IUnitOfWork unitOfWork;
         private readonly IMovieRepository movieRepository;
         private readonly IGenreRepository genreRepository;
         private readonly IDirectorRepository directorRepository;
-        public GetAllHandler(IUnitOfWork unitOfWork, IMovieRepository movieRepository, IGenreRepository genreRepository, IDirectorRepository directorRepository)
+        public GetAllHandler(IMovieRepository movieRepository, IGenreRepository genreRepository, IDirectorRepository directorRepository)
         {
-            this.unitOfWork = unitOfWork;
             this.movieRepository = movieRepository;
             this.genreRepository = genreRepository;
             this.directorRepository = directorRepository;

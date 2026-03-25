@@ -11,7 +11,7 @@ namespace Application.Features.LikedServices.Delete
         private readonly IUnitOfWork unitOfWork;
         private readonly ILogger<DeleteLikedHandler> logger;
 
-        public DeleteLikedHandler(IUnitOfWork unitOfWork, ILikedMediaRepository likedMediaRepository, ILogger<DeleteLikedHandler>logger)
+        public DeleteLikedHandler(IUnitOfWork unitOfWork, ILikedMediaRepository likedMediaRepository, ILogger<DeleteLikedHandler> logger)
         {
             this.unitOfWork = unitOfWork;
             this.likedMediaRepository = likedMediaRepository;

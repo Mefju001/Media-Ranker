@@ -1,5 +1,4 @@
 ﻿using Application.Common.Interfaces;
-using Domain.Exceptions;
 using MediatR;
 using Microsoft.Extensions.Logging;
 
@@ -10,7 +9,7 @@ namespace Application.Features.ReviewServices.DeleteReviewAsync
         private readonly IUnitOfWork unitOfWork;
         private readonly IReviewRepository reviewRepository;
         private readonly ILogger<DeleteReviewHandler> logger;
-        public DeleteReviewHandler(IUnitOfWork unitOfWork, IReviewRepository reviewRepository, ILogger<DeleteReviewHandler>logger)
+        public DeleteReviewHandler(IUnitOfWork unitOfWork, IReviewRepository reviewRepository, ILogger<DeleteReviewHandler> logger)
         {
             this.unitOfWork = unitOfWork;
             this.reviewRepository = reviewRepository;

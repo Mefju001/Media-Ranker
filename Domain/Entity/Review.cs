@@ -9,6 +9,7 @@ namespace Domain.Entity
         public string Comment { get; private set; }
         public int MediaId { get; init; }
         public Guid UserId { get; init; }
+        public Username Username { get; init; }
         public DateTime CreatedAt { get; init; } = DateTime.UtcNow;
         public DateTime LastModifiedAt { get; private set; } = DateTime.UtcNow;
         private Review() { }
@@ -18,12 +19,13 @@ namespace Domain.Entity
             Rating = rating;
             Comment = comment;
         }
-        public static Review Create(Rating rating, string comment, int MediaId, Guid UserId)
+        public static Review Create(Rating rating, string comment, int MediaId, Guid UserId, Username username)
         {
             return new Review(rating, comment)
             {
                 MediaId = MediaId,
-                UserId = UserId
+                UserId = UserId,
+                Username = username
             };
         }
         public void Update(Rating rating, string comment)

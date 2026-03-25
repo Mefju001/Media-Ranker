@@ -13,16 +13,20 @@
             this.mediaId = mediaId;
             this.likedDate = DateTime.UtcNow;
         }
-        private LikedMedia(int id, Guid userId, int mediaId, DateTime likedDate)
+        private LikedMedia(int id, Guid userId, int mediaId)
         {
             this.id = id;
             this.userId = userId;
             this.mediaId = mediaId;
-            this.likedDate = likedDate;
+            this.likedDate = DateTime.UtcNow;
         }
         public static LikedMedia Create(Guid userId, int mediaId)
         {
             return new LikedMedia(userId, mediaId);
+        }
+        public static LikedMedia Reconstruct(int id, Guid userId, int mediaId)
+        {
+            return new LikedMedia(id, userId, mediaId);
         }
     }
 }

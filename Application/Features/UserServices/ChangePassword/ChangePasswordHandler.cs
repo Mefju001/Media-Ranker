@@ -1,5 +1,4 @@
 ﻿using Application.Common.Interfaces;
-using Domain.DomainServices;
 using Domain.Exceptions;
 using MediatR;
 using Microsoft.Extensions.Logging;
@@ -13,7 +12,7 @@ namespace Application.Features.UserServices.ChangePassword
         private readonly IUserRepository userRepository;
         private readonly ILogger<ChangePasswordHandler> logger;
 
-        public ChangePasswordHandler(IUserRepository userRepository, ILogger<ChangePasswordHandler>logger)
+        public ChangePasswordHandler(IUserRepository userRepository, ILogger<ChangePasswordHandler> logger)
         {
             this.userRepository = userRepository;
             this.logger = logger;

@@ -52,7 +52,7 @@ namespace Application.Features.TvSeriesServices.GetTvSeriesByCriteria
         }
         private IQueryable<TvSeries> ApplySorting(IQueryable<TvSeries> query, GetTvSeriesByCriteriaQuery request)
         {
-            if (!string.IsNullOrEmpty(request.SortByField)&&sortColumns.TryGetValue(request.SortByField, out var sortExpression))
+            if (!string.IsNullOrEmpty(request.SortByField) && sortColumns.TryGetValue(request.SortByField, out var sortExpression))
             {
                 return request.IsDescending
                     ? query.OrderByDescending(sortExpression)

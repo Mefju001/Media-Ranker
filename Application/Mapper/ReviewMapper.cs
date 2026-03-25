@@ -10,7 +10,7 @@ namespace Application.Mapper
             return new ReviewResponse(
                 review.Id,
                 review.MediaId,
-                review.UserId.ToString(),
+                review.Username.Value,
                 review.Rating.value,
                 review.Comment,
                 review.CreatedAt,

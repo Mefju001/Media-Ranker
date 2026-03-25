@@ -21,9 +21,9 @@ namespace Infrastructure.Persistence.Repository
         }
         public void Delete(TvSeries tv)
         {
-            appDbContext.TvSeries.Remove(tv);  
+            appDbContext.TvSeries.Remove(tv);
         }
-        public async Task<TvSeries> AddTvSeriesAsync(TvSeries tvSeriesDomain,CancellationToken cancellationToken)
+        public async Task<TvSeries> AddTvSeriesAsync(TvSeries tvSeriesDomain, CancellationToken cancellationToken)
         {
             var tvSeries = await appDbContext.TvSeries.AddAsync(tvSeriesDomain, cancellationToken);
             return tvSeries.Entity;

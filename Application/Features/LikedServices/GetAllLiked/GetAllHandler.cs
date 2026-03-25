@@ -26,7 +26,7 @@ namespace Application.Features.LikedServices.GetAllLiked
         public async Task<List<LikedMediaResponse>> Handle(GetAllQuery request, CancellationToken cancellationToken)
         {
             var likedItems = await likedMediaRepository.GetAll(cancellationToken);
-            if(!likedItems.Any()) return new List<LikedMediaResponse>();
+            if (!likedItems.Any()) return new List<LikedMediaResponse>();
 
             var userIds = likedItems.Select(x => x.userId).Distinct().ToList();
             var mediaIds = likedItems.Select(x => x.mediaId).Distinct().ToList();
@@ -40,13 +40,13 @@ namespace Application.Features.LikedServices.GetAllLiked
             var result = new List<LikedMediaResponse>();
             foreach (var lm in likedItems)
             {
-                if(!users.TryGetValue(lm.userId, out var user)||
-                   !mediaList.TryGetValue(lm.mediaId,out var media)) 
+                if (!users.TryGetValue(lm.userId, out var user) ||
+                   !mediaList.TryGetValue(lm.mediaId, out var media))
                     continue;
-                genres.TryGetValue(media.GenreId,out var genre);
+                genres.TryGetValue(media.GenreId, out var genre);
                 result.Add(media switch
                 {
-                    Movie m => LikedMediaMapper.ToResponse(lm, user, m, genre, directors.TryGetValue(m.DirectorId, out var director)?director:null),
+                    Movie m => LikedMediaMapper.ToResponse(lm, user, m, genre, directors.TryGetValue(m.DirectorId, out var director) ? director : null),
                     Game g => LikedMediaMapper.ToResponse(lm, user, g, genre),
                     TvSeries t => LikedMediaMapper.ToResponse(lm, user, t, genre),
                     _ => throw new Exception("Unknown media type")

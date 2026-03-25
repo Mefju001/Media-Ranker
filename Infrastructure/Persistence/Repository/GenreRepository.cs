@@ -26,11 +26,11 @@ namespace Infrastructure.Persistence.Repository
         }
         public async Task<Genre?> Get(int id, CancellationToken cancellationToken)
         {
-            return await context.Genres.AsNoTracking().FirstOrDefaultAsync(g=>g.Id == id, cancellationToken);
+            return await context.Genres.AsNoTracking().FirstOrDefaultAsync(g => g.Id == id, cancellationToken);
         }
-        public async Task<Dictionary<int,Genre>> GetByIdsAsync(List<int> ids, CancellationToken cancellationToken)
+        public async Task<Dictionary<int, Genre>> GetByIdsAsync(List<int> ids, CancellationToken cancellationToken)
         {
-            return await context.Genres.AsNoTracking().Where(g => ids.Contains(g.Id)).ToDictionaryAsync(g=>g.Id,cancellationToken);
+            return await context.Genres.AsNoTracking().Where(g => ids.Contains(g.Id)).ToDictionaryAsync(g => g.Id, cancellationToken);
         }
         public async Task<List<Genre>> GetByNamesAsync(List<string> names, CancellationToken cancellationToken)
         {
@@ -44,7 +44,7 @@ namespace Infrastructure.Persistence.Repository
 
         public async Task<int?> GetGenreIdByNameAsync(string name, CancellationToken cancellationToken)
         {
-            var genreId = await context.Genres.AsNoTracking().Where(g=>g.name.Value == name).Select(g=>(int?)g.Id).FirstOrDefaultAsync(cancellationToken);
+            var genreId = await context.Genres.AsNoTracking().Where(g => g.name.Value == name).Select(g => (int?)g.Id).FirstOrDefaultAsync(cancellationToken);
             return genreId;
         }
 

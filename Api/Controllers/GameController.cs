@@ -2,7 +2,6 @@
 using Application.Features.GamesServices.AddListOfGames;
 using Application.Features.GamesServices.DeleteById;
 using Application.Features.GamesServices.GameUpsert;
-using Application.Features.GamesServices.GetAll;
 using Application.Features.GamesServices.GetGameById;
 using Application.Features.GamesServices.GetGamesByCriteria;
 using MediatR;

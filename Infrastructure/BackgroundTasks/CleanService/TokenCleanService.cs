@@ -18,7 +18,7 @@ namespace Infrastructure.BackgroundTasks.CleanService
             logger.LogInformation("Starting refresh token cleanup process.");
             try
             {
-                var deletedCount =await tokenRepository.CleanUpTokensAsync(cancellationToken);
+                var deletedCount = await tokenRepository.CleanUpTokensAsync(cancellationToken);
                 if (deletedCount > 0)
                 {
                     logger.LogInformation("Cleanup finished successfully. Deleted {Count} expired tokens.", deletedCount);
@@ -30,7 +30,7 @@ namespace Infrastructure.BackgroundTasks.CleanService
             }
             catch (Exception ex)
             {
-                logger.LogError(ex,"An error occurred during token cleanup");
+                logger.LogError(ex, "An error occurred during token cleanup");
                 throw;
             }
         }

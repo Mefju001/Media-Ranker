@@ -18,7 +18,7 @@ namespace Application.Features.LikedServices.AddLiked
         private readonly IDirectorRepository directorRepository;
         private readonly ILikedMediaRepository likedMediaRepository;
 
-        public AddLikedHandler(ILogger<AddLikedHandler>logger, IUnitOfWork unitOfWork, ILikedMediaRepository likedMediaRepository, IDirectorRepository directorRepository, IMediaRepository mediaRepository, IUserRepository userRepository, IGenreRepository genreRepository)
+        public AddLikedHandler(ILogger<AddLikedHandler> logger, IUnitOfWork unitOfWork, ILikedMediaRepository likedMediaRepository, IDirectorRepository directorRepository, IMediaRepository mediaRepository, IUserRepository userRepository, IGenreRepository genreRepository)
         {
             this.logger = logger;
             this.unitOfWork = unitOfWork;
@@ -51,7 +51,7 @@ namespace Application.Features.LikedServices.AddLiked
                 throw new NotFoundException("genre not found");
             }
             Director? director = null;
-            if(media is Movie movie)
+            if (media is Movie movie)
             {
                 director = await directorRepository.Get(movie.DirectorId, cancellationToken);
             }
