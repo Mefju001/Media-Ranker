@@ -1,0 +1,19 @@
+﻿using Application.Common.DTO.Response;
+using MediatR;
+
+namespace Application.Features.MovieServices.GetMoviesByCriteria
+{
+    public class GetMoviesByCriteriaQuery() : IRequest<List<MovieResponse>>
+    {
+        public string? TitleSearch { get; set; }
+        public double? MinRating { get; set; }
+        public int? ReleaseYear { get; set; }
+        public string? genreName { get; set; }
+        public string? DirectorName { get; set; }
+        public string? DirectorSurname { get; set; }
+
+        public string? SortByField { get; set; }
+        public bool IsDescending { get; set; } = false;
+    }
+
+}

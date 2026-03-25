@@ -1,0 +1,41 @@
+<h2 mat-dialog-title>{{ data.title || 'Logowanie do serwisu' }}</h2>
+
+<mat-dialog-content>
+<form [formGroup]="loginForm" (ngSubmit)="onLoginSubmit()">
+
+<mat-form-field appearance="outline" class="w-full">
+  <mat-label>Nazwa użytkownika</mat-label>
+  <input matInput formControlName="username" required>
+  <mat-error *ngIf="loginForm.get('username')?.hasError('required') && loginForm.get('username')?.touched">
+    Nazwa użytkownika jest wymagana.
+  </mat-error>
+</mat-form-field>
+
+<mat-form-field appearance="outline" class="w-full">
+  <mat-label>Hasło</mat-label>
+  <input matInput formControlName="password" type="password" required>
+  <!-- *ngIf wymaga zaimportowania CommonModule w komponencie TS -->
+  <mat-error *ngIf="loginForm.get('password')?.hasError('required') && loginForm.get('password')?.touched">
+    Hasło jest wymagane.
+  </mat-error>
+  <mat-error *ngIf="loginForm.get('password')?.hasError('minlength') && loginForm.get('password')?.touched">
+    Hasło musi mieć co najmniej 6 znaków.
+  </mat-error>
+</mat-form-field>
+
+
+</form>
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+<button mat-button (click)="onCancel()">Anuluj</button>
+<button
+mat-raised-button
+color="primary"
+type="submit"
+[disabled]="loginForm.invalid"
+(click)="onLoginSubmit()"
+>
+Zaloguj
+</button>
+</mat-dialog-actions>

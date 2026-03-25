@@ -1,0 +1,21 @@
+@import '@angular/material/prebuilt-themes/indigo-pink.css';
+.w-full {
+  width: 100%;
+}
+
+mat-dialog-content {
+  padding: 50px 24px 24px 24px;
+
+  min-width: 400px; 
+}
+
+mat-form-field {
+  margin-bottom: 1rem;
+}
+
+mat-dialog-actions button {
+  margin-left: 8px;
+}
+.mat-mdc-dialog-content>:first-child {
+    margin-top: 1rem;
+}

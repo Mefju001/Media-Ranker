@@ -1,0 +1,14 @@
+import { Component, signal } from '@angular/core';
+import { RouterOutlet } from '@angular/router';
+import { Footer } from '../Pages/footer/footer';
+import { Header } from '../Pages/header/header';
+
+@Component({
+  selector: 'app-root',
+  imports: [Footer, Header, RouterOutlet],
+  templateUrl: './app.html',
+  styleUrl: './app.css'
+})
+export class App {
+  protected readonly title = signal('Media Ranker');
+}

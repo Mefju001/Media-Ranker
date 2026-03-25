@@ -1,0 +1,15 @@
+    <h3>Kategorie</h3>
+    <ul>
+      @for(genre of genres; track genre.id) {
+        <li><a href="#">{{ genre.name }}</a></li>
+      }
+      @empty { <p>Ładowanie kategorii lub brak danych...</p> }
+    </ul>
+
+    <h3>Najnowsze Recenzje</h3>
+    <ul>
+      @for(reviewTitle of reviewsTitle; track reviewTitle) {
+        <li><a href="#">{{ reviewTitle }}</a></li>
+      }
+      @empty { <p>Ładowanie tytułów lub brak danych...</p> }
+    </ul>

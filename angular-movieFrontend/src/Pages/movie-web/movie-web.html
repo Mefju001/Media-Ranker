@@ -1,0 +1,73 @@
+<main class="main-content">
+  <aside class="sidebar">
+ <div class="movie-page-container">
+
+    <form [formGroup]="filterForm" class="filter-form">
+
+    <div class="filter-group">
+      <h3>🔍 Filtry Wyszukiwania</h3>
+
+      <label for="titleSearch">Szukaj po tytule:</label>
+      <input id="titleSearch" type="text" formControlName="TitleSearch">
+      
+      <label for="minRating">Min. ocena (0-10):</label>
+      <input id="minRating" type="number" formControlName="MinRating" min="0" max="10">
+      
+      <label for="releaseYear">Rok Wydania:</label>
+      <input id="releaseYear" type="number" formControlName="ReleaseYear" min="1900">
+
+      <label for="genreName">Gatunek:</label>
+      <select id="genreName" formControlName="genreName">
+          <option [value]="''">-- Wszystkie gatunki --</option>
+          @for (genre of genres; track genre.id) {
+              <option [value]="genre.name">{{ genre.name }}</option>
+          }
+      </select>
+    </div>
+    <hr>
+
+    <div class="sort-group">
+      <h3>↕️ Sortowanie</h3>
+      <label for="sortByField">Sortuj wg:</label>
+      <select id="sortByField" formControlName="SortByField">
+        @for (field of sortFields; track field.value) {
+          <option [value]="field.value">{{ field.name }}</option>
+        }
+      </select>
+      <button 
+      type="button" 
+      (click)="filterForm.reset({SortByField: null, IsDescending: false})" 
+      class="reset-btn">
+      Resetuj sortowanie
+    </button>
+    </div>
+
+    </form>
+    <hr>
+    </div>
+  </aside>
+  <section class="film-listings">
+    <h2>Popularne Filmy</h2>
+    @for(movie of movies; track movie.id) {
+      <div class="film-card">
+        <div class="movie-details">
+          <div class="film-info">
+            <h3>{{ movie.title }}</h3>
+            <p>
+              <span class="rating">{{ movie.mediaStats.averageRating }}</span>
+              <span class="genre">{{ movie.genre.name }}</span>
+            </p>
+            <p class="description">
+              {{ movie.description }}
+            </p>
+          </div>
+
+          <button>
+            <a [routerLink]="['/movie', movie.id]">Więcej...</a>
+          </button>
+        </div>
+      </div>
+    }
+    @empty { <p>Ładowanie filmów lub brak danych...</p> }
+  </section>
+</main>

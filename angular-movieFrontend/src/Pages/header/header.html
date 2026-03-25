@@ -1,0 +1,34 @@
+<header class="header">
+  <div class="logo">
+    <h1 [routerLink]="['']">Media-Ranker</h1>
+  </div>
+  <nav class="main-nav">
+    <ul>
+      <li><a [routerLink]="['movies']">Filmy</a></li>
+      <li><a [routerLink]="['tvSeries']">Seriale</a></li>
+      <li><a [routerLink]="['games']">Gry</a></li>
+      <li><a href="#">Rankingi</a></li>
+      <li><a href="#">Premiery</a></li>
+      <li><a href="#">Newsy</a></li>
+      <li><a href="#">Forum</a></li>
+    </ul>
+  </nav>
+  <div class="user-actions">
+    <input type="text" placeholder="Szukaj filmów..." />
+    @if(isLoggedIn) {
+      <div class="dropdown">
+        <button class="btn btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+          Zalogowany jako {{ username }}
+        </button>
+        <ul class="dropdown-menu">
+          <li><a class="dropdown-item" href="#">zmiana hasła</a></li>
+          <li><a class="dropdown-item" href="#">zmiana danych</a></li>
+          <li><a class="dropdown-item" href="#">Usuń konto</a></li>
+          <li><a class="dropdown-item" href="#">wyloguj</a></li>
+        </ul>
+      </div>
+    } @else if(!isLoggedIn) {
+      <button (click)="openLoginDialog()">Zaloguj</button>
+    }
+  </div>
+</header>

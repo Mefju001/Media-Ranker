@@ -1,0 +1,34 @@
+﻿using Application.Notification;
+using Microsoft.Extensions.Configuration;
+using System.Text.Json;
+
+namespace Infrastructure.BackgroundTasks
+{
+    public class LogSenderService
+    {
+        private readonly HttpClient _httpClient;
+        private readonly IConfiguration _configuration;
+
+        public LogSenderService(HttpClient httpClient, IConfiguration configuration)
+        {
+            _httpClient = httpClient;
+            _configuration = configuration;
+        }
+        public async Task SendLogAsync(string Level, string Message, string Source)
+        {
+            var logApiUrl = _configuration["LoggingApi:Url"];
+            var logEntry = new LogNotification(Level, Message, Source);
+            var jsonContent = new StringContent(
+                JsonSerializer.Serialize(logEntry),
+                System.Text.Encoding.UTF8, "application/json");
+            try
+            {
+                await _httpClient.PostAsync($"{logApiUrl}/api/logs", jsonContent);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Nie udało się wysłać logu do Logging API: {ex.Message}");
+            }
+        }
+    }
+}
