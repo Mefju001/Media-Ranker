@@ -1,4 +1,4 @@
-# 🎮 Media Ranker(ASP.NET Core + PostgreSQL)
+# Media Ranker(ASP.NET Core + PostgreSQL)
 
 A simple application that has a similar function to Filmweb built using ASP.NET Core Web API, leveraging Entity Framework Core and PostgreSQL as the database. This project is dedicated to learning C#, EF Core fundamentals, and building a robust REST API.
 
@@ -24,7 +24,7 @@ Update the connection string in appsettings.json, ensuring the Username and Pass
 
 ```json
 "ConnectionStrings": {
-  "DefaultConnection": "Host=localhost;Port=5432;Database=FilmwebDb;Username=postgres;Password=TwojeHaslo"
+  "DefaultConnection": "Host=localhost;Port=5432;Database=FilmwebDb;Username=postgres;Password=yourPassword"
 }
 ```
 ---
@@ -44,7 +44,7 @@ dotnet ef migrations add InitialCreate
 dotnet ef database update
 ```
 ---
-## 🚀 technologies
+## technologies
 
 * ASP.NET Core Web API (.NET 8)
 * Entity Framework Core
@@ -65,6 +65,5 @@ dotnet ef database update
 *  Frontend (Angular)
 *  Recommendations
 *  docker
-*  clean architecture with vertical slice
 
 ---
