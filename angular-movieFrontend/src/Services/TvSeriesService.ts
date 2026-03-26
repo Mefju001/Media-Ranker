@@ -8,13 +8,13 @@ import { MovieQuery } from "../Data/Request/MovieQuery";
   providedIn: 'root' 
 })
 export class TvSeriesService {
-    private apiUrl = 'http://localhost:5009/TvSeries';
+    private apiUrl = 'http://localhost:5009/api/TvSeries';
     constructor(private http: HttpClient) {}
     getTvSeries(): Observable<TvSeriesResponse[]> {
         return this.http.get<TvSeriesResponse[]>(`${this.apiUrl}`);
     }
     getMovieById(id: number): Observable<TvSeriesResponse> {
-        return this.http.get<TvSeriesResponse>(`${this.apiUrl}/id/${id}`);
+        return this.http.get<TvSeriesResponse>(`${this.apiUrl}/${id}`);
     }
     getMoviesByFilter(query: MovieQuery): Observable<TvSeriesResponse[]> {
         let params = new HttpParams();
@@ -24,6 +24,6 @@ export class TvSeriesService {
             params = params.set(key, value.toString());
         }
         });
-        return this.http.get<TvSeriesResponse[]>(`${this.apiUrl}/FilterBy`, { params: params });
+        return this.http.get<TvSeriesResponse[]>(`${this.apiUrl}`, { params: params });
     }
 }

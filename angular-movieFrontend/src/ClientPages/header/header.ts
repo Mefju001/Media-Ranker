@@ -4,6 +4,8 @@ import { LoginDialog } from '../auth/login-dialog/login-dialog';
 import { MatDialog, MatDialogModule} from '@angular/material/dialog';
 import { MatButtonModule } from '@angular/material/button';
 import { AuthService } from '../../Services/AuthService';
+import { ChangePassword } from '../change-password/change-password';
+import { ChangeDetails } from '../change-details/change-details';
 
 @Component({
   selector: 'app-header',
@@ -21,7 +23,16 @@ export class Header {
     private dialog: MatDialog,
     private authService: AuthService
   ) {}
-
+openChangePassword() {
+  this.dialog.open(ChangePassword, {
+    width: '400px',
+  });
+}
+openChangeDetails() {
+  this.dialog.open(ChangeDetails, {
+    width: '400px',
+  });
+}
 openLoginDialog(): void {
       this.dialog.open(LoginDialog, {
           width: '400px',

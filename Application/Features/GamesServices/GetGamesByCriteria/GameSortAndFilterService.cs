@@ -54,6 +54,12 @@ namespace Application.Features.GamesServices.GetGamesByCriteria
         }
         private IQueryable<Game> ApplySorting(IQueryable<Game> query, GetGamesByCriteriaQuery request)
         {
+            if (request.sortByField != null)
+            {
+                var strings = request.sortByField!.Split("|");
+                request.sortByField = strings[0];
+                request.IsDescending = strings[1].ToLower().Equals("false") ? false : true;
+            }
             if (!string.IsNullOrEmpty(request.sortByField) && sortColumns.TryGetValue(request.sortByField, out var sortExpression))
             {
                 return request.IsDescending

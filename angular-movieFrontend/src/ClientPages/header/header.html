@@ -21,8 +21,8 @@
           Zalogowany jako {{ username }}
         </button>
         <ul class="dropdown-menu">
-          <li><a class="dropdown-item" href="#">zmiana hasła</a></li>
-          <li><a class="dropdown-item" href="#">zmiana danych</a></li>
+          <li><a class="dropdown-item" (click)="openChangePassword()">zmiana hasła</a></li>
+          <li><a class="dropdown-item" (click)="openChangeDetails()">zmiana danych</a></li>
           <li><a class="dropdown-item" href="#">Usuń konto</a></li>
           <li><a class="dropdown-item" href="#">wyloguj</a></li>
         </ul>

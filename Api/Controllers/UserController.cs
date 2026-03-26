@@ -12,7 +12,7 @@ namespace Api.Controllers
 {
     [Authorize(Roles = "Admin,User")]
     [ApiController]
-    [Route("[controller]")]
+    [Route("api/[controller]")]
     public class UserController : ControllerBase
     {
         private readonly IMediator mediator;
@@ -50,14 +50,18 @@ namespace Api.Controllers
         }
         [Authorize(Roles = "Admin,User")]
         [HttpPatch("Change/Password")]
-        public async Task<IActionResult> ChangePassword(string newPassword, string confirmPassword, string oldPassword)
+        public async Task<IActionResult> ChangePassword(ChangePasswordRequest changePasswordRequest)
         {
             var userId = getUserId();
             if (userId == null)
             {
                 return Unauthorized();
             }
-            var command = new ChangePasswordCommand(newPassword, confirmPassword, oldPassword, userId.Value);
+            var command = new ChangePasswordCommand(
+                changePasswordRequest.newPassword,
+                changePasswordRequest.confirmPassword,
+                changePasswordRequest.oldPassword, 
+                userId.Value);
             await mediator.Send(command);
             return Ok();
         }

@@ -42,7 +42,7 @@ namespace Application.Features.TvSeriesServices.GetTvSeriesByCriteria
             }
             if (request.ReleaseYear.HasValue)
             {
-                query = query.Where(m => m.ReleaseDate.Value.Year == request.ReleaseYear);
+                query = query.Where(m => m.ReleaseDate!.Value.Year == request.ReleaseYear);
             }
             if (!string.IsNullOrWhiteSpace(request.network))
             {
@@ -52,6 +52,12 @@ namespace Application.Features.TvSeriesServices.GetTvSeriesByCriteria
         }
         private IQueryable<TvSeries> ApplySorting(IQueryable<TvSeries> query, GetTvSeriesByCriteriaQuery request)
         {
+            if (request.SortByField != null)
+            {
+            var strings = request.SortByField!.Split("|");
+            request.SortByField = strings[0];
+            request.IsDescending = strings[1].ToLower().Equals("false") ? false : true;
+            }   
             if (!string.IsNullOrEmpty(request.SortByField) && sortColumns.TryGetValue(request.SortByField, out var sortExpression))
             {
                 return request.IsDescending

@@ -6,7 +6,7 @@ import { Injectable } from "@angular/core";
   providedIn: 'root' 
 })
 export class ReviewService {
-    private apiUrl = 'http://localhost:5009/Review';
+    private apiUrl = 'http://localhost:5009/api/Review';
 constructor(private http: HttpClient) {}
 getTheLastestReviews(): Observable<String[]> {
     return this.http.get<String[]>(`${this.apiUrl}/TheLatest`);

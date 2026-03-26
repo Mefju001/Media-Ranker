@@ -22,11 +22,11 @@ export class MovieWeb implements OnInit {
   reviewsTitle: String[] = [];
   sortFields = [
     { name: 'Tytuł (A-Z)', value: 'Title|false' }, 
-    { name: 'Ocena (najniższa)', value: 'average|false' }, 
-    { name: 'Rok Wydania (najstarsze)', value: 'releaseDate|false' },
+    { name: 'Ocena (najniższa)', value: 'Rating|false' }, 
+    { name: 'Rok Wydania (najstarsze)', value: 'Date|false' },
     { name: 'Tytuł (Z-A)', value: 'Title|true' },
-    { name: 'Ocena (najwyższa)', value: 'average|true' },
-    { name: 'Rok Wydania (najnowsze)', value: 'releaseDate|true' },
+    { name: 'Ocena (najwyższa)', value: 'Rating|true' },
+    { name: 'Rok Wydania (najnowsze)', value: 'Date|true' },
     ];
   constructor(private fb: FormBuilder,private cdr: ChangeDetectorRef,private movieService: MovieService,private genreService: GenreService,private reviewService: ReviewService) {
   this.filterForm = this.fb.group({

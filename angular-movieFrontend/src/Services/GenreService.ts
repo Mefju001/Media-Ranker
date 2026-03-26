@@ -6,7 +6,7 @@ import { Injectable } from "@angular/core";
   providedIn: 'root' 
 })
 export class GenreService {
-    private apiUrl = 'http://localhost:5009/Genre';
+    private apiUrl = 'http://localhost:5009/api/Genre';
     constructor(private http: HttpClient) {}
     getGenres(): Observable<GenreResponse[]> {
         return this.http.get<GenreResponse[]>(`${this.apiUrl}`);

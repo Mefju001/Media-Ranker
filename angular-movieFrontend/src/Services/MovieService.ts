@@ -7,13 +7,13 @@ import { MovieQuery } from "../Data/Request/MovieQuery";
   providedIn: 'root' 
 })
 export class MovieService {
-private apiUrl = 'http://localhost:5009/Movie';
+private apiUrl = 'http://localhost:5009/api/Movie';
 constructor(private http: HttpClient) {}
 getMovies(): Observable<MovieResponse[]> {
   return this.http.get<MovieResponse[]>(`${this.apiUrl}`);
 }
 getMovieById(id: number): Observable<MovieResponse> {
-  return this.http.get<MovieResponse>(`${this.apiUrl}/id/${id}`);
+  return this.http.get<MovieResponse>(`${this.apiUrl}/${id}`);
 }
 getMoviesByFilter(query: MovieQuery): Observable<MovieResponse[]> {
   let params = new HttpParams();
@@ -23,7 +23,7 @@ getMoviesByFilter(query: MovieQuery): Observable<MovieResponse[]> {
         params = params.set(key, value.toString());
       }
     });
-  return this.http.get<MovieResponse[]>(`${this.apiUrl}/FilterBy`, { params: params });
+  return this.http.get<MovieResponse[]>(`${this.apiUrl}`, { params: params });
 }
 
 }

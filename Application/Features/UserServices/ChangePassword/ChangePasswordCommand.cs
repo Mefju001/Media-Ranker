@@ -1,6 +1,7 @@
-﻿using MediatR;
+﻿using Application.Common.DTO.Request;
+using MediatR;
 
 namespace Application.Features.UserServices.ChangePassword
 {
-    public record ChangePasswordCommand(string newPassword, string oldPassword, string confirmPassword, Guid userId) : IRequest<Unit>;
+    public record ChangePasswordCommand(string newPassword, string confirmPassword, string oldPassword, Guid userId) : IRequest<Unit>;
 }

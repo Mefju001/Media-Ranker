@@ -7,13 +7,13 @@ import { Injectable } from "@angular/core";
     providedIn: 'root'
 })
 export class GameService {
-    private apiUrl = 'http://localhost:5009/Game';
+    private apiUrl = 'http://localhost:5009/api/Game';
     constructor(private http: HttpClient) {}
     getGames(): Observable<GameResponse[]> {
     return this.http.get<GameResponse[]>(`${this.apiUrl}`);
     }
     getGameById(id: number): Observable<GameResponse> {
-    return this.http.get<GameResponse>(`${this.apiUrl}/id/${id}`);
+    return this.http.get<GameResponse>(`${this.apiUrl}/${id}`);
     }
     getGamesByFilter(query: MovieQuery): Observable<GameResponse[]> {
     let params = new HttpParams();
@@ -23,6 +23,6 @@ export class GameService {
             params = params.set(key, value.toString());
         }
         });
-    return this.http.get<GameResponse[]>(`${this.apiUrl}/FilterBy`, { params: params });
+    return this.http.get<GameResponse[]>(`${this.apiUrl}`, { params: params });
     }
 }

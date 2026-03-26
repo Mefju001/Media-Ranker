@@ -8,7 +8,7 @@ import { Router } from "@angular/router";
     providedIn: 'root'
 })
 export class AuthService {
-    private apiUrl = 'http://localhost:5009/api';
+    private apiUrl = 'http://localhost:5009/api/Account';
     public accessToken: string | null = null;
     constructor(private http: HttpClient, private router: Router) {}
     getAccessToken(): string | null {
@@ -27,12 +27,12 @@ export class AuthService {
 
     }
     login(request:LoginRequest):Observable<LoginResponse> {
-        return this.http.post<LoginResponse>(`${this.apiUrl}/login`, request,{withCredentials: true}).pipe(tap(response => {
+        return this.http.post<LoginResponse>(`${this.apiUrl}/Login`, request,{withCredentials: true}).pipe(tap(response => {
             this.setAccessToken(response.token);
         }));
     }
     logout(): Observable<String> {
-        return this.http.post<String>(`${this.apiUrl}/logout`,{}).pipe(finalize(() => {
+        return this.http.post<String>(`${this.apiUrl}/Logout`,{}).pipe(finalize(() => {
             this.clearAccessToken();
             sessionStorage.removeItem('isLoggedIn');
             sessionStorage.removeItem('username');

@@ -1,14 +1,14 @@
-/* src/app/header/header.component.css */
+
 
 .header {
   background-color: var(--header-bg);
   color: var(--light-text);
   padding: 20px 30px;
-  display: flex; /* Włącza Flexbox dla elementów w nagłówku */
-  justify-content: space-between; /* Rozkłada elementy (logo, nawigacja, akcje użytkownika) */
-  align-items: center; /* Wyśrodkowuje elementy pionowo */
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
   border-radius: 10px;
-  margin-bottom: 20px; /* Odstęp od następnej sekcji */
+  margin-bottom: 20px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
 }
 
@@ -24,11 +24,11 @@
   list-style: none;
   margin: 0;
   padding: 0;
-  display: flex; /* Włącza Flexbox dla elementów listy nawigacji */
+  display: flex;
 }
 
 .main-nav li {
-  margin-right: 25px; /* Większy odstęp między elementami nawigacji */
+  margin-right: 15px;
 }
 
 .main-nav a {
@@ -74,9 +74,14 @@
   transition: background-color 0.3s ease;
   font-weight: bold;
   letter-spacing: 0.5px;
-  margin-left: 5px; /* Odstęp między przyciskami */
+  margin-left: 5px;
+  white-space: nowrap;
+  width: max-content;
 }
-
+.user-actions .dropdown-toggle {
+  display: inline-block;
+  min-width: fit-content !important;
+}
 .user-actions button:hover {
   background-color: #cc0000;
 }

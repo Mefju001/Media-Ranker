@@ -61,6 +61,12 @@ namespace Application.Features.MovieServices.GetMoviesByCriteria
         }
         private IQueryable<Movie> ApplySorting(IQueryable<Movie> query, GetMoviesByCriteriaQuery request)
         {
+            if (request.SortByField != null)
+            {
+                var strings = request.SortByField.Split("|");
+                request.SortByField = strings[0];
+                request.IsDescending = strings[1].ToLower().Equals("false") ? false : true;
+            }
             if (!string.IsNullOrEmpty(request.SortByField) && sortColumns.TryGetValue(request.SortByField, out var sortExpression))
             {
                 return request.IsDescending
