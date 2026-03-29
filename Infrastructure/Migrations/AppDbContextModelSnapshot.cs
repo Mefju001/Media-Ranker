@@ -30,11 +30,11 @@ namespace Infrastructure.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
-                    b.Property<string>("name")
+                    b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<string>("surname")
+                    b.Property<string>("Surname")
                         .IsRequired()
                         .HasColumnType("text");
 
@@ -58,32 +58,210 @@ namespace Infrastructure.Migrations
 
             modelBuilder.Entity("Domain.Entity.LikedMedia", b =>
                 {
-                    b.Property<int>("id")
+                    b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("integer");
 
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("id"));
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
-                    b.Property<DateTime>("likedDate")
+                    b.Property<DateTime>("LikedDate")
                         .HasColumnType("timestamp without time zone");
 
-                    b.Property<int>("mediaId")
+                    b.Property<int>("MediaId")
                         .HasColumnType("integer");
 
-                    b.Property<Guid>("userId")
+                    b.Property<int?>("MediaId1")
+                        .HasColumnType("integer");
+
+                    b.Property<Guid>("UserId")
                         .HasColumnType("uuid");
 
-                    b.HasKey("id");
+                    b.HasKey("Id");
 
-                    b.HasIndex("mediaId");
+                    b.HasIndex("MediaId");
 
-                    b.HasIndex("userId", "mediaId")
+                    b.HasIndex("MediaId1");
+
+                    b.HasIndex("UserId", "MediaId")
                         .IsUnique();
 
                     b.ToTable("LikedMedias");
                 });
 
-            modelBuilder.Entity("Domain.Entity.Media", b =>
+            modelBuilder.Entity("Domain.Entity.Review", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Comment")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<int>("MediaId")
+                        .HasColumnType("integer");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uuid");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("MediaId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("Reviews");
+                });
+
+            modelBuilder.Entity("Domain.Entity.Token", b =>
+                {
+                    b.Property<string>("Id")
+                        .HasColumnType("text");
+
+                    b.Property<string>("CreatedByIp")
+                        .HasColumnType("text");
+
+                    b.Property<DateTime>("ExpiryDate")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<bool>("IsRevoked")
+                        .HasColumnType("boolean");
+
+                    b.Property<DateTime>("IssuedAt")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<string>("RefreshToken")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<DateTime?>("RevokedAt")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<string>("UserAgent")
+                        .HasColumnType("text");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uuid");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("Tokens");
+                });
+
+            modelBuilder.Entity("Infrastructure.DBModels.RoleModel", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("ConcurrencyStamp")
+                        .IsConcurrencyToken()
+                        .HasColumnType("text");
+
+                    b.Property<string>("Name")
+                        .HasMaxLength(256)
+                        .HasColumnType("character varying(256)");
+
+                    b.Property<string>("NormalizedName")
+                        .HasMaxLength(256)
+                        .HasColumnType("character varying(256)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("NormalizedName")
+                        .IsUnique()
+                        .HasDatabaseName("RoleNameIndex");
+
+                    b.ToTable("AspNetRoles", (string)null);
+                });
+
+            modelBuilder.Entity("Infrastructure.DBModels.UserModel", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<int>("AccessFailedCount")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("ConcurrencyStamp")
+                        .IsConcurrencyToken()
+                        .HasColumnType("text");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<string>("Email")
+                        .HasMaxLength(256)
+                        .HasColumnType("character varying(256)");
+
+                    b.Property<bool>("EmailConfirmed")
+                        .HasColumnType("boolean");
+
+                    b.Property<bool>("IsActived")
+                        .HasColumnType("boolean");
+
+                    b.Property<bool>("LockoutEnabled")
+                        .HasColumnType("boolean");
+
+                    b.Property<DateTimeOffset?>("LockoutEnd")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("NormalizedEmail")
+                        .HasMaxLength(256)
+                        .HasColumnType("character varying(256)");
+
+                    b.Property<string>("NormalizedUserName")
+                        .HasMaxLength(256)
+                        .HasColumnType("character varying(256)");
+
+                    b.Property<string>("PasswordHash")
+                        .HasColumnType("text");
+
+                    b.Property<string>("PhoneNumber")
+                        .HasColumnType("text");
+
+                    b.Property<bool>("PhoneNumberConfirmed")
+                        .HasColumnType("boolean");
+
+                    b.Property<string>("SecurityStamp")
+                        .HasColumnType("text");
+
+                    b.Property<string>("Surname")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<bool>("TwoFactorEnabled")
+                        .HasColumnType("boolean");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<string>("UserName")
+                        .HasMaxLength(256)
+                        .HasColumnType("character varying(256)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("NormalizedEmail")
+                        .HasDatabaseName("EmailIndex");
+
+                    b.HasIndex("NormalizedUserName")
+                        .IsUnique()
+                        .HasDatabaseName("UserNameIndex");
+
+                    b.ToTable("AspNetUsers", (string)null);
+                });
+
+            modelBuilder.Entity("Media", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -116,186 +294,6 @@ namespace Infrastructure.Migrations
                     b.HasDiscriminator<string>("MediaType").HasValue("Media");
 
                     b.UseTphMappingStrategy();
-                });
-
-            modelBuilder.Entity("Domain.Entity.Review", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("Comment")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("timestamp without time zone");
-
-                    b.Property<DateTime>("LastModifiedAt")
-                        .HasColumnType("timestamp without time zone");
-
-                    b.Property<int>("MediaId")
-                        .HasColumnType("integer");
-
-                    b.Property<Guid>("UserId")
-                        .HasColumnType("uuid");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("MediaId");
-
-                    b.HasIndex("UserId");
-
-                    b.ToTable("Reviews");
-                });
-
-            modelBuilder.Entity("Domain.Entity.Token", b =>
-                {
-                    b.Property<string>("Jti")
-                        .HasColumnType("text");
-
-                    b.Property<string>("CreatedByIp")
-                        .HasColumnType("text");
-
-                    b.Property<DateTime>("ExpiryDate")
-                        .HasColumnType("timestamp without time zone");
-
-                    b.Property<bool>("IsRevoked")
-                        .HasColumnType("boolean");
-
-                    b.Property<DateTime>("IssuedAt")
-                        .HasColumnType("timestamp without time zone");
-
-                    b.Property<DateTime?>("RevokedAt")
-                        .HasColumnType("timestamp without time zone");
-
-                    b.Property<string>("UserAgent")
-                        .HasColumnType("text");
-
-                    b.Property<Guid>("UserId")
-                        .HasColumnType("uuid");
-
-                    b.Property<string>("refreshToken")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.HasKey("Jti");
-
-                    b.HasIndex("UserId");
-
-                    b.ToTable("Tokens");
-                });
-
-            modelBuilder.Entity("Infrastructure.DBModels.UserModel", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
-
-                    b.Property<int>("AccessFailedCount")
-                        .HasColumnType("integer");
-
-                    b.Property<string>("ConcurrencyStamp")
-                        .IsConcurrencyToken()
-                        .HasColumnType("text");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("timestamp without time zone")
-                        .HasColumnName("CreatedAt");
-
-                    b.Property<string>("Email")
-                        .HasMaxLength(256)
-                        .HasColumnType("character varying(256)");
-
-                    b.Property<bool>("EmailConfirmed")
-                        .HasColumnType("boolean");
-
-                    b.Property<bool>("IsActived")
-                        .HasColumnType("boolean")
-                        .HasColumnName("IsActived");
-
-                    b.Property<bool>("LockoutEnabled")
-                        .HasColumnType("boolean");
-
-                    b.Property<DateTimeOffset?>("LockoutEnd")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasColumnType("text")
-                        .HasColumnName("Name");
-
-                    b.Property<string>("NormalizedEmail")
-                        .HasMaxLength(256)
-                        .HasColumnType("character varying(256)");
-
-                    b.Property<string>("NormalizedUserName")
-                        .HasMaxLength(256)
-                        .HasColumnType("character varying(256)");
-
-                    b.Property<string>("PasswordHash")
-                        .HasColumnType("text");
-
-                    b.Property<string>("PhoneNumber")
-                        .HasColumnType("text");
-
-                    b.Property<bool>("PhoneNumberConfirmed")
-                        .HasColumnType("boolean");
-
-                    b.Property<string>("SecurityStamp")
-                        .HasColumnType("text");
-
-                    b.Property<string>("Surname")
-                        .IsRequired()
-                        .HasColumnType("text")
-                        .HasColumnName("Surname");
-
-                    b.Property<bool>("TwoFactorEnabled")
-                        .HasColumnType("boolean");
-
-                    b.Property<string>("UserName")
-                        .HasMaxLength(256)
-                        .HasColumnType("character varying(256)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("NormalizedEmail")
-                        .HasDatabaseName("EmailIndex");
-
-                    b.HasIndex("NormalizedUserName")
-                        .IsUnique()
-                        .HasDatabaseName("UserNameIndex");
-
-                    b.ToTable("AspNetUsers", (string)null);
-                });
-
-            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole<System.Guid>", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
-
-                    b.Property<string>("ConcurrencyStamp")
-                        .IsConcurrencyToken()
-                        .HasColumnType("text");
-
-                    b.Property<string>("Name")
-                        .HasMaxLength(256)
-                        .HasColumnType("character varying(256)");
-
-                    b.Property<string>("NormalizedName")
-                        .HasMaxLength(256)
-                        .HasColumnType("character varying(256)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("NormalizedName")
-                        .IsUnique()
-                        .HasDatabaseName("RoleNameIndex");
-
-                    b.ToTable("AspNetRoles", (string)null);
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<System.Guid>", b =>
@@ -401,65 +399,69 @@ namespace Infrastructure.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
-            modelBuilder.Entity("Domain.Entity.Game", b =>
+            modelBuilder.Entity("Domain.Aggregate.Game", b =>
                 {
-                    b.HasBaseType("Domain.Entity.Media");
+                    b.HasBaseType("Media");
 
                     b.Property<string>("Developer")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)");
 
-                    b.Property<int>("Platform")
-                        .HasColumnType("integer");
+                    b.Property<string>("Platform")
+                        .IsRequired()
+                        .HasColumnType("text");
 
                     b.HasDiscriminator().HasValue("Game");
                 });
 
-            modelBuilder.Entity("Domain.Entity.Movie", b =>
+            modelBuilder.Entity("Domain.Aggregate.Movie", b =>
                 {
-                    b.HasBaseType("Domain.Entity.Media");
+                    b.HasBaseType("Media");
 
                     b.Property<int>("DirectorId")
                         .HasColumnType("integer");
 
                     b.Property<bool>("IsCinemaRelease")
-                        .HasColumnType("boolean");
-
-                    b.HasIndex("DirectorId");
+                        .HasColumnType("boolean")
+                        .HasColumnName("IsCinemaRelease");
 
                     b.HasDiscriminator().HasValue("Movie");
                 });
 
-            modelBuilder.Entity("Domain.Entity.TvSeries", b =>
+            modelBuilder.Entity("Domain.Aggregate.TvSeries", b =>
                 {
-                    b.HasBaseType("Domain.Entity.Media");
+                    b.HasBaseType("Media");
 
                     b.Property<int>("Episodes")
                         .HasColumnType("integer");
 
                     b.Property<string>("Network")
-                        .HasColumnType("text");
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
 
                     b.Property<int>("Seasons")
                         .HasColumnType("integer");
 
-                    b.Property<int>("Status")
-                        .HasColumnType("integer");
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasColumnType("text");
 
                     b.HasDiscriminator().HasValue("TvSeries");
                 });
 
             modelBuilder.Entity("Domain.Entity.Genre", b =>
                 {
-                    b.OwnsOne("Domain.Value_Object.GenreName", "name", b1 =>
+                    b.OwnsOne("Domain.Value_Object.GenreName", "Name", b1 =>
                         {
                             b1.Property<int>("GenreId")
                                 .HasColumnType("integer");
 
                             b1.Property<string>("Value")
                                 .IsRequired()
-                                .HasColumnType("text")
-                                .HasColumnName("name");
+                                .HasMaxLength(100)
+                                .HasColumnType("character varying(100)")
+                                .HasColumnName("Name");
 
                             b1.HasKey("GenreId");
 
@@ -469,26 +471,119 @@ namespace Infrastructure.Migrations
                                 .HasForeignKey("GenreId");
                         });
 
-                    b.Navigation("name")
+                    b.Navigation("Name")
                         .IsRequired();
                 });
 
             modelBuilder.Entity("Domain.Entity.LikedMedia", b =>
                 {
-                    b.HasOne("Domain.Entity.Media", null)
+                    b.HasOne("Media", null)
                         .WithMany()
-                        .HasForeignKey("mediaId")
+                        .HasForeignKey("MediaId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.HasOne("Media", null)
+                        .WithMany("LikedMedia")
+                        .HasForeignKey("MediaId1");
+
                     b.HasOne("Infrastructure.DBModels.UserModel", null)
                         .WithMany()
-                        .HasForeignKey("userId")
+                        .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("Domain.Entity.Media", b =>
+            modelBuilder.Entity("Domain.Entity.Review", b =>
+                {
+                    b.HasOne("Media", null)
+                        .WithMany("Reviews")
+                        .HasForeignKey("MediaId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("Infrastructure.DBModels.UserModel", null)
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.OwnsOne("Domain.Value_Object.AuditInfo", "AuditInfo", b1 =>
+                        {
+                            b1.Property<int>("ReviewId")
+                                .HasColumnType("integer");
+
+                            b1.Property<DateTime>("CreatedAt")
+                                .HasColumnType("timestamp without time zone")
+                                .HasColumnName("CreatedAt");
+
+                            b1.Property<DateTime?>("UpdatedAt")
+                                .HasColumnType("timestamp without time zone")
+                                .HasColumnName("UpdatedAt");
+
+                            b1.HasKey("ReviewId");
+
+                            b1.ToTable("Reviews");
+
+                            b1.WithOwner()
+                                .HasForeignKey("ReviewId");
+                        });
+
+                    b.OwnsOne("Domain.Value_Object.Rating", "Rating", b1 =>
+                        {
+                            b1.Property<int>("ReviewId")
+                                .HasColumnType("integer");
+
+                            b1.Property<int>("Value")
+                                .HasColumnType("integer")
+                                .HasColumnName("Rating");
+
+                            b1.HasKey("ReviewId");
+
+                            b1.ToTable("Reviews");
+
+                            b1.WithOwner()
+                                .HasForeignKey("ReviewId");
+                        });
+
+                    b.OwnsOne("Domain.Value_Object.Username", "Username", b1 =>
+                        {
+                            b1.Property<int>("ReviewId")
+                                .HasColumnType("integer");
+
+                            b1.Property<string>("Value")
+                                .IsRequired()
+                                .HasColumnType("text")
+                                .HasColumnName("Username");
+
+                            b1.HasKey("ReviewId");
+
+                            b1.ToTable("Reviews");
+
+                            b1.WithOwner()
+                                .HasForeignKey("ReviewId");
+                        });
+
+                    b.Navigation("AuditInfo")
+                        .IsRequired();
+
+                    b.Navigation("Rating")
+                        .IsRequired();
+
+                    b.Navigation("Username")
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("Domain.Entity.Token", b =>
+                {
+                    b.HasOne("Infrastructure.DBModels.UserModel", null)
+                        .WithMany("Tokens")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("Media", b =>
                 {
                     b.HasOne("Domain.Entity.Genre", null)
                         .WithMany()
@@ -501,7 +596,7 @@ namespace Infrastructure.Migrations
                             b1.Property<int>("MediaId")
                                 .HasColumnType("integer");
 
-                            b1.Property<string>("value")
+                            b1.Property<string>("Value")
                                 .IsRequired()
                                 .HasColumnType("text")
                                 .HasColumnName("Language");
@@ -519,18 +614,20 @@ namespace Infrastructure.Migrations
                             b1.Property<int>("MediaId")
                                 .HasColumnType("integer");
 
-                            b1.Property<double?>("AverageRating")
-                                .HasColumnType("double precision");
+                            b1.Property<double>("AverageRating")
+                                .HasColumnType("double precision")
+                                .HasColumnName("AverageRating");
 
-                            b1.Property<DateTime?>("LastCalculated")
+                            b1.Property<DateTime>("LastCalculated")
                                 .HasColumnType("timestamp without time zone");
 
                             b1.Property<int>("ReviewCount")
-                                .HasColumnType("integer");
+                                .HasColumnType("integer")
+                                .HasColumnName("reviewCount");
 
                             b1.HasKey("MediaId");
 
-                            b1.ToTable("MediaStats", (string)null);
+                            b1.ToTable("Medias");
 
                             b1.WithOwner()
                                 .HasForeignKey("MediaId");
@@ -543,7 +640,7 @@ namespace Infrastructure.Migrations
 
                             b1.Property<DateTime>("Value")
                                 .HasColumnType("timestamp without time zone")
-                                .HasColumnName("ReleaseDate");
+                                .HasColumnName("ReleaseYear");
 
                             b1.HasKey("MediaId");
 
@@ -552,6 +649,30 @@ namespace Infrastructure.Migrations
                             b1.WithOwner()
                                 .HasForeignKey("MediaId");
                         });
+
+                    b.OwnsOne("Domain.Value_Object.AuditInfo", "AuditInfo", b1 =>
+                        {
+                            b1.Property<int>("MediaId")
+                                .HasColumnType("integer");
+
+                            b1.Property<DateTime>("CreatedAt")
+                                .HasColumnType("timestamp without time zone")
+                                .HasColumnName("CreatedAt");
+
+                            b1.Property<DateTime?>("UpdatedAt")
+                                .HasColumnType("timestamp without time zone")
+                                .HasColumnName("UpdatedAt");
+
+                            b1.HasKey("MediaId");
+
+                            b1.ToTable("Medias");
+
+                            b1.WithOwner()
+                                .HasForeignKey("MediaId");
+                        });
+
+                    b.Navigation("AuditInfo")
+                        .IsRequired();
 
                     b.Navigation("Language")
                         .IsRequired();
@@ -562,53 +683,9 @@ namespace Infrastructure.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("Domain.Entity.Review", b =>
-                {
-                    b.HasOne("Domain.Entity.Media", null)
-                        .WithMany("Reviews")
-                        .HasForeignKey("MediaId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.HasOne("Infrastructure.DBModels.UserModel", null)
-                        .WithMany()
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.OwnsOne("Domain.Value_Object.Rating", "Rating", b1 =>
-                        {
-                            b1.Property<int>("ReviewId")
-                                .HasColumnType("integer");
-
-                            b1.Property<int>("value")
-                                .HasColumnType("integer")
-                                .HasColumnName("Rating");
-
-                            b1.HasKey("ReviewId");
-
-                            b1.ToTable("Reviews");
-
-                            b1.WithOwner()
-                                .HasForeignKey("ReviewId");
-                        });
-
-                    b.Navigation("Rating")
-                        .IsRequired();
-                });
-
-            modelBuilder.Entity("Domain.Entity.Token", b =>
-                {
-                    b.HasOne("Infrastructure.DBModels.UserModel", null)
-                        .WithMany()
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
-
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<System.Guid>", b =>
                 {
-                    b.HasOne("Microsoft.AspNetCore.Identity.IdentityRole<System.Guid>", null)
+                    b.HasOne("Infrastructure.DBModels.RoleModel", null)
                         .WithMany()
                         .HasForeignKey("RoleId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -635,14 +712,14 @@ namespace Infrastructure.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserRole<System.Guid>", b =>
                 {
-                    b.HasOne("Microsoft.AspNetCore.Identity.IdentityRole<System.Guid>", null)
+                    b.HasOne("Infrastructure.DBModels.RoleModel", null)
                         .WithMany()
                         .HasForeignKey("RoleId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("Infrastructure.DBModels.UserModel", null)
-                        .WithMany()
+                        .WithMany("Roles")
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -657,14 +734,8 @@ namespace Infrastructure.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("Domain.Entity.Movie", b =>
+            modelBuilder.Entity("Domain.Aggregate.Movie", b =>
                 {
-                    b.HasOne("Domain.Entity.Director", null)
-                        .WithMany()
-                        .HasForeignKey("DirectorId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
                     b.OwnsOne("Domain.Value_Object.Duration", "Duration", b1 =>
                         {
                             b1.Property<int>("MovieId")
@@ -672,7 +743,7 @@ namespace Infrastructure.Migrations
 
                             b1.Property<TimeSpan>("Value")
                                 .HasColumnType("interval")
-                                .HasColumnName("Duration");
+                                .HasColumnName("DurationMinutes");
 
                             b1.HasKey("MovieId");
 
@@ -686,8 +757,17 @@ namespace Infrastructure.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("Domain.Entity.Media", b =>
+            modelBuilder.Entity("Infrastructure.DBModels.UserModel", b =>
                 {
+                    b.Navigation("Roles");
+
+                    b.Navigation("Tokens");
+                });
+
+            modelBuilder.Entity("Media", b =>
+                {
+                    b.Navigation("LikedMedia");
+
                     b.Navigation("Reviews");
                 });
 #pragma warning restore 612, 618

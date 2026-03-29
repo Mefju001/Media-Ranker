@@ -39,13 +39,13 @@ namespace Api.Controllers
         }
         [Authorize(Roles = "User")]
         [HttpPost]
-        public async Task<IActionResult> AddReview([FromQuery] int movieId, [FromQuery] ReviewRequest reviewRequest)
+        public async Task<IActionResult> AddReview([FromBody]ReviewRequest reviewRequest)
         {
             var userId = GetCurrentUserId();
             var command = new ReviewUpsertCommand
             (
                 null,
-                movieId,
+                reviewRequest.movieId,
                 userId,
                 reviewRequest.Rating,
                 reviewRequest.Comment
@@ -86,9 +86,9 @@ namespace Api.Controllers
         }
         [Authorize(Roles = "User")]
         [HttpDelete("{id:int}")]
-        public async Task<IActionResult> Delete([FromRoute] int id)
+        public async Task<IActionResult> Delete(int mediaId, [FromRoute] int id)
         {
-            var command = new DeleteReviewCommand(id);
+            var command = new DeleteReviewCommand(mediaId, id);
             await mediator.Send(command);
             return NoContent();
         }

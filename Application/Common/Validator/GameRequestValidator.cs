@@ -34,7 +34,7 @@ namespace Application.Common.Validator
             RuleFor(Request => Request.Platform)
                 .NotEmpty()
                 .IsInEnum().WithMessage("The value entered is incorrect.")
-                .NotEqual(EPlatform.Unknown)
+                .NotEqual(EPlatform.None)
                 .WithMessage("You must enter the correct value, not the default value.");
             RuleFor(Request => Request.Developer)
                 .NotEmpty()

@@ -1,33 +1,34 @@
-﻿namespace Domain.Entity
+﻿using Domain.Base;
+
+namespace Domain.Entity;
+
+public class Director:Entity<int>
 {
-    public class Director
+    public string Name { get; private set; } = default!;
+    public string Surname { get; private set; } = default!;
+
+    private Director() { }
+    public static Director Create(string name, string surname, int id = 0)
     {
-        public int Id { get; init; }
-        public string name { get; set; }
-        public string surname { get; set; }
-        private Director() { }
-        private Director(string name, string surname)
+        Validate(name, surname);
+        return new Director
         {
-            this.name = name;
-            this.surname = surname;
-        }
-        public static Director Create(string name, string surname)
-        {
-            return new Director(name, surname);
-        }
-        public static void Validate(string name, string surname)
-        {
-            if (string.IsNullOrWhiteSpace(name))
-                throw new ArgumentException("Name cannot be null or empty.");
-            if (string.IsNullOrWhiteSpace(surname))
-                throw new ArgumentException("Surname cannot be null or empty.");
-        }
-        public static Director Reconstruct(int id, string name, string surname)
-        {
-            return new Director(name, surname)
-            {
-                Id = id
-            };
-        }
+            Id = id,
+            Name = name,
+            Surname = surname
+        };
+    }
+
+    public void Update(string name, string surname)
+    {
+        Validate(name, surname);
+        Name = name;
+        Surname = surname;
+    }
+
+    private static void Validate(string name, string surname)
+    {
+        if (string.IsNullOrWhiteSpace(name) || string.IsNullOrWhiteSpace(surname))
+            throw new ArgumentException("Name and Surname are required.");
     }
 }

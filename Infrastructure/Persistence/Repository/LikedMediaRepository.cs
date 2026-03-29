@@ -13,7 +13,7 @@ namespace Infrastructure.Persistence.Repository
         }
         public async Task<bool> Any(Guid userId, int mediaId, CancellationToken cancellationToken)
         {
-            return await appDbContext.LikedMedias.AnyAsync(lm => lm.userId.Equals(userId) && lm.mediaId == mediaId, cancellationToken);
+            return await appDbContext.LikedMedias.AnyAsync(lm => lm.UserId.Equals(userId) && lm.MediaId == mediaId, cancellationToken);
         }
         public async Task AddAsync(LikedMedia likedMedia, CancellationToken cancellationToken)
         {
@@ -23,12 +23,12 @@ namespace Infrastructure.Persistence.Repository
         {
             return await appDbContext.LikedMedias
                 .AsNoTrackingWithIdentityResolution()
-                .Where(lm => lm.userId == userId && lm.mediaId == mediaId)
+                .Where(lm => lm.UserId == userId && lm.MediaId == mediaId)
                 .FirstOrDefaultAsync(cancellationToken);
         }
         public async Task<bool> DeleteByLikedMedia(Guid userId, int mediaId, CancellationToken cancellationToken)
         {
-            var results = await appDbContext.LikedMedias.Where(lm => lm.userId == userId && lm.mediaId == mediaId).ExecuteDeleteAsync(cancellationToken);
+            var results = await appDbContext.LikedMedias.Where(lm => lm.UserId == userId && lm.MediaId == mediaId).ExecuteDeleteAsync(cancellationToken);
             return results > 0;
         }
         public async Task<List<LikedMedia>> GetAll(CancellationToken cancellationToken)
@@ -39,12 +39,12 @@ namespace Infrastructure.Persistence.Repository
         {
             return await appDbContext.LikedMedias
                 .AsNoTracking()
-                .Where(lm => lm.id == likedMediaId)
+                .Where(lm => lm.Id == likedMediaId)
                 .FirstOrDefaultAsync(cancellationToken);
         }
         public async Task<List<LikedMedia>> GetLikedForUser(Guid userId, CancellationToken cancellationToken)
         {
-            return await appDbContext.LikedMedias.AsNoTrackingWithIdentityResolution().Where(lm => lm.userId == userId).ToListAsync(cancellationToken);
+            return await appDbContext.LikedMedias.AsNoTrackingWithIdentityResolution().Where(lm => lm.UserId == userId).ToListAsync(cancellationToken);
         }
     }
 }

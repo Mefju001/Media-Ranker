@@ -1,6 +1,7 @@
 ﻿using Application.Common.DTO.Response;
 using Application.Common.Interfaces;
 using Application.Mapper;
+using Domain.Aggregate;
 using Domain.Exceptions;
 using MediatR;
 using Microsoft.Extensions.Logging;
@@ -9,20 +10,20 @@ namespace Application.Features.TvSeriesServices.GetTvSeriesById
 {
     public class GetTvSeriesByIdHandler : IRequestHandler<GetTvSeriesByIdQuery, TvSeriesResponse?>
     {
-        private readonly ITvSeriesRepository tvSeriesRepository;
+        private readonly IMediaRepository mediaRepository;
         private readonly IGenreRepository genreRepository;
         private readonly ILogger<GetTvSeriesByIdHandler> logger;
 
-        public GetTvSeriesByIdHandler(ITvSeriesRepository tvSeriesRepository, IGenreRepository genreRepository, ILogger<GetTvSeriesByIdHandler> logger)
+        public GetTvSeriesByIdHandler(IMediaRepository mediaRepository, IGenreRepository genreRepository, ILogger<GetTvSeriesByIdHandler> logger)
         {
-            this.tvSeriesRepository = tvSeriesRepository;
+            this.mediaRepository = mediaRepository;
             this.genreRepository = genreRepository;
             this.logger = logger;
         }
 
         public async Task<TvSeriesResponse?> Handle(GetTvSeriesByIdQuery request, CancellationToken cancellationToken)
         {
-            var tvSeriesDomain = await tvSeriesRepository.GetTvSeriesById(request.id, cancellationToken);
+            var tvSeriesDomain = await mediaRepository.GetByIdAsync<TvSeries>(request.id, cancellationToken);
             if (tvSeriesDomain == null)
             {
                 logger.LogWarning("Tv Series with ID {TvSeriesId} was not found.", request.id);

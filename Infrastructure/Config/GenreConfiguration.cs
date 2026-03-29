@@ -1,6 +1,11 @@
 ﻿using Domain.Entity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 
 namespace Infrastructure.Config
 {
@@ -9,9 +14,13 @@ namespace Infrastructure.Config
         public void Configure(EntityTypeBuilder<Genre> builder)
         {
             builder.HasKey(g => g.Id);
-            builder.OwnsOne(m => m.name, d =>
+
+            builder.OwnsOne(g => g.Name, n =>
             {
-                d.Property(x => x.Value).HasColumnName("name");
+                n.Property(p => p.Value)
+                    .HasColumnName("Name")
+                    .IsRequired()
+                    .HasMaxLength(100);
             });
         }
     }

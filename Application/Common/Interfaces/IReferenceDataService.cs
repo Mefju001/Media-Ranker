@@ -11,6 +11,5 @@ namespace Application.Common.Interfaces
         Task<Dictionary<string, Genre>> EnsureGenresExistAsync(List<string> names, CancellationToken cancellationToken);
         Task<Dictionary<(string, string), Director>> EnsureDirectorsExistAsync(List<DirectorRequest> directors, CancellationToken cancellationToken);
         Task<List<GenreResponse>> GetGenres(CancellationToken cancellationToken);
-        Task saveToken(Token token, CancellationToken cancellationToken);
     }
 }

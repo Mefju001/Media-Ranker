@@ -4,6 +4,7 @@ using Application.Features.MovieServices.AddListOfMovies;
 using Application.Features.MovieServices.GetAll;
 using Application.Features.MovieServices.GetMoviesByCriteria;
 using Application.Features.MovieServices.MovieUpsert;
+using Domain.Aggregate;
 using Domain.Entity;
 using Domain.Value_Object;
 using MediatR;

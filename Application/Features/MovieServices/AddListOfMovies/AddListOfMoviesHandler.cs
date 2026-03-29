@@ -3,7 +3,7 @@ using Application.Common.Interfaces;
 using Application.Features.GamesServices.AddListOfGames;
 using Application.Mapper;
 using Application.Notification;
-using Domain.Entity;
+using Domain.Aggregate;
 using Domain.Exceptions;
 using Domain.Value_Object;
 using MediatR;
@@ -15,14 +15,14 @@ namespace Application.Features.MovieServices.AddListOfMovies
     {
         private readonly IUnitOfWork unitOfWork;
         private readonly IReferenceDataService referenceDataService;
-        private readonly IMovieRepository movieRepository;
+        private readonly IMediaRepository mediaRepository;
         private readonly ILogger<AddListOfMoviesHandler> logger;
         private readonly IMediator mediator;
-        public AddListOfMoviesHandler(ILogger<AddListOfMoviesHandler> logger, IMovieRepository movieRepository, IReferenceDataService referenceDataService, IUnitOfWork unitOfWork, IMediator mediator)
+        public AddListOfMoviesHandler(ILogger<AddListOfMoviesHandler> logger, IMediaRepository mediaRepository, IReferenceDataService referenceDataService, IUnitOfWork unitOfWork, IMediator mediator)
         {
             this.referenceDataService = referenceDataService;
             this.unitOfWork = unitOfWork;
-            this.movieRepository = movieRepository;
+            this.mediaRepository = mediaRepository;
             this.logger = logger;
             this.mediator = mediator;
         }
@@ -50,7 +50,7 @@ namespace Application.Features.MovieServices.AddListOfMovies
                     new Duration(movieReq.Duration),
                     movieReq.IsCinemaRelease);
             }).ToList();
-            await movieRepository.AddListOfMovies(movies, cancellationToken);
+            await mediaRepository.AddRangeAsync(movies, cancellationToken);
             await unitOfWork.CompleteAsync(cancellationToken);
             logger.LogInformation("Pomyślnie dodano {Count} gier do bazy.", movies.Count);
             await mediator.Publish(new LogNotification("Information", "Nowa lista filmów została dodana.", nameof(AddListOfGamesHandler)));

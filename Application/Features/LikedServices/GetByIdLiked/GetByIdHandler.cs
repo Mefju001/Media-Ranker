@@ -1,6 +1,7 @@
 ﻿using Application.Common.DTO.Response;
 using Application.Common.Interfaces;
 using Application.Mapper;
+using Domain.Aggregate;
 using Domain.Entity;
 using Domain.Exceptions;
 using MediatR;
@@ -30,8 +31,8 @@ namespace Application.Features.LikedServices.GetByIdLiked
             var liked = await likedMediaRepository.GetById(request.id, cancellationToken);
             if (liked == null) throw new NotFoundException("Liked media not found");
 
-            var mediaTask = mediaRepository.GetMediaById(liked.mediaId, cancellationToken);
-            var userTask = userRepository.GetUserById(liked.userId, cancellationToken);
+            var mediaTask = mediaRepository.GetByIdAsync(liked.MediaId, cancellationToken);
+            var userTask = userRepository.GetUserById(liked.UserId, cancellationToken);
 
             await Task.WhenAll(mediaTask, userTask);
 

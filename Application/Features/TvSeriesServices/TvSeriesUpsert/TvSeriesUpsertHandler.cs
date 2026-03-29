@@ -2,7 +2,7 @@
 using Application.Common.Interfaces;
 using Application.Mapper;
 using Application.Notification;
-using Domain.Entity;
+using Domain.Aggregate;
 using Domain.Value_Object;
 using MediatR;
 using Microsoft.Extensions.Logging;
@@ -14,15 +14,15 @@ namespace Application.Features.TvSeriesServices.TvSeriesUpsert
         private readonly IUnitOfWork unitOfWork;
         private readonly IMediator mediator;
         private readonly IReferenceDataService referenceDataService;
-        private readonly ITvSeriesRepository tvSeriesRepository;
+        private readonly IMediaRepository mediaRepository;
         private readonly ILogger<TvSeriesUpsertHandler> logger;
 
-        public TvSeriesUpsertHandler(IUnitOfWork unitOfWork, IReferenceDataService referenceDataService, IMediator mediator, ITvSeriesRepository tvSeriesRepository, ILogger<TvSeriesUpsertHandler> logger)
+        public TvSeriesUpsertHandler(IUnitOfWork unitOfWork, IReferenceDataService referenceDataService, IMediator mediator, IMediaRepository mediaRepository, ILogger<TvSeriesUpsertHandler> logger)
         {
             this.unitOfWork = unitOfWork;
             this.mediator = mediator;
             this.referenceDataService = referenceDataService;
-            this.tvSeriesRepository = tvSeriesRepository;
+            this.mediaRepository = mediaRepository;
             this.logger = logger;
         }
 
@@ -32,7 +32,7 @@ namespace Application.Features.TvSeriesServices.TvSeriesUpsert
             TvSeries? tvSeries = null;
             if (request.id is not null)
             {
-                tvSeries = await tvSeriesRepository.GetTvSeriesById(request.id.Value, cancellationToken);
+                tvSeries = await mediaRepository.GetByIdAsync<TvSeries>(request.id.Value, cancellationToken);
 
             }
             if (tvSeries is not null)
@@ -62,7 +62,7 @@ namespace Application.Features.TvSeriesServices.TvSeriesUpsert
                         request.Episodes,
                         request.Network,
                         request.Status);
-                tvSeries = await tvSeriesRepository.AddTvSeriesAsync(tvSeries, cancellationToken);
+                tvSeries = await mediaRepository.AddAsync<TvSeries>(tvSeries, cancellationToken);
                 logger.LogInformation("Creating new TvSeries with id {TvSeriesId}", tvSeries.Id);
             }
             await unitOfWork.CompleteAsync(cancellationToken);

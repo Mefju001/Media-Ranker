@@ -1,4 +1,5 @@
 ﻿using Application.Common.Interfaces;
+using Domain.Repository;
 using MediatR;
 using Microsoft.Extensions.Logging;
 

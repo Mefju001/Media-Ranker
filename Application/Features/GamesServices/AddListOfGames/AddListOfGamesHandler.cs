@@ -2,7 +2,7 @@
 using Application.Common.Interfaces;
 using Application.Mapper;
 using Application.Notification;
-using Domain.Entity;
+using Domain.Aggregate;
 using Domain.Exceptions;
 using Domain.Value_Object;
 using MediatR;
@@ -14,15 +14,15 @@ namespace Application.Features.GamesServices.AddListOfGames
     {
         private readonly IUnitOfWork unitOfWork;
         private readonly IReferenceDataService referenceDataService;
-        private readonly IGameRepository gameRepository;
+        private readonly IMediaRepository mediaRepository;
         private readonly ILogger<AddListOfGamesHandler> logger;
         private readonly IMediator mediator;
-        public AddListOfGamesHandler(IMediator mediator, IReferenceDataService referenceDataService, IUnitOfWork unitOfWork, IGameRepository gameRepository, ILogger<AddListOfGamesHandler> logger)
+        public AddListOfGamesHandler(IMediator mediator, IReferenceDataService referenceDataService, IUnitOfWork unitOfWork, IMediaRepository mediaRepository, ILogger<AddListOfGamesHandler> logger)
         {
             this.mediator = mediator;
             this.referenceDataService = referenceDataService;
             this.unitOfWork = unitOfWork;
-            this.gameRepository = gameRepository;
+            this.mediaRepository = mediaRepository;
             this.logger = logger;
         }
         public async Task<List<GameResponse>> Handle(AddListOfGamesCommand requests, CancellationToken cancellationToken)
@@ -44,7 +44,7 @@ namespace Application.Features.GamesServices.AddListOfGames
                         gameReq.Developer!,
                         gameReq.Platform);
             }).ToList();
-            await gameRepository.AddListOfGames(games, cancellationToken);
+            await mediaRepository.AddRangeAsync(games, cancellationToken);
             await unitOfWork.CompleteAsync(cancellationToken);
             logger.LogInformation("Added list of games to the repository. Games count: {GamesCount}", games.Count);
             await mediator.Publish(new LogNotification("Information", "Nowa lista gier została dodana.", nameof(AddListOfGamesHandler)));

@@ -1,32 +1,29 @@
-﻿namespace Domain.Entity
+﻿using Domain.Base;
+
+namespace Domain.Entity;
+
+public class LikedMedia : AggregateRoot<int>
 {
-    public class LikedMedia
+    public Guid UserId { get; private set; }
+    public int MediaId { get; private set; }
+    public DateTime LikedDate { get; private set; }
+
+    private LikedMedia() { }
+
+    public static LikedMedia Create(Guid userId, int mediaId, int id = 0)
     {
-        public int id { get; private set; }
-        public Guid userId { get; private set; }
-        public int mediaId { get; private set; }
-        public DateTime likedDate { get; private set; }
-        private LikedMedia() { }
-        private LikedMedia(Guid userId, int mediaId)
+        var liked = new LikedMedia
         {
-            this.userId = userId;
-            this.mediaId = mediaId;
-            this.likedDate = DateTime.UtcNow;
-        }
-        private LikedMedia(int id, Guid userId, int mediaId)
-        {
-            this.id = id;
-            this.userId = userId;
-            this.mediaId = mediaId;
-            this.likedDate = DateTime.UtcNow;
-        }
-        public static LikedMedia Create(Guid userId, int mediaId)
-        {
-            return new LikedMedia(userId, mediaId);
-        }
-        public static LikedMedia Reconstruct(int id, Guid userId, int mediaId)
-        {
-            return new LikedMedia(id, userId, mediaId);
-        }
+            Id = id,
+            UserId = userId,
+            MediaId = mediaId,
+            LikedDate = DateTime.UtcNow
+        };
+
+       /* if (id == 0)
+            liked._domainEvents.Add(new MediaLiked(userId, mediaId));*/
+
+        return liked;
     }
+
 }

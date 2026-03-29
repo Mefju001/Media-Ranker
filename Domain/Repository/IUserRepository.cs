@@ -1,4 +1,4 @@
-﻿using Domain.Entity;
+﻿using Domain.Aggregate;
 using Microsoft.AspNetCore.Identity;
 
 namespace Application.Common.Interfaces
@@ -14,7 +14,7 @@ namespace Application.Common.Interfaces
         Task<IList<string>> getUserRoles(string username);
         Task<User> GetUserById(Guid userId, CancellationToken cancellationToken);
         Task<bool> IsAnyUserWhoHaveEmailAndId(string email, Guid id);
-        Task<IdentityResult?> DeleteUser(User user);
+        Task<IdentityResult?> DeleteUser(Guid id);
         Task<bool> IsAnyUserWithUsernameAndEmailLikeThat(string username, string email);
         Task<User> CreateUserWithDefaultRole(User user, CancellationToken cancellationToken);
     }

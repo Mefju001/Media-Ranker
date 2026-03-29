@@ -1,4 +1,5 @@
 ﻿using Application.Common.Interfaces;
+using Domain.Repository;
 using Microsoft.Extensions.Logging;
 
 
@@ -8,7 +9,8 @@ namespace Infrastructure.BackgroundTasks.CleanService
     {
         private readonly ILogger<TokenCleanService> logger;
         private readonly ITokenRepository tokenRepository;
-        public TokenCleanService(ILogger<TokenCleanService> logger, ITokenRepository tokenRepository)
+        public TokenCleanService(ILogger<TokenCleanService> logger, 
+            ITokenRepository tokenRepository)
         {
             this.logger = logger;
             this.tokenRepository = tokenRepository;

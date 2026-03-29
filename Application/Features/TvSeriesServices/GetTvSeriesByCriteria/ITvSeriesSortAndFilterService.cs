@@ -1,4 +1,4 @@
-﻿using Domain.Entity;
+﻿using Domain.Aggregate;
 
 namespace Application.Features.TvSeriesServices.GetTvSeriesByCriteria
 {

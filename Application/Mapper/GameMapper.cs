@@ -1,4 +1,5 @@
 ﻿using Application.Common.DTO.Response;
+using Domain.Aggregate;
 using Domain.Entity;
 
 namespace Application.Mapper
@@ -13,7 +14,7 @@ namespace Application.Mapper
                 game.Description,
                 GenreMapper.ToResponse(genreDomain),
                 game.ReleaseDate.Value,
-                game.Language.value,
+                game.Language,
                 game.Reviews?.Select(r => ReviewMapper.ToResponse(r)).ToList() ?? new List<ReviewResponse>(),
                 MediaStatsMapper.ToResponse(game.Stats!) ?? new MediaStatsResponse(0, 0, null),
                 game.Developer,

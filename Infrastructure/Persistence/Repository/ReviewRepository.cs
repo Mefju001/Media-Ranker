@@ -27,7 +27,7 @@ namespace Infrastructure.Persistence.Repository
             var media = appDbContext.Medias.AsQueryable();
             return await appDbContext.Reviews
                 .AsNoTrackingWithIdentityResolution()
-                .OrderByDescending(r => r.CreatedAt)
+                .OrderByDescending(r => r.AuditInfo.CreatedAt)
                 .Take(10)
                 .Join(media,
                     review => review.MediaId,

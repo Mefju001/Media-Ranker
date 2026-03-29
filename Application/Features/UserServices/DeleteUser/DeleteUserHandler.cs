@@ -19,13 +19,7 @@ namespace Application.Features.UserServices.DeleteUser
 
         public async Task<Unit> Handle(DeleteUserCommand request, CancellationToken cancellationToken)
         {
-            var user = await userRepository.GetUserById(request.id, cancellationToken);
-            if (user is null)
-            {
-                logger.LogWarning("User with id {id} not found.", request.id);
-                throw new NotFoundException($"User with id {request.id} not found.");
-            }
-            var result = await userRepository.DeleteUser(user);
+            var result = await userRepository.DeleteUser(request.id);
             if (!result.Succeeded)
             {
                 var error = result.Errors.FirstOrDefault()?.Description ?? "Unknown error";

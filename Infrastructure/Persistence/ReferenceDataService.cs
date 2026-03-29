@@ -3,21 +3,21 @@ using Application.Common.DTO.Response;
 using Application.Common.Interfaces;
 using Application.Mapper;
 using Domain.Entity;
+using Infrastructure.Persistence.Repository;
 
 namespace Infrastructure.Persistence
 {
+    //i need to edit this class because its doing too much, i need to split it into two services one for genres and one for directors, but for now i will leave it as it is
     public class ReferenceDataService : IReferenceDataService
     {
         private readonly IUnitOfWork unitOfWork;
         private readonly IDirectorRepository directorRepository;
         private readonly IGenreRepository genreRepository;
-        private readonly ITokenRepository tokenRepository;
-        public ReferenceDataService(IUnitOfWork unitOfWork, IDirectorRepository directorRepository, IGenreRepository genreRepository, ITokenRepository tokenRepository)
+        public ReferenceDataService(IUnitOfWork unitOfWork, IDirectorRepository directorRepository, IGenreRepository genreRepository)
         {
             this.unitOfWork = unitOfWork;
             this.directorRepository = directorRepository;
             this.genreRepository = genreRepository;
-            this.tokenRepository = tokenRepository;
         }
         public async Task<Director> GetOrCreateDirectorAsync(DirectorRequest directorRequest, CancellationToken cancellationToken)
         {
@@ -38,7 +38,7 @@ namespace Infrastructure.Persistence
         public async Task<Dictionary<string, Genre>> EnsureGenresExistAsync(List<string> names, CancellationToken cancellationToken)
         {
             var existingGenres = await genreRepository.GetByNamesAsync(names, cancellationToken);
-            var genresMap = existingGenres.ToDictionary(g => g.name.Value);
+            var genresMap = existingGenres.ToDictionary(g => g.Name.Value);
             foreach (var name in names)
             {
                 if (!genresMap.ContainsKey(name))
@@ -58,12 +58,6 @@ namespace Infrastructure.Persistence
             var response = genres.Select(GenreMapper.ToResponse).ToList();
             return response;
         }
-        public async Task saveToken(Token token, CancellationToken cancellationToken)
-        {
-            if (token == null) throw new ArgumentNullException();
-            await tokenRepository.SaveToken(token, cancellationToken);
-            await unitOfWork.CompleteAsync(cancellationToken);
-        }
 
         public async Task<Dictionary<(string, string), Director>> EnsureDirectorsExistAsync(List<DirectorRequest> directors, CancellationToken cancellationToken)
         {
@@ -73,7 +67,7 @@ namespace Infrastructure.Persistence
                 .ToList();
             var existingDirectors = await directorRepository.findByNames(uniquePairs, cancellationToken);
             var directorMap = existingDirectors.ToDictionary(
-               d => (d.name.Trim(), d.surname.Trim()));
+               d => (d.Name.Trim(), d.Surname.Trim()));
             foreach (var pair in uniquePairs)
             {
                 if (!directorMap.ContainsKey(pair))
@@ -86,5 +80,11 @@ namespace Infrastructure.Persistence
             await unitOfWork.CompleteAsync(cancellationToken);
             return directorMap;
         }
+        /*public async Task saveToken(Token token, CancellationToken cancellationToken)
+        {
+            if (token == null) throw new ArgumentNullException();
+            await tokenRepository.SaveToken(token, cancellationToken);
+            await unitOfWork.CompleteAsync(cancellationToken);
+        }*/
     }
 }

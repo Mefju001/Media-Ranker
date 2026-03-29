@@ -1,6 +1,7 @@
 ﻿using Application.Common.Interfaces;
 using Domain.Entity;
 using Domain.Enums;
+using Domain.Repository;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
@@ -80,14 +81,14 @@ namespace Application.Features.AuthServices.Common
             var httpContext = httpContextAccessor.HttpContext;
             string? clientIp = httpContext?.Connection.RemoteIpAddress?.ToString();
             string? userAgent = httpContext?.Request.Headers["User-Agent"].ToString();
-            var token = Token.CreateToken(
+            var token = Token.Create(
                 jti,
                 refToken,
                 userId,
                 clientIp,
                 userAgent
             );
-            await referenceDataService.saveToken(token, cancellationToken);
+            //await referenceDataService.saveToken(token, cancellationToken);
             return refToken;
         }
         public async Task<IReadOnlyList<Claim>> ValidateAndGetPrincipalFromRefreshToken(string token, CancellationToken cancellationToken)

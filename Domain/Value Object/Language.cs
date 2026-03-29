@@ -1,13 +1,22 @@
-﻿namespace Domain.Value_Object
+﻿using Domain.Base;
+
+namespace Domain.Value_Object;
+
+public record Language:ValueObject
 {
-    public record Language
+    public string Value { get; init; }
+
+    public Language(string value)
     {
-        public string value { get; init; }
-        public Language(string value)
-        {
-            if (string.IsNullOrWhiteSpace(value))
-                throw new ArgumentException("Language cannot be null or empty.", nameof(value));
-            this.value = value;
-        }
+        if (string.IsNullOrWhiteSpace(value))
+            throw new ArgumentException("Language cannot be empty.", nameof(value));
+
+        Value = value.Trim().ToUpper();
     }
+
+    public static implicit operator string(Language lang) => lang.Value;
+
+    public static explicit operator Language(string value) => new(value);
+
+    public override string ToString() => Value;
 }

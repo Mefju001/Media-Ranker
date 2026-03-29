@@ -2,7 +2,7 @@
 using Application.Common.Interfaces;
 using Application.Mapper;
 using Application.Notification;
-using Domain.Entity;
+using Domain.Aggregate;
 using Domain.Exceptions;
 using Domain.Value_Object;
 using MediatR;
@@ -14,16 +14,16 @@ namespace Application.Features.TvSeriesServices.AddListOfTvSeries
     {
         private readonly IUnitOfWork unitOfWork;
         private readonly IReferenceDataService referenceDataService;
-        private readonly ITvSeriesRepository tvSeriesRepository;
+        private readonly IMediaRepository mediaRepository;
         private readonly ILogger<AddListOfTvSeriesHandler> logger;
         private readonly IMediator mediator;
-        public AddListOfTvSeriesHandler(IMediator mediator, IReferenceDataService referenceDataService, ILogger<AddListOfTvSeriesHandler> logger, IUnitOfWork unitOfWork, ITvSeriesRepository tvSeriesRepository)
+        public AddListOfTvSeriesHandler(IMediator mediator, IReferenceDataService referenceDataService, ILogger<AddListOfTvSeriesHandler> logger, IUnitOfWork unitOfWork, IMediaRepository mediaRepository)
         {
             this.mediator = mediator;
             this.logger = logger;
             this.referenceDataService = referenceDataService;
             this.unitOfWork = unitOfWork;
-            this.tvSeriesRepository = tvSeriesRepository;
+            this.mediaRepository = mediaRepository;
         }
         public async Task<List<TvSeriesResponse>> Handle(AddListOfTvSeriesCommand requests, CancellationToken cancellationToken)
         {
@@ -39,7 +39,7 @@ namespace Application.Features.TvSeriesServices.AddListOfTvSeries
                 var genre = genres[tv.genre.name];
                 return TvSeries.Create(tv.title, tv.description, new Language(tv.Language), new ReleaseDate(tv.ReleaseDate), genre.Id, tv.Seasons, tv.Episodes, tv.Network, tv.Status);
             }).ToList();
-            await tvSeriesRepository.AddListOfTvSeries(tvSeries, cancellationToken);
+            await mediaRepository.AddRangeAsync(tvSeries, cancellationToken);
             await unitOfWork.CompleteAsync(cancellationToken);
             logger.LogInformation("Added list of TV series to the repository. TV series count: {TvSeriesCount}", tvSeries.Count);
             await mediator.Publish(new LogNotification("Information", "Nowa lista seriali została dodana.", nameof(AddListOfTvSeriesHandler)));

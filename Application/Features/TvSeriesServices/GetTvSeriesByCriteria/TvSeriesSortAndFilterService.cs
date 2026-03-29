@@ -1,16 +1,16 @@
 ﻿using Application.Common.Interfaces;
-using Domain.Entity;
+using Domain.Aggregate;
 using System.Linq.Expressions;
 
 namespace Application.Features.TvSeriesServices.GetTvSeriesByCriteria
 {
     public class TvSeriesSortAndFilterService : ITvSeriesSortAndFilterService
     {
-        private readonly ITvSeriesRepository tvSeriesRepository;
+        private readonly IMediaRepository mediaRepository;
         private readonly IGenreRepository genreRepository;
-        public TvSeriesSortAndFilterService(ITvSeriesRepository tvSeriesRepository, IGenreRepository genreRepository)
+        public TvSeriesSortAndFilterService(IMediaRepository mediaRepository, IGenreRepository genreRepository)
         {
-            this.tvSeriesRepository = tvSeriesRepository;
+            this.mediaRepository = mediaRepository;
             this.genreRepository = genreRepository;
         }
         public IQueryable<TvSeries> Handler(GetTvSeriesByCriteriaQuery request)
@@ -21,7 +21,7 @@ namespace Application.Features.TvSeriesServices.GetTvSeriesByCriteria
         }
         private IQueryable<TvSeries> ApplyFilters(GetTvSeriesByCriteriaQuery request)
         {
-            var query = tvSeriesRepository.AsQueryable();
+            var query = mediaRepository.GetAsQueryable<TvSeries>();
             if (!string.IsNullOrWhiteSpace(request.TitleSearch))
             {
                 query = query.Where(m => m.Title.Contains(request.TitleSearch));
@@ -33,7 +33,7 @@ namespace Application.Features.TvSeriesServices.GetTvSeriesByCriteria
                     tv => tv.GenreId,
                     g => g.Id,
                     (tv, g) => new { Tv = tv, Genre = g })
-                    .Where(tvg => tvg.Genre.name.Value.Contains(request.genreName))
+                    .Where(tvg => tvg.Genre.Name.Value.Contains(request.genreName))
                     .Select(tvg => tvg.Tv);
             }
             if (request.MinRating.HasValue)
@@ -70,8 +70,8 @@ namespace Application.Features.TvSeriesServices.GetTvSeriesByCriteria
             new(StringComparer.OrdinalIgnoreCase)
             {
                 ["Title"] = m => m.Title,
-                ["Rating"] = m => m.Stats.AverageRating!,
-                ["Date"] = m => m.ReleaseDate!,
+                ["Rating"] = m => m.Stats.AverageRating,
+                ["Date"] = m => m.ReleaseDate!.Value,
             };
     }
 }

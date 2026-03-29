@@ -3,7 +3,7 @@ using Application.Features.UserServices.ChangeDetails;
 using Application.Features.UserServices.ChangePassword;
 using Application.Features.UserServices.DeleteUser;
 using Application.Features.UserServices.GetBy;
-using Domain.Entity;
+using Domain.Aggregate;
 using Domain.Value_Object;
 using MediatR;
 using Microsoft.AspNetCore.Identity;

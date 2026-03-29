@@ -9,8 +9,8 @@ namespace Application.Mapper
         {
             return new DirectorResponse(
                 director.Id,
-                director.name,
-                director.surname
+                director.Name,
+                director.Surname
                );
         }
     }

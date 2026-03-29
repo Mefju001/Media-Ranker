@@ -1,6 +1,8 @@
-﻿namespace Domain.Value_Object
+﻿using Domain.Base;
+
+namespace Domain.Value_Object
 {
-    public class Fullname
+    public record Fullname:ValueObject
     {
         public string Name { get; init; }
         public string Surname { get; init; }
@@ -10,8 +12,8 @@
             if (string.IsNullOrWhiteSpace(name)) throw new ArgumentException("Name cannot be empty.");
             if (string.IsNullOrWhiteSpace(surname)) throw new ArgumentException("Surname cannot be empty.");
 
-            Name = name;
-            Surname = surname;
+            Name = name.Trim();
+            Surname = surname.Trim();
         }
 
         public override string ToString() => $"{Name} {Surname}";

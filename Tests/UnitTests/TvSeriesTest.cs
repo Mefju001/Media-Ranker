@@ -4,6 +4,7 @@ using Application.Features.TvSeriesServices.AddListOfTvSeries;
 using Application.Features.TvSeriesServices.GetAll;
 using Application.Features.TvSeriesServices.GetTvSeriesByCriteria;
 using Application.Features.TvSeriesServices.TvSeriesUpsert;
+using Domain.Aggregate;
 using Domain.Entity;
 using Domain.Enums;
 using Domain.Value_Object;

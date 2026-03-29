@@ -2,7 +2,7 @@
 using Application.Common.Interfaces;
 using Application.Mapper;
 using Application.Notification;
-using Domain.Entity;
+using Domain.Aggregate;
 using Domain.Value_Object;
 using MediatR;
 using Microsoft.Extensions.Logging;
@@ -12,18 +12,18 @@ namespace Application.Features.MovieServices.MovieUpsert
     public class MovieUpsertHandler : IRequestHandler<UpsertMovieCommand, MovieResponse>
     {
         private readonly IUnitOfWork unitOfWork;
-        private readonly IMovieRepository movieRepository;
+        private readonly IMediaRepository mediaRepository;
         private readonly IMediator mediator;
         private readonly IReferenceDataService referenceDataService;
         private readonly ILogger<MovieUpsertHandler> logger;
 
-        public MovieUpsertHandler(IUnitOfWork unitOfWork, ILogger<MovieUpsertHandler> logger, IReferenceDataService referenceDataService, IMediator mediator, IMovieRepository movieRepository)
+        public MovieUpsertHandler(IUnitOfWork unitOfWork, ILogger<MovieUpsertHandler> logger, IReferenceDataService referenceDataService, IMediator mediator, IMediaRepository mediaRepository)
         {
             this.logger = logger;
             this.unitOfWork = unitOfWork;
             this.mediator = mediator;
             this.referenceDataService = referenceDataService;
-            this.movieRepository = movieRepository;
+            this.mediaRepository = mediaRepository;
         }
 
         public async Task<MovieResponse> Handle(UpsertMovieCommand request, CancellationToken cancellationToken)
@@ -33,7 +33,7 @@ namespace Application.Features.MovieServices.MovieUpsert
             Movie? movie = null;
             if (request.id.HasValue)
             {
-                movie = await movieRepository.FirstOrDefaultAsync(request.id.Value, cancellationToken);
+                movie = await mediaRepository.GetByIdAsync<Movie>(request.id.Value, cancellationToken);
             }
             if (movie is not null)
             {
@@ -59,7 +59,7 @@ namespace Application.Features.MovieServices.MovieUpsert
                             director.Id,
                             new Duration(request.Duration),
                             request.IsCinemaRelease);
-                movie = await movieRepository.AddAsync(movie, cancellationToken);
+                movie = await mediaRepository.AddAsync(movie, cancellationToken);
                 logger.LogInformation("Creating new movie with title {movieTitle}", movie.Title);
             }
 

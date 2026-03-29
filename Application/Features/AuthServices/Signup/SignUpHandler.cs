@@ -1,6 +1,6 @@
 ﻿using Application.Common.Interfaces;
 using Application.Features.AuthServices.Common;
-using Domain.Entity;
+using Domain.Aggregate;
 using Domain.Value_Object;
 using MediatR;
 using Microsoft.Extensions.Logging;

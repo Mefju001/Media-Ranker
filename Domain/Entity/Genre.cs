@@ -1,23 +1,20 @@
-﻿using Domain.Value_Object;
+﻿using Domain.Base;
+using Domain.Value_Object;
 
-namespace Domain.Entity
+namespace Domain.Entity;
+
+public class Genre:Entity<int>
 {
-    public class Genre
-    {
-        public int Id { get; init; }
-        public GenreName name { get; private set; }
-        private Genre() { }
-        private Genre(GenreName name)
+    public GenreName Name { get; private set; } = default!;
+
+    private Genre() { }
+    public static Genre Create(string name, int id = 0)
+        => new Genre
         {
-            this.name = name;
-        }
-        public static Genre Create(string name)
-                => new(new GenreName(name));
+            Id = id,
+            Name = new GenreName(name)
+        };
 
-        public void Update(string name)
-            => this.name = new GenreName(name);
-
-        public static Genre Reconstruct(int id, string name)
-            => new(new GenreName(name)) { Id = id };
-    }
+    public void Update(string name)
+        => Name = new GenreName(name);
 }

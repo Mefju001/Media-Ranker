@@ -1,5 +1,5 @@
 ﻿using Application.Common.Interfaces;
-using Domain.Entity;
+using Domain.Aggregate;
 using Domain.Enums;
 using Infrastructure.DBModels;
 using Infrastructure.DBModels.Extensions;
@@ -66,9 +66,14 @@ namespace Infrastructure.Persistence.Repository
         {
             return await appDbContext.Users.AnyAsync(u => u.Email == email && u.Id != id);
         }
-        public async Task<IdentityResult?> DeleteUser(User user)
+        public async Task<IdentityResult?> DeleteUser(Guid id)
         {
-            var userModel = user.ToModel();
+            var userModel = await userManager.FindByIdAsync(id.ToString());
+
+            if (userModel == null)
+            {
+                return IdentityResult.Failed(new IdentityError { Description = "User not found in store." });
+            }
             var result = await userManager.DeleteAsync(userModel);
             return result;
         }

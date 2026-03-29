@@ -1,22 +1,23 @@
 ﻿using Application.Common.DTO.Response;
 using Application.Common.Interfaces;
 using Application.Mapper;
+using Domain.Aggregate;
 using MediatR;
 
 namespace Application.Features.GamesServices.GetAll
 {
     public class GetAllHandler : IRequestHandler<GetAllQuery, List<GameResponse>>
     {
-        private readonly IGameRepository gameRepository;
+        private readonly IMediaRepository mediaRepository;
         private readonly IGenreRepository genreRepository;
-        public GetAllHandler(IGameRepository gameRepository, IGenreRepository genreRepository)
+        public GetAllHandler(IMediaRepository mediaRepository, IGenreRepository genreRepository)
         {
-            this.gameRepository = gameRepository;
+            this.mediaRepository = mediaRepository;
             this.genreRepository = genreRepository;
         }
         public async Task<List<GameResponse>> Handle(GetAllQuery request, CancellationToken cancellationToken)
         {
-            var games = await gameRepository.GetAllAsync(cancellationToken);
+            var games = await mediaRepository.GetAll<Game>(cancellationToken);
             var genres = await genreRepository.GetGenresDictionary(cancellationToken);
             var gameResponses = games.Select(g =>
                 GameMapper.ToGameResponse(g, genres[g.GenreId])).ToList();

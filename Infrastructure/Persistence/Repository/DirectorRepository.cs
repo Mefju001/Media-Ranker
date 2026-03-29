@@ -13,7 +13,7 @@ namespace Infrastructure.Persistence.Repository
         }
         public async Task<Director?> FirstOrDefaultForNameAndSurnameAsync(string name, string surname, CancellationToken cancellationToken)
         {
-            return await context.Directors.AsNoTracking().FirstOrDefaultAsync(d => d.name == name && d.surname == surname, cancellationToken);
+            return await context.Directors.AsNoTracking().FirstOrDefaultAsync(d => d.Name == name && d.Surname == surname, cancellationToken);
         }
         public async Task<Director> AddAsync(Director directorDomain, CancellationToken cancellationToken)
         {
@@ -28,7 +28,7 @@ namespace Infrastructure.Persistence.Repository
         {
             var names = fullnames.Select(x => x.Item1).Distinct().ToList();
             var surnames = fullnames.Select(x => x.Item2).Distinct().ToList();
-            var results = await context.Directors.Where(d => names.Contains(d.name) && surnames.Contains(d.surname)).AsNoTracking().ToListAsync(cancellationToken);
+            var results = await context.Directors.Where(d => names.Contains(d.Name) && surnames.Contains(d.Surname)).AsNoTracking().ToListAsync(cancellationToken);
             return results;
         }
 

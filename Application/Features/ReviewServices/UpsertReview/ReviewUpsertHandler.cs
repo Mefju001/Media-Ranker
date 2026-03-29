@@ -43,11 +43,8 @@ namespace Application.Features.ReviewServices.UpsertReview
                 {
                     throw new ArgumentException("UserId and MediaId must be provided for creating a new review.");
                 }
-                var userTask = userRepository.GetUserById(request.userId.Value, cancellationToken);
-                var mediaTask = mediaRepository.GetMediaById(request.mediaId.Value, cancellationToken);
-                await Task.WhenAll(userTask, mediaTask);
-                var user = await userTask;
-                var media = await mediaTask;
+                var user = await userRepository.GetUserById(request.userId.Value, cancellationToken);
+                var media = await mediaRepository.GetByIdAsync(request.mediaId.Value, cancellationToken);
                 if (user is null)
                 {
                     throw new NotFoundException($"User with id {request.userId.Value} not found.");
@@ -56,8 +53,9 @@ namespace Application.Features.ReviewServices.UpsertReview
                 {
                     throw new NotFoundException($"Media with id {request.mediaId.Value} not found.");
                 }
-                reviewDomain = Review.Create(new Rating(request.Rating), request.Comment, media.Id, user.Id, new Username(user.Username.ToString()));
-                reviewDomain = await reviewRepository.AddAsync(reviewDomain, cancellationToken);
+                reviewDomain = Review.Create(new Rating(request.Rating), request.Comment, media.Id, user.Id, new Username(user.Username.Value));
+                media.AddReview(reviewDomain);
+                //reviewDomain = await reviewRepository.AddAsync(reviewDomain, cancellationToken);
                 logger.LogInformation("Created new review with id {ReviewId}", reviewDomain.Id);
             }
             await unitOfWork.CompleteAsync(cancellationToken);

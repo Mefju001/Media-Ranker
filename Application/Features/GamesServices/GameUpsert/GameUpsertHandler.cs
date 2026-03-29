@@ -2,7 +2,7 @@
 using Application.Common.Interfaces;
 using Application.Mapper;
 using Application.Notification;
-using Domain.Entity;
+using Domain.Aggregate;
 using Domain.Value_Object;
 using MediatR;
 using Microsoft.Extensions.Logging;
@@ -12,14 +12,14 @@ namespace Application.Features.GamesServices.GameUpsert
     public class GameUpsertHandler : IRequestHandler<UpsertGameCommand, GameResponse>
     {
         private readonly IUnitOfWork unitOfWork;
-        private readonly IGameRepository gameRepository;
+        private readonly IMediaRepository mediaRepository;
         private readonly IMediator mediator;
         private readonly IReferenceDataService referenceDataService;
         private readonly ILogger<GameUpsertHandler> logger;
 
-        public GameUpsertHandler(IUnitOfWork unitOfWork, IReferenceDataService referenceDataService, IMediator mediator, IGameRepository gameRepository, ILogger<GameUpsertHandler> logger)
+        public GameUpsertHandler(IUnitOfWork unitOfWork, IReferenceDataService referenceDataService, IMediator mediator, IMediaRepository mediaRepository, ILogger<GameUpsertHandler> logger)
         {
-            this.gameRepository = gameRepository;
+            this.mediaRepository = mediaRepository;
             this.unitOfWork = unitOfWork;
             this.mediator = mediator;
             this.referenceDataService = referenceDataService;
@@ -32,7 +32,7 @@ namespace Application.Features.GamesServices.GameUpsert
             Game? game = null;
             if (request.id.HasValue)
             {
-                game = await gameRepository.GetGameDomainAsync(request.id.Value, cancellationToken);
+                game = await mediaRepository.GetByIdAsync<Game>(request.id.Value, cancellationToken);
             }
             if (game != null)
             {
@@ -57,7 +57,7 @@ namespace Application.Features.GamesServices.GameUpsert
                     new ReleaseDate(request.ReleaseDate!.Value),
                     genre.Id, request.Developer!,
                     request.Platform);
-                game = await gameRepository.AddGameAsync(game, cancellationToken);
+                game = await mediaRepository.AddAsync<Game>(game, cancellationToken);
                 logger.LogInformation("Creating new game with title {GameTitle}", game.Title);
             }
             await unitOfWork.CompleteAsync(cancellationToken);

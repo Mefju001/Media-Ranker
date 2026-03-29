@@ -1,45 +1,45 @@
-﻿namespace Domain.Entity
+﻿using Domain.Base;
+
+namespace Domain.Entity;
+
+public class Token:Entity<string>
 {
-    public class Token
+    public string RefreshToken { get; private set; } = default!;
+    public Guid UserId { get; init; }
+    public DateTime IssuedAt { get; init; }
+    public DateTime ExpiryDate { get; init; }
+    public bool IsRevoked { get; private set; }
+    public DateTime? RevokedAt { get; private set; }
+    public string? CreatedByIp { get; init; }
+    public string? UserAgent { get; init; }
+
+
+    public bool IsExpired => DateTime.UtcNow >= ExpiryDate;
+    public bool IsActive => !IsRevoked && !IsExpired;
+
+    private Token() { }
+
+    public static Token Create(string jti, string token, Guid userId, string? ip, string? ua, int daysToExpiry = 7)
     {
-        public string Jti { get; private set; } = string.Empty;
-        public string refreshToken { get; private set; } = string.Empty;
-        public Guid UserId { get; private set; }
-        public DateTime IssuedAt { get; private set; }
-        public DateTime ExpiryDate { get; private set; }
-        public bool IsRevoked { get; private set; } = false;
-        public DateTime? RevokedAt { get; private set; }
-        public string? CreatedByIp { get; private set; }
-        public string? UserAgent { get; private set; }
-        //public bool IsExpired => DateTime.UtcNow >= ExpiryDate;
-        //public bool IsActive => !IsRevoked && !IsExpired;
-        private Token() { }
-        private Token(string jti, string refreshToken, Guid userId, string? createdByIp, string? userAgent)
-        {
-            Jti = jti;
-            this.refreshToken = refreshToken;
-            UserId = userId;
-            CreatedByIp = createdByIp;
-            UserAgent = userAgent;
-            IssuedAt = DateTime.UtcNow;
-            ExpiryDate = DateTime.UtcNow.AddDays(7);
-            IsRevoked = false;
-        }
+        if (string.IsNullOrWhiteSpace(jti)) throw new ArgumentException("JTI is required.");
 
-        public static Token CreateToken(string jti, string token, Guid userId, string? createdByIp, string? userAgent, int daysToExpiry = 7)
+        return new Token
         {
-            if (string.IsNullOrWhiteSpace(jti)) throw new ArgumentException("JTI cannot be empty");
-            if (string.IsNullOrWhiteSpace(token)) throw new ArgumentException("Token cannot be empty");
+            Id = jti,
+            RefreshToken = token,
+            UserId = userId,
+            CreatedByIp = ip,
+            UserAgent = ua,
+            IssuedAt = DateTime.UtcNow,
+            ExpiryDate = DateTime.UtcNow.AddDays(daysToExpiry),
+            IsRevoked = false
+        };
+    }
 
-            return new Token(jti, token, userId, createdByIp, userAgent);
-        }
-        public void Revoke()
-        {
-            if (!IsRevoked)
-            {
-                IsRevoked = true;
-                RevokedAt = DateTime.UtcNow;
-            }
-        }
+    public void Revoke()
+    {
+        if (IsRevoked) return;
+        IsRevoked = true;
+        RevokedAt = DateTime.UtcNow;
     }
 }

@@ -1,7 +1,7 @@
 ﻿using Application.Common.DTO.Response;
 using Application.Common.Interfaces;
 using Application.Mapper;
-using Domain.Entity;
+using Domain.Aggregate;
 using MediatR;
 
 namespace Application.Features.LikedServices.GetAllLiked
@@ -28,8 +28,8 @@ namespace Application.Features.LikedServices.GetAllLiked
             var likedItems = await likedMediaRepository.GetAll(cancellationToken);
             if (!likedItems.Any()) return new List<LikedMediaResponse>();
 
-            var userIds = likedItems.Select(x => x.userId).Distinct().ToList();
-            var mediaIds = likedItems.Select(x => x.mediaId).Distinct().ToList();
+            var userIds = likedItems.Select(x => x.UserId).Distinct().ToList();
+            var mediaIds = likedItems.Select(x => x.MediaId).Distinct().ToList();
 
             var users = await userRepository.GetByIds(userIds, cancellationToken);
             var mediaList = await mediaRepository.GetByIds(mediaIds, cancellationToken);
@@ -40,8 +40,8 @@ namespace Application.Features.LikedServices.GetAllLiked
             var result = new List<LikedMediaResponse>();
             foreach (var lm in likedItems)
             {
-                if (!users.TryGetValue(lm.userId, out var user) ||
-                   !mediaList.TryGetValue(lm.mediaId, out var media))
+                if (!users.TryGetValue(lm.UserId, out var user) ||
+                   !mediaList.TryGetValue(lm.MediaId, out var media))
                     continue;
                 genres.TryGetValue(media.GenreId, out var genre);
                 result.Add(media switch

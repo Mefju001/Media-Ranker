@@ -1,10 +1,13 @@
 ﻿namespace Domain.Enums
 {
+    [Flags]
     public enum EPlatform
     {
-        Unknown = 0,
+        None = 0,
         PC = 1,
         Playstation = 2,
-        Xbox = 3
+        Xbox = 4,
+        Nintendo = 8,
+        Mobile = 16
     }
 }

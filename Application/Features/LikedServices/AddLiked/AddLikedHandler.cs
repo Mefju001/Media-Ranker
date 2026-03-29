@@ -1,6 +1,7 @@
 ﻿using Application.Common.DTO.Response;
 using Application.Common.Interfaces;
 using Application.Mapper;
+using Domain.Aggregate;
 using Domain.Entity;
 using Domain.Exceptions;
 using MediatR;
@@ -31,7 +32,7 @@ namespace Application.Features.LikedServices.AddLiked
 
         public async Task<LikedMediaResponse> Handle(AddLikedCommand request, CancellationToken cancellationToken)
         {
-            var media = await mediaRepository.GetMediaById(request.MediaId, cancellationToken);
+            var media = await mediaRepository.GetByIdAsync(request.MediaId, cancellationToken);
             var user = await userRepository.GetUserById(request.UserId, cancellationToken);
             if (media is null || user is null)
             {

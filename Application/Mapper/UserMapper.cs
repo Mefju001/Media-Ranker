@@ -1,5 +1,5 @@
 ﻿using Application.Common.DTO.Response;
-using Domain.Entity;
+using Domain.Aggregate;
 
 namespace Application.Mapper
 {
@@ -11,7 +11,6 @@ namespace Application.Mapper
             return new UserResponse(
                 user.Id,
                 user.Username.Value,
-                user.Password.HashValue,
                 user.Fullname.Name,
                 user.Fullname.Surname,
                 user.Email.Value,

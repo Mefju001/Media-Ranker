@@ -1,5 +1,5 @@
 ﻿using Application.Common.Interfaces;
-using Domain.Entity;
+using Domain.Aggregate;
 using System.Linq.Expressions;
 
 namespace Application.Features.GamesServices.GetGamesByCriteria
@@ -7,11 +7,11 @@ namespace Application.Features.GamesServices.GetGamesByCriteria
     public class GameSortAndFilterService : IGameSortAndFilterService
     {
 
-        private readonly IGameRepository gameRepository;
+        private readonly IMediaRepository mediaRepository;
         private readonly IGenreRepository genreRepository;
-        public GameSortAndFilterService(IGameRepository gameRepository, IGenreRepository genreRepository)
+        public GameSortAndFilterService(IMediaRepository mediaRepository, IGenreRepository genreRepository)
         {
-            this.gameRepository = gameRepository;
+            this.mediaRepository = mediaRepository;
             this.genreRepository = genreRepository;
         }
         public IQueryable<Game> GetGamesByCriteriaAsync(GetGamesByCriteriaQuery request)
@@ -22,7 +22,7 @@ namespace Application.Features.GamesServices.GetGamesByCriteria
         }
         private IQueryable<Game> ApplyFiltersAsync(GetGamesByCriteriaQuery request)
         {
-            var query = gameRepository.AsQueryable();
+            var query = mediaRepository.GetAsQueryable<Game>();
             if (!string.IsNullOrWhiteSpace(request.title))
             {
                 query = query.Where(m => m.Title.Contains(request.title));
@@ -35,7 +35,7 @@ namespace Application.Features.GamesServices.GetGamesByCriteria
                     genre => genre.Id,
                     (game, genre) => new { game, genre }
                     )
-                    .Where(ge => ge.genre.name.Value.Contains(request.genreName))
+                    .Where(ge => ge.genre.Name.Value.Contains(request.genreName))
                     .Select(ge => ge.game);
             }
             if (request.MinRating.HasValue)
@@ -72,8 +72,8 @@ namespace Application.Features.GamesServices.GetGamesByCriteria
             new(StringComparer.OrdinalIgnoreCase)
             {
                 ["Title"] = m => m.Title,
-                ["Rating"] = m => m.Stats.AverageRating!,
-                ["Date"] = m => m.ReleaseDate!,
+                ["Rating"] = m => m.Stats.AverageRating,
+                ["Date"] = m => m.ReleaseDate!.Value,
             };
     }
 }

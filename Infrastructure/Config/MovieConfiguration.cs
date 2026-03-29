@@ -1,6 +1,11 @@
-﻿using Domain.Entity;
+﻿using Domain.Aggregate;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 
 namespace Infrastructure.Config
 {
@@ -8,15 +13,18 @@ namespace Infrastructure.Config
     {
         public void Configure(EntityTypeBuilder<Movie> builder)
         {
-            builder
-                .HasOne<Director>()
-                .WithMany()
-                .HasForeignKey(m => m.DirectorId)
-                .OnDelete(DeleteBehavior.Restrict);
             builder.OwnsOne(m => m.Duration, d =>
             {
-                d.Property(x => x.Value).HasColumnName("Duration");
+                d.Property(p => p.Value)
+                    .HasColumnName("DurationMinutes")
+                    .IsRequired();
             });
+
+            builder.Property(m => m.IsCinemaRelease)
+                .HasColumnName("IsCinemaRelease");
+
+            builder.Property(m => m.DirectorId)
+                .IsRequired();
         }
     }
 }

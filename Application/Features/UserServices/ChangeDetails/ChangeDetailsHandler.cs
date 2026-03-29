@@ -22,7 +22,7 @@ namespace Application.Features.UserServices.ChangeDetails
             var user = await userRepository.GetUserById(request.userId, cancellationToken) ?? throw new UserNotFoundException("Not found user");
             var emailExist = await userRepository.IsAnyUserWhoHaveEmailAndId(request.email, request.userId);
             if (emailExist) throw new EmailAlreadyExistsException("This email is taken.");
-            user.Update(request.name, request.surname, new Email(request.email));
+            user.UpdateProfile(new Fullname(request.name, request.surname), new Email(request.email));
             await unitOfWork.CompleteAsync(cancellationToken);
             return Unit.Value;
         }

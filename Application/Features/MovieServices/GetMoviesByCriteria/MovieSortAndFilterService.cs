@@ -1,17 +1,17 @@
 ﻿using Application.Common.Interfaces;
-using Domain.Entity;
+using Domain.Aggregate;
 using System.Linq.Expressions;
 
 namespace Application.Features.MovieServices.GetMoviesByCriteria
 {
     public class MovieSortAndFilterService : IMovieSortAndFilterService
     {
-        private readonly IMovieRepository movieRepository;
+        private readonly IMediaRepository mediaRepository;
         private readonly IGenreRepository genreRepository;
         private readonly IDirectorRepository directorRepository;
-        public MovieSortAndFilterService(IMovieRepository movieRepository, IGenreRepository genreRepository, IDirectorRepository directorRepository)
+        public MovieSortAndFilterService(IMediaRepository mediaRepository, IGenreRepository genreRepository, IDirectorRepository directorRepository)
         {
-            this.movieRepository = movieRepository;
+            this.mediaRepository = mediaRepository;
             this.genreRepository = genreRepository;
             this.directorRepository = directorRepository;
         }
@@ -23,7 +23,7 @@ namespace Application.Features.MovieServices.GetMoviesByCriteria
         }
         private IQueryable<Movie> ApplyFilters(GetMoviesByCriteriaQuery request)
         {
-            var query = movieRepository.AsQueryable();
+            var query = mediaRepository.GetAsQueryable<Movie>();
             if (!string.IsNullOrWhiteSpace(request.TitleSearch))
             {
                 query = query.Where(m => m.Title.Contains(request.TitleSearch));
@@ -35,7 +35,7 @@ namespace Application.Features.MovieServices.GetMoviesByCriteria
                     movie => movie.GenreId,
                     genre => genre.Id,
                     (movie, genre) => new { Movie = movie, Genre = genre })
-                    .Where(mg => mg.Genre.name.Value.Contains(request.genreName))
+                    .Where(mg => mg.Genre.Name.Value.Contains(request.genreName))
                     .Select(mg => mg.Movie);
             }
             if (request.MinRating.HasValue)
@@ -54,7 +54,7 @@ namespace Application.Features.MovieServices.GetMoviesByCriteria
                     movie => movie.DirectorId,
                     director => director.Id,
                     (movie, directorQuery) => new { Movie = movie, Director = directorQuery })
-                    .Where(md => md.Director.name.Contains(request.DirectorName!) && md.Director.surname.Contains(request.DirectorSurname!))
+                    .Where(md => md.Director.Name.Contains(request.DirectorName!) && md.Director.Surname.Contains(request.DirectorSurname!))
                     .Select(md => md.Movie);
             }
             return query;
@@ -80,7 +80,7 @@ namespace Application.Features.MovieServices.GetMoviesByCriteria
             {
                 ["Title"] = m => m.Title,
                 ["Rating"] = m => m.Stats.AverageRating!,
-                ["Date"] = m => m.ReleaseDate!,
+                ["Date"] = m => m.ReleaseDate!.Value,
                 ["Director"] = m => m.DirectorId
             };
     }

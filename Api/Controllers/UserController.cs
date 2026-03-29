@@ -2,6 +2,7 @@
 using Application.Common.Interfaces;
 using Application.Features.UserServices.ChangeDetails;
 using Application.Features.UserServices.ChangePassword;
+using Application.Features.UserServices.DeleteUser;
 using Application.Features.UserServices.GetBy;
 using Application.Features.UserServices.GetById;
 using MediatR;
@@ -77,6 +78,19 @@ namespace Api.Controllers
             var command = new ChangeDetailsCommand(userId.Value, userDetailsRequest.name, userDetailsRequest.surname, userDetailsRequest.email);
             await mediator.Send(command);
             return Ok();
+        }
+        [Authorize(Roles = "Admin,User")]
+        [HttpDelete]
+        public async Task<IActionResult>DeleteUserByYourself()
+        {
+            var userId = getUserId();
+            if (userId == null)
+            {
+                return Unauthorized();
+            }
+            var command = new DeleteUserCommand(userId.Value);
+            await mediator.Send(command);
+            return NoContent();
         }
     }
 }

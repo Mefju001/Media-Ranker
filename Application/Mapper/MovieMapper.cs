@@ -1,4 +1,5 @@
 using Application.Common.DTO.Response;
+using Domain.Aggregate;
 using Domain.Entity;
 
 namespace Application.Mapper
@@ -14,7 +15,7 @@ namespace Application.Mapper
                 GenreMapper.ToResponse(genreDomain) ?? new GenreResponse(0, "Nie podano"),
                 DirectorMapper.ToResponse(director) ?? new DirectorResponse(0, "Nie znany", "nie znany"),
                 movieDomain.ReleaseDate.Value,
-                movieDomain.Language.value,
+                movieDomain.Language,
                 movieDomain.Reviews?.Select(r => ReviewMapper.ToResponse(r)).ToList() ?? new List<ReviewResponse>(),
                 MediaStatsMapper.ToResponse(movieDomain.Stats) ?? new MediaStatsResponse(0, 0, null),
                 movieDomain.Duration.Value,

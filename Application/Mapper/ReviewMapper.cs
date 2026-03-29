@@ -11,10 +11,10 @@ namespace Application.Mapper
                 review.Id,
                 review.MediaId,
                 review.Username.Value,
-                review.Rating.value,
+                review.Rating,
                 review.Comment,
-                review.CreatedAt,
-                review.LastModifiedAt);
+                review.AuditInfo.CreatedAt,
+                review.AuditInfo.UpdatedAt);
 
         }
 

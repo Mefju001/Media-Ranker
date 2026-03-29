@@ -4,6 +4,7 @@ using Application.Features.GamesServices.AddListOfGames;
 using Application.Features.GamesServices.GameUpsert;
 using Application.Features.GamesServices.GetAll;
 using Application.Features.GamesServices.GetGamesByCriteria;
+using Domain.Aggregate;
 using Domain.Entity;
 using Domain.Enums;
 using Domain.Value_Object;
@@ -50,7 +51,7 @@ namespace UnitTests
         {
             List<Game> games = new List<Game>
             {
-                Game.Reconstruct(1, "Game 1", "Description 1", new Language("English"), new ReleaseDate(DateTime.UtcNow), 1, "Developer 1", EPlatform.PC, new MediaStats(6,2)),
+                Game.Create(1, "Game 1", "Description 1", new Language("English"), new ReleaseDate(DateTime.UtcNow), 1, "Developer 1", EPlatform.PC, new MediaStats(6,2)),
                 Game.Reconstruct(2, "Game 2", "Description 2", new Language("English"), new ReleaseDate(DateTime.UtcNow), 2, "Developer 2", EPlatform.Xbox,new MediaStats(6,3))
             };
             Dictionary<int, Genre> genres = new Dictionary<int, Genre>

@@ -9,7 +9,7 @@ namespace Application.Mapper
         {
             return new GenreResponse(
                 genre.Id,
-                genre.name.Value);
+                genre.Name.Value);
         }
     }
 }

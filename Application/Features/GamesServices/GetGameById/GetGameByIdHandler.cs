@@ -1,6 +1,7 @@
 ﻿using Application.Common.DTO.Response;
 using Application.Common.Interfaces;
 using Application.Mapper;
+using Domain.Aggregate;
 using Domain.Exceptions;
 using MediatR;
 using Microsoft.Extensions.Logging;
@@ -9,20 +10,20 @@ namespace Application.Features.GamesServices.GetGameById
 {
     public class GetGameByIdHandler : IRequestHandler<GetGameByIdQuery, GameResponse?>
     {
-        private readonly IGameRepository gameRepository;
+        private readonly IMediaRepository mediaRepository;
         private readonly IGenreRepository genreRepository;
         private readonly ILogger<GetGameByIdHandler> logger;
 
-        public GetGameByIdHandler(IGameRepository gameRepository, IGenreRepository genreRepository, ILogger<GetGameByIdHandler> logger)
+        public GetGameByIdHandler(IMediaRepository mediaRepository, IGenreRepository genreRepository, ILogger<GetGameByIdHandler> logger)
         {
-            this.gameRepository = gameRepository;
+            this.mediaRepository = mediaRepository;
             this.genreRepository = genreRepository;
             this.logger = logger;
         }
 
         public async Task<GameResponse?> Handle(GetGameByIdQuery request, CancellationToken cancellationToken)
         {
-            var game = await gameRepository.GetGameDomainAsync(request.id, cancellationToken);
+            var game = await mediaRepository.GetByIdAsync<Game>(request.id, cancellationToken);
             if (game == null)
             {
                 logger.LogWarning("Game with ID {GameId} was not found.", request.id);

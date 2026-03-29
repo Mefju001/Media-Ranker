@@ -1,7 +1,7 @@
 ﻿using Application.Common.DTO.Response;
 using Application.Common.Interfaces;
 using Application.Mapper;
-using Domain.Entity;
+using Domain.Aggregate;
 using Domain.Exceptions;
 using MediatR;
 
@@ -31,7 +31,7 @@ namespace Application.Features.LikedServices.GetAllLikedByUser
                 return new List<LikedMediaResponse>();
             var user = await userRepository.GetUserById(request.userId, cancellationToken);
             if (user == null) throw new NotFoundException("User not found");
-            var mediaIds = likedItems.Select(r => r.mediaId).Distinct().ToList();
+            var mediaIds = likedItems.Select(r => r.MediaId).Distinct().ToList();
             var medias = await mediaRepository.GetByIds(mediaIds, cancellationToken);
             var genresIds = medias.Values.Select(m => m.GenreId).Distinct().ToList();
             var genres = await genreRepository.GetByIdsAsync(genresIds, cancellationToken);
@@ -40,7 +40,7 @@ namespace Application.Features.LikedServices.GetAllLikedByUser
             var results = new List<LikedMediaResponse>();
             foreach (var item in likedItems)
             {
-                if (!medias.TryGetValue(item.mediaId, out var media)) continue;
+                if (!medias.TryGetValue(item.MediaId, out var media)) continue;
 
                 genres.TryGetValue(media.GenreId, out var genre);
 

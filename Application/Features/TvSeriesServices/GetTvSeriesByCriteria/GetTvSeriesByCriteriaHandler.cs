@@ -8,14 +8,14 @@ namespace Application.Features.TvSeriesServices.GetTvSeriesByCriteria
 {
     public class GetTvSeriesByCriteriaHandler : IRequestHandler<GetTvSeriesByCriteriaQuery, List<TvSeriesResponse>>
     {
-        private readonly ITvSeriesRepository tvSeriesRepository;
+        private readonly IMediaRepository mediaRepository;
         private readonly IGenreRepository genreRepository;
         private readonly ITvSeriesSortAndFilterService SortAndFilterService;
 
-        public GetTvSeriesByCriteriaHandler(ITvSeriesSortAndFilterService sortAndFilterService, ITvSeriesRepository tvSeriesRepository, IGenreRepository genreRepository)
+        public GetTvSeriesByCriteriaHandler(ITvSeriesSortAndFilterService sortAndFilterService, IMediaRepository mediaRepository, IGenreRepository genreRepository)
         {
             SortAndFilterService = sortAndFilterService;
-            this.tvSeriesRepository = tvSeriesRepository;
+            this.mediaRepository = mediaRepository;
             this.genreRepository = genreRepository;
         }
 
@@ -23,7 +23,7 @@ namespace Application.Features.TvSeriesServices.GetTvSeriesByCriteria
         public async Task<List<TvSeriesResponse>> Handle(GetTvSeriesByCriteriaQuery request, CancellationToken cancellationToken)
         {
             var query = SortAndFilterService.Handler(request);
-            var result = await tvSeriesRepository.ToListAsync(query, cancellationToken);
+            var result = await mediaRepository.FromAsQueryableToList(query, cancellationToken);
             var genres = await genreRepository.GetGenresDictionary(cancellationToken);
             var Response = result.Select(tvSeries =>
             {

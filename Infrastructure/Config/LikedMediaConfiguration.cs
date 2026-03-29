@@ -1,23 +1,29 @@
 ﻿using Domain.Entity;
+using Infrastructure.Config.ExtensionsMethodForConfig;
 using Infrastructure.DBModels;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace Infrastructure.Config
 {
-    public class LikedMediaConfiguration : IEntityTypeConfiguration<LikedMedia>
+    public class LikedMediaConfiguration : EntityConfiguration<LikedMedia,int>
     {
-        public void Configure(Microsoft.EntityFrameworkCore.Metadata.Builders.EntityTypeBuilder<LikedMedia> builder)
+        public override void Configure(EntityTypeBuilder<LikedMedia> builder)
         {
-            builder.HasIndex(lm => new { lm.userId, lm.mediaId })
+            builder.HasIndex(lm => new { lm.UserId, lm.MediaId })
                 .IsUnique();
             builder
                 .HasOne<UserModel>()
                 .WithMany()
-                .HasForeignKey(lm => lm.userId);
+                .HasForeignKey(lm => lm.UserId)
+                .OnDelete(DeleteBehavior.Cascade); ;
             builder
                 .HasOne<Media>()
                 .WithMany()
-                .HasForeignKey(lm => lm.mediaId);
+                .HasForeignKey(lm => lm.MediaId)
+                .OnDelete(DeleteBehavior.Cascade);
+            builder.Property(lm => lm.LikedDate)
+           .IsRequired();
         }
     }
 }

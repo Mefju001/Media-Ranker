@@ -1,4 +1,4 @@
-﻿using Domain.Entity;
+﻿using Domain.Aggregate;
 using Domain.Enums;
 using Domain.Value_Object;
 
@@ -9,13 +9,12 @@ namespace Infrastructure.DBModels.Extensions
     {
         public static User ToDomain(this UserModel model, List<ERole> roles)
         {
-            return User.Reconstruct(
-                model.Id,
+            return User.Create(
                 new Username(model.UserName!),
                 new Password(model.PasswordHash!),
                 new Fullname(model.Name, model.Surname),
                 new Email(model.Email!),
-                new CreatedAt(model.CreatedAt),
+                model.Id,
                 model.IsActived,
                 roles
                 );
@@ -29,7 +28,8 @@ namespace Infrastructure.DBModels.Extensions
                 user.Fullname.Name,
                 user.Fullname.Surname,
                 user.Email.Value,
-                user.CreatedAt.Value,
+                user.AuditInfo.CreatedAt,
+                user.AuditInfo.UpdatedAt,
                 user.IsActive);
         }
     }

@@ -11,10 +11,11 @@ namespace Infrastructure.Config
         {
             builder.ToTable("AspNetUserRoles");
 
-            builder.HasOne<UserModel>()
-                  .WithMany(u => u.Roles)
-                  .HasForeignKey(ur => ur.UserId)
-                  .IsRequired();
+            builder.HasOne<RoleModel>()
+                   .WithMany()
+                   .HasForeignKey(ur => ur.RoleId)
+                   .IsRequired()
+                   .OnDelete(DeleteBehavior.Cascade);
         }
     }
 }
