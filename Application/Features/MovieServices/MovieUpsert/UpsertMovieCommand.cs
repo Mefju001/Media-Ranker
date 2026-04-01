@@ -1,5 +1,6 @@
 ﻿using Application.Common.DTO.Request;
 using Application.Common.DTO.Response;
+using Application.Common.Interfaces;
 using MediatR;
 
 namespace Application.Features.MovieServices.MovieUpsert
@@ -13,5 +14,5 @@ namespace Application.Features.MovieServices.MovieUpsert
         DateTime? ReleaseDate,
         string Language,
         TimeSpan Duration,
-        bool IsCinemaRelease) : IRequest<MovieResponse>;
+        bool IsCinemaRelease) : ICommand<MovieResponse>;
 }

@@ -1,10 +1,11 @@
 ﻿using Application.Common.DTO.Response;
+using Application.Common.Interfaces;
 using Domain.Enums;
 using MediatR;
 
 namespace Application.Features.TvSeriesServices.GetTvSeriesByCriteria
 {
-    public class GetTvSeriesByCriteriaQuery() : IRequest<List<TvSeriesResponse>>
+    public class GetTvSeriesByCriteriaQuery() : IQuery<List<TvSeriesResponse>>
     {
         public string? TitleSearch { get; set; }
         public double? MinRating { get; set; }

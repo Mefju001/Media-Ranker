@@ -10,11 +10,11 @@ namespace Application.Features.GamesServices.GetGameById
 {
     public class GetGameByIdHandler : IRequestHandler<GetGameByIdQuery, GameResponse?>
     {
-        private readonly IMediaRepository mediaRepository;
+        private readonly IMediaRepository<Game> mediaRepository;
         private readonly IGenreRepository genreRepository;
         private readonly ILogger<GetGameByIdHandler> logger;
 
-        public GetGameByIdHandler(IMediaRepository mediaRepository, IGenreRepository genreRepository, ILogger<GetGameByIdHandler> logger)
+        public GetGameByIdHandler(IMediaRepository<Game> mediaRepository, IGenreRepository genreRepository, ILogger<GetGameByIdHandler> logger)
         {
             this.mediaRepository = mediaRepository;
             this.genreRepository = genreRepository;
@@ -23,13 +23,13 @@ namespace Application.Features.GamesServices.GetGameById
 
         public async Task<GameResponse?> Handle(GetGameByIdQuery request, CancellationToken cancellationToken)
         {
-            var game = await mediaRepository.GetByIdAsync<Game>(request.id, cancellationToken);
+            var game = await mediaRepository.GetByIdAsync(request.id, cancellationToken);
             if (game == null)
             {
                 logger.LogWarning("Game with ID {GameId} was not found.", request.id);
                 throw new NotFoundException("not found");
             }
-            var genre = await genreRepository.Get(game.GenreId, cancellationToken);
+            var genre = await genreRepository.GetByIdAsync(game.GenreId, cancellationToken);
             if (genre == null)
             {
                 logger.LogWarning("Genre with ID {GenreId} was not found for Game ID {GameId}.", game.GenreId, request.id);

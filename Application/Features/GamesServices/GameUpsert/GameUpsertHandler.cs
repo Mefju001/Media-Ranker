@@ -11,28 +11,26 @@ namespace Application.Features.GamesServices.GameUpsert
 {
     public class GameUpsertHandler : IRequestHandler<UpsertGameCommand, GameResponse>
     {
-        private readonly IUnitOfWork unitOfWork;
-        private readonly IMediaRepository mediaRepository;
+        private readonly IMediaRepository<Game> mediaRepository;
         private readonly IMediator mediator;
-        private readonly IReferenceDataService referenceDataService;
+        private readonly IGenreHelperService genreHelperService;
         private readonly ILogger<GameUpsertHandler> logger;
 
-        public GameUpsertHandler(IUnitOfWork unitOfWork, IReferenceDataService referenceDataService, IMediator mediator, IMediaRepository mediaRepository, ILogger<GameUpsertHandler> logger)
+        public GameUpsertHandler( IGenreHelperService genreHelperService, IMediator mediator, IMediaRepository<Game> mediaRepository, ILogger<GameUpsertHandler> logger)
         {
             this.mediaRepository = mediaRepository;
-            this.unitOfWork = unitOfWork;
             this.mediator = mediator;
-            this.referenceDataService = referenceDataService;
+            this.genreHelperService = genreHelperService;
             this.logger = logger;
         }
 
         public async Task<GameResponse> Handle(UpsertGameCommand request, CancellationToken cancellationToken)
         {
-            var genre = await referenceDataService.GetOrCreateGenreAsync(request.Genre, cancellationToken);
+            var genre = await genreHelperService.GetOrCreateGenreAsync(request.Genre, cancellationToken);
             Game? game = null;
             if (request.id.HasValue)
             {
-                game = await mediaRepository.GetByIdAsync<Game>(request.id.Value, cancellationToken);
+                game = await mediaRepository.GetByIdAsync(request.id.Value, cancellationToken);
             }
             if (game != null)
             {
@@ -57,10 +55,10 @@ namespace Application.Features.GamesServices.GameUpsert
                     new ReleaseDate(request.ReleaseDate!.Value),
                     genre.Id, request.Developer!,
                     request.Platform);
-                game = await mediaRepository.AddAsync<Game>(game, cancellationToken);
+                game = await mediaRepository.AddAsync(game, cancellationToken);
                 logger.LogInformation("Creating new game with title {GameTitle}", game.Title);
             }
-            await unitOfWork.CompleteAsync(cancellationToken);
+            
             if (game is null) throw new InvalidOperationException(nameof(game));
             var response = GameMapper.ToGameResponse(game, genre);
             logger.LogInformation("Game with id {GameId} has been upserted successfully", game.Id);

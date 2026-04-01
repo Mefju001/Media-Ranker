@@ -10,11 +10,11 @@ namespace Application.Features.TvSeriesServices.GetTvSeriesById
 {
     public class GetTvSeriesByIdHandler : IRequestHandler<GetTvSeriesByIdQuery, TvSeriesResponse?>
     {
-        private readonly IMediaRepository mediaRepository;
+        private readonly IMediaRepository<TvSeries> mediaRepository;
         private readonly IGenreRepository genreRepository;
         private readonly ILogger<GetTvSeriesByIdHandler> logger;
 
-        public GetTvSeriesByIdHandler(IMediaRepository mediaRepository, IGenreRepository genreRepository, ILogger<GetTvSeriesByIdHandler> logger)
+        public GetTvSeriesByIdHandler(IMediaRepository<TvSeries> mediaRepository, IGenreRepository genreRepository, ILogger<GetTvSeriesByIdHandler> logger)
         {
             this.mediaRepository = mediaRepository;
             this.genreRepository = genreRepository;
@@ -23,13 +23,13 @@ namespace Application.Features.TvSeriesServices.GetTvSeriesById
 
         public async Task<TvSeriesResponse?> Handle(GetTvSeriesByIdQuery request, CancellationToken cancellationToken)
         {
-            var tvSeriesDomain = await mediaRepository.GetByIdAsync<TvSeries>(request.id, cancellationToken);
+            var tvSeriesDomain = await mediaRepository.GetByIdAsync(request.id, cancellationToken);
             if (tvSeriesDomain == null)
             {
                 logger.LogWarning("Tv Series with ID {TvSeriesId} was not found.", request.id);
                 throw new NotFoundException("not found");
             }
-            var genre = await genreRepository.Get(tvSeriesDomain.GenreId, cancellationToken);
+            var genre = await genreRepository.GetByIdAsync(tvSeriesDomain.GenreId, cancellationToken);
             if (genre == null)
             {
                 logger.LogWarning("Genre with ID {GenreId} was not found for Tv Series ID {TvSeriesId}.", tvSeriesDomain.GenreId, request.id);

@@ -1,9 +1,10 @@
 ﻿using Application.Common.DTO.Response;
+using Application.Common.Interfaces;
 using MediatR;
 
 namespace Application.Features.GamesServices.GetGamesByCriteria
 {
-    public class GetGamesByCriteriaQuery() : IRequest<List<GameResponse>>
+    public class GetGamesByCriteriaQuery() : IQuery<List<GameResponse>>
     {
         public string? title { get; set; }
         public string? genreName { get; set; }

@@ -1,16 +1,15 @@
 ﻿using Domain.Aggregate;
+using Domain.Entity;
 
 namespace Application.Common.Interfaces
 {
-    public interface IMediaRepository:IRepository<Media>
+    public interface IMediaRepository<T>:IRepository<T,int>where T : Media
     {
-        Task<List<T>> GetByTypeAsync<T>(CancellationToken ct) where T : Media;
-        Task<T?> GetByIdAsync<T>(int id, CancellationToken ct) where T : Media;
-        Task<T> AddAsync<T>(T entity, CancellationToken ct) where T: Media;
-        Task<T?> GetByIdWithDetailsAsync<T>(int id, CancellationToken ct) where T : Media;
-        Task<List<T>> GetAll<T>(CancellationToken cancellationToken) where T : Media;
-        IQueryable<T>GetAsQueryable<T>() where T : Media;
-        Task<List<T>> FromAsQueryableToList<T>(IQueryable<T> query, CancellationToken cancellationToken) where T : Media;
-        Task<Dictionary<int, Media>> GetByIds(List<int> mediaIds, CancellationToken cancellationToken);
+        Task<List<T>> FromAsQueryableToList(IQueryable<T> query, CancellationToken cancellationToken);
+        Task<Dictionary<int, T>> GetByIds(List<int> mediaIds, CancellationToken cancellationToken);
+        Task<List<Review>> GetAllReviewsAsync(CancellationToken cancellationToken);
+        Task<Review?> GetReviewByIdAsync(int reviewId, CancellationToken cancellationToken);
+        Task<List<int>> GetTheLastestReviewAsync(CancellationToken cancellationToken);
+        Task<List<string>> GetTitleByIdsAsync(List<int> reviewsId, CancellationToken cancellationToken);
     }
 }

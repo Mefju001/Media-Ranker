@@ -1,9 +1,10 @@
 ﻿using Application.Common.DTO.Response;
+using Application.Common.Interfaces;
 using MediatR;
 
 namespace Application.Features.MovieServices.GetMoviesByCriteria
 {
-    public class GetMoviesByCriteriaQuery() : IRequest<List<MovieResponse>>
+    public class GetMoviesByCriteriaQuery() : IQuery<List<MovieResponse>>
     {
         public string? TitleSearch { get; set; }
         public double? MinRating { get; set; }

@@ -5,7 +5,6 @@ using Application.Features.GamesServices.GameUpsert;
 using Application.Features.GamesServices.GetAll;
 using Application.Features.GamesServices.GetGamesByCriteria;
 using Domain.Aggregate;
-using Domain.Entity;
 using Domain.Enums;
 using Domain.Value_Object;
 using MediatR;
@@ -26,11 +25,11 @@ namespace UnitTests
         private Mock<IGenreRepository> mockGenreRepository;
         private Mock<IMediator> mockMediator;
         private Mock<IReferenceDataService> referenceDataService;
-        private Mock<IUnitOfWork> mockUnitOfWork;
+        private Mock<> mock;
         private Mock<IGameSortAndFilterService> gameSortAndFilterService;
         private void setupMocks()
         {
-            mockUnitOfWork = new Mock<IUnitOfWork>();
+            mock = new Mock<>();
             referenceDataService = new Mock<IReferenceDataService>();
             mockMediator = new Mock<IMediator>();
             gameSortAndFilterService = new Mock<IGameSortAndFilterService>();
@@ -41,9 +40,9 @@ namespace UnitTests
         public void Setup()
         {
             setupMocks();
-            handlerUpsert = new GameUpsertHandler(mockUnitOfWork.Object, referenceDataService.Object, mockMediator.Object, mockGameRepository.Object, Mock.Of<ILogger<GameUpsertHandler>>());
+            handlerUpsert = new GameUpsertHandler(mock.Object, referenceDataService.Object, mockMediator.Object, mockGameRepository.Object, Mock.Of<ILogger<GameUpsertHandler>>());
             handlerGetAll = new GetAllHandler(mockGameRepository.Object, mockGenreRepository.Object);
-            handlerAddListOfGames = new AddListOfGamesHandler(mockMediator.Object, referenceDataService.Object, mockUnitOfWork.Object, mockGameRepository.Object, Mock.Of<ILogger<AddListOfGamesHandler>>());
+            handlerAddListOfGames = new AddListOfGamesHandler(mockMediator.Object, referenceDataService.Object, mock.Object, mockGameRepository.Object, Mock.Of<ILogger<AddListOfGamesHandler>>());
             getGamesByCriteriaHandler = new GetGamesByCriteriaHandler(gameSortAndFilterService.Object, mockGameRepository.Object, mockGenreRepository.Object);
         }
         [TestMethod]
@@ -84,7 +83,7 @@ namespace UnitTests
             var gameDomain = Game.Reconstruct(1, "New Game", "New Description", new Language("Polski"), new ReleaseDate(DateTime.UtcNow), 1, "CD Projekt Red", EPlatform.PC, new MediaStats(6, 2));
             referenceDataService.Setup(r => r.GetOrCreateGenreAsync(It.IsAny<GenreRequest>(), It.IsAny<CancellationToken>())).Returns(Task.FromResult(genreDomain));
             mockGameRepository.Setup(u => u.AddGameAsync(It.IsAny<Game>(), It.IsAny<CancellationToken>())).Returns(Task.FromResult(gameDomain));
-            mockUnitOfWork.Setup(u => u.CompleteAsync(It.IsAny<CancellationToken>()));
+            mock.Setup(u => u.CompleteAsync(It.IsAny<CancellationToken>()));
             var result = await handlerUpsert.Handle(command, CancellationToken.None);
             Assert.IsNotNull(result);
             Assert.AreEqual("New Game", result.Title);
@@ -95,7 +94,7 @@ namespace UnitTests
             Assert.AreEqual("new name", result.Genre.Name);
             referenceDataService.Verify(r => r.GetOrCreateGenreAsync(It.IsAny<GenreRequest>(), It.IsAny<CancellationToken>()), Times.Once);
             mockGameRepository.Verify(u => u.AddGameAsync(It.IsAny<Game>(), It.IsAny<CancellationToken>()), Times.Once);
-            mockUnitOfWork.Verify(u => u.CompleteAsync(It.IsAny<CancellationToken>()), Times.Once);
+            mock.Verify(u => u.CompleteAsync(It.IsAny<CancellationToken>()), Times.Once);
         }
         [TestMethod]
         public async Task GamesUpsert_UpdateGame()
@@ -113,13 +112,13 @@ namespace UnitTests
             var gameDomain = Game.Reconstruct(1, "old game", "New Description", new Language("Polski"), new ReleaseDate(DateTime.UtcNow), 1, "CD Projekt Red", EPlatform.PC, new MediaStats(6, 2));
             referenceDataService.Setup(r => r.GetOrCreateGenreAsync(It.IsAny<GenreRequest>(), It.IsAny<CancellationToken>())).Returns(Task.FromResult(genreDomain));
             mockGameRepository.Setup(u => u.GetGameDomainAsync(It.IsAny<int>(), It.IsAny<CancellationToken>())).Returns(Task.FromResult(gameDomain));
-            mockUnitOfWork.Setup(u => u.CompleteAsync(It.IsAny<CancellationToken>()));
+            mock.Setup(u => u.CompleteAsync(It.IsAny<CancellationToken>()));
             var result = await handlerUpsert.Handle(command, CancellationToken.None);
             Assert.IsNotNull(result);
             Assert.AreEqual("New Game", result.Title);
             referenceDataService.Verify(r => r.GetOrCreateGenreAsync(It.IsAny<GenreRequest>(), It.IsAny<CancellationToken>()), Times.Once);
             mockGameRepository.Verify(u => u.GetGameDomainAsync(It.IsAny<int>(), It.IsAny<CancellationToken>()), Times.Once);
-            mockUnitOfWork.Verify(u => u.CompleteAsync(It.IsAny<CancellationToken>()), Times.Once);
+            mock.Verify(u => u.CompleteAsync(It.IsAny<CancellationToken>()), Times.Once);
         }
         [TestMethod]
         public async Task AddListOfGames()

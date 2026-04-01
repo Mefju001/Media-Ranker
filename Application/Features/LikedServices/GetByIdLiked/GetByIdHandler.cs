@@ -2,7 +2,6 @@
 using Application.Common.Interfaces;
 using Application.Mapper;
 using Domain.Aggregate;
-using Domain.Entity;
 using Domain.Exceptions;
 using MediatR;
 
@@ -10,15 +9,14 @@ namespace Application.Features.LikedServices.GetByIdLiked
 {
     public class GetByIdHandler : IRequestHandler<GetByIdQuery, LikedMediaResponse?>
     {
-        private readonly IUnitOfWork unitOfWork;
         private readonly ILikedMediaRepository likedMediaRepository;
-        private readonly IMediaRepository mediaRepository;
+        private readonly IMediaRepository<Media> mediaRepository;
         private readonly IUserRepository userRepository;
         private readonly IGenreRepository genreRepository;
         private readonly IDirectorRepository directorRepository;
-        public GetByIdHandler(IUnitOfWork unitOfWork, IDirectorRepository directorRepository, IGenreRepository genreRepository, ILikedMediaRepository likedMediaRepository, IMediaRepository mediaRepository, IUserRepository userRepository)
+        public GetByIdHandler(IDirectorRepository directorRepository, IGenreRepository genreRepository, ILikedMediaRepository likedMediaRepository, IMediaRepository<Media> mediaRepository, IUserRepository userRepository)
         {
-            this.unitOfWork = unitOfWork;
+            
             this.likedMediaRepository = likedMediaRepository;
             this.mediaRepository = mediaRepository;
             this.userRepository = userRepository;
@@ -42,13 +40,13 @@ namespace Application.Features.LikedServices.GetByIdLiked
             if (media == null || user == null)
                 throw new NotFoundException("Associated media or user not found");
 
-            var genre = await genreRepository.Get(media.GenreId, cancellationToken);
+            var genre = await genreRepository.GetByIdAsync(media.GenreId, cancellationToken);
             if (genre is null) throw new NotFoundException("Genre not found");
 
             Director? director = null;
             if (media is Movie movie)
             {
-                director = await directorRepository.Get(movie.DirectorId, cancellationToken);
+                director = await directorRepository.GetByIdAsync(movie.DirectorId, cancellationToken);
             }
 
             return media switch

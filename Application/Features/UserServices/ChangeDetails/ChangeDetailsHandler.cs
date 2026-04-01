@@ -8,11 +8,10 @@ namespace Application.Features.UserServices.ChangeDetails
 {
     public class ChangeDetailsHandler : IRequestHandler<ChangeDetailsCommand, Unit>
     {
-        private readonly IUnitOfWork unitOfWork;
         private readonly IUserRepository userRepository;
-        public ChangeDetailsHandler(IUnitOfWork unitOfWork, IUserRepository userRepository)
+        public ChangeDetailsHandler(IUserRepository userRepository)
         {
-            this.unitOfWork = unitOfWork;
+            
             this.userRepository = userRepository;
         }
         public async Task<Unit> Handle(ChangeDetailsCommand request, CancellationToken cancellationToken)
@@ -23,7 +22,7 @@ namespace Application.Features.UserServices.ChangeDetails
             var emailExist = await userRepository.IsAnyUserWhoHaveEmailAndId(request.email, request.userId);
             if (emailExist) throw new EmailAlreadyExistsException("This email is taken.");
             user.UpdateProfile(new Fullname(request.name, request.surname), new Email(request.email));
-            await unitOfWork.CompleteAsync(cancellationToken);
+            
             return Unit.Value;
         }
     }

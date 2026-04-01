@@ -6,10 +6,10 @@ namespace Application.Features.MovieServices.GetMoviesByCriteria
 {
     public class MovieSortAndFilterService : IMovieSortAndFilterService
     {
-        private readonly IMediaRepository mediaRepository;
+        private readonly IMediaRepository<Movie> mediaRepository;
         private readonly IGenreRepository genreRepository;
         private readonly IDirectorRepository directorRepository;
-        public MovieSortAndFilterService(IMediaRepository mediaRepository, IGenreRepository genreRepository, IDirectorRepository directorRepository)
+        public MovieSortAndFilterService(IMediaRepository<Movie> mediaRepository, IGenreRepository genreRepository, IDirectorRepository directorRepository)
         {
             this.mediaRepository = mediaRepository;
             this.genreRepository = genreRepository;
@@ -23,14 +23,14 @@ namespace Application.Features.MovieServices.GetMoviesByCriteria
         }
         private IQueryable<Movie> ApplyFilters(GetMoviesByCriteriaQuery request)
         {
-            var query = mediaRepository.GetAsQueryable<Movie>();
+            var query = mediaRepository.GetAsQueryable();
             if (!string.IsNullOrWhiteSpace(request.TitleSearch))
             {
                 query = query.Where(m => m.Title.Contains(request.TitleSearch));
             }
             if (!string.IsNullOrWhiteSpace(request.genreName))
             {
-                var genreQuery = genreRepository.GetAllQueryable();
+                var genreQuery = genreRepository.GetAsQueryable();
                 query = query.Join(genreQuery,
                     movie => movie.GenreId,
                     genre => genre.Id,
@@ -48,7 +48,7 @@ namespace Application.Features.MovieServices.GetMoviesByCriteria
             }
             if (!string.IsNullOrWhiteSpace(request.DirectorSurname) && !string.IsNullOrWhiteSpace(request.DirectorSurname))
             {
-                var directorQuery = directorRepository.GetAllQueryable();
+                var directorQuery = directorRepository.GetAsQueryable();
                 query = query.Join(
                     directorQuery,
                     movie => movie.DirectorId,

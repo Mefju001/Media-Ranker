@@ -11,9 +11,9 @@ namespace Application.Features.AuthServices.Signup
     public class SignUpHandler : IRequestHandler<SignUpCommand, SignUpResponse>
     {
         private readonly IUserRepository userRepository;
-        private readonly TokenServices tokenServices;
+        private readonly TokenService tokenServices;
         private readonly ILogger<SignUpHandler> logger;
-        public SignUpHandler(IUserRepository userRepository, TokenServices tokenServices, ILogger<SignUpHandler> logger)
+        public SignUpHandler(IUserRepository userRepository, TokenService tokenServices, ILogger<SignUpHandler> logger)
         {
             this.userRepository = userRepository;
             this.tokenServices = tokenServices;

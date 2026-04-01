@@ -5,7 +5,6 @@ using Application.Features.MovieServices.GetAll;
 using Application.Features.MovieServices.GetMoviesByCriteria;
 using Application.Features.MovieServices.MovieUpsert;
 using Domain.Aggregate;
-using Domain.Entity;
 using Domain.Value_Object;
 using MediatR;
 using Microsoft.Extensions.Logging;
@@ -21,7 +20,7 @@ namespace UnitTests
         private GetAllHandler getAllHandler;
         private MovieUpsertHandler movieUpsertHandler;
         private AddListOfMoviesHandler addListOfMoviesHandler;
-        private Mock<IUnitOfWork> unitOfWork;
+        private Mock<> ;
         private Mock<IMovieRepository> mockMovieRepository;
         private Mock<IGenreRepository> mockGenreRepository;
         private Mock<IDirectorRepository> mockDirectorRepository;
@@ -33,7 +32,7 @@ namespace UnitTests
             mockMovieRepository = new Mock<IMovieRepository>();
             mockGenreRepository = new Mock<IGenreRepository>();
             mockDirectorRepository = new Mock<IDirectorRepository>();
-            unitOfWork = new Mock<IUnitOfWork>();
+             = new Mock<>();
             referenceMock = new Mock<IReferenceDataService>();
             mediator = new Mock<IMediator>();
             movieSortAndFilterService = new Mock<IMovieSortAndFilterService>();
@@ -42,9 +41,9 @@ namespace UnitTests
         public void Initialize()
         {
             SetupMocks();
-            movieUpsertHandler = new MovieUpsertHandler(unitOfWork.Object, Mock.Of<ILogger<MovieUpsertHandler>>(), referenceMock.Object, mediator.Object, mockMovieRepository.Object);
+            movieUpsertHandler = new MovieUpsertHandler(.Object, Mock.Of<ILogger<MovieUpsertHandler>>(), referenceMock.Object, mediator.Object, mockMovieRepository.Object);
             getAllHandler = new GetAllHandler(mockMovieRepository.Object, mockGenreRepository.Object, mockDirectorRepository.Object);
-            addListOfMoviesHandler = new AddListOfMoviesHandler(Mock.Of<ILogger<AddListOfMoviesHandler>>(), mockMovieRepository.Object, referenceMock.Object, unitOfWork.Object, mediator.Object);
+            addListOfMoviesHandler = new AddListOfMoviesHandler(Mock.Of<ILogger<AddListOfMoviesHandler>>(), mockMovieRepository.Object, referenceMock.Object, .Object, mediator.Object);
             getMoviesByCriteriaHandler = new GetMoviesByCriteriaHandler(movieSortAndFilterService.Object, mockMovieRepository.Object, mockGenreRepository.Object, mockDirectorRepository.Object);
         }
 

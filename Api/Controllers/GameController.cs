@@ -1,9 +1,12 @@
-﻿using Application.Common.DTO.Request;
+﻿using Application;
+using Application.Common.DTO.Request;
+using Application.Common.DTO.Response;
 using Application.Features.GamesServices.AddListOfGames;
 using Application.Features.GamesServices.DeleteById;
 using Application.Features.GamesServices.GameUpsert;
 using Application.Features.GamesServices.GetGameById;
 using Application.Features.GamesServices.GetGamesByCriteria;
+using Domain.Aggregate;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -27,6 +30,7 @@ namespace Api.Controllers
             var games = await mediator.Send(gameQuery);
             return Ok(games);
         }
+        [AllowAnonymous]
         [HttpGet("{id:int}")]
         public async Task<IActionResult> GetById([FromRoute] int id)
         {

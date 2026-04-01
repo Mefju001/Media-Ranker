@@ -12,16 +12,14 @@ namespace Application.Features.GamesServices.AddListOfGames
 {
     public class AddListOfGamesHandler : IRequestHandler<AddListOfGamesCommand, List<GameResponse>>
     {
-        private readonly IUnitOfWork unitOfWork;
-        private readonly IReferenceDataService referenceDataService;
-        private readonly IMediaRepository mediaRepository;
+        private readonly IGenreHelperService genreHelperService;
+        private readonly IMediaRepository<Game> mediaRepository;
         private readonly ILogger<AddListOfGamesHandler> logger;
         private readonly IMediator mediator;
-        public AddListOfGamesHandler(IMediator mediator, IReferenceDataService referenceDataService, IUnitOfWork unitOfWork, IMediaRepository mediaRepository, ILogger<AddListOfGamesHandler> logger)
+        public AddListOfGamesHandler(IMediator mediator, IGenreHelperService genreHelperService, IMediaRepository<Game> mediaRepository, ILogger<AddListOfGamesHandler> logger)
         {
             this.mediator = mediator;
-            this.referenceDataService = referenceDataService;
-            this.unitOfWork = unitOfWork;
+            this.genreHelperService = genreHelperService;
             this.mediaRepository = mediaRepository;
             this.logger = logger;
         }
@@ -31,7 +29,7 @@ namespace Application.Features.GamesServices.AddListOfGames
                 throw new BadRequestException("The package is too large. Maximum 500 games at a time.");
             logger.LogInformation("Received request to add a list of games. Games count: {GamesCount}", requests.games.Count);
             var names = requests.games.Select(g => g.Genre.name).Distinct().ToList();
-            var genresMap = await referenceDataService.EnsureGenresExistAsync(names, cancellationToken);
+            var genresMap = await genreHelperService.EnsureGenresExistAsync(names, cancellationToken);
             var games = requests.games.Select(gameReq =>
             {
                 var genre = genresMap[gameReq.Genre.name];
@@ -45,7 +43,6 @@ namespace Application.Features.GamesServices.AddListOfGames
                         gameReq.Platform);
             }).ToList();
             await mediaRepository.AddRangeAsync(games, cancellationToken);
-            await unitOfWork.CompleteAsync(cancellationToken);
             logger.LogInformation("Added list of games to the repository. Games count: {GamesCount}", games.Count);
             await mediator.Publish(new LogNotification("Information", "Nowa lista gier została dodana.", nameof(AddListOfGamesHandler)));
             return games.Select(g =>

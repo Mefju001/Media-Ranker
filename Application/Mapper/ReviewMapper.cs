@@ -15,7 +15,6 @@ namespace Application.Mapper
                 review.Comment,
                 review.AuditInfo.CreatedAt,
                 review.AuditInfo.UpdatedAt);
-
         }
 
     }

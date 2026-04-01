@@ -1,6 +1,7 @@
 ﻿using Application.Common.DTO.Response;
 using Application.Common.Interfaces;
 using Application.Mapper;
+using Domain.Aggregate;
 using MediatR;
 
 
@@ -9,10 +10,10 @@ namespace Application.Features.MovieServices.GetMoviesByCriteria
     public class GetMoviesByCriteriaHandler : IRequestHandler<GetMoviesByCriteriaQuery, List<MovieResponse>>
     {
         private readonly IMovieSortAndFilterService SortAndFilterService;
-        private readonly IMediaRepository mediaRepository;
+        private readonly IMediaRepository<Movie> mediaRepository;
         private readonly IGenreRepository genreRepository;
         private readonly IDirectorRepository directorRepository;
-        public GetMoviesByCriteriaHandler(IMovieSortAndFilterService sortAndFilterService, IMediaRepository mediaRepository, IGenreRepository genreRepository, IDirectorRepository directorRepository)
+        public GetMoviesByCriteriaHandler(IMovieSortAndFilterService sortAndFilterService, IMediaRepository<Movie> mediaRepository, IGenreRepository genreRepository, IDirectorRepository directorRepository)
         {
             SortAndFilterService = sortAndFilterService;
             this.mediaRepository = mediaRepository;

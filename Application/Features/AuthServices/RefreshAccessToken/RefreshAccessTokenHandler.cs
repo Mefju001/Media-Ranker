@@ -12,9 +12,9 @@ namespace Application.Features.AuthServices.RefreshAccessToken
     public class RefreshAccessTokenHandler : IRequestHandler<RefreshAccessTokenCommand, TokenResponse?>
     {
         private readonly IUserRepository userRepository;
-        private readonly TokenServices tokenServices;
+        private readonly TokenService tokenServices;
         private readonly ILogger<RefreshAccessTokenHandler> logger;
-        public RefreshAccessTokenHandler(IUserRepository userRepository, TokenServices refreshAccessToken, ILogger<RefreshAccessTokenHandler> logger)
+        public RefreshAccessTokenHandler(IUserRepository userRepository, TokenService refreshAccessToken, ILogger<RefreshAccessTokenHandler> logger)
         {
             this.userRepository = userRepository;
             this.tokenServices = refreshAccessToken;

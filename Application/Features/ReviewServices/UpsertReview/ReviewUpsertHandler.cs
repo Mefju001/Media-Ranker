@@ -12,15 +12,14 @@ namespace Application.Features.ReviewServices.UpsertReview
 {
     public class ReviewUpsertHandler : IRequestHandler<ReviewUpsertCommand, ReviewResponse>
     {
-        private readonly IUnitOfWork unitOfWork;
-        private readonly IReviewRepository reviewRepository;
+        private readonly IMediaRepository<Media> reviewRepository;
         private readonly IUserRepository userRepository;
-        private readonly IMediaRepository mediaRepository;
+        private readonly IMediaRepository<Media> mediaRepository;
         private readonly ILogger<ReviewUpsertHandler> logger;
-        public ReviewUpsertHandler(IUnitOfWork unitOfWork, ILogger<ReviewUpsertHandler> logger, IReviewRepository reviewRepository, IUserRepository userRepository, IMediaRepository mediaRepository)
+        public ReviewUpsertHandler(ILogger<ReviewUpsertHandler> logger, IMediaRepository<Media> reviewRepository, IUserRepository userRepository, IMediaRepository<Media> mediaRepository)
         {
             this.logger = logger;
-            this.unitOfWork = unitOfWork;
+            
             this.reviewRepository = reviewRepository;
             this.userRepository = userRepository;
             this.mediaRepository = mediaRepository;
@@ -55,10 +54,9 @@ namespace Application.Features.ReviewServices.UpsertReview
                 }
                 reviewDomain = Review.Create(new Rating(request.Rating), request.Comment, media.Id, user.Id, new Username(user.Username.Value));
                 media.AddReview(reviewDomain);
-                //reviewDomain = await reviewRepository.AddAsync(reviewDomain, cancellationToken);
                 logger.LogInformation("Created new review with id {ReviewId}", reviewDomain.Id);
             }
-            await unitOfWork.CompleteAsync(cancellationToken);
+            
             return ReviewMapper.ToResponse(reviewDomain);
         }
     }

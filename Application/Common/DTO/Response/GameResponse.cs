@@ -13,5 +13,5 @@ namespace Application.Common.DTO.Response
         MediaStatsResponse MediaStats,
         string? Developer,
         EPlatform Platform
-        ) : MediaResponse(id, Title, Description, Genre, ReleaseDate, Language, Reviews);
+        ) : MediaResponse(id, Title, Description, Genre, ReleaseDate, Language, Reviews),IResponse;
 }

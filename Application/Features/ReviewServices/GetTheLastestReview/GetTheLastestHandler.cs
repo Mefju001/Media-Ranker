@@ -5,15 +5,16 @@ namespace Application.Features.ReviewServices.GetTheLastestReview
 {
     public class GetTheLastestHandler : IRequestHandler<GetTheLastestQuery, List<string>>
     {
-        private readonly IReviewRepository reviewRepository;
-        public GetTheLastestHandler(IReviewRepository reviewRepository)
+        private readonly IMediaRepository<Media> mediaRepository;
+        public GetTheLastestHandler(IMediaRepository<Media> mediaRepository)
         {
-            this.reviewRepository = reviewRepository;
+            this.mediaRepository = mediaRepository;
         }
         public async Task<List<string>> Handle(GetTheLastestQuery request, CancellationToken cancellationToken)
         {
-            var review = await reviewRepository.GetTheLastestReviewAsync(cancellationToken);
-            return review;
+            var reviewsId = await mediaRepository.GetTheLastestReviewAsync(cancellationToken);
+            var TitleList = await mediaRepository.GetTitleByIdsAsync(reviewsId, cancellationToken);
+            return TitleList;
         }
     }
 }

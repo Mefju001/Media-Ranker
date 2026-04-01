@@ -15,5 +15,5 @@ namespace Application.Common.DTO.Response
         int Episodes,
         string? Network,
         EStatus Status
-        ) : MediaResponse(id, Title, Description, Genre, ReleaseDate, Language, Reviews);
+        ) : MediaResponse(id, Title, Description, Genre, ReleaseDate, Language, Reviews),IResponse;
 }

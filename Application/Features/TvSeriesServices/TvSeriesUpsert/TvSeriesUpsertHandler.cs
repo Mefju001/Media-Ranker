@@ -11,28 +11,27 @@ namespace Application.Features.TvSeriesServices.TvSeriesUpsert
 {
     public class TvSeriesUpsertHandler : IRequestHandler<UpsertTvSeriesCommand, TvSeriesResponse>
     {
-        private readonly IUnitOfWork unitOfWork;
         private readonly IMediator mediator;
-        private readonly IReferenceDataService referenceDataService;
-        private readonly IMediaRepository mediaRepository;
+        private readonly IGenreHelperService genreHelperService;
+        private readonly IMediaRepository<TvSeries> mediaRepository;
         private readonly ILogger<TvSeriesUpsertHandler> logger;
 
-        public TvSeriesUpsertHandler(IUnitOfWork unitOfWork, IReferenceDataService referenceDataService, IMediator mediator, IMediaRepository mediaRepository, ILogger<TvSeriesUpsertHandler> logger)
+        public TvSeriesUpsertHandler(IGenreHelperService genreHelperService, IMediator mediator, IMediaRepository<TvSeries> mediaRepository, ILogger<TvSeriesUpsertHandler> logger)
         {
-            this.unitOfWork = unitOfWork;
+            
             this.mediator = mediator;
-            this.referenceDataService = referenceDataService;
+            this.genreHelperService = genreHelperService;
             this.mediaRepository = mediaRepository;
             this.logger = logger;
         }
 
         public async Task<TvSeriesResponse> Handle(UpsertTvSeriesCommand request, CancellationToken cancellationToken)
         {
-            var genre = await referenceDataService.GetOrCreateGenreAsync(request.genre, cancellationToken);
+            var genre = await genreHelperService.GetOrCreateGenreAsync(request.genre, cancellationToken);
             TvSeries? tvSeries = null;
             if (request.id is not null)
             {
-                tvSeries = await mediaRepository.GetByIdAsync<TvSeries>(request.id.Value, cancellationToken);
+                tvSeries = await mediaRepository.GetByIdAsync(request.id.Value, cancellationToken);
 
             }
             if (tvSeries is not null)
@@ -62,10 +61,10 @@ namespace Application.Features.TvSeriesServices.TvSeriesUpsert
                         request.Episodes,
                         request.Network,
                         request.Status);
-                tvSeries = await mediaRepository.AddAsync<TvSeries>(tvSeries, cancellationToken);
+                tvSeries = await mediaRepository.AddAsync(tvSeries, cancellationToken);
                 logger.LogInformation("Creating new TvSeries with id {TvSeriesId}", tvSeries.Id);
             }
-            await unitOfWork.CompleteAsync(cancellationToken);
+            
             if (tvSeries is null) throw new ArgumentNullException(nameof(tvSeries));
             var response = TvSeriesMapper.ToTvSeriesResponse(tvSeries, genre);
             logger.LogInformation("TvSeries with id {TvSeriesId} upserted successfully", tvSeries.Id);

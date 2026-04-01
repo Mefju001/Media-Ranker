@@ -8,10 +8,10 @@ namespace Application.Features.MovieServices.GetAll
 {
     public class GetAllHandler : IRequestHandler<GetAllQuery, List<MovieResponse>>
     {
-        private readonly IMediaRepository mediaRepository;
+        private readonly IMediaRepository<Movie> mediaRepository;
         private readonly IGenreRepository genreRepository;
         private readonly IDirectorRepository directorRepository;
-        public GetAllHandler(IMediaRepository mediaRepository, IGenreRepository genreRepository, IDirectorRepository directorRepository)
+        public GetAllHandler(IMediaRepository<Movie> mediaRepository, IGenreRepository genreRepository, IDirectorRepository directorRepository)
         {
             this.mediaRepository = mediaRepository;
             this.genreRepository = genreRepository;
@@ -19,7 +19,7 @@ namespace Application.Features.MovieServices.GetAll
         }
         public async Task<List<MovieResponse>> Handle(GetAllQuery request, CancellationToken cancellationToken)
         {
-            var movies = await mediaRepository.GetAll<Movie>(cancellationToken);
+            var movies = await mediaRepository.GetAllAsync(cancellationToken);
             // Selective fetching of genres and directors to avoid N+1 problem in future
             var genres = await genreRepository.GetGenresDictionary(cancellationToken);
             var directorsDict = await directorRepository.GetDirectorsDictionary(cancellationToken);

@@ -21,12 +21,12 @@ namespace UnitTests
         private ChangeDetailsHandler changeDetailsHandler;
 
         private Mock<IUserRepository> userRepository;
-        private Mock<IUnitOfWork> unitOfWork;
+        private Mock<> ;
 
         private void SetupMocks()
         {
             userRepository = new Mock<IUserRepository>();
-            unitOfWork = new Mock<IUnitOfWork>();
+             = new Mock<>();
         }
         [TestInitialize]
         public void Initialize()
@@ -35,7 +35,7 @@ namespace UnitTests
             getUserByNameHandler = new GetUserByNameHandler(userRepository.Object);
             deleteUserHandler = new DeleteUserHandler(userRepository.Object, Mock.Of<ILogger<DeleteUserHandler>>());
             changePasswordHandler = new ChangePasswordHandler(userRepository.Object, Mock.Of<ILogger<ChangePasswordHandler>>());
-            changeDetailsHandler = new ChangeDetailsHandler(unitOfWork.Object, userRepository.Object);
+            changeDetailsHandler = new ChangeDetailsHandler(.Object, userRepository.Object);
         }
         [TestMethod]
         public async Task GetUserByNameHandler_ReturnsUserResponse_WhenUserExists()
@@ -81,7 +81,7 @@ namespace UnitTests
             var result = changeDetailsHandler.Handle(command, CancellationToken.None);
             userRepository.Verify(r => r.GetUserById(command.userId, It.IsAny<CancellationToken>()), Times.Once);
             userRepository.Verify(r => r.IsAnyUserWhoHaveEmailAndId(command.email, command.userId), Times.Once);
-            unitOfWork.Verify(u => u.CompleteAsync(It.IsAny<CancellationToken>()), Times.Once);
+            .Verify(u => u.CompleteAsync(It.IsAny<CancellationToken>()), Times.Once);
             Assert.AreEqual(Unit.Value, result.Result);
         }
     }

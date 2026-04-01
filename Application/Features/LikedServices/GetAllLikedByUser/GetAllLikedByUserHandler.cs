@@ -9,13 +9,13 @@ namespace Application.Features.LikedServices.GetAllLikedByUser
 {
     public class GetAllLikedByUserHandler : IRequestHandler<GetAllLikedByUserQuery, List<LikedMediaResponse>>
     {
-        private readonly IMediaRepository mediaRepository;
+        private readonly IMediaRepository<Media> mediaRepository;
         private readonly IUserRepository userRepository;
         private readonly IGenreRepository genreRepository;
         private readonly IDirectorRepository directorRepository;
         private readonly ILikedMediaRepository likedMediaRepository;
 
-        public GetAllLikedByUserHandler(IMediaRepository mediaRepository, IUserRepository userRepository, IGenreRepository genreRepository, IDirectorRepository directorRepository, ILikedMediaRepository likedMediaRepository)
+        public GetAllLikedByUserHandler(IMediaRepository<Media> mediaRepository, IUserRepository userRepository, IGenreRepository genreRepository, IDirectorRepository directorRepository, ILikedMediaRepository likedMediaRepository)
         {
             this.likedMediaRepository = likedMediaRepository;
             this.userRepository = userRepository;

@@ -11,18 +11,16 @@ namespace Application.Features.LikedServices.AddLiked
 {
     public class AddLikedHandler : IRequestHandler<AddLikedCommand, LikedMediaResponse>
     {
-        private readonly IUnitOfWork unitOfWork;
         private readonly ILogger<AddLikedHandler> logger;
-        private readonly IMediaRepository mediaRepository;
+        private readonly IMediaRepository<Media> mediaRepository;
         private readonly IUserRepository userRepository;
         private readonly IGenreRepository genreRepository;
         private readonly IDirectorRepository directorRepository;
         private readonly ILikedMediaRepository likedMediaRepository;
 
-        public AddLikedHandler(ILogger<AddLikedHandler> logger, IUnitOfWork unitOfWork, ILikedMediaRepository likedMediaRepository, IDirectorRepository directorRepository, IMediaRepository mediaRepository, IUserRepository userRepository, IGenreRepository genreRepository)
+        public AddLikedHandler(ILogger<AddLikedHandler> logger, ILikedMediaRepository likedMediaRepository, IDirectorRepository directorRepository, IMediaRepository<Media> mediaRepository, IUserRepository userRepository, IGenreRepository genreRepository)
         {
             this.logger = logger;
-            this.unitOfWork = unitOfWork;
             this.mediaRepository = mediaRepository;
             this.userRepository = userRepository;
             this.genreRepository = genreRepository;
@@ -45,7 +43,7 @@ namespace Application.Features.LikedServices.AddLiked
                 logger.LogWarning("Media already in liked list. UserId: {UserId}, MediaId: {MediaId}", request.UserId, request.MediaId);
                 throw new NotFoundException("Media already in liked list.");
             }
-            var genre = await genreRepository.Get(media.GenreId, cancellationToken);
+            var genre = await genreRepository.GetByIdAsync(media.GenreId, cancellationToken);
             if (genre is null)
             {
                 logger.LogWarning("Genre not found for MediaId: {MediaId}, GenreId: {GenreId}", request.MediaId, media.GenreId);
@@ -54,14 +52,13 @@ namespace Application.Features.LikedServices.AddLiked
             Director? director = null;
             if (media is Movie movie)
             {
-                director = await directorRepository.Get(movie.DirectorId, cancellationToken);
+                director = await directorRepository.GetByIdAsync(movie.DirectorId, cancellationToken);
             }
             var likedMedia = LikedMedia.Create(
                 request.UserId,
                 request.MediaId
             );
             await likedMediaRepository.AddAsync(likedMedia, cancellationToken);
-            await unitOfWork.CompleteAsync(cancellationToken);
             logger.LogInformation("Media added to liked list. UserId: {UserId}, MediaId: {MediaId}", request.UserId, request.MediaId);
             return media switch
             {

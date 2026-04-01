@@ -10,14 +10,13 @@ namespace Application.Features.MovieServices.GetMovieById
 {
     public class GetMovieByIdHandler : IRequestHandler<GetMovieByIdQuery, MovieResponse?>
     {
-        private readonly IUnitOfWork unitOfWork;
-        private readonly IMediaRepository mediaRepository;
+        private readonly IMediaRepository<Movie> mediaRepository;
         private readonly IGenreRepository genreRepository;
         private readonly IDirectorRepository directorRepository;
 
-        public GetMovieByIdHandler(IUnitOfWork unitOfWork, IMediaRepository mediaRepository, IGenreRepository genreRepository, IDirectorRepository directorRepository)
+        public GetMovieByIdHandler(IMediaRepository<Movie> mediaRepository, IGenreRepository genreRepository, IDirectorRepository directorRepository)
         {
-            this.unitOfWork = unitOfWork;
+            
             this.mediaRepository = mediaRepository;
             this.genreRepository = genreRepository;
             this.directorRepository = directorRepository;
@@ -25,13 +24,13 @@ namespace Application.Features.MovieServices.GetMovieById
 
         public async Task<MovieResponse?> Handle(GetMovieByIdQuery request, CancellationToken cancellationToken)
         {
-            var movie = await mediaRepository.GetByIdAsync<Movie>(request.id, cancellationToken);
+            var movie = await mediaRepository.GetByIdAsync(request.id, cancellationToken);
             if (movie == null)
             {
                 throw new NotFoundException("Movie not found");
             }
-            var genre = await genreRepository.Get(movie.GenreId, cancellationToken);
-            var director = await directorRepository.Get(movie.DirectorId, cancellationToken);
+            var genre = await genreRepository.GetByIdAsync(movie.GenreId, cancellationToken);
+            var director = await directorRepository.GetByIdAsync(movie.DirectorId, cancellationToken);
 
 
             if (genre == null) throw new NotFoundException("Genre not found");

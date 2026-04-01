@@ -13,5 +13,6 @@
         TimeSpan Duration,
         bool IsCinemaRelease
 
-        ) : MediaResponse(id, Title, Description, Genre, ReleaseDate, Language, Reviews);
+        ) : MediaResponse(id, Title, Description, Genre, ReleaseDate, Language, Reviews), IResponse;
+
 }

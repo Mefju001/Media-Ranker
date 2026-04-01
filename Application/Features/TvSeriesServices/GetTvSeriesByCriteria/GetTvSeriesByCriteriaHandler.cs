@@ -1,6 +1,7 @@
 ﻿using Application.Common.DTO.Response;
 using Application.Common.Interfaces;
 using Application.Mapper;
+using Domain.Aggregate;
 using MediatR;
 
 
@@ -8,11 +9,11 @@ namespace Application.Features.TvSeriesServices.GetTvSeriesByCriteria
 {
     public class GetTvSeriesByCriteriaHandler : IRequestHandler<GetTvSeriesByCriteriaQuery, List<TvSeriesResponse>>
     {
-        private readonly IMediaRepository mediaRepository;
+        private readonly IMediaRepository<TvSeries> mediaRepository;
         private readonly IGenreRepository genreRepository;
         private readonly ITvSeriesSortAndFilterService SortAndFilterService;
 
-        public GetTvSeriesByCriteriaHandler(ITvSeriesSortAndFilterService sortAndFilterService, IMediaRepository mediaRepository, IGenreRepository genreRepository)
+        public GetTvSeriesByCriteriaHandler(ITvSeriesSortAndFilterService sortAndFilterService, IMediaRepository<TvSeries> mediaRepository, IGenreRepository genreRepository)
         {
             SortAndFilterService = sortAndFilterService;
             this.mediaRepository = mediaRepository;

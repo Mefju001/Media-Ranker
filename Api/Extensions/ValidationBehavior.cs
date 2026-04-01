@@ -1,10 +1,11 @@
-﻿using FluentValidation;
+﻿using Application.Common.Interfaces;
+using FluentValidation;
 using MediatR;
 
 namespace Api.Extensions
 {
     public class ValidationBehavior<TRequest, TResponse> : IPipelineBehavior<TRequest, TResponse>
-            where TRequest : IRequest<TResponse>
+            where TRequest : ICommand<TResponse>
     {
         private readonly IEnumerable<IValidator<TRequest>> _validators;
 

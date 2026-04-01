@@ -1,6 +1,5 @@
 using Application.Common.DTO.Response;
 using Domain.Aggregate;
-using Domain.Entity;
 
 namespace Application.Mapper
 {

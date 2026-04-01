@@ -11,29 +11,30 @@ namespace Application.Features.MovieServices.MovieUpsert
 {
     public class MovieUpsertHandler : IRequestHandler<UpsertMovieCommand, MovieResponse>
     {
-        private readonly IUnitOfWork unitOfWork;
-        private readonly IMediaRepository mediaRepository;
+        private readonly IMediaRepository<Movie> mediaRepository;
         private readonly IMediator mediator;
-        private readonly IReferenceDataService referenceDataService;
+        private readonly IGenreHelperService genreHelperService;
+        private readonly IDirectorHelperService directorHelperService;
         private readonly ILogger<MovieUpsertHandler> logger;
 
-        public MovieUpsertHandler(IUnitOfWork unitOfWork, ILogger<MovieUpsertHandler> logger, IReferenceDataService referenceDataService, IMediator mediator, IMediaRepository mediaRepository)
+        public MovieUpsertHandler(ILogger<MovieUpsertHandler> logger, IDirectorHelperService directorHelperService, IGenreHelperService genreHelperService, IMediator mediator, IMediaRepository<Movie> mediaRepository)
         {
             this.logger = logger;
-            this.unitOfWork = unitOfWork;
+            
             this.mediator = mediator;
-            this.referenceDataService = referenceDataService;
+            this.genreHelperService = genreHelperService;
+            this.directorHelperService = directorHelperService;
             this.mediaRepository = mediaRepository;
         }
 
         public async Task<MovieResponse> Handle(UpsertMovieCommand request, CancellationToken cancellationToken)
         {
-            var director = await referenceDataService.GetOrCreateDirectorAsync(request.Director, cancellationToken);
-            var genre = await referenceDataService.GetOrCreateGenreAsync(request.Genre, cancellationToken);
+            var director = await directorHelperService.GetOrCreateDirectorAsync(request.Director, cancellationToken);
+            var genre = await genreHelperService.GetOrCreateGenreAsync(request.Genre, cancellationToken);
             Movie? movie = null;
             if (request.id.HasValue)
             {
-                movie = await mediaRepository.GetByIdAsync<Movie>(request.id.Value, cancellationToken);
+                movie = await mediaRepository.GetByIdAsync(request.id.Value, cancellationToken);
             }
             if (movie is not null)
             {
@@ -63,7 +64,7 @@ namespace Application.Features.MovieServices.MovieUpsert
                 logger.LogInformation("Creating new movie with title {movieTitle}", movie.Title);
             }
 
-            await unitOfWork.CompleteAsync(cancellationToken);
+            
             if (movie is null) throw new InvalidOperationException(nameof(movie));
             var response = MovieMapper.ToMovieResponse(movie, genre, director);
             logger.LogInformation("Movie with id {MovieId} has been upserted successfully", movie.Id);

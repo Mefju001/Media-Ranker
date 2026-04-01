@@ -1,7 +1,8 @@
-﻿using MediatR;
+﻿using Application.Common.Interfaces;
+using MediatR;
 
 namespace Application.Features.AuthServices.Signup
 {
     public record SignUpCommand(string username, string email, string password, string name,
-        string surname) : IRequest<SignUpResponse>;
+        string surname) : ICommand<SignUpResponse>;
 }

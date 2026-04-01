@@ -7,9 +7,9 @@ namespace Application.Features.GamesServices.GetGamesByCriteria
     public class GameSortAndFilterService : IGameSortAndFilterService
     {
 
-        private readonly IMediaRepository mediaRepository;
+        private readonly IMediaRepository<Game> mediaRepository;
         private readonly IGenreRepository genreRepository;
-        public GameSortAndFilterService(IMediaRepository mediaRepository, IGenreRepository genreRepository)
+        public GameSortAndFilterService(IMediaRepository<Game> mediaRepository, IGenreRepository genreRepository)
         {
             this.mediaRepository = mediaRepository;
             this.genreRepository = genreRepository;
@@ -22,14 +22,14 @@ namespace Application.Features.GamesServices.GetGamesByCriteria
         }
         private IQueryable<Game> ApplyFiltersAsync(GetGamesByCriteriaQuery request)
         {
-            var query = mediaRepository.GetAsQueryable<Game>();
+            var query = mediaRepository.GetAsQueryable();
             if (!string.IsNullOrWhiteSpace(request.title))
             {
                 query = query.Where(m => m.Title.Contains(request.title));
             }
             if (!string.IsNullOrWhiteSpace(request.genreName))
             {
-                var genreTable = genreRepository.GetAllQueryable();
+                var genreTable = genreRepository.GetAsQueryable();
                 query = query.Join(genreTable,
                     game => game.GenreId,
                     genre => genre.Id,

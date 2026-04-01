@@ -12,17 +12,16 @@ namespace Application.Features.TvSeriesServices.AddListOfTvSeries
 {
     public class AddListOfTvSeriesHandler : IRequestHandler<AddListOfTvSeriesCommand, List<TvSeriesResponse>>
     {
-        private readonly IUnitOfWork unitOfWork;
-        private readonly IReferenceDataService referenceDataService;
-        private readonly IMediaRepository mediaRepository;
+        private readonly IGenreHelperService genreHelperService;
+        private readonly IMediaRepository<TvSeries> mediaRepository;
         private readonly ILogger<AddListOfTvSeriesHandler> logger;
         private readonly IMediator mediator;
-        public AddListOfTvSeriesHandler(IMediator mediator, IReferenceDataService referenceDataService, ILogger<AddListOfTvSeriesHandler> logger, IUnitOfWork unitOfWork, IMediaRepository mediaRepository)
+        public AddListOfTvSeriesHandler(IMediator mediator, IGenreHelperService genreHelperService, ILogger<AddListOfTvSeriesHandler> logger, IMediaRepository<TvSeries> mediaRepository)
         {
             this.mediator = mediator;
             this.logger = logger;
-            this.referenceDataService = referenceDataService;
-            this.unitOfWork = unitOfWork;
+            this.genreHelperService = genreHelperService;
+            
             this.mediaRepository = mediaRepository;
         }
         public async Task<List<TvSeriesResponse>> Handle(AddListOfTvSeriesCommand requests, CancellationToken cancellationToken)
@@ -32,7 +31,7 @@ namespace Application.Features.TvSeriesServices.AddListOfTvSeries
                 throw new BadRequestException("The package is too large. Maximum 500 series at a time.");
             logger.LogInformation("Received request to add a list of TV series. TV series count: {TvSeriesCount}", requests.tvSeries.Count);
             var genreNames = requests.tvSeries.Select(t => t.genre.name).Distinct().ToList();
-            var genres = await referenceDataService.EnsureGenresExistAsync(genreNames, cancellationToken);
+            var genres = await genreHelperService.EnsureGenresExistAsync(genreNames, cancellationToken);
             logger.LogInformation("Ensured genres exist for the provided TV series. Genre count: {GenreCount}", genres.Count);
             var tvSeries = requests.tvSeries.Select(tv =>
             {
@@ -40,7 +39,7 @@ namespace Application.Features.TvSeriesServices.AddListOfTvSeries
                 return TvSeries.Create(tv.title, tv.description, new Language(tv.Language), new ReleaseDate(tv.ReleaseDate), genre.Id, tv.Seasons, tv.Episodes, tv.Network, tv.Status);
             }).ToList();
             await mediaRepository.AddRangeAsync(tvSeries, cancellationToken);
-            await unitOfWork.CompleteAsync(cancellationToken);
+            
             logger.LogInformation("Added list of TV series to the repository. TV series count: {TvSeriesCount}", tvSeries.Count);
             await mediator.Publish(new LogNotification("Information", "Nowa lista seriali została dodana.", nameof(AddListOfTvSeriesHandler)));
             var genresById = genres.Values.ToDictionary(g => g.Id);

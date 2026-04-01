@@ -1,7 +1,7 @@
 using Api.Controllers;
 using Api.Extensions;
-using Infrastructure.DBModels;
-using Infrastructure.Persistence;
+using Infrastructure.Database;
+using Infrastructure.Database.DBModels;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;

@@ -1,5 +1,6 @@
 ﻿using Application.Common.DTO.Request;
 using Application.Common.DTO.Response;
+using Application.Common.Interfaces;
 using Domain.Enums;
 using MediatR;
 
@@ -15,5 +16,5 @@ namespace Application.Features.TvSeriesServices.TvSeriesUpsert
         int Seasons,
         int Episodes,
         string Network,
-        EStatus Status) : IRequest<TvSeriesResponse>;
+        EStatus Status) : ICommand<TvSeriesResponse>;
 }

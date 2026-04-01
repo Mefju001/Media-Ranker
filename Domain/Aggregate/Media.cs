@@ -16,8 +16,6 @@ public abstract class Media : AggregateRoot<int>,IAudited
 
     private readonly List<Review> reviews = new();
     public IReadOnlyCollection<Review> Reviews => reviews.AsReadOnly();
-    private readonly HashSet<LikedMedia> likedMedia = new();
-    public IReadOnlyCollection<LikedMedia> LikedMedia => likedMedia.ToList().AsReadOnly();
 
     protected Media() { }
 
@@ -58,25 +56,6 @@ public abstract class Media : AggregateRoot<int>,IAudited
         reviews.Remove(review);
         RecalculateStats();
     }
-    public void LikeMedia(LikedMedia like)
-    {
-        if (likedMedia.Any(lm => lm.MediaId == like.MediaId))
-        {
-        }
-        likedMedia.Add(like);
-    }
-
-    public void UnlikeMedia(int mediaId)
-    {
-        var like = likedMedia.FirstOrDefault(lm => lm.MediaId == mediaId);
-        if (like != null)
-        {
-            likedMedia.Remove(like);
-        }
-    }
-
-    public bool HasLiked(int mediaId)
-        => likedMedia.Any(lm => lm.MediaId == mediaId);
     private void RecalculateStats() =>
         Stats = new MediaStats(reviews.Any() ? reviews.Average(r => r.Rating) : 0, reviews.Count);
 

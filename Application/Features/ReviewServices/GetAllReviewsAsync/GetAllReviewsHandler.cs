@@ -7,16 +7,14 @@ namespace Application.Features.ReviewServices.GetAllReviewsAsync
 {
     public class GetAllReviewsHandler : IRequestHandler<GetAllReviewsQuery, List<ReviewResponse>>
     {
-        private readonly IReviewRepository reviewRepository;
-        private readonly IUserRepository userRepository;
-        public GetAllReviewsHandler(IReviewRepository reviewRepository, IUserRepository userRepository)
+        private readonly IMediaRepository<Media> mediaRepository;
+        public GetAllReviewsHandler(IMediaRepository<Media> mediaRepository)
         {
-            this.reviewRepository = reviewRepository;
-            this.userRepository = userRepository;
+            this.mediaRepository = mediaRepository;
         }
         public async Task<List<ReviewResponse>> Handle(GetAllReviewsQuery request, CancellationToken cancellationToken)
         {
-            var reviews = await reviewRepository.GetAllReviewsAsync(cancellationToken);
+            var reviews = await mediaRepository.GetAllReviewsAsync(cancellationToken);
             return reviews.Select(r => ReviewMapper.ToResponse(r)).ToList();
         }
     }

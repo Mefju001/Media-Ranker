@@ -8,15 +8,14 @@ namespace Application.Features.LikedServices.GetAllLiked
 {
     public class GetAllHandler : IRequestHandler<GetAllQuery, List<LikedMediaResponse>>
     {
-        private readonly IUnitOfWork unitOfWork;
-        private readonly IMediaRepository mediaRepository;
+        private readonly IMediaRepository<Media> mediaRepository;
         private readonly IUserRepository userRepository;
         private readonly IGenreRepository genreRepository;
         private readonly IDirectorRepository directorRepository;
         private readonly ILikedMediaRepository likedMediaRepository;
-        public GetAllHandler(IUnitOfWork unitOfWork, ILikedMediaRepository likedMediaRepository, IMediaRepository mediaRepository, IUserRepository userRepository, IGenreRepository genreRepository, IDirectorRepository directorRepository)
+        public GetAllHandler(  ILikedMediaRepository likedMediaRepository, IMediaRepository<Media> mediaRepository, IUserRepository userRepository, IGenreRepository genreRepository, IDirectorRepository directorRepository)
         {
-            this.unitOfWork = unitOfWork;
+            
             this.mediaRepository = mediaRepository;
             this.genreRepository = genreRepository;
             this.directorRepository = directorRepository;

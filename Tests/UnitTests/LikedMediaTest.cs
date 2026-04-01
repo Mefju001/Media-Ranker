@@ -18,7 +18,7 @@ namespace UnitTests
         private DeleteLikedHandler DeleteLikedHandler;
         private GetAllLikedByUserHandler GetAllLikedByUserHandler;
 
-        private Mock<IUnitOfWork> unitOfWork;
+        private Mock<> ;
         private Mock<ILikedMediaRepository> likedMediaRepository;
         private Mock<IGenreRepository> genreRepository;
         private Mock<IDirectorRepository> directorRepository;
@@ -27,7 +27,7 @@ namespace UnitTests
 
         private void SetupMocks()
         {
-            unitOfWork = new Mock<IUnitOfWork>();
+             = new Mock<>();
             likedMediaRepository = new Mock<ILikedMediaRepository>();
             genreRepository = new Mock<IGenreRepository>();
             directorRepository = new Mock<IDirectorRepository>();
@@ -39,8 +39,8 @@ namespace UnitTests
         {
             SetupMocks();
             GetAllLikedByUserHandler = new GetAllLikedByUserHandler(mediaRepository.Object, userRepository.Object, genreRepository.Object, directorRepository.Object, likedMediaRepository.Object);
-            DeleteLikedHandler = new DeleteLikedHandler(unitOfWork.Object, likedMediaRepository.Object, new Mock<ILogger<DeleteLikedHandler>>().Object);
-            handler = new AddLikedHandler(new Mock<ILogger<AddLikedHandler>>().Object, unitOfWork.Object, likedMediaRepository.Object, directorRepository.Object, mediaRepository.Object, userRepository.Object, genreRepository.Object);
+            DeleteLikedHandler = new DeleteLikedHandler(.Object, likedMediaRepository.Object, new Mock<ILogger<DeleteLikedHandler>>().Object);
+            handler = new AddLikedHandler(new Mock<ILogger<AddLikedHandler>>().Object, .Object, likedMediaRepository.Object, directorRepository.Object, mediaRepository.Object, userRepository.Object, genreRepository.Object);
         }
         [TestMethod]
         public async Task AddLiked_ShouldAddLikedMedia()

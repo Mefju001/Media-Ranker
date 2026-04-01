@@ -13,10 +13,12 @@ public class User : AggregateRoot<Guid>,IAudited
     public Fullname Fullname { get; private set; } = default!;
     public Email Email { get; private set; } = default!;
     public bool IsActive { get; private set; }
+    public AuditInfo AuditInfo { get; private set; } = new();
 
     private readonly HashSet<ERole> _roles = new();
     public IReadOnlyCollection<ERole> UserRoles => _roles.ToList();
-    public AuditInfo AuditInfo { get; private set; } = new();
+    private readonly List<LikedMedia> likedMedias = new();
+    public IReadOnlyCollection<LikedMedia> LikedMedias => likedMedias.AsReadOnly();
 
     private User() { }
 
@@ -30,7 +32,6 @@ public class User : AggregateRoot<Guid>,IAudited
             Password = password,
             Fullname = fullname,
             Email = email,
-            AuditInfo = new AuditInfo(),
             IsActive = isActive
         };
 
@@ -41,7 +42,6 @@ public class User : AggregateRoot<Guid>,IAudited
 
         return user;
     }
-
 
     public void UpdateProfile(Fullname fullname, Email email)
     {
@@ -57,8 +57,6 @@ public class User : AggregateRoot<Guid>,IAudited
         Password = password;
         AuditInfo = AuditInfo.MarkAsUpdated();
     }
-
-
     public void PromotionToManager()
     {
         if (_roles.Contains(ERole.Admin)) throw new InvalidOperationException("User is already an Admin.");
@@ -77,5 +75,18 @@ public class User : AggregateRoot<Guid>,IAudited
     {
         if (_roles.Contains(ERole.Admin)) throw new InvalidOperationException("Demote from Admin first.");
         _roles.Remove(ERole.Manager);
+    }
+    public void AddLikedMedia(int mediaId)
+    {
+        if (likedMedias.Any(lm => lm.MediaId.Equals(mediaId)))
+            throw new InvalidOperationException("Media is already liked.");
+        likedMedias.Add(LikedMedia.Create(Id,mediaId));
+    }
+    public void RemoveLikedMedia(int mediaId)
+    {
+        var likedMedia = likedMedias.FirstOrDefault(lm => lm.MediaId.Equals(mediaId));
+        if (likedMedia == null)
+            throw new InvalidOperationException("Media is not in liked list.");
+        likedMedias.Remove(likedMedia);
     }
 }

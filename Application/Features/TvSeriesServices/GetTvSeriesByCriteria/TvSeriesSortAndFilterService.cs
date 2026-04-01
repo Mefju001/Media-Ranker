@@ -6,9 +6,9 @@ namespace Application.Features.TvSeriesServices.GetTvSeriesByCriteria
 {
     public class TvSeriesSortAndFilterService : ITvSeriesSortAndFilterService
     {
-        private readonly IMediaRepository mediaRepository;
+        private readonly IMediaRepository<TvSeries> mediaRepository;
         private readonly IGenreRepository genreRepository;
-        public TvSeriesSortAndFilterService(IMediaRepository mediaRepository, IGenreRepository genreRepository)
+        public TvSeriesSortAndFilterService(IMediaRepository<TvSeries> mediaRepository, IGenreRepository genreRepository)
         {
             this.mediaRepository = mediaRepository;
             this.genreRepository = genreRepository;
@@ -21,14 +21,14 @@ namespace Application.Features.TvSeriesServices.GetTvSeriesByCriteria
         }
         private IQueryable<TvSeries> ApplyFilters(GetTvSeriesByCriteriaQuery request)
         {
-            var query = mediaRepository.GetAsQueryable<TvSeries>();
+            var query = mediaRepository.GetAsQueryable();
             if (!string.IsNullOrWhiteSpace(request.TitleSearch))
             {
                 query = query.Where(m => m.Title.Contains(request.TitleSearch));
             }
             if (!string.IsNullOrWhiteSpace(request.genreName))
             {
-                var genre = genreRepository.GetAllQueryable();
+                var genre = genreRepository.GetAsQueryable();
                 query = query.Join(genre,
                     tv => tv.GenreId,
                     g => g.Id,

@@ -1,5 +1,6 @@
 ﻿using Application.Common.DTO.Request;
 using Application.Common.DTO.Response;
+using Application.Common.Interfaces;
 using Domain.Enums;
 using MediatR;
 
@@ -13,5 +14,5 @@ namespace Application.Features.GamesServices.GameUpsert
         DateTime? ReleaseDate,
         string Language,
         string? Developer,
-        EPlatform Platform) : IRequest<GameResponse>;
+        EPlatform Platform) : ICommand<GameResponse>;
 }

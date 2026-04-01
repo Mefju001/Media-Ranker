@@ -5,7 +5,6 @@ using Application.Features.TvSeriesServices.GetAll;
 using Application.Features.TvSeriesServices.GetTvSeriesByCriteria;
 using Application.Features.TvSeriesServices.TvSeriesUpsert;
 using Domain.Aggregate;
-using Domain.Entity;
 using Domain.Enums;
 using Domain.Value_Object;
 using MediatR;
@@ -21,8 +20,8 @@ namespace UnitTests
         private Mock<ITvSeriesSortAndFilterService> sortAndFilterService;
         private Mock<IMediator> mediator;
         private Mock<IReferenceDataService> referenceDataService;
-        private Mock<IUnitOfWork> unitOfWork;
-        private Mock<ITvSeriesRepository> tvSeriesRepository;
+        private Mock<> ;
+        private Mock<IMediaRepository> tvSeriesRepository;
         private Mock<IGenreRepository> genreRepository;
 
         private GetAllHandler handler;
@@ -33,7 +32,7 @@ namespace UnitTests
         {
             referenceDataService = new Mock<IReferenceDataService>();
             mediator = new Mock<IMediator>();
-            unitOfWork = new Mock<IUnitOfWork>();
+             = new Mock<>();
             sortAndFilterService = new Mock<ITvSeriesSortAndFilterService>();
             tvSeriesRepository = new Mock<ITvSeriesRepository>();
             genreRepository = new Mock<IGenreRepository>();
@@ -43,9 +42,9 @@ namespace UnitTests
         {
             SetupMocks();
             handler = new GetAllHandler(tvSeriesRepository.Object, genreRepository.Object);
-            upsertHandler = new TvSeriesUpsertHandler(unitOfWork.Object, referenceDataService.Object, mediator.Object, tvSeriesRepository.Object, Mock.Of<ILogger<TvSeriesUpsertHandler>>());
+            upsertHandler = new TvSeriesUpsertHandler(.Object, referenceDataService.Object, mediator.Object, tvSeriesRepository.Object, Mock.Of<ILogger<TvSeriesUpsertHandler>>());
             criteriaHandler = new GetTvSeriesByCriteriaHandler(sortAndFilterService.Object, tvSeriesRepository.Object, genreRepository.Object);
-            addListOfTvSeriesHandler = new AddListOfTvSeriesHandler(mediator.Object, referenceDataService.Object, Mock.Of<ILogger<AddListOfTvSeriesHandler>>(), unitOfWork.Object, tvSeriesRepository.Object);
+            addListOfTvSeriesHandler = new AddListOfTvSeriesHandler(mediator.Object, referenceDataService.Object, Mock.Of<ILogger<AddListOfTvSeriesHandler>>(), .Object, tvSeriesRepository.Object);
         }
         [TestMethod]
         public async Task GetAllTvSeries_ReturnsTvSeriesList()
@@ -157,11 +156,11 @@ namespace UnitTests
             };
             referenceDataService.Setup(r => r.EnsureGenresExistAsync(It.IsAny<List<string>>(), It.IsAny<CancellationToken>())).Returns(Task.FromResult(listOFGenres));
             tvSeriesRepository.Setup(t => t.AddListOfTvSeries(It.IsAny<List<TvSeries>>(), It.IsAny<CancellationToken>()));
-            unitOfWork.Setup(u => u.CompleteAsync(It.IsAny<CancellationToken>()));
+            .Setup(u => u.CompleteAsync(It.IsAny<CancellationToken>()));
             var result = await addListOfTvSeriesHandler.Handle(commands, CancellationToken.None);
             referenceDataService.Verify(r => r.EnsureGenresExistAsync(It.IsAny<List<string>>(), It.IsAny<CancellationToken>()), Times.Once);
             tvSeriesRepository.Verify(t => t.AddListOfTvSeries(It.IsAny<List<TvSeries>>(), It.IsAny<CancellationToken>()), Times.Once);
-            unitOfWork.Verify(u => u.CompleteAsync(It.IsAny<CancellationToken>()), Times.Once);
+            .Verify(u => u.CompleteAsync(It.IsAny<CancellationToken>()), Times.Once);
             Assert.HasCount(2, result);
             Assert.AreEqual("Breaking Bad", result[0].Title);
             Assert.AreEqual("Game of Thrones", result[1].Title);

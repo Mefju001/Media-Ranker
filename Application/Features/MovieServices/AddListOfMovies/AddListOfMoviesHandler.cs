@@ -13,18 +13,19 @@ namespace Application.Features.MovieServices.AddListOfMovies
 {
     public class AddListOfMoviesHandler : IRequestHandler<AddListOfMoviesCommand, List<MovieResponse>>
     {
-        private readonly IUnitOfWork unitOfWork;
-        private readonly IReferenceDataService referenceDataService;
-        private readonly IMediaRepository mediaRepository;
+        private readonly IGenreHelperService genreHelperService;
+        private readonly IDirectorHelperService directorHelperService;
+        private readonly IMediaRepository<Media> mediaRepository;
         private readonly ILogger<AddListOfMoviesHandler> logger;
         private readonly IMediator mediator;
-        public AddListOfMoviesHandler(ILogger<AddListOfMoviesHandler> logger, IMediaRepository mediaRepository, IReferenceDataService referenceDataService, IUnitOfWork unitOfWork, IMediator mediator)
+        public AddListOfMoviesHandler(ILogger<AddListOfMoviesHandler> logger, IMediaRepository<Media> mediaRepository, IGenreHelperService genreHelperService, IMediator mediator, IDirectorHelperService directorHelperService)
         {
-            this.referenceDataService = referenceDataService;
-            this.unitOfWork = unitOfWork;
+            this.genreHelperService = genreHelperService;
+            
             this.mediaRepository = mediaRepository;
             this.logger = logger;
             this.mediator = mediator;
+            this.directorHelperService = directorHelperService;
         }
         public async Task<List<MovieResponse>> Handle(AddListOfMoviesCommand requests, CancellationToken cancellationToken)
         {
@@ -34,8 +35,8 @@ namespace Application.Features.MovieServices.AddListOfMovies
             var genreNames = requests.movies.Select(m => m.Genre.name).Distinct().ToList();
             var directors = requests.movies.Select(r => r.Director).Distinct().ToList();
 
-            var dictionaryDirectors = await referenceDataService.EnsureDirectorsExistAsync(directors, cancellationToken);
-            var dictionaryGenres = await referenceDataService.EnsureGenresExistAsync(genreNames, cancellationToken);
+            var dictionaryDirectors = await directorHelperService.EnsureDirectorsExistAsync(directors, cancellationToken);
+            var dictionaryGenres = await genreHelperService.EnsureGenresExistAsync(genreNames, cancellationToken);
 
             var movies = requests.movies.Select(movieReq =>
             {
@@ -51,7 +52,7 @@ namespace Application.Features.MovieServices.AddListOfMovies
                     movieReq.IsCinemaRelease);
             }).ToList();
             await mediaRepository.AddRangeAsync(movies, cancellationToken);
-            await unitOfWork.CompleteAsync(cancellationToken);
+            
             logger.LogInformation("Pomyślnie dodano {Count} gier do bazy.", movies.Count);
             await mediator.Publish(new LogNotification("Information", "Nowa lista filmów została dodana.", nameof(AddListOfGamesHandler)));
             var directorById = dictionaryDirectors.Values.ToDictionary(d => d.Id);

@@ -17,14 +17,14 @@ namespace UnitTests
         private GetTheLastestHandler GetTheLastestHandler;
         private DeleteReviewHandler DeleteReviewHandler;
 
-        private Mock<IUnitOfWork> unitOfWorkMock;
+        private Mock<> Mock;
         private Mock<IReviewRepository> reviewRepositoryMock;
         private Mock<IUserRepository> userRepositoryMock;
         private Mock<IMediaRepository> mediaRepositoryMock;
 
         private void InitializeMocks()
         {
-            unitOfWorkMock = new Mock<IUnitOfWork>();
+            Mock = new Mock<>();
             reviewRepositoryMock = new Mock<IReviewRepository>();
             userRepositoryMock = new Mock<IUserRepository>();
             mediaRepositoryMock = new Mock<IMediaRepository>();
@@ -33,9 +33,9 @@ namespace UnitTests
         public void Setup()
         {
             InitializeMocks();
-            DeleteReviewHandler = new DeleteReviewHandler(unitOfWorkMock.Object, reviewRepositoryMock.Object, Mock.Of<ILogger<DeleteReviewHandler>>());
+            DeleteReviewHandler = new DeleteReviewHandler(Mock.Object, reviewRepositoryMock.Object, Mock.Of<ILogger<DeleteReviewHandler>>());
             GetTheLastestHandler = new GetTheLastestHandler(reviewRepositoryMock.Object);
-            ReviewUpsertHandler = new ReviewUpsertHandler(unitOfWorkMock.Object, Mock.Of<ILogger<ReviewUpsertHandler>>(), reviewRepositoryMock.Object, userRepositoryMock.Object, mediaRepositoryMock.Object);
+            ReviewUpsertHandler = new ReviewUpsertHandler(Mock.Object, Mock.Of<ILogger<ReviewUpsertHandler>>(), reviewRepositoryMock.Object, userRepositoryMock.Object, mediaRepositoryMock.Object);
         }
         [TestMethod]
         public async Task AddReviewToMedia_ShouldAddReview()
@@ -88,10 +88,10 @@ namespace UnitTests
         {
             var reviewId = 1;
             reviewRepositoryMock.Setup(repo => repo.DeleteAsync(It.IsAny<int>(), It.IsAny<CancellationToken>())).Returns(Task.CompletedTask);
-            unitOfWorkMock.Setup(uow => uow.CompleteAsync(It.IsAny<CancellationToken>()));
+            Mock.Setup(uow => uow.CompleteAsync(It.IsAny<CancellationToken>()));
             var result = await DeleteReviewHandler.Handle(new DeleteReviewCommand(reviewId), CancellationToken.None);
             reviewRepositoryMock.Verify(repo => repo.DeleteAsync(reviewId, It.IsAny<CancellationToken>()), Times.Once);
-            unitOfWorkMock.Verify(uow => uow.CompleteAsync(It.IsAny<CancellationToken>()), Times.Once);
+            Mock.Verify(uow => uow.CompleteAsync(It.IsAny<CancellationToken>()), Times.Once);
             Assert.IsTrue(result);
 
         }
