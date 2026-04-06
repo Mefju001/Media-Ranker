@@ -1,9 +1,10 @@
-﻿using Domain.Aggregate;
+﻿using Application.Common.DTO.Response;
+using Domain.Aggregate;
 
 namespace Application.Features.GamesServices.GetGamesByCriteria
 {
     public interface IGameSortAndFilterService
     {
-        IQueryable<Game> GetGamesByCriteriaAsync(GetGamesByCriteriaQuery request);
+        Task<List<GameResponse>> GetGamesByCriteriaAsync(GetGamesByCriteriaQuery request, CancellationToken cancellationToken);
     }
 }

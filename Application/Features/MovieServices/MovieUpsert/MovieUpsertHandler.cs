@@ -15,12 +15,9 @@ namespace Application.Features.MovieServices.MovieUpsert
         private readonly IMediator mediator;
         private readonly IGenreHelperService genreHelperService;
         private readonly IDirectorHelperService directorHelperService;
-        private readonly ILogger<MovieUpsertHandler> logger;
 
-        public MovieUpsertHandler(ILogger<MovieUpsertHandler> logger, IDirectorHelperService directorHelperService, IGenreHelperService genreHelperService, IMediator mediator, IMediaRepository<Movie> mediaRepository)
+        public MovieUpsertHandler(IDirectorHelperService directorHelperService, IGenreHelperService genreHelperService, IMediator mediator, IMediaRepository<Movie> mediaRepository)
         {
-            this.logger = logger;
-            
             this.mediator = mediator;
             this.genreHelperService = genreHelperService;
             this.directorHelperService = directorHelperService;
@@ -31,6 +28,7 @@ namespace Application.Features.MovieServices.MovieUpsert
         {
             var director = await directorHelperService.GetOrCreateDirectorAsync(request.Director, cancellationToken);
             var genre = await genreHelperService.GetOrCreateGenreAsync(request.Genre, cancellationToken);
+            var isNew = false;
             Movie? movie = null;
             if (request.id.HasValue)
             {
@@ -48,10 +46,10 @@ namespace Application.Features.MovieServices.MovieUpsert
                     new Duration(request.Duration),
                     request.IsCinemaRelease
                 );
-                logger.LogInformation("Updating movie with id {MovieId}", movie.Id);
             }
             else
             {
+                isNew = true;
                 movie = Movie.Create(request.Title,
                             request.Description,
                             new Language(request.Language),
@@ -61,15 +59,11 @@ namespace Application.Features.MovieServices.MovieUpsert
                             new Duration(request.Duration),
                             request.IsCinemaRelease);
                 movie = await mediaRepository.AddAsync(movie, cancellationToken);
-                logger.LogInformation("Creating new movie with title {movieTitle}", movie.Title);
             }
-
-            
+            var action = isNew ? "dodana" : "zaktualizowana";
             if (movie is null) throw new InvalidOperationException(nameof(movie));
-            var response = MovieMapper.ToMovieResponse(movie, genre, director);
-            logger.LogInformation("Movie with id {MovieId} has been upserted successfully", movie.Id);
-            await mediator.Publish(new LogNotification("Information", "Nowy film został dodany.", nameof(MovieUpsertHandler)));
-            return response;
+            await mediator.Publish(new LogNotification("Information", $"Film został {action}.", nameof(MovieUpsertHandler)));
+            return MovieMapper.ToMovieResponse(movie, genre, director);
         }
 
     }

@@ -10,9 +10,9 @@ namespace Application.Features.AuthServices.Login
     public class LoginHandler : IRequestHandler<LoginCommand, TokenResponse?>
     {
         private readonly IUserRepository userRepository;
-        private readonly TokenService tokenServices;
+        private readonly ITokenService tokenServices;
         private readonly ILogger<LoginHandler> logger;
-        public LoginHandler(IUserRepository userRepository, TokenService tokenServices, ILogger<LoginHandler> logger)
+        public LoginHandler(IUserRepository userRepository, ITokenService tokenServices, ILogger<LoginHandler> logger)
         {
             this.userRepository = userRepository;
             this.tokenServices = tokenServices;
@@ -27,11 +27,9 @@ namespace Application.Features.AuthServices.Login
                 logger.LogWarning("Failed login attempt for username: {Username}", command.username);
                 throw new InvalidCredentialsException("Wrong username or password");
             }
-            var username = user.Username.Value;
-            var accessToken = tokenServices.generateAccessToken(user.Id, username, user.UserRoles);
-            var refreshToken = await tokenServices.GenerateRefreshToken(user.Id, username, cancellationToken);
-            logger.LogInformation("User {Username} logged in successfully", username);
-            return new TokenResponse(user.Id, username, accessToken, refreshToken);
+            var accessToken = tokenServices.GenerateAccessToken(user.Id, user.Username, user.Roles);
+            var refreshToken = await tokenServices.GenerateRefreshToken(user.Id, user.Username, cancellationToken);
+            return new TokenResponse(user.Id, user.Username, accessToken, refreshToken);
         }
     }
 }

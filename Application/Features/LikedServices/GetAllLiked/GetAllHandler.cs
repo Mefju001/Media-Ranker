@@ -1,57 +1,48 @@
 ﻿using Application.Common.DTO.Response;
 using Application.Common.Interfaces;
-using Application.Mapper;
 using Domain.Aggregate;
+using Domain.Entity;
 using MediatR;
+using Microsoft.EntityFrameworkCore;
 
 namespace Application.Features.LikedServices.GetAllLiked
 {
     public class GetAllHandler : IRequestHandler<GetAllQuery, List<LikedMediaResponse>>
     {
-        private readonly IMediaRepository<Media> mediaRepository;
-        private readonly IUserRepository userRepository;
-        private readonly IGenreRepository genreRepository;
-        private readonly IDirectorRepository directorRepository;
-        private readonly ILikedMediaRepository likedMediaRepository;
-        public GetAllHandler(  ILikedMediaRepository likedMediaRepository, IMediaRepository<Media> mediaRepository, IUserRepository userRepository, IGenreRepository genreRepository, IDirectorRepository directorRepository)
+        private readonly IAppDbContext appDbContext;
+        public GetAllHandler(IAppDbContext appDbContext)
         {
-            
-            this.mediaRepository = mediaRepository;
-            this.genreRepository = genreRepository;
-            this.directorRepository = directorRepository;
-            this.userRepository = userRepository;
-            this.likedMediaRepository = likedMediaRepository;
+            this.appDbContext = appDbContext;
         }
         public async Task<List<LikedMediaResponse>> Handle(GetAllQuery request, CancellationToken cancellationToken)
         {
-            var likedItems = await likedMediaRepository.GetAll(cancellationToken);
-            if (!likedItems.Any()) return new List<LikedMediaResponse>();
-
-            var userIds = likedItems.Select(x => x.UserId).Distinct().ToList();
-            var mediaIds = likedItems.Select(x => x.MediaId).Distinct().ToList();
-
-            var users = await userRepository.GetByIds(userIds, cancellationToken);
-            var mediaList = await mediaRepository.GetByIds(mediaIds, cancellationToken);
-            //zwracac genre i directors poprzez id wcześniej wyszukane
-            var genres = await genreRepository.GetGenresDictionary(cancellationToken);
-            var directors = await directorRepository.GetDirectorsDictionary(cancellationToken);
-
-            var result = new List<LikedMediaResponse>();
-            foreach (var lm in likedItems)
-            {
-                if (!users.TryGetValue(lm.UserId, out var user) ||
-                   !mediaList.TryGetValue(lm.MediaId, out var media))
-                    continue;
-                genres.TryGetValue(media.GenreId, out var genre);
-                result.Add(media switch
-                {
-                    Movie m => LikedMediaMapper.ToResponse(lm, user, m, genre, directors.TryGetValue(m.DirectorId, out var director) ? director : null),
-                    Game g => LikedMediaMapper.ToResponse(lm, user, g, genre),
-                    TvSeries t => LikedMediaMapper.ToResponse(lm, user, t, genre),
-                    _ => throw new Exception("Unknown media type")
-                });
-            }
-            return result;
+            return await appDbContext.Set<LikedMedia>()
+                .AsNoTrackingWithIdentityResolution()
+                .AsSplitQuery()
+                .Join(appDbContext.Set<UserDetails>(), l => l.UserId, u => u.Id, (l, u) => new { l, u })
+                .Join(appDbContext.Set<Media>(), lu => lu.l.MediaId, m => m.Id, (lu, m) => new { lu.l, lu.u, m })
+                .Join(appDbContext.Set<Genre>(), lum => lum.m.GenreId, g => g.Id, (lum, g) => new { lum.l, lum.u, lum.m, g })
+                .Select(l=> new LikedMediaResponse
+                (l.l.Id,
+                 new UserDetailsResponse(l.u.Id,l.u.Fullname.Name,l.u.Fullname.Surname,l.u.email),
+                 new MediaResponse(
+                 l.m.Id,
+                 l.m.Title,
+                 l.m.Description,
+                 new GenreResponse(l.g.Id,l.g.Name),
+                 l.m.ReleaseDate,
+                 l.m.Language,
+                 l.m.Reviews.Select(r => new ReviewResponse(
+                        r.Id,
+                        r.MediaId,
+                        r.Username,
+                        r.Rating,
+                        r.Comment,
+                        r.AuditInfo.CreatedAt,
+                        r.AuditInfo.UpdatedAt
+                    )).ToList()),
+                 l.l.LikedDate))
+                .ToListAsync(cancellationToken);
         }
     }
 }

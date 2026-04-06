@@ -4,38 +4,28 @@ using Application.Mapper;
 using Domain.Aggregate;
 using Domain.Exceptions;
 using MediatR;
+using Microsoft.EntityFrameworkCore;
 
 
 namespace Application.Features.MovieServices.GetMovieById
 {
     public class GetMovieByIdHandler : IRequestHandler<GetMovieByIdQuery, MovieResponse?>
     {
-        private readonly IMediaRepository<Movie> mediaRepository;
-        private readonly IGenreRepository genreRepository;
-        private readonly IDirectorRepository directorRepository;
+        private readonly IAppDbContext appDbContext;
 
-        public GetMovieByIdHandler(IMediaRepository<Movie> mediaRepository, IGenreRepository genreRepository, IDirectorRepository directorRepository)
+        public GetMovieByIdHandler(IAppDbContext appDbContext)
         {
             
-            this.mediaRepository = mediaRepository;
-            this.genreRepository = genreRepository;
-            this.directorRepository = directorRepository;
+            this.appDbContext = appDbContext;
         }
 
         public async Task<MovieResponse?> Handle(GetMovieByIdQuery request, CancellationToken cancellationToken)
         {
-            var movie = await mediaRepository.GetByIdAsync(request.id, cancellationToken);
-            if (movie == null)
-            {
-                throw new NotFoundException("Movie not found");
-            }
-            var genre = await genreRepository.GetByIdAsync(movie.GenreId, cancellationToken);
-            var director = await directorRepository.GetByIdAsync(movie.DirectorId, cancellationToken);
-
-
-            if (genre == null) throw new NotFoundException("Genre not found");
-            if (director == null) throw new NotFoundException("Director not found");
-            return MovieMapper.ToMovieResponse(movie, genre, director);
+            return await appDbContext.Set<Movie>()
+                .AsNoTracking()
+                .AsSplitQuery()
+                .Select()
+                .firstOrDefaultAsync(m => m.Id == request.id, cancellationToken);
         }
     }
 }

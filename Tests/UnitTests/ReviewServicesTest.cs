@@ -40,7 +40,7 @@ namespace UnitTests
         [TestMethod]
         public async Task AddReviewToMedia_ShouldAddReview()
         {
-            var user = User.Create(new Username("Username"), new Password("password"), new Fullname("name", "surname"), new Email("string@strin.pl"));
+            var user = UserDetails.Create(new Username("Username"), new Password("password"), new Fullname("name", "surname"), new Email("string@strin.pl"));
             var movie = Movie.Reconstruct(1, "Inception", "A mind-bending thriller", new Language("polish"), new ReleaseDate(new DateTime(2010, 7, 16)), 1, 1, new Duration(TimeSpan.Zero), true, new MediaStats(6, 2));
             var command = new ReviewUpsertCommand(null, 1, user.Id, 5, "Great movie!");
             userRepositoryMock.Setup(x => x.GetUserById(It.IsAny<Guid>(), It.IsAny<CancellationToken>())).ReturnsAsync(user);

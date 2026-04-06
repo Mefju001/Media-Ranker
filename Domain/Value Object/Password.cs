@@ -1,4 +1,5 @@
 ﻿using Domain.Base;
+using Domain.DomainService;
 
 namespace Domain.Value_Object;
 
@@ -6,20 +7,25 @@ public record Password:ValueObject
 {
     public string HashValue { get; init; }
 
-    public Password(string hashValue)
+    private Password(string hashValue)
     {
-        if (string.IsNullOrWhiteSpace(hashValue))
-            throw new ArgumentException("Password hash cannot be empty", nameof(hashValue));
-
-        if (hashValue.Length < 10)
-            throw new ArgumentException("Password hash is suspiciously short.");
-
         HashValue = hashValue;
     }
 
+    public static Password Create(string rawPassword, IPasswordHasher passwordHasher)
+    {
+        if (string.IsNullOrWhiteSpace(rawPassword))
+            throw new ArgumentException("Password cannot be empty");
+
+        if (rawPassword.Length < 8)
+            throw new ArgumentException("Password is too short.");
+
+        var hash = passwordHasher.CreatePasswordHash(rawPassword);
+        return new Password(hash);
+    }
+
+    public static Password FromHash(string hash) => new Password(hash);
+
     public static implicit operator string(Password password) => password.HashValue;
-
-    public static explicit operator Password(string hash) => new(hash);
-
     public override string ToString() => "********";
 }

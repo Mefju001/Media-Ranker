@@ -2,7 +2,7 @@
 
 namespace Domain.Entity;
 
-public class LikedMedia : AggregateRoot<int>
+public class LikedMedia : Entity<int>
 {
     public Guid UserId { get; private set; }
     public int MediaId { get; private set; }

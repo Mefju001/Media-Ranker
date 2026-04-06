@@ -1,4 +1,5 @@
-﻿using Application.Common.Interfaces;
+﻿using Application.Common.DTO;
+using Application.Common.Interfaces;
 using Domain.Aggregate;
 using Domain.Enums;
 using Infrastructure.Database.DBModels;
@@ -26,7 +27,7 @@ namespace Infrastructure.Database.Repository
             if (user == null) return IdentityResult.Failed(new IdentityError { Description = "User not found" });
             return await userManager.ChangePasswordAsync(user, currentPassword, newPassword);
         }
-        public async Task<User> GetUserByUsername(string username)
+        /*public async Task<UserDetails> GetUserByUsername(string username)
         {
             var user = await userManager.FindByNameAsync(username);
             if (user == null) return null;
@@ -34,17 +35,15 @@ namespace Infrastructure.Database.Repository
             var domainRoles = roles.Select(r =>
                 Enum.TryParse<ERole>(r, out var role) ? (ERole?)role : null).OfType<ERole>().ToList();
             return user.ToDomain(domainRoles);
-        }
-        public async Task<User?> AuthenticateAsync(string username, string password)
+        }*/
+        public async Task<UserDTO?> AuthenticateAsync(string username, string password)
         {
             var user = await userManager.FindByNameAsync(username);
             if (user == null) return null;
             var result = await userManager.CheckPasswordAsync(user, password);
             if (result == false) return null;
             var roles = await userManager.GetRolesAsync(user);
-            var domainRoles = roles.Select(r =>
-                Enum.TryParse<ERole>(r, out var role) ? (ERole?)role : null).OfType<ERole>().ToList();
-            return user.ToDomain(domainRoles);
+            return new UserDTO(user.Id,user.UserName,user.Email,roles.ToList());
         }
         public async Task<IList<string>> getUserRoles(string username)
         {
@@ -53,14 +52,16 @@ namespace Infrastructure.Database.Repository
             var results = await userManager.GetRolesAsync(user);
             return results;
         }
-        public async Task<User> GetUserById(Guid userId, CancellationToken cancellationToken)
+        public async Task<UserDTO> GetUserById(Guid userId, CancellationToken cancellationToken)
         {
-            var user = await userManager.FindByIdAsync(userId.ToString());
-            if (user == null) return null;
-            var roles = await userManager.GetRolesAsync(user);
-            var domainRoles = roles.Select(r =>
-                Enum.TryParse<ERole>(r, out var role) ? (ERole?)role : null).OfType<ERole>().ToList();
-            return user.ToDomain(domainRoles);
+            var userModel = await appDbContext.Users
+                    .FirstOrDefaultAsync(u => u.Id == userId, cancellationToken);
+
+            if (userModel == null) return null;
+
+            var roles = await userManager.GetRolesAsync(userModel);
+
+            return new UserDTO(userModel.Id, userModel.UserName, userModel.Email, roles.ToList());
         }
         public async Task<bool> IsAnyUserWhoHaveEmailAndId(string email, Guid id)
         {
@@ -81,20 +82,26 @@ namespace Infrastructure.Database.Repository
         {
             return await appDbContext.Users.AnyAsync(u => u.UserName == username || u.Email == email);
         }
-        public async Task<User> CreateUserWithDefaultRole(User user, CancellationToken cancellationToken)
+        public async Task<UserDTO> CreateUserWithDefaultRole(string username, string password, string email, CancellationToken cancellationToken)
         {
-            var identityUser = user.ToModel();
-            var result = await userManager.CreateAsync(identityUser, user.Password.HashValue);
+            var identityUser = new UserModel
+            {
+                Id = Guid.NewGuid(),
+                UserName = username,
+                Email = email,
+            };
+            var result = await userManager.CreateAsync(identityUser,password);
             if (!result.Succeeded) throw new Exception("User creation failed: " + result.Errors.Select(e => e.Description));
-            await userManager.AddToRoleAsync(identityUser, ERole.User.ToString());
-            return await GetUserById(identityUser.Id, cancellationToken);
+            var defaultRoles = new List<string> { "User" };
+            await userManager.AddToRolesAsync(identityUser, defaultRoles);
+            return new UserDTO(identityUser.Id,identityUser.UserName, identityUser.Email, defaultRoles);
         }
-        public async Task<Dictionary<Guid, User>> GetByIds(List<Guid> userIds, CancellationToken cancellationToken)
+/*        public async Task<Dictionary<Guid, UserDetails>> GetByIds(List<Guid> userIds, CancellationToken cancellationToken)
         {
             var identityUsers = await userManager.Users
                 .Where(u => userIds.Contains(u.Id))
                 .ToListAsync(cancellationToken);
-            var userDictionary = new Dictionary<Guid, User>();
+            var userDictionary = new Dictionary<Guid, UserDetails>();
             foreach (var user in identityUsers)
             {
                 var roles = await userManager.GetRolesAsync(user);
@@ -105,7 +112,7 @@ namespace Infrastructure.Database.Repository
                 userDictionary[user.Id] = user.ToDomain(domainRoles);
             }
             return userDictionary;
-        }
+        }*/
 
         public async Task<string> GetUsernameById(Guid id, CancellationToken cancellationToken)
         {

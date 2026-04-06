@@ -6,7 +6,5 @@ using System.Threading.Tasks;
 
 namespace Application.Common.DTO
 {
-    public interface IResponse
-    {
-    }
+    public record UserDTO(Guid Id, string Username, string Email, List<string> Roles);
 }

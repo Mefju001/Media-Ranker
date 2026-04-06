@@ -5,18 +5,19 @@ using MediatR;
 
 namespace Application.Features.UserServices.GetBy
 {
-    public class GetUserByNameHandler : IRequestHandler<GetUserByNameQuery, UserResponse?>
+    public class GetUserByNameHandler : IRequestHandler<GetUserByNameQuery, UserDetailsResponse?>
     {
         private readonly IUserRepository userRepository;
         public GetUserByNameHandler(IUserRepository userRepository)
         {
             this.userRepository = userRepository;
         }
-        public async Task<UserResponse?> Handle(GetUserByNameQuery request, CancellationToken cancellationToken)
+        public async Task<UserDetailsResponse?> Handle(GetUserByNameQuery request, CancellationToken cancellationToken)
         {
-            var user = await userRepository.GetUserByUsername(request.name);
+            /*var user = await userRepository.GetUserByUsername(request.name);
             if (user is null) return null;
-            return UserMapper.ToResponse(user);
+            return UserMapper.ToResponse(user);*/
+            throw  new NotImplementedException();
         }
     }
 }

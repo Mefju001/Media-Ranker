@@ -1,7 +1,10 @@
 ﻿using Application.Common.Interfaces;
 using Application.Common.Services;
+using Application.Features.AuthServices.Common;
 using Application.Features.MovieServices.GetAll;
+using Domain.DomainService;
 using FluentValidation;
+using Infrastructure;
 using Infrastructure.BackgroundTasks;
 using Infrastructure.BackgroundTasks.Workers;
 using Infrastructure.Database;
@@ -19,10 +22,12 @@ namespace Api.Extensions
             {
                 options.UseNpgsql(config.GetConnectionString("DefaultConnection"));
             });
+            services.Configure<JwtSettings>(config.GetSection(JwtSettings.SectionName));
             services.AddScoped(typeof(IRepository<,>), typeof(Repository<,>));
             services.AddScoped(typeof(IMediaRepository<>), typeof(MediaRepository<>));
             services.RegisterAllTypes(typeof(UserRepository).Assembly);
             services.RegisterAllTypes(typeof(GenreHelperService).Assembly);
+            services.AddScoped<IPasswordHasher, PasswordHasher>();
             services.AddHostedService<TokenBackgroundService>();
             services.AddHttpClient<LogSenderService>();
             services.AddTransient(typeof(IPipelineBehavior<,>), typeof(ValidationBehavior<,>));
@@ -30,7 +35,8 @@ namespace Api.Extensions
             services.AddMediatR(cfg =>
             {
                 cfg.RegisterServicesFromAssembly(typeof(GetAllQuery).Assembly);
-                cfg.AddBehavior(typeof(LoggingBehaviour<,>));
+                cfg.AddOpenBehavior(typeof(ErrorHandlingBehaviour<,>));
+                cfg.AddOpenBehavior(typeof(LoggingBehaviour<,>));
                 cfg.AddOpenBehavior(typeof(ValidationBehavior<,>));
                 cfg.AddOpenBehavior(typeof(TransactionBehaviour<,>));
             });

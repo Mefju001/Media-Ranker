@@ -3,9 +3,9 @@ using Application.Common.Interfaces;
 using Application.Mapper;
 using Application.Notification;
 using Domain.Aggregate;
+using Domain.Exceptions;
 using Domain.Value_Object;
 using MediatR;
-using Microsoft.Extensions.Logging;
 
 namespace Application.Features.GamesServices.GameUpsert
 {
@@ -14,23 +14,22 @@ namespace Application.Features.GamesServices.GameUpsert
         private readonly IMediaRepository<Game> mediaRepository;
         private readonly IMediator mediator;
         private readonly IGenreHelperService genreHelperService;
-        private readonly ILogger<GameUpsertHandler> logger;
 
-        public GameUpsertHandler( IGenreHelperService genreHelperService, IMediator mediator, IMediaRepository<Game> mediaRepository, ILogger<GameUpsertHandler> logger)
+        public GameUpsertHandler(IGenreHelperService genreHelperService, IMediator mediator, IMediaRepository<Game> mediaRepository)
         {
             this.mediaRepository = mediaRepository;
             this.mediator = mediator;
             this.genreHelperService = genreHelperService;
-            this.logger = logger;
         }
 
         public async Task<GameResponse> Handle(UpsertGameCommand request, CancellationToken cancellationToken)
         {
             var genre = await genreHelperService.GetOrCreateGenreAsync(request.Genre, cancellationToken);
+            var isNew = false;
             Game? game = null;
             if (request.id.HasValue)
             {
-                game = await mediaRepository.GetByIdAsync(request.id.Value, cancellationToken);
+                game = await mediaRepository.GetByIdAsync(request.id.Value, cancellationToken)?? throw new NotFoundException($"Game {request.id} not found");
             }
             if (game != null)
             {
@@ -44,10 +43,10 @@ namespace Application.Features.GamesServices.GameUpsert
                     request.Developer!,
                     request.Platform
                     );
-                logger.LogInformation("Updating game with id {GameId}", game.Id);
             }
             else
             {
+                isNew = true;
                 game = Game.Create(
                     request.Title,
                     request.Description,
@@ -56,14 +55,10 @@ namespace Application.Features.GamesServices.GameUpsert
                     genre.Id, request.Developer!,
                     request.Platform);
                 game = await mediaRepository.AddAsync(game, cancellationToken);
-                logger.LogInformation("Creating new game with title {GameTitle}", game.Title);
             }
-            
-            if (game is null) throw new InvalidOperationException(nameof(game));
-            var response = GameMapper.ToGameResponse(game, genre);
-            logger.LogInformation("Game with id {GameId} has been upserted successfully", game.Id);
-            await mediator.Publish(new LogNotification("Information", "Nowa gra została dodana.", nameof(GameUpsertHandler)));
-            return response;
+            var action = isNew ? "dodana" : "zaktualizowana";
+            await mediator.Publish(new LogNotification("Information", $"Gra została {action}. ID:{game.Id}", nameof(GameUpsertHandler)));
+            return GameMapper.ToGameResponse(game, genre);
         }
     }
 }

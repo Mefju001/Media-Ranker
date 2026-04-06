@@ -1,3 +1,4 @@
+using Application.Common.Interfaces;
 using Domain.Aggregate;
 using Domain.Base;
 using Domain.Entity;
@@ -9,7 +10,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Infrastructure.Database
 {
-    public class AppDbContext : IdentityDbContext<UserModel, RoleModel, Guid>
+    public class AppDbContext : IdentityDbContext<UserModel, RoleModel, Guid>, IAppDbContext
     {
         public AppDbContext(DbContextOptions<AppDbContext> options) : base(options) { }
         public DbSet<Media> Medias { get; set; }
@@ -18,6 +19,7 @@ namespace Infrastructure.Database
         public DbSet<Review> Reviews { get; set; }
         public DbSet<Token> Tokens { get; set; }
         public DbSet<LikedMedia> LikedMedias { get; set; }
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);

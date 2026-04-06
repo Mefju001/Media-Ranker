@@ -16,7 +16,6 @@ public abstract class Media : AggregateRoot<int>,IAudited
 
     private readonly List<Review> reviews = new();
     public IReadOnlyCollection<Review> Reviews => reviews.AsReadOnly();
-
     protected Media() { }
 
 

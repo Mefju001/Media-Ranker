@@ -6,28 +6,26 @@ using Domain.Aggregate;
 using Domain.Exceptions;
 using Domain.Value_Object;
 using MediatR;
-using Microsoft.Extensions.Logging;
 
 namespace Application.Features.GamesServices.AddListOfGames
 {
+    //maybe add better response with info about which games were added and which not, and why.
     public class AddListOfGamesHandler : IRequestHandler<AddListOfGamesCommand, List<GameResponse>>
     {
         private readonly IGenreHelperService genreHelperService;
         private readonly IMediaRepository<Game> mediaRepository;
-        private readonly ILogger<AddListOfGamesHandler> logger;
         private readonly IMediator mediator;
-        public AddListOfGamesHandler(IMediator mediator, IGenreHelperService genreHelperService, IMediaRepository<Game> mediaRepository, ILogger<AddListOfGamesHandler> logger)
+        public AddListOfGamesHandler(IMediator mediator, IGenreHelperService genreHelperService, IMediaRepository<Game> mediaRepository)
         {
             this.mediator = mediator;
             this.genreHelperService = genreHelperService;
             this.mediaRepository = mediaRepository;
-            this.logger = logger;
         }
         public async Task<List<GameResponse>> Handle(AddListOfGamesCommand requests, CancellationToken cancellationToken)
         {
+            if (requests.games == null || !requests.games.Any()) return [];
             if (requests.games.Count > 500)
                 throw new BadRequestException("The package is too large. Maximum 500 games at a time.");
-            logger.LogInformation("Received request to add a list of games. Games count: {GamesCount}", requests.games.Count);
             var names = requests.games.Select(g => g.Genre.name).Distinct().ToList();
             var genresMap = await genreHelperService.EnsureGenresExistAsync(names, cancellationToken);
             var games = requests.games.Select(gameReq =>
@@ -39,17 +37,13 @@ namespace Application.Features.GamesServices.AddListOfGames
                         new Language(gameReq.Language),
                         new ReleaseDate(gameReq.ReleaseDate ?? DateTime.UtcNow),
                         genre.Id,
-                        gameReq.Developer!,
+                        gameReq.Developer ?? "Unknown",
                         gameReq.Platform);
             }).ToList();
             await mediaRepository.AddRangeAsync(games, cancellationToken);
-            logger.LogInformation("Added list of games to the repository. Games count: {GamesCount}", games.Count);
             await mediator.Publish(new LogNotification("Information", "Nowa lista gier została dodana.", nameof(AddListOfGamesHandler)));
-            return games.Select(g =>
-            {
-                var genre = genresMap.Values.First(ge => ge.Id == g.GenreId);
-                return GameMapper.ToGameResponse(g, genre);
-            }).ToList();
+            var genresById = genresMap.Values.ToDictionary(g => g.Id);
+            return games.Select(g => GameMapper.ToGameResponse(g, genresById[g.Id])).ToList();
         }
     }
 }

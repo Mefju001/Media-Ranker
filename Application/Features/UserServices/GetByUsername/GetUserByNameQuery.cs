@@ -4,5 +4,5 @@ using MediatR;
 
 namespace Application.Features.UserServices.GetBy
 {
-    public record GetUserByNameQuery(string name) : IQuery<UserResponse?>;
+    public record GetUserByNameQuery(string name) : IQuery<UserDetailsResponse?>;
 }

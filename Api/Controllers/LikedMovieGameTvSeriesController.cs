@@ -64,7 +64,8 @@ namespace Api.Controllers
             var userId = GetCurrentUserId();
             var command = new AddLikedCommand(userId, liked.MediaId);
             var response = await mediator.Send(command);
-            return CreatedAtAction(nameof(GetById), new { id = response.id }, response);
+            return Ok();
+            //return CreatedAtAction(nameof(GetById), new { id = response.id }, response);
         }
         [HttpDelete("{id:int}")]
         public async Task<IActionResult> DeleteLikedMovie([FromRoute] int id)

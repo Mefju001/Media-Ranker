@@ -6,7 +6,7 @@ namespace Application.Mapper
 {
     public class LikedMediaMapper
     {
-        public static LikedMediaResponse ToResponse(LikedMedia likedMedia, User userDomain, Movie movieDomain, Genre genreDomain, Director director)
+        public static LikedMediaResponse ToResponse(LikedMedia likedMedia, UserDetails userDomain, Movie movieDomain, Genre genreDomain, Director director)
         {
             return new LikedMediaResponse(
                 likedMedia.Id,
@@ -15,7 +15,7 @@ namespace Application.Mapper
                 likedMedia.LikedDate
             );
         }
-        public static LikedMediaResponse ToResponse(LikedMedia likedMedia, User userDomain, Game gameDomain, Genre genreDomain)
+        public static LikedMediaResponse ToResponse(LikedMedia likedMedia, UserDetails userDomain, Game gameDomain, Genre genreDomain)
         {
             return new LikedMediaResponse(
                 likedMedia.Id,
@@ -24,7 +24,7 @@ namespace Application.Mapper
                 likedMedia.LikedDate
             );
         }
-        public static LikedMediaResponse ToResponse(LikedMedia likedMedia, User userDomain, TvSeries tvSeriesDomain, Genre genreDomain)
+        public static LikedMediaResponse ToResponse(LikedMedia likedMedia, UserDetails userDomain, TvSeries tvSeriesDomain, Genre genreDomain)
         {
             return new LikedMediaResponse(
                 likedMedia.Id,

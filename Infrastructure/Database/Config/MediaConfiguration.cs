@@ -19,6 +19,11 @@ namespace Infrastructure.Database.Config
                 .HasValue<Movie>("Movie")
                 .HasValue<TvSeries>("TvSeries")
                 .HasValue<Game>("Game");
+            builder.HasMany(x => x.LikedMedias)
+                .WithOne()
+                .HasForeignKey(lm => lm.MediaId)
+                .OnDelete(DeleteBehavior.Cascade);
+            builder.Navigation(x => x.LikedMedias).UsePropertyAccessMode(PropertyAccessMode.Field);
             builder.OwnsOne(m => m.Stats, sa =>
             {
                 sa.Property(s => s.AverageRating).HasColumnName("AverageRating");

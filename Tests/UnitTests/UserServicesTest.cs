@@ -40,7 +40,7 @@ namespace UnitTests
         [TestMethod]
         public async Task GetUserByNameHandler_ReturnsUserResponse_WhenUserExists()
         {
-            var user = User.Create(new Username("test"), new Password("hashedpassword"), new Fullname("Test", "User"), new Email("test@test.pl"));
+            var user = UserDetails.Create(new Username("test"), new Password("hashedpassword"), new Fullname("Test", "User"), new Email("test@test.pl"));
 
             userRepository.Setup(repo => repo.GetUserByUsername(It.IsAny<string>())).ReturnsAsync(user);
 
@@ -52,9 +52,9 @@ namespace UnitTests
         [TestMethod]
         public async Task DeleteUser_ShouldBeDeleted()
         {
-            var user = User.Create(new Username("test"), new Password("hashedpassword"), new Fullname("Test", "User"), new Email("test@test.pl"));
+            var user = UserDetails.Create(new Username("test"), new Password("hashedpassword"), new Fullname("Test", "User"), new Email("test@test.pl"));
             userRepository.Setup(repo => repo.GetUserById(It.IsAny<Guid>(), It.IsAny<CancellationToken>())).ReturnsAsync(user);
-            userRepository.Setup(repo => repo.DeleteUser(It.IsAny<User>())).ReturnsAsync(IdentityResult.Success);
+            userRepository.Setup(repo => repo.DeleteUser(It.IsAny<UserDetails>())).ReturnsAsync(IdentityResult.Success);
             var result = await deleteUserHandler.Handle(new DeleteUserCommand(user.Id), CancellationToken.None);
             userRepository.Verify(repo => repo.GetUserById(user.Id, It.IsAny<CancellationToken>()), Times.Once);
             userRepository.Verify(repo => repo.DeleteUser(user), Times.Once);
@@ -62,7 +62,7 @@ namespace UnitTests
         [TestMethod]
         public async Task ChangePassword_ShouldChangePassword()
         {
-            var user = User.Create(new Username("test"), new Password("hashedpassword"), new Fullname("Test", "User"), new Email("test@test.pl"));
+            var user = UserDetails.Create(new Username("test"), new Password("hashedpassword"), new Fullname("Test", "User"), new Email("test@test.pl"));
             userRepository.Setup(r => r.ChangePassword(It.IsAny<Guid>(), It.IsAny<String>(), It.IsAny<String>())).ReturnsAsync(IdentityResult.Success);
 
             var command = new ChangePasswordCommand("newPassword", "hashedpassword", "newPassword", Guid.NewGuid());
@@ -74,7 +74,7 @@ namespace UnitTests
         [TestMethod]
         public async Task ChangeDetails_ShouldChangeDetails()
         {
-            var user = User.Create(new Username("test"), new Password("hashedpassword"), new Fullname("Test", "User"), new Email("test@"));
+            var user = UserDetails.Create(new Username("test"), new Password("hashedpassword"), new Fullname("Test", "User"), new Email("test@"));
             var command = new ChangeDetailsCommand(user.Id, "newTest", "newUser", "newtest@");
             userRepository.Setup(r => r.GetUserById(It.IsAny<Guid>(), It.IsAny<CancellationToken>())).ReturnsAsync(user);
             userRepository.Setup(r => r.IsAnyUserWhoHaveEmailAndId(It.IsAny<string>(), It.IsAny<Guid>())).ReturnsAsync(false);

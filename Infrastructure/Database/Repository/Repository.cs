@@ -23,6 +23,11 @@ namespace Infrastructure.Database.Repository
             await appDbContext.Set<T>().AddRangeAsync(entities, ct);
         }
 
+        public async Task<bool> ExistById(TId id, CancellationToken cancellationToken)
+        {
+            return await appDbContext.Set<T>().AnyAsync(x => x.Id!.Equals(id), cancellationToken);
+        }
+
         public async Task<List<T>> GetAllAsync(CancellationToken ct)
         {
             return await appDbContext.Set<T>().ToListAsync(ct);

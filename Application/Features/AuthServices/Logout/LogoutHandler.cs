@@ -1,5 +1,4 @@
-﻿using Application.Common.Interfaces;
-using Domain.Repository;
+﻿using Domain.Repository;
 using MediatR;
 using Microsoft.Extensions.Logging;
 
@@ -17,10 +16,9 @@ namespace Application.Features.AuthServices.Logout
         public async Task<Unit> Handle(LogoutCommand request, CancellationToken cancellationToken)
         {
             var deletedCount = await tokenRepository.DeleteTokensFromUserId(request.UserId, request.jti, cancellationToken);
-            if (deletedCount > 0)
+            if (deletedCount == 0)
             {
-                logger.LogInformation("User {UserId} logged out (Scope: {Scope})",
-                    request.UserId, request.jti ?? "All devices");
+                logger.LogWarning("Logout requested for User {UserId}, but no active tokens were found.", request.UserId);
             }
             return Unit.Value;
         }

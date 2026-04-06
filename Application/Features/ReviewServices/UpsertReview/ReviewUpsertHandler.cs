@@ -52,7 +52,7 @@ namespace Application.Features.ReviewServices.UpsertReview
                 {
                     throw new NotFoundException($"Media with id {request.mediaId.Value} not found.");
                 }
-                reviewDomain = Review.Create(new Rating(request.Rating), request.Comment, media.Id, user.Id, new Username(user.Username.Value));
+                reviewDomain = Review.Create(new Rating(request.Rating), request.Comment, media.Id, user.Id, new Username(user.Username));
                 media.AddReview(reviewDomain);
                 logger.LogInformation("Created new review with id {ReviewId}", reviewDomain.Id);
             }

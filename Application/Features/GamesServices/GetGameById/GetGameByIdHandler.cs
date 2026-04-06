@@ -1,42 +1,56 @@
 ﻿using Application.Common.DTO.Response;
 using Application.Common.Interfaces;
-using Application.Mapper;
 using Domain.Aggregate;
-using Domain.Exceptions;
 using MediatR;
-using Microsoft.Extensions.Logging;
+using Microsoft.EntityFrameworkCore;
 
 namespace Application.Features.GamesServices.GetGameById
 {
     public class GetGameByIdHandler : IRequestHandler<GetGameByIdQuery, GameResponse?>
     {
-        private readonly IMediaRepository<Game> mediaRepository;
-        private readonly IGenreRepository genreRepository;
-        private readonly ILogger<GetGameByIdHandler> logger;
-
-        public GetGameByIdHandler(IMediaRepository<Game> mediaRepository, IGenreRepository genreRepository, ILogger<GetGameByIdHandler> logger)
+        private readonly IAppDbContext appDbContext;
+        public GetGameByIdHandler(IAppDbContext appDbContext)
         {
-            this.mediaRepository = mediaRepository;
-            this.genreRepository = genreRepository;
-            this.logger = logger;
+            this.appDbContext = appDbContext;
+
         }
 
         public async Task<GameResponse?> Handle(GetGameByIdQuery request, CancellationToken cancellationToken)
         {
-            var game = await mediaRepository.GetByIdAsync(request.id, cancellationToken);
-            if (game == null)
-            {
-                logger.LogWarning("Game with ID {GameId} was not found.", request.id);
-                throw new NotFoundException("not found");
-            }
-            var genre = await genreRepository.GetByIdAsync(game.GenreId, cancellationToken);
-            if (genre == null)
-            {
-                logger.LogWarning("Genre with ID {GenreId} was not found for Game ID {GameId}.", game.GenreId, request.id);
-                throw new NotFiniteNumberException("No genre found with the specified id ");
-            }
-            var gameResponses = GameMapper.ToGameResponse(game, genre);
-            return gameResponses;
+            var game = await appDbContext.Set<Game>()
+                .AsNoTracking()
+                .AsSplitQuery()
+                .Include(g => g.Stats)
+                .Include(g => g.Reviews)
+                .Where(m => m.Id == request.id)
+                .Join(
+                appDbContext.Set<Genre>(), g => g.GenreId, gen => gen.Id, (g, gen) => new { g, gen })
+                .Select(g => new GameResponse(
+                    g.g.Id,
+                    g.g.Title,
+                    g.g.Description,
+                    new GenreResponse(g.g.GenreId, g.gen.Name),
+                    g.g.ReleaseDate!,
+                    g.g.Language,
+                    g.g.Reviews.Select(r => new ReviewResponse(
+                        r.Id,
+                        r.MediaId,
+                        r.Username,
+                        r.Rating,
+                        r.Comment,
+                        r.AuditInfo.CreatedAt,
+                        r.AuditInfo.UpdatedAt
+                    )).ToList(),
+                    new MediaStatsResponse(
+                        g.g.Stats.AverageRating,
+                        g.g.Stats.ReviewCount,
+                        g.g.Stats.LastCalculated
+                    ),
+                    g.g.Developer,
+                    g.g.Platform
+                ))
+                .FirstOrDefaultAsync(cancellationToken);
+            return game;
         }
     }
 }

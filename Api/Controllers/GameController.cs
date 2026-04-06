@@ -81,8 +81,7 @@ namespace Api.Controllers
         public async Task<IActionResult> Delete([FromRoute] int id)
         {
             var command = new DeleteByIdCommand(id);
-            var deleted = await mediator.Send(command);
-            if (!deleted) return NotFound();
+            await mediator.Send(command);
             return NoContent();
         }
     }

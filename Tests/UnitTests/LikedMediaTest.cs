@@ -48,7 +48,7 @@ namespace UnitTests
             // Arrange
             var command = new AddLikedCommand(Guid.NewGuid(), 1);
             var media = Game.Create("Test Game", "Description", new Language("English"), new ReleaseDate(DateTime.UtcNow), 1, "Test developer", EPlatform.PC);
-            var user = User.Create(new Username("testuser"), new Password("password"), new Fullname("Test", "User"), new Email("test@wp.pl"));
+            var user = UserDetails.Create(new Username("testuser"), new Password("password"), new Fullname("Test", "User"), new Email("test@wp.pl"));
             var userId = user.Id;
             var genre = Genre.Reconstruct(1, "Action");
             mediaRepository.Setup(m => m.GetMediaById(It.IsAny<int>(), It.IsAny<CancellationToken>())).ReturnsAsync(media);
@@ -72,7 +72,7 @@ namespace UnitTests
             // Arrange
             var command = new DeleteLikedCommand(Guid.NewGuid(), 1);
             var media = Game.Create("Test Game", "Description", new Language("English"), new ReleaseDate(DateTime.UtcNow), 1, "Test developer", EPlatform.PC);
-            var user = User.Create(new Username("testuser"), new Password("password"), new Fullname("Test", "User"), new Email("test@"));
+            var user = UserDetails.Create(new Username("testuser"), new Password("password"), new Fullname("Test", "User"), new Email("test@"));
             likedMediaRepository.Setup(l => l.DeleteByLikedMedia(It.IsAny<Guid>(), It.IsAny<int>(), It.IsAny<CancellationToken>())).Returns(Task.FromResult(true));
             var result = DeleteLikedHandler.Handle(command, CancellationToken.None);
             likedMediaRepository.Verify(l => l.DeleteByLikedMedia(It.IsAny<Guid>(), It.IsAny<int>(), It.IsAny<CancellationToken>()), Times.Once);
@@ -82,7 +82,7 @@ namespace UnitTests
         public async Task GetAllForUser_ShouldGetAllForUser()
         {
             var query = new GetAllLikedByUserQuery(Guid.NewGuid());
-            var user = User.Create(new Username("testuser"), new Password("password"), new Fullname("Test", "User"), new Email("test@"));
+            var user = UserDetails.Create(new Username("testuser"), new Password("password"), new Fullname("Test", "User"), new Email("test@"));
             var media1 = Game.Create("Test Game 1", "Description", new Language("English"), new ReleaseDate(DateTime.UtcNow), 1, "Test developer", EPlatform.PC);
             var media2 = Game.Create("Test Game 2", "Description", new Language("English"), new ReleaseDate(DateTime.UtcNow), 1, "Test developer", EPlatform.PC);
             var media3 = Game.Create("Test Game 3", "Description", new Language("English"), new ReleaseDate(DateTime.UtcNow), 1, "Test developer", EPlatform.PC);

@@ -2,60 +2,50 @@
 using Application.Common.Interfaces;
 using Application.Mapper;
 using Domain.Aggregate;
+using Domain.Entity;
 using Domain.Exceptions;
 using MediatR;
+using Microsoft.EntityFrameworkCore;
 
 namespace Application.Features.LikedServices.GetByIdLiked
 {
     public class GetByIdHandler : IRequestHandler<GetByIdQuery, LikedMediaResponse?>
     {
-        private readonly ILikedMediaRepository likedMediaRepository;
-        private readonly IMediaRepository<Media> mediaRepository;
-        private readonly IUserRepository userRepository;
-        private readonly IGenreRepository genreRepository;
-        private readonly IDirectorRepository directorRepository;
-        public GetByIdHandler(IDirectorRepository directorRepository, IGenreRepository genreRepository, ILikedMediaRepository likedMediaRepository, IMediaRepository<Media> mediaRepository, IUserRepository userRepository)
+        private readonly IAppDbContext appDbContext;
+        public GetByIdHandler(IAppDbContext appDbContext)
         {
-            
-            this.likedMediaRepository = likedMediaRepository;
-            this.mediaRepository = mediaRepository;
-            this.userRepository = userRepository;
-            this.genreRepository = genreRepository;
-            this.directorRepository = directorRepository;
+            this.appDbContext = appDbContext;
         }
 
         public async Task<LikedMediaResponse?> Handle(GetByIdQuery request, CancellationToken cancellationToken)
         {
-            var liked = await likedMediaRepository.GetById(request.id, cancellationToken);
-            if (liked == null) throw new NotFoundException("Liked media not found");
-
-            var mediaTask = mediaRepository.GetByIdAsync(liked.MediaId, cancellationToken);
-            var userTask = userRepository.GetUserById(liked.UserId, cancellationToken);
-
-            await Task.WhenAll(mediaTask, userTask);
-
-            var media = await mediaTask;
-            var user = await userTask;
-
-            if (media == null || user == null)
-                throw new NotFoundException("Associated media or user not found");
-
-            var genre = await genreRepository.GetByIdAsync(media.GenreId, cancellationToken);
-            if (genre is null) throw new NotFoundException("Genre not found");
-
-            Director? director = null;
-            if (media is Movie movie)
-            {
-                director = await directorRepository.GetByIdAsync(movie.DirectorId, cancellationToken);
-            }
-
-            return media switch
-            {
-                Movie m => LikedMediaMapper.ToResponse(liked, user, m, genre, director!),
-                Game g => LikedMediaMapper.ToResponse(liked, user, g, genre),
-                TvSeries t => LikedMediaMapper.ToResponse(liked, user, t, genre),
-                _ => throw new InvalidOperationException("Unknown media type")
-            };
+            return await appDbContext.Set<LikedMedia>()
+                .AsNoTracking()
+                .AsSplitQuery()
+                .Join(appDbContext.Set<UserDetails>(), l => l.UserId, u => u.Id, (l, u) => new { l, u })
+                .Join(appDbContext.Set<Media>(), lu => lu.l.MediaId, m => m.Id, (lu, m) => new { lu.l, lu.u, m })
+                .Join(appDbContext.Set<Genre>(), lum => lum.m.GenreId, g => g.Id, (lum, g) => new { lum.l, lum.u, lum.m, g })
+                .Select(l => new LikedMediaResponse
+                (l.l.Id,
+                 new UserDetailsResponse(l.u.Id, l.u.Fullname.Name, l.u.Fullname.Surname, l.u.email),
+                 new MediaResponse(
+                 l.m.Id,
+                 l.m.Title,
+                 l.m.Description,
+                 new GenreResponse(l.g.Id, l.g.Name),
+                 l.m.ReleaseDate,
+                 l.m.Language,
+                 l.m.Reviews.Select(r => new ReviewResponse(
+                        r.Id,
+                        r.MediaId,
+                        r.Username,
+                        r.Rating,
+                        r.Comment,
+                        r.AuditInfo.CreatedAt,
+                        r.AuditInfo.UpdatedAt
+                    )).ToList()),
+                 l.l.LikedDate))
+                .FirstOrDefaultAsync(l=>l.id == request.id, cancellationToken) ?? throw new NotFoundException("Liked media not found");
         }
     }
 }

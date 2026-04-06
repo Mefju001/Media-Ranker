@@ -1,4 +1,4 @@
-﻿namespace Infrastructure.BackgroundTasks.CleanService
+﻿namespace Application.Features.AuthServices.CleanTokens
 {
     public interface ITokenCleanService
     {

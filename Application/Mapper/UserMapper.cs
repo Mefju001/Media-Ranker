@@ -5,16 +5,15 @@ namespace Application.Mapper
 {
     public static class UserMapper
     {
-        public static UserResponse ToResponse(User user)
+        public static UserDetailsResponse ToResponse(UserDetails user)
         {
             if (user is null) return null;
-            return new UserResponse(
+            return new UserDetailsResponse(
                 user.Id,
-                user.Username.Value,
                 user.Fullname.Name,
                 user.Fullname.Surname,
-                user.Email.Value,
-                user.UserRoles.Select(ur => RoleMapper.ToResponse(ur)).ToList() ?? new List<RoleResponse>());
+                user.email.Value
+                );
         }
     }
 }
