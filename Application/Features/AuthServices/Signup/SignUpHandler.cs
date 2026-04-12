@@ -2,7 +2,6 @@
 using Application.Common.Interfaces;
 using Application.Features.AuthServices.Common;
 using Domain.Aggregate;
-using Domain.DomainService;
 using Domain.Exceptions;
 using Domain.Repository;
 using Domain.Value_Object;
@@ -35,7 +34,7 @@ namespace Application.Features.AuthServices.Signup
                 throw new BadRequestException("User with that username or email already exists");
             }
             UserDTO userModel = await userRepository.CreateUserWithDefaultRole(request.username, request.password, request.email, cancellationToken);
-            var user = UserDetails.Create(userModel.Id, new Fullname(request.name, request.surname), new Email(request.email));
+            var user = UserDetails.Create(userModel.Id, new Fullname(request.name, request.surname));
             await userDetailsRepository.AddAsync(user, cancellationToken);
             var accessToken = tokenService.GenerateAccessToken(user.Id, userModel.Username, userModel.Roles);
             var refreshToken = await tokenService.GenerateRefreshToken(user.Id, userModel.Username, cancellationToken);

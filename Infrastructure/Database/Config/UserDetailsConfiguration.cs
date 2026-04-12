@@ -17,11 +17,6 @@ namespace Infrastructure.Database.Config
                 n.Property(p => p.Name).HasColumnName("FirstName").HasMaxLength(50);
                 n.Property(p => p.Surname).HasColumnName("LastName").HasMaxLength(50);
             });
-
-            builder.OwnsOne(x => x.email, e =>
-            {
-                e.Property(p => p.Value).HasColumnName("Email").HasMaxLength(255);
-            });
             builder.OwnsOne(m => m.AuditInfo, ai =>
             {
                 ai.Property(a => a.CreatedAt).HasColumnName("CreatedAt");
@@ -29,8 +24,9 @@ namespace Infrastructure.Database.Config
             });
             builder.HasMany(x => x.LikedMedias)
                    .WithOne()
-                   .HasForeignKey(x => x.UserId);
-
+                   .HasForeignKey(x => x.UserId)
+                   .OnDelete(DeleteBehavior.Cascade); ;
+            builder.Navigation(x => x.LikedMedias).UsePropertyAccessMode(PropertyAccessMode.Field);
             builder.HasOne<UserModel>()
                    .WithOne()
                    .HasForeignKey<UserDetails>(ud => ud.Id)

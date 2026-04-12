@@ -21,11 +21,6 @@ namespace Infrastructure.Database.Repository
         {
             return await appDbContext.Genres.AsNoTracking().Where(g => names.Contains(g.Name.Value)).ToListAsync(cancellationToken);
         }
-        public async Task<int?> GetGenreIdByNameAsync(string name, CancellationToken cancellationToken)
-        {
-            var genreId = await appDbContext.Genres.AsNoTracking().Where(g => g.Name.Value == name).Select(g => (int?)g.Id).FirstOrDefaultAsync(cancellationToken);
-            return genreId;
-        }
         public async Task<Dictionary<int, Genre>> GetGenresDictionary(CancellationToken cancellationToken)
         {
             var genresDict = await appDbContext.Genres.AsNoTracking().ToDictionaryAsync(g => g.Id, g => g, cancellationToken);

@@ -4,11 +4,11 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace Infrastructure.Database.Config
 {
-    public class MediaConfiguration : EntityConfiguration<Media, int>
+    public class MediaConfiguration : IEntityTypeConfiguration<Media>
     {
-        public override void Configure(EntityTypeBuilder<Media> builder)
+        public  void Configure(EntityTypeBuilder<Media> builder)
         {
-            base.Configure(builder);
+            builder.HasKey(x => x.Id);
             builder
                 .HasOne<Genre>()
                 .WithMany()
@@ -19,11 +19,6 @@ namespace Infrastructure.Database.Config
                 .HasValue<Movie>("Movie")
                 .HasValue<TvSeries>("TvSeries")
                 .HasValue<Game>("Game");
-            builder.HasMany(x => x.LikedMedias)
-                .WithOne()
-                .HasForeignKey(lm => lm.MediaId)
-                .OnDelete(DeleteBehavior.Cascade);
-            builder.Navigation(x => x.LikedMedias).UsePropertyAccessMode(PropertyAccessMode.Field);
             builder.OwnsOne(m => m.Stats, sa =>
             {
                 sa.Property(s => s.AverageRating).HasColumnName("AverageRating");

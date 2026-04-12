@@ -5,7 +5,6 @@ using Application.Notification;
 using Domain.Aggregate;
 using Domain.Value_Object;
 using MediatR;
-using Microsoft.Extensions.Logging;
 
 namespace Application.Features.MovieServices.MovieUpsert
 {

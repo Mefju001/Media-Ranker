@@ -1,23 +1,26 @@
 ﻿using Application.Common.DTO.Response;
 using Application.Common.Interfaces;
 using Application.Mapper;
+using Domain.Aggregate;
 using MediatR;
+using Microsoft.EntityFrameworkCore;
 
 namespace Application.Features.UserServices.GetBy
 {
     public class GetUserByNameHandler : IRequestHandler<GetUserByNameQuery, UserDetailsResponse?>
     {
-        private readonly IUserRepository userRepository;
-        public GetUserByNameHandler(IUserRepository userRepository)
+        private readonly IAppDbContext appDbContext;
+        public GetUserByNameHandler(IAppDbContext appDbContext)
         {
-            this.userRepository = userRepository;
+            this.appDbContext = appDbContext;
         }
         public async Task<UserDetailsResponse?> Handle(GetUserByNameQuery request, CancellationToken cancellationToken)
         {
-            /*var user = await userRepository.GetUserByUsername(request.name);
-            if (user is null) return null;
-            return UserMapper.ToResponse(user);*/
-            throw  new NotImplementedException();
+            return await appDbContext.Set<UserDetails>()
+                .Where(u=>u.Fullname.Name == request.name)
+                .AsNoTracking()
+                .Select(u=>UserMapper.ToResponse(u))
+                .FirstOrDefaultAsync(cancellationToken);
         }
     }
 }

@@ -24,7 +24,7 @@ namespace Application.Features.LikedServices.GetAllLiked
                 .Join(appDbContext.Set<Genre>(), lum => lum.m.GenreId, g => g.Id, (lum, g) => new { lum.l, lum.u, lum.m, g })
                 .Select(l=> new LikedMediaResponse
                 (l.l.Id,
-                 new UserDetailsResponse(l.u.Id,l.u.Fullname.Name,l.u.Fullname.Surname,l.u.email),
+                 new UserDetailsResponse(l.u.Id,l.u.Fullname.Name,l.u.Fullname.Surname),
                  new MediaResponse(
                  l.m.Id,
                  l.m.Title,

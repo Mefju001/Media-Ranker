@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore.Migrations;
+﻿using System;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 #nullable disable
@@ -6,7 +7,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Infrastructure.Migrations
 {
     /// <inheritdoc />
-    public partial class InitialCreate : Migration
+    public partial class Initialize : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -30,10 +31,6 @@ namespace Infrastructure.Migrations
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
-                    Name = table.Column<string>(type: "text", nullable: false),
-                    Surname = table.Column<string>(type: "text", nullable: false),
-                    CreatedAt = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
-                    IsActived = table.Column<bool>(type: "boolean", nullable: false),
                     UserName = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: true),
                     NormalizedUserName = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: true),
                     Email = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: true),
@@ -60,8 +57,8 @@ namespace Infrastructure.Migrations
                 {
                     Id = table.Column<int>(type: "integer", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    name = table.Column<string>(type: "text", nullable: false),
-                    surname = table.Column<string>(type: "text", nullable: false)
+                    Name = table.Column<string>(type: "text", nullable: false),
+                    Surname = table.Column<string>(type: "text", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -74,11 +71,30 @@ namespace Infrastructure.Migrations
                 {
                     Id = table.Column<int>(type: "integer", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    name = table.Column<string>(type: "text", nullable: false)
+                    Name = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Genres", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Tokens",
+                columns: table => new
+                {
+                    Id = table.Column<string>(type: "text", nullable: false),
+                    RefreshToken = table.Column<string>(type: "text", nullable: false),
+                    UserId = table.Column<Guid>(type: "uuid", nullable: false),
+                    IssuedAt = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
+                    ExpiryDate = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
+                    IsRevoked = table.Column<bool>(type: "boolean", nullable: false),
+                    RevokedAt = table.Column<DateTime>(type: "timestamp without time zone", nullable: true),
+                    CreatedByIp = table.Column<string>(type: "text", nullable: true),
+                    UserAgent = table.Column<string>(type: "text", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Tokens", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -188,25 +204,22 @@ namespace Infrastructure.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Tokens",
+                name: "UsersDetails",
                 columns: table => new
                 {
-                    Jti = table.Column<string>(type: "text", nullable: false),
-                    refreshToken = table.Column<string>(type: "text", nullable: false),
-                    UserId = table.Column<Guid>(type: "uuid", nullable: false),
-                    IssuedAt = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
-                    ExpiryDate = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
-                    IsRevoked = table.Column<bool>(type: "boolean", nullable: false),
-                    RevokedAt = table.Column<DateTime>(type: "timestamp without time zone", nullable: true),
-                    CreatedByIp = table.Column<string>(type: "text", nullable: true),
-                    UserAgent = table.Column<string>(type: "text", nullable: true)
+                    Id = table.Column<Guid>(type: "uuid", nullable: false),
+                    FirstName = table.Column<string>(type: "character varying(50)", maxLength: 50, nullable: false),
+                    LastName = table.Column<string>(type: "character varying(50)", maxLength: 50, nullable: false),
+                    IsActive = table.Column<bool>(type: "boolean", nullable: false),
+                    CreatedAt = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
+                    UpdatedAt = table.Column<DateTime>(type: "timestamp without time zone", nullable: true)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Tokens", x => x.Jti);
+                    table.PrimaryKey("PK_UsersDetails", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Tokens_AspNetUsers_UserId",
-                        column: x => x.UserId,
+                        name: "FK_UsersDetails_AspNetUsers_Id",
+                        column: x => x.Id,
                         principalTable: "AspNetUsers",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
@@ -221,28 +234,27 @@ namespace Infrastructure.Migrations
                     Title = table.Column<string>(type: "text", nullable: false),
                     Description = table.Column<string>(type: "text", nullable: false),
                     GenreId = table.Column<int>(type: "integer", nullable: false),
-                    ReleaseDate = table.Column<DateTime>(type: "timestamp without time zone", nullable: true),
+                    ReleaseYear = table.Column<DateTime>(type: "timestamp without time zone", nullable: true),
                     Language = table.Column<string>(type: "text", nullable: false),
+                    AverageRating = table.Column<double>(type: "double precision", nullable: false),
+                    reviewCount = table.Column<int>(type: "integer", nullable: false),
+                    Stats_LastCalculated = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
+                    CreatedAt = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
+                    UpdatedAt = table.Column<DateTime>(type: "timestamp without time zone", nullable: true),
                     MediaType = table.Column<string>(type: "character varying(8)", maxLength: 8, nullable: false),
-                    Developer = table.Column<string>(type: "text", nullable: true),
-                    Platform = table.Column<int>(type: "integer", nullable: true),
+                    Developer = table.Column<string>(type: "character varying(200)", maxLength: 200, nullable: true),
+                    Platform = table.Column<string>(type: "text", nullable: true),
                     DirectorId = table.Column<int>(type: "integer", nullable: true),
-                    Duration = table.Column<TimeSpan>(type: "interval", nullable: true),
+                    DurationMinutes = table.Column<TimeSpan>(type: "interval", nullable: true),
                     IsCinemaRelease = table.Column<bool>(type: "boolean", nullable: true),
                     Seasons = table.Column<int>(type: "integer", nullable: true),
                     Episodes = table.Column<int>(type: "integer", nullable: true),
-                    Network = table.Column<string>(type: "text", nullable: true),
-                    Status = table.Column<int>(type: "integer", nullable: true)
+                    Network = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: true),
+                    Status = table.Column<string>(type: "text", nullable: true)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Medias", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_Medias_Directors_DirectorId",
-                        column: x => x.DirectorId,
-                        principalTable: "Directors",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
                         name: "FK_Medias_Genres_GenreId",
                         column: x => x.GenreId,
@@ -255,45 +267,25 @@ namespace Infrastructure.Migrations
                 name: "LikedMedias",
                 columns: table => new
                 {
-                    id = table.Column<int>(type: "integer", nullable: false)
+                    Id = table.Column<int>(type: "integer", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    userId = table.Column<Guid>(type: "uuid", nullable: false),
-                    mediaId = table.Column<int>(type: "integer", nullable: false),
-                    likedDate = table.Column<DateTime>(type: "timestamp without time zone", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_LikedMedias", x => x.id);
-                    table.ForeignKey(
-                        name: "FK_LikedMedias_AspNetUsers_userId",
-                        column: x => x.userId,
-                        principalTable: "AspNetUsers",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_LikedMedias_Medias_mediaId",
-                        column: x => x.mediaId,
-                        principalTable: "Medias",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "MediaStats",
-                columns: table => new
-                {
+                    UserId = table.Column<Guid>(type: "uuid", nullable: false),
                     MediaId = table.Column<int>(type: "integer", nullable: false),
-                    AverageRating = table.Column<double>(type: "double precision", nullable: true),
-                    ReviewCount = table.Column<int>(type: "integer", nullable: false),
-                    LastCalculated = table.Column<DateTime>(type: "timestamp without time zone", nullable: true)
+                    LikedDate = table.Column<DateTime>(type: "timestamp without time zone", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_MediaStats", x => x.MediaId);
+                    table.PrimaryKey("PK_LikedMedias", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_MediaStats_Medias_MediaId",
+                        name: "FK_LikedMedias_Medias_MediaId",
                         column: x => x.MediaId,
                         principalTable: "Medias",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_LikedMedias_UsersDetails_UserId",
+                        column: x => x.UserId,
+                        principalTable: "UsersDetails",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -304,12 +296,13 @@ namespace Infrastructure.Migrations
                 {
                     Id = table.Column<int>(type: "integer", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    Rating = table.Column<int>(type: "integer", nullable: false),
-                    Comment = table.Column<string>(type: "text", nullable: false),
                     MediaId = table.Column<int>(type: "integer", nullable: false),
                     UserId = table.Column<Guid>(type: "uuid", nullable: false),
+                    Username = table.Column<string>(type: "text", nullable: false),
+                    Rating = table.Column<int>(type: "integer", nullable: false),
+                    Comment = table.Column<string>(type: "text", nullable: false),
                     CreatedAt = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
-                    LastModifiedAt = table.Column<DateTime>(type: "timestamp without time zone", nullable: false)
+                    UpdatedAt = table.Column<DateTime>(type: "timestamp without time zone", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -366,20 +359,15 @@ namespace Infrastructure.Migrations
                 unique: true);
 
             migrationBuilder.CreateIndex(
-                name: "IX_LikedMedias_mediaId",
+                name: "IX_LikedMedias_MediaId",
                 table: "LikedMedias",
-                column: "mediaId");
+                column: "MediaId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_LikedMedias_userId_mediaId",
+                name: "IX_LikedMedias_UserId_MediaId",
                 table: "LikedMedias",
-                columns: new[] { "userId", "mediaId" },
+                columns: new[] { "UserId", "MediaId" },
                 unique: true);
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Medias_DirectorId",
-                table: "Medias",
-                column: "DirectorId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Medias_GenreId",
@@ -394,11 +382,6 @@ namespace Infrastructure.Migrations
             migrationBuilder.CreateIndex(
                 name: "IX_Reviews_UserId",
                 table: "Reviews",
-                column: "UserId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Tokens_UserId",
-                table: "Tokens",
                 column: "UserId");
         }
 
@@ -421,10 +404,10 @@ namespace Infrastructure.Migrations
                 name: "AspNetUserTokens");
 
             migrationBuilder.DropTable(
-                name: "LikedMedias");
+                name: "Directors");
 
             migrationBuilder.DropTable(
-                name: "MediaStats");
+                name: "LikedMedias");
 
             migrationBuilder.DropTable(
                 name: "Reviews");
@@ -436,13 +419,13 @@ namespace Infrastructure.Migrations
                 name: "AspNetRoles");
 
             migrationBuilder.DropTable(
+                name: "UsersDetails");
+
+            migrationBuilder.DropTable(
                 name: "Medias");
 
             migrationBuilder.DropTable(
                 name: "AspNetUsers");
-
-            migrationBuilder.DropTable(
-                name: "Directors");
 
             migrationBuilder.DropTable(
                 name: "Genres");

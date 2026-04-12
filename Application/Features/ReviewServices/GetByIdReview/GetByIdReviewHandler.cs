@@ -1,25 +1,22 @@
 ﻿using Application.Common.DTO.Response;
 using Application.Common.Interfaces;
 using Application.Mapper;
+using Domain.Entity;
 using MediatR;
+using Microsoft.EntityFrameworkCore;
 
 namespace Application.Features.ReviewServices.GetByIdReview
 {
     public class GetByIdReviewHandler : IRequestHandler<GetByIdReviewQuery, ReviewResponse?>
     {
-        private readonly IMediaRepository<Media> reviewRepository;
-        public GetByIdReviewHandler(IMediaRepository<Media> reviewRepository)
+        private readonly IAppDbContext appDbContext;
+        public GetByIdReviewHandler(IAppDbContext appDbContext)
         {
-            this.reviewRepository = reviewRepository;
+            this.appDbContext = appDbContext;
         }
         public async Task<ReviewResponse?> Handle(GetByIdReviewQuery query, CancellationToken cancellationToken)
         {
-            var review = await reviewRepository.GetReviewByIdAsync(query.reviewId, cancellationToken);
-            if (review == null)
-            {
-                return null;
-            }
-            return ReviewMapper.ToResponse(review);
+            return await appDbContext.Set<Review>().AsNoTrackingWithIdentityResolution().AsSplitQuery().Where(x=>x.Id==query.reviewId).Select(x => ReviewMapper.ToResponse(x)).FirstOrDefaultAsync(cancellationToken);
         }
     }
 }

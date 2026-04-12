@@ -11,8 +11,7 @@ namespace Application.Mapper
             return new UserDetailsResponse(
                 user.Id,
                 user.Fullname.Name,
-                user.Fullname.Surname,
-                user.email.Value
+                user.Fullname.Surname
                 );
         }
     }

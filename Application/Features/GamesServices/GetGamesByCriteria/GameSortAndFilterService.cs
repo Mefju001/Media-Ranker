@@ -1,5 +1,6 @@
 ﻿using Application.Common.DTO.Response;
 using Application.Common.Interfaces;
+using Application.Mapper;
 using Domain.Aggregate;
 using Microsoft.EntityFrameworkCore;
 using System.Linq.Expressions;
@@ -16,37 +17,11 @@ namespace Application.Features.GamesServices.GetGamesByCriteria
         public async Task<List<GameResponse>> GetGamesByCriteriaAsync(GetGamesByCriteriaQuery request, CancellationToken ct)
         {
             var query = appDbContext.Set<Game>().AsNoTrackingWithIdentityResolution().AsSplitQuery();
-
             query = ApplyFilters(query, request);
-
             query = ApplySorting(query, request);
-
             return await query
                 .Join(appDbContext.Set<Genre>(), g => g.GenreId, gen => gen.Id, (g, gen) => new { g, gen })
-                .Select(x => new GameResponse(
-                    x.g.Id,
-                    x.g.Title,
-                    x.g.Description,
-                    new GenreResponse(x.g.GenreId, x.gen.Name),
-                    x.g.ReleaseDate,
-                    x.g.Language,
-                    x.g.Reviews.Select(r => new ReviewResponse(
-                        r.Id,
-                        r.MediaId,
-                        r.Username,
-                        r.Rating,
-                        r.Comment,
-                        r.AuditInfo != null ? r.AuditInfo.CreatedAt : DateTime.UtcNow,
-                        r.AuditInfo != null ? r.AuditInfo.UpdatedAt : null
-                    )).ToList(),
-                    new MediaStatsResponse(
-                        x.g.Stats.AverageRating,
-                        x.g.Stats.ReviewCount,
-                        x.g.Stats.LastCalculated
-                    ),
-                    x.g.Developer,
-                    x.g.Platform
-                ))
+                .Select(x => GameMapper.ToGameResponse(x.g,x.gen))
                 .ToListAsync(ct);
         }
 
@@ -85,7 +60,7 @@ namespace Application.Features.GamesServices.GetGamesByCriteria
                 isDescending = parts.Length > 1 && parts[1].ToLower() != "false";
             }
 
-            if (!string.IsNullOrEmpty(sortField) && _sortColumns.TryGetValue(sortField, out var sortExp))
+            if (!string.IsNullOrEmpty(sortField) && sortColumns.TryGetValue(sortField, out var sortExp))
             {
                 return isDescending ? query.OrderByDescending(sortExp) : query.OrderBy(sortExp);
             }
@@ -93,7 +68,7 @@ namespace Application.Features.GamesServices.GetGamesByCriteria
             return query.OrderBy(g => g.Title);
         }
 
-        private static readonly Dictionary<string, Expression<Func<Game, object>>> _sortColumns =
+        private static readonly Dictionary<string, Expression<Func<Game, object>>> sortColumns =
             new(StringComparer.OrdinalIgnoreCase)
             {
                 ["Title"] = g => g.Title,

@@ -6,6 +6,7 @@ using Domain.Entity;
 using Domain.Exceptions;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Internal;
 
 namespace Application.Features.LikedServices.GetByIdLiked
 {
@@ -25,9 +26,9 @@ namespace Application.Features.LikedServices.GetByIdLiked
                 .Join(appDbContext.Set<UserDetails>(), l => l.UserId, u => u.Id, (l, u) => new { l, u })
                 .Join(appDbContext.Set<Media>(), lu => lu.l.MediaId, m => m.Id, (lu, m) => new { lu.l, lu.u, m })
                 .Join(appDbContext.Set<Genre>(), lum => lum.m.GenreId, g => g.Id, (lum, g) => new { lum.l, lum.u, lum.m, g })
-                .Select(l => new LikedMediaResponse
-                (l.l.Id,
-                 new UserDetailsResponse(l.u.Id, l.u.Fullname.Name, l.u.Fullname.Surname, l.u.email),
+                .Select(l => 
+                new LikedMediaResponse(l.l.Id,
+                 new UserDetailsResponse(l.u.Id, l.u.Fullname.Name, l.u.Fullname.Surname),
                  new MediaResponse(
                  l.m.Id,
                  l.m.Title,
@@ -47,5 +48,6 @@ namespace Application.Features.LikedServices.GetByIdLiked
                  l.l.LikedDate))
                 .FirstOrDefaultAsync(l=>l.id == request.id, cancellationToken) ?? throw new NotFoundException("Liked media not found");
         }
+
     }
 }

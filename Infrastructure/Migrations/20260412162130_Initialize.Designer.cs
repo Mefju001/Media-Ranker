@@ -3,6 +3,7 @@ using System;
 using Infrastructure.Database;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Infrastructure.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260412162130_Initialize")]
+    partial class Initialize
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -22,7 +25,7 @@ namespace Infrastructure.Migrations
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
-            modelBuilder.Entity("Domain.Entity.Director", b =>
+            modelBuilder.Entity("Domain.Aggregate.Director", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -43,7 +46,7 @@ namespace Infrastructure.Migrations
                     b.ToTable("Directors");
                 });
 
-            modelBuilder.Entity("Domain.Entity.Genre", b =>
+            modelBuilder.Entity("Domain.Aggregate.Genre", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -54,6 +57,19 @@ namespace Infrastructure.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Genres");
+                });
+
+            modelBuilder.Entity("Domain.Aggregate.UserDetails", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .HasColumnType("uuid");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("boolean");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("UsersDetails");
                 });
 
             modelBuilder.Entity("Domain.Entity.LikedMedia", b =>
@@ -70,17 +86,12 @@ namespace Infrastructure.Migrations
                     b.Property<int>("MediaId")
                         .HasColumnType("integer");
 
-                    b.Property<int?>("MediaId1")
-                        .HasColumnType("integer");
-
                     b.Property<Guid>("UserId")
                         .HasColumnType("uuid");
 
                     b.HasKey("Id");
 
                     b.HasIndex("MediaId");
-
-                    b.HasIndex("MediaId1");
 
                     b.HasIndex("UserId", "MediaId")
                         .IsUnique();
@@ -147,12 +158,10 @@ namespace Infrastructure.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("UserId");
-
                     b.ToTable("Tokens");
                 });
 
-            modelBuilder.Entity("Infrastructure.DBModels.RoleModel", b =>
+            modelBuilder.Entity("Infrastructure.Database.DBModels.RoleModel", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -179,7 +188,7 @@ namespace Infrastructure.Migrations
                     b.ToTable("AspNetRoles", (string)null);
                 });
 
-            modelBuilder.Entity("Infrastructure.DBModels.UserModel", b =>
+            modelBuilder.Entity("Infrastructure.Database.DBModels.UserModel", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -192,9 +201,6 @@ namespace Infrastructure.Migrations
                         .IsConcurrencyToken()
                         .HasColumnType("text");
 
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("timestamp without time zone");
-
                     b.Property<string>("Email")
                         .HasMaxLength(256)
                         .HasColumnType("character varying(256)");
@@ -202,18 +208,11 @@ namespace Infrastructure.Migrations
                     b.Property<bool>("EmailConfirmed")
                         .HasColumnType("boolean");
 
-                    b.Property<bool>("IsActived")
-                        .HasColumnType("boolean");
-
                     b.Property<bool>("LockoutEnabled")
                         .HasColumnType("boolean");
 
                     b.Property<DateTimeOffset?>("LockoutEnd")
                         .HasColumnType("timestamp with time zone");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasColumnType("text");
 
                     b.Property<string>("NormalizedEmail")
                         .HasMaxLength(256)
@@ -235,15 +234,8 @@ namespace Infrastructure.Migrations
                     b.Property<string>("SecurityStamp")
                         .HasColumnType("text");
 
-                    b.Property<string>("Surname")
-                        .IsRequired()
-                        .HasColumnType("text");
-
                     b.Property<bool>("TwoFactorEnabled")
                         .HasColumnType("boolean");
-
-                    b.Property<DateTime?>("UpdatedAt")
-                        .HasColumnType("timestamp without time zone");
 
                     b.Property<string>("UserName")
                         .HasMaxLength(256)
@@ -450,7 +442,7 @@ namespace Infrastructure.Migrations
                     b.HasDiscriminator().HasValue("TvSeries");
                 });
 
-            modelBuilder.Entity("Domain.Entity.Genre", b =>
+            modelBuilder.Entity("Domain.Aggregate.Genre", b =>
                 {
                     b.OwnsOne("Domain.Value_Object.GenreName", "Name", b1 =>
                         {
@@ -475,6 +467,67 @@ namespace Infrastructure.Migrations
                         .IsRequired();
                 });
 
+            modelBuilder.Entity("Domain.Aggregate.UserDetails", b =>
+                {
+                    b.HasOne("Infrastructure.Database.DBModels.UserModel", null)
+                        .WithOne()
+                        .HasForeignKey("Domain.Aggregate.UserDetails", "Id")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.OwnsOne("Domain.Value_Object.AuditInfo", "AuditInfo", b1 =>
+                        {
+                            b1.Property<Guid>("UserDetailsId")
+                                .HasColumnType("uuid");
+
+                            b1.Property<DateTime>("CreatedAt")
+                                .HasColumnType("timestamp without time zone")
+                                .HasColumnName("CreatedAt");
+
+                            b1.Property<DateTime?>("UpdatedAt")
+                                .HasColumnType("timestamp without time zone")
+                                .HasColumnName("UpdatedAt");
+
+                            b1.HasKey("UserDetailsId");
+
+                            b1.ToTable("UsersDetails");
+
+                            b1.WithOwner()
+                                .HasForeignKey("UserDetailsId");
+                        });
+
+                    b.OwnsOne("Domain.Value_Object.Fullname", "Fullname", b1 =>
+                        {
+                            b1.Property<Guid>("UserDetailsId")
+                                .HasColumnType("uuid");
+
+                            b1.Property<string>("Name")
+                                .IsRequired()
+                                .HasMaxLength(50)
+                                .HasColumnType("character varying(50)")
+                                .HasColumnName("FirstName");
+
+                            b1.Property<string>("Surname")
+                                .IsRequired()
+                                .HasMaxLength(50)
+                                .HasColumnType("character varying(50)")
+                                .HasColumnName("LastName");
+
+                            b1.HasKey("UserDetailsId");
+
+                            b1.ToTable("UsersDetails");
+
+                            b1.WithOwner()
+                                .HasForeignKey("UserDetailsId");
+                        });
+
+                    b.Navigation("AuditInfo")
+                        .IsRequired();
+
+                    b.Navigation("Fullname")
+                        .IsRequired();
+                });
+
             modelBuilder.Entity("Domain.Entity.LikedMedia", b =>
                 {
                     b.HasOne("Media", null)
@@ -483,12 +536,8 @@ namespace Infrastructure.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("Media", null)
-                        .WithMany("LikedMedia")
-                        .HasForeignKey("MediaId1");
-
-                    b.HasOne("Infrastructure.DBModels.UserModel", null)
-                        .WithMany()
+                    b.HasOne("Domain.Aggregate.UserDetails", null)
+                        .WithMany("LikedMedias")
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -502,7 +551,7 @@ namespace Infrastructure.Migrations
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.HasOne("Infrastructure.DBModels.UserModel", null)
+                    b.HasOne("Infrastructure.Database.DBModels.UserModel", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -574,18 +623,9 @@ namespace Infrastructure.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("Domain.Entity.Token", b =>
-                {
-                    b.HasOne("Infrastructure.DBModels.UserModel", null)
-                        .WithMany("Tokens")
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
-
             modelBuilder.Entity("Media", b =>
                 {
-                    b.HasOne("Domain.Entity.Genre", null)
+                    b.HasOne("Domain.Aggregate.Genre", null)
                         .WithMany()
                         .HasForeignKey("GenreId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -685,7 +725,7 @@ namespace Infrastructure.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<System.Guid>", b =>
                 {
-                    b.HasOne("Infrastructure.DBModels.RoleModel", null)
+                    b.HasOne("Infrastructure.Database.DBModels.RoleModel", null)
                         .WithMany()
                         .HasForeignKey("RoleId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -694,7 +734,7 @@ namespace Infrastructure.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserClaim<System.Guid>", b =>
                 {
-                    b.HasOne("Infrastructure.DBModels.UserModel", null)
+                    b.HasOne("Infrastructure.Database.DBModels.UserModel", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -703,7 +743,7 @@ namespace Infrastructure.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserLogin<System.Guid>", b =>
                 {
-                    b.HasOne("Infrastructure.DBModels.UserModel", null)
+                    b.HasOne("Infrastructure.Database.DBModels.UserModel", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -712,14 +752,14 @@ namespace Infrastructure.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserRole<System.Guid>", b =>
                 {
-                    b.HasOne("Infrastructure.DBModels.RoleModel", null)
+                    b.HasOne("Infrastructure.Database.DBModels.RoleModel", null)
                         .WithMany()
                         .HasForeignKey("RoleId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("Infrastructure.DBModels.UserModel", null)
-                        .WithMany("Roles")
+                    b.HasOne("Infrastructure.Database.DBModels.UserModel", null)
+                        .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -727,7 +767,7 @@ namespace Infrastructure.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserToken<System.Guid>", b =>
                 {
-                    b.HasOne("Infrastructure.DBModels.UserModel", null)
+                    b.HasOne("Infrastructure.Database.DBModels.UserModel", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -757,17 +797,13 @@ namespace Infrastructure.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("Infrastructure.DBModels.UserModel", b =>
+            modelBuilder.Entity("Domain.Aggregate.UserDetails", b =>
                 {
-                    b.Navigation("Roles");
-
-                    b.Navigation("Tokens");
+                    b.Navigation("LikedMedias");
                 });
 
             modelBuilder.Entity("Media", b =>
                 {
-                    b.Navigation("LikedMedia");
-
                     b.Navigation("Reviews");
                 });
 #pragma warning restore 612, 618

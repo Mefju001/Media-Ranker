@@ -2,41 +2,30 @@
 using Application.Common.Interfaces;
 using Application.Mapper;
 using Domain.Aggregate;
-using Domain.Exceptions;
 using MediatR;
-using Microsoft.Extensions.Logging;
+using Microsoft.EntityFrameworkCore;
 
 namespace Application.Features.TvSeriesServices.GetTvSeriesById
 {
     public class GetTvSeriesByIdHandler : IRequestHandler<GetTvSeriesByIdQuery, TvSeriesResponse?>
     {
-        private readonly IMediaRepository<TvSeries> mediaRepository;
-        private readonly IGenreRepository genreRepository;
-        private readonly ILogger<GetTvSeriesByIdHandler> logger;
+        private readonly IAppDbContext appDbContext;
 
-        public GetTvSeriesByIdHandler(IMediaRepository<TvSeries> mediaRepository, IGenreRepository genreRepository, ILogger<GetTvSeriesByIdHandler> logger)
+        public GetTvSeriesByIdHandler(IAppDbContext appDbContext)
         {
-            this.mediaRepository = mediaRepository;
-            this.genreRepository = genreRepository;
-            this.logger = logger;
+            this.appDbContext = appDbContext;
         }
 
         public async Task<TvSeriesResponse?> Handle(GetTvSeriesByIdQuery request, CancellationToken cancellationToken)
         {
-            var tvSeriesDomain = await mediaRepository.GetByIdAsync(request.id, cancellationToken);
-            if (tvSeriesDomain == null)
-            {
-                logger.LogWarning("Tv Series with ID {TvSeriesId} was not found.", request.id);
-                throw new NotFoundException("not found");
-            }
-            var genre = await genreRepository.GetByIdAsync(tvSeriesDomain.GenreId, cancellationToken);
-            if (genre == null)
-            {
-                logger.LogWarning("Genre with ID {GenreId} was not found for Tv Series ID {TvSeriesId}.", tvSeriesDomain.GenreId, request.id);
-                throw new NotFoundException("not found");
-            }
-            var tvSeriesResponse = TvSeriesMapper.ToTvSeriesResponse(tvSeriesDomain, genre);
-            return tvSeriesResponse;
+            return await appDbContext.Set<TvSeries>()
+                .Where(x => x.Id == request.id)
+                .Join(appDbContext.Set<Genre>(),
+                    tvSeries => tvSeries.GenreId,
+                    genre => genre.Id,
+                    (tvSeries, genre) => new { TvSeries = tvSeries, Genre = genre })
+                .Select(x => TvSeriesMapper.ToTvSeriesResponse(x.TvSeries, x.Genre))
+                .FirstOrDefaultAsync(cancellationToken);
         }
     }
 }

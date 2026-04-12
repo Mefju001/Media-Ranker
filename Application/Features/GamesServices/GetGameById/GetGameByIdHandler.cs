@@ -1,5 +1,6 @@
 ﻿using Application.Common.DTO.Response;
 using Application.Common.Interfaces;
+using Application.Mapper;
 using Domain.Aggregate;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
@@ -19,36 +20,12 @@ namespace Application.Features.GamesServices.GetGameById
         {
             var game = await appDbContext.Set<Game>()
                 .AsNoTracking()
-                .AsSplitQuery()
                 .Include(g => g.Stats)
                 .Include(g => g.Reviews)
                 .Where(m => m.Id == request.id)
                 .Join(
                 appDbContext.Set<Genre>(), g => g.GenreId, gen => gen.Id, (g, gen) => new { g, gen })
-                .Select(g => new GameResponse(
-                    g.g.Id,
-                    g.g.Title,
-                    g.g.Description,
-                    new GenreResponse(g.g.GenreId, g.gen.Name),
-                    g.g.ReleaseDate!,
-                    g.g.Language,
-                    g.g.Reviews.Select(r => new ReviewResponse(
-                        r.Id,
-                        r.MediaId,
-                        r.Username,
-                        r.Rating,
-                        r.Comment,
-                        r.AuditInfo.CreatedAt,
-                        r.AuditInfo.UpdatedAt
-                    )).ToList(),
-                    new MediaStatsResponse(
-                        g.g.Stats.AverageRating,
-                        g.g.Stats.ReviewCount,
-                        g.g.Stats.LastCalculated
-                    ),
-                    g.g.Developer,
-                    g.g.Platform
-                ))
+                .Select(g => GameMapper.ToGameResponse(g.g, g.gen))
                 .FirstOrDefaultAsync(cancellationToken);
             return game;
         }

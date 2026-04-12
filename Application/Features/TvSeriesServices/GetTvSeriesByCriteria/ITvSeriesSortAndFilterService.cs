@@ -1,9 +1,10 @@
-﻿using Domain.Aggregate;
+﻿using Application.Common.DTO.Response;
+using Domain.Aggregate;
 
 namespace Application.Features.TvSeriesServices.GetTvSeriesByCriteria
 {
     public interface ITvSeriesSortAndFilterService
     {
-        IQueryable<TvSeries> Handler(GetTvSeriesByCriteriaQuery request);
+        Task<List<TvSeriesResponse>> Handler(GetTvSeriesByCriteriaQuery request, CancellationToken ct);
     }
 }

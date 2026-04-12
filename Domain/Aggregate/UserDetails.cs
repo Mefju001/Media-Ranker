@@ -9,7 +9,6 @@ namespace Domain.Aggregate;
 public class UserDetails : AggregateRoot<Guid>,IAudited
 {
     public Fullname Fullname { get; private set; } = default!;
-    public Email email { get; private set; } = default!;
     public bool IsActive { get; private set; }
     public AuditInfo AuditInfo { get; private set; } = new();
 
@@ -17,13 +16,12 @@ public class UserDetails : AggregateRoot<Guid>,IAudited
     public IReadOnlyCollection<LikedMedia> LikedMedias => likedMedias.AsReadOnly();
     private UserDetails() { }
 
-    public static UserDetails Create(Guid id,Fullname fullname, Email email)
+    public static UserDetails Create(Guid id,Fullname fullname)
     {
         return new UserDetails
         {
             Id = id,
             Fullname = fullname,
-            email = email,
             IsActive = true,
             AuditInfo = new AuditInfo()
         };
@@ -43,10 +41,9 @@ public class UserDetails : AggregateRoot<Guid>,IAudited
         likedMedias.Remove(likedMedia);
     }
 
-    public void UpdateProfile(Fullname fullname,Email email)
+    public void UpdateProfile(Fullname fullname)
     {
         Fullname = fullname;
-        this.email = email;
         AuditInfo = AuditInfo.MarkAsUpdated();
     }
 

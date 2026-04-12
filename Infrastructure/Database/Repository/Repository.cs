@@ -12,43 +12,43 @@ namespace Infrastructure.Database.Repository
         {
             this.appDbContext = appDbContext;
         }
-        public async Task<T> AddAsync(T entity, CancellationToken ct)
+        public virtual async Task<T> AddAsync(T entity, CancellationToken ct)
         {
             var result = await appDbContext.Set<T>().AddAsync(entity,ct);
             return result.Entity;
         }
 
-        public async Task AddRangeAsync(IEnumerable<T> entities, CancellationToken ct)
+        public virtual async Task AddRangeAsync(IEnumerable<T> entities, CancellationToken ct)
         {
             await appDbContext.Set<T>().AddRangeAsync(entities, ct);
         }
 
-        public async Task<bool> ExistById(TId id, CancellationToken cancellationToken)
+        public virtual async Task<bool> ExistById(TId id, CancellationToken cancellationToken)
         {
             return await appDbContext.Set<T>().AnyAsync(x => x.Id!.Equals(id), cancellationToken);
         }
 
-        public async Task<List<T>> GetAllAsync(CancellationToken ct)
+        public virtual async Task<List<T>> GetAllAsync(CancellationToken ct)
         {
             return await appDbContext.Set<T>().ToListAsync(ct);
         }
 
-        public IQueryable<T> GetAsQueryable()
+        public virtual IQueryable<T> GetAsQueryable()
         {
             return appDbContext.Set<T>().AsQueryable();
         }
 
-        public async Task<T?> GetByIdAsync(TId id, CancellationToken ct)
+        public virtual async Task<T?> GetByIdAsync(TId id, CancellationToken ct)
         {
             return await appDbContext.Set<T>().FirstOrDefaultAsync(x=>x.Id!.Equals(id), ct);
         }
 
-        public void Remove(T entity)
+        public virtual void Remove(T entity)
         {
             appDbContext.Set<T>().Remove(entity);
         }
 
-        public void Update(T entity)
+        public virtual void Update(T entity)
         {
             appDbContext.Set<T>().Update(entity);
         }

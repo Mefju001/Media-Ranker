@@ -30,12 +30,13 @@ public abstract class Media : AggregateRoot<int>,IAudited
         ReleaseDate = releaseDate;
         GenreId = genreId;
     }
+    public bool HasUserReviewed(Guid userId) => reviews.Any(r => r.UserId == userId);
 
-    public void AddReview(Review review)
+    public void AddReview(Guid userId, Rating rating, string comment, Username username)
     {
-        if (reviews.Any(r => r.UserId == review.UserId))
+        if (reviews.Any(r => r.UserId == userId))
             throw new DomainException("User already reviewed this media.");
-
+        var review = Review.Create(rating, comment, this.Id, userId, username);
         reviews.Add(review);
         RecalculateStats();
     }

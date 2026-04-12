@@ -1,40 +1,42 @@
-﻿using Application.Common.Interfaces;
+﻿using Application.Common.DTO.Response;
+using Application.Common.Interfaces;
+using Application.Mapper;
 using Domain.Aggregate;
+using Microsoft.EntityFrameworkCore;
 using System.Linq.Expressions;
 
 namespace Application.Features.TvSeriesServices.GetTvSeriesByCriteria
 {
     public class TvSeriesSortAndFilterService : ITvSeriesSortAndFilterService
     {
-        private readonly IMediaRepository<TvSeries> mediaRepository;
-        private readonly IGenreRepository genreRepository;
-        public TvSeriesSortAndFilterService(IMediaRepository<TvSeries> mediaRepository, IGenreRepository genreRepository)
+        private readonly IAppDbContext appDbContext;
+        public TvSeriesSortAndFilterService(IAppDbContext appDbContext)
         {
-            this.mediaRepository = mediaRepository;
-            this.genreRepository = genreRepository;
+            this.appDbContext = appDbContext;
         }
-        public IQueryable<TvSeries> Handler(GetTvSeriesByCriteriaQuery request)
+        public async Task<List<TvSeriesResponse>> Handler(GetTvSeriesByCriteriaQuery request, CancellationToken ct)
         {
-            var filteredTvSeries = ApplyFilters(request);
-            var sortedTvSeries = ApplySorting(filteredTvSeries, request);
-            return sortedTvSeries;
+            var query = appDbContext.Set<TvSeries>().AsNoTrackingWithIdentityResolution().AsSplitQuery();
+            query = ApplyFilters(query, request);
+            query = ApplySorting(query, request);
+            return await query
+                .Join(appDbContext.Set<Genre>(), tv => tv.GenreId, gen => gen.Id, (tv, gen) => new { tv, gen })
+                .Select(x => TvSeriesMapper.ToTvSeriesResponse(x.tv, x.gen))
+                .ToListAsync(ct);
         }
-        private IQueryable<TvSeries> ApplyFilters(GetTvSeriesByCriteriaQuery request)
+        private IQueryable<TvSeries> ApplyFilters(IQueryable<TvSeries> query, GetTvSeriesByCriteriaQuery request)
         {
-            var query = mediaRepository.GetAsQueryable();
             if (!string.IsNullOrWhiteSpace(request.TitleSearch))
             {
                 query = query.Where(m => m.Title.Contains(request.TitleSearch));
             }
             if (!string.IsNullOrWhiteSpace(request.genreName))
             {
-                var genre = genreRepository.GetAsQueryable();
-                query = query.Join(genre,
-                    tv => tv.GenreId,
-                    g => g.Id,
-                    (tv, g) => new { Tv = tv, Genre = g })
-                    .Where(tvg => tvg.Genre.Name.Value.Contains(request.genreName))
-                    .Select(tvg => tvg.Tv);
+                var genreIds = appDbContext.Set<Genre>()
+                                    .Where(gen => gen.Name.Value.Contains(request.genreName))
+                                    .Select(gen => gen.Id);
+
+                query = query.Where(g => genreIds.Contains(g.GenreId));
             }
             if (request.MinRating.HasValue)
             {
@@ -52,19 +54,22 @@ namespace Application.Features.TvSeriesServices.GetTvSeriesByCriteria
         }
         private IQueryable<TvSeries> ApplySorting(IQueryable<TvSeries> query, GetTvSeriesByCriteriaQuery request)
         {
-            if (request.SortByField != null)
+            var sortField = request.SortByField;
+            var isDescending = request.IsDescending;
+
+            if (!string.IsNullOrEmpty(sortField) && sortField.Contains('|'))
             {
-            var strings = request.SortByField!.Split("|");
-            request.SortByField = strings[0];
-            request.IsDescending = strings[1].ToLower().Equals("false") ? false : true;
-            }   
-            if (!string.IsNullOrEmpty(request.SortByField) && sortColumns.TryGetValue(request.SortByField, out var sortExpression))
-            {
-                return request.IsDescending
-                    ? query.OrderByDescending(sortExpression)
-                    : query.OrderBy(sortExpression);
+                var parts = sortField.Split('|');
+                sortField = parts[0];
+                isDescending = parts.Length > 1 && parts[1].ToLower() != "false";
             }
-            return query;
+
+            if (!string.IsNullOrEmpty(sortField) && sortColumns.TryGetValue(sortField, out var sortExp))
+            {
+                return isDescending ? query.OrderByDescending(sortExp) : query.OrderBy(sortExp);
+            }
+
+            return query.OrderBy(g => g.Title);
         }
         private static readonly Dictionary<string, Expression<Func<TvSeries, object>>> sortColumns =
             new(StringComparer.OrdinalIgnoreCase)

@@ -6,11 +6,11 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace Infrastructure.Database.Config
 {
-    public class ReviewConfiguration : EntityConfiguration<Review, int>
+    public class ReviewConfiguration : IEntityTypeConfiguration<Review>
     {
-        public override void Configure(EntityTypeBuilder<Review> builder)
+        public void Configure(EntityTypeBuilder<Review> builder)
         {
-            base.Configure(builder);
+            builder.HasKey(r => r.Id);
             builder.HasOne<UserModel>()
                 .WithMany()
                 .HasForeignKey(r => r.UserId)

@@ -1,42 +1,43 @@
-﻿using Application.Common.Interfaces;
+﻿using Application.Common.DTO.Response;
+using Application.Common.Interfaces;
+using Application.Mapper;
 using Domain.Aggregate;
+using Microsoft.EntityFrameworkCore;
 using System.Linq.Expressions;
 
 namespace Application.Features.MovieServices.GetMoviesByCriteria
 {
     public class MovieSortAndFilterService : IMovieSortAndFilterService
     {
-        private readonly IMediaRepository<Movie> mediaRepository;
-        private readonly IGenreRepository genreRepository;
-        private readonly IDirectorRepository directorRepository;
-        public MovieSortAndFilterService(IMediaRepository<Movie> mediaRepository, IGenreRepository genreRepository, IDirectorRepository directorRepository)
+        private readonly IAppDbContext appDbContext;
+        public MovieSortAndFilterService(IAppDbContext appDbContext)
         {
-            this.mediaRepository = mediaRepository;
-            this.genreRepository = genreRepository;
-            this.directorRepository = directorRepository;
+            this.appDbContext = appDbContext;
         }
-        public IQueryable<Movie> Handler(GetMoviesByCriteriaQuery request)
+        public async Task<List<MovieResponse>> Handler(GetMoviesByCriteriaQuery request, CancellationToken cancellationToken)
         {
-            var filteredMovies = ApplyFilters(request);
-            var sortedMovies = ApplySorting(filteredMovies, request);
-            return sortedMovies;
+            var query = appDbContext.Set<Movie>().AsNoTrackingWithIdentityResolution().AsSplitQuery();
+            query = ApplyFilters(query,request);
+            query = ApplySorting(query, request);
+            return await query
+                .Join(appDbContext.Set<Genre>(), mov => mov.GenreId, gen => gen.Id, (mov, gen) => new { mov, gen })
+                .Join(appDbContext.Set<Director>(), mg => mg.mov.DirectorId, dir => dir.Id, (mg, dir) => new { mg.mov, mg.gen, dir })
+                .Select(m=>MovieMapper.ToMovieResponse(m.mov,m.gen,m.dir))
+                .ToListAsync(cancellationToken);
         }
-        private IQueryable<Movie> ApplyFilters(GetMoviesByCriteriaQuery request)
+        private IQueryable<Movie> ApplyFilters(IQueryable<Movie> query, GetMoviesByCriteriaQuery request)
         {
-            var query = mediaRepository.GetAsQueryable();
             if (!string.IsNullOrWhiteSpace(request.TitleSearch))
             {
                 query = query.Where(m => m.Title.Contains(request.TitleSearch));
             }
             if (!string.IsNullOrWhiteSpace(request.genreName))
             {
-                var genreQuery = genreRepository.GetAsQueryable();
-                query = query.Join(genreQuery,
-                    movie => movie.GenreId,
-                    genre => genre.Id,
-                    (movie, genre) => new { Movie = movie, Genre = genre })
-                    .Where(mg => mg.Genre.Name.Value.Contains(request.genreName))
-                    .Select(mg => mg.Movie);
+                var genreIds = appDbContext.Set<Genre>()
+                    .Where(gen => gen.Name.Value.Contains(request.genreName))
+                    .Select(gen => gen.Id);
+
+                query = query.Where(g => genreIds.Contains(g.GenreId));
             }
             if (request.MinRating.HasValue)
             {
@@ -48,32 +49,32 @@ namespace Application.Features.MovieServices.GetMoviesByCriteria
             }
             if (!string.IsNullOrWhiteSpace(request.DirectorSurname) && !string.IsNullOrWhiteSpace(request.DirectorSurname))
             {
-                var directorQuery = directorRepository.GetAsQueryable();
-                query = query.Join(
-                    directorQuery,
-                    movie => movie.DirectorId,
-                    director => director.Id,
-                    (movie, directorQuery) => new { Movie = movie, Director = directorQuery })
-                    .Where(md => md.Director.Name.Contains(request.DirectorName!) && md.Director.Surname.Contains(request.DirectorSurname!))
-                    .Select(md => md.Movie);
+                var genreIds = appDbContext.Set<Director>()
+                    .Where(gen => gen.Name == request.DirectorName && gen.Surname == request.DirectorSurname)
+                    .Select(gen => gen.Id);
+
+                query = query.Where(g => genreIds.Contains(g.GenreId));
             }
             return query;
         }
         private IQueryable<Movie> ApplySorting(IQueryable<Movie> query, GetMoviesByCriteriaQuery request)
         {
-            if (request.SortByField != null)
+            var sortField = request.SortByField;
+            var isDescending = request.IsDescending;
+
+            if (!string.IsNullOrEmpty(sortField) && sortField.Contains('|'))
             {
-                var strings = request.SortByField.Split("|");
-                request.SortByField = strings[0];
-                request.IsDescending = strings[1].ToLower().Equals("false") ? false : true;
+                var parts = sortField.Split('|');
+                sortField = parts[0];
+                isDescending = parts.Length > 1 && parts[1].ToLower() != "false";
             }
-            if (!string.IsNullOrEmpty(request.SortByField) && sortColumns.TryGetValue(request.SortByField, out var sortExpression))
+
+            if (!string.IsNullOrEmpty(sortField) && sortColumns.TryGetValue(sortField, out var sortExp))
             {
-                return request.IsDescending
-                    ? query.OrderByDescending(sortExpression)
-                    : query.OrderBy(sortExpression);
+                return isDescending ? query.OrderByDescending(sortExp) : query.OrderBy(sortExp);
             }
-            return query;
+
+            return query.OrderBy(g => g.Title);
         }
         private static readonly Dictionary<string, Expression<Func<Movie, object>>> sortColumns =
             new(StringComparer.OrdinalIgnoreCase)

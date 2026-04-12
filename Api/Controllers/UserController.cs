@@ -75,7 +75,7 @@ namespace Api.Controllers
             {
                 return Unauthorized();
             }
-            var command = new ChangeDetailsCommand(userId.Value, userDetailsRequest.name, userDetailsRequest.surname, userDetailsRequest.email);
+            var command = new ChangeDetailsCommand(userId.Value, userDetailsRequest.name, userDetailsRequest.surname);
             await mediator.Send(command);
             return Ok();
         }

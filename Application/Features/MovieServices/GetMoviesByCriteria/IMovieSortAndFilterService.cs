@@ -1,9 +1,11 @@
-﻿using Domain.Aggregate;
+﻿using Application.Common.DTO.Request;
+using Application.Common.DTO.Response;
+using Domain.Aggregate;
 
 namespace Application.Features.MovieServices.GetMoviesByCriteria
 {
     public interface IMovieSortAndFilterService
     {
-        IQueryable<Movie> Handler(GetMoviesByCriteriaQuery request);
+        Task<List<MovieResponse>> Handler(GetMoviesByCriteriaQuery request, CancellationToken cancellationToken);
     }
 }

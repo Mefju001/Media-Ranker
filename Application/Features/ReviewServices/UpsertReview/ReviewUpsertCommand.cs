@@ -1,6 +1,5 @@
 ﻿using Application.Common.DTO.Response;
 using Application.Common.Interfaces;
-using MediatR;
 using System.ComponentModel.DataAnnotations;
 
 namespace Application.Features.ReviewServices.UpsertReview

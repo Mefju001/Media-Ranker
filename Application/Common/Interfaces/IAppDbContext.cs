@@ -19,5 +19,6 @@ namespace Application.Common.Interfaces
         public DbSet<Review> Reviews { get; set; }
         public DbSet<Token> Tokens { get; set; }
         public DbSet<LikedMedia> LikedMedias { get; set; }
+        public DbSet<UserDetails> UsersDetails {  get; set; }
     }
 }

@@ -14,25 +14,23 @@ namespace Application.Features.TvSeriesServices.TvSeriesUpsert
         private readonly IMediator mediator;
         private readonly IGenreHelperService genreHelperService;
         private readonly IMediaRepository<TvSeries> mediaRepository;
-        private readonly ILogger<TvSeriesUpsertHandler> logger;
 
-        public TvSeriesUpsertHandler(IGenreHelperService genreHelperService, IMediator mediator, IMediaRepository<TvSeries> mediaRepository, ILogger<TvSeriesUpsertHandler> logger)
+        public TvSeriesUpsertHandler(IGenreHelperService genreHelperService, IMediator mediator, IMediaRepository<TvSeries> mediaRepository)
         {
             
             this.mediator = mediator;
             this.genreHelperService = genreHelperService;
             this.mediaRepository = mediaRepository;
-            this.logger = logger;
         }
 
         public async Task<TvSeriesResponse> Handle(UpsertTvSeriesCommand request, CancellationToken cancellationToken)
         {
             var genre = await genreHelperService.GetOrCreateGenreAsync(request.genre, cancellationToken);
+            var isNew = false;
             TvSeries? tvSeries = null;
             if (request.id is not null)
             {
                 tvSeries = await mediaRepository.GetByIdAsync(request.id.Value, cancellationToken);
-
             }
             if (tvSeries is not null)
             {
@@ -47,10 +45,10 @@ namespace Application.Features.TvSeriesServices.TvSeriesUpsert
                     request.Network,
                     request.Status
                     );
-                logger.LogInformation("Updating TvSeries with id {TvSeriesId}", tvSeries.Id);
             }
             else
             {
+                isNew = true;
                 tvSeries = TvSeries.Create(
                         request.title,
                         request.description,
@@ -62,14 +60,10 @@ namespace Application.Features.TvSeriesServices.TvSeriesUpsert
                         request.Network,
                         request.Status);
                 tvSeries = await mediaRepository.AddAsync(tvSeries, cancellationToken);
-                logger.LogInformation("Creating new TvSeries with id {TvSeriesId}", tvSeries.Id);
             }
-            
-            if (tvSeries is null) throw new ArgumentNullException(nameof(tvSeries));
-            var response = TvSeriesMapper.ToTvSeriesResponse(tvSeries, genre);
-            logger.LogInformation("TvSeries with id {TvSeriesId} upserted successfully", tvSeries.Id);
-            await mediator.Publish(new LogNotification("Information", "Nowy serial został dodany.", nameof(TvSeriesUpsertHandler)));
-            return response;
+            var action = isNew ? "dodana" : "zaktualizowana";
+            await mediator.Publish(new LogNotification("Information", $"Nowy serial został {action}.", nameof(TvSeriesUpsertHandler)));
+            return TvSeriesMapper.ToTvSeriesResponse(tvSeries,genre);
         }
     }
 }
