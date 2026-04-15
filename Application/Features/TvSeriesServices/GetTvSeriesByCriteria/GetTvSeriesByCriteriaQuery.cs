@@ -1,7 +1,6 @@
 ﻿using Application.Common.DTO.Response;
 using Application.Common.Interfaces;
 using Domain.Enums;
-using MediatR;
 
 namespace Application.Features.TvSeriesServices.GetTvSeriesByCriteria
 {

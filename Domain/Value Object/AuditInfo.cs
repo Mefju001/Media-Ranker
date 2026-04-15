@@ -2,7 +2,7 @@
 
 namespace Domain.Value_Object;
 
-public record AuditInfo:ValueObject
+public record AuditInfo : ValueObject
 {
     public DateTime CreatedAt { get; init; }
     public DateTime? UpdatedAt { get; init; }

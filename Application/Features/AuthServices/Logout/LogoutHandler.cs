@@ -4,7 +4,7 @@ using Microsoft.Extensions.Logging;
 
 namespace Application.Features.AuthServices.Logout
 {
-    public class LogoutHandler : IRequestHandler<LogoutCommand,Unit>
+    public class LogoutHandler : IRequestHandler<LogoutCommand, Unit>
     {
         private readonly ITokenRepository tokenRepository;
         private readonly ILogger<LogoutHandler> logger;

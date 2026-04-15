@@ -2,7 +2,7 @@
 
 namespace Domain.Value_Object;
 
-public record ReleaseDate: ValueObject
+public record ReleaseDate : ValueObject
 {
     public DateTime Value { get; init; }
 

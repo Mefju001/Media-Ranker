@@ -21,7 +21,7 @@ namespace Application.Features.GamesServices.GetGamesByCriteria
             query = ApplySorting(query, request);
             return await query
                 .Join(appDbContext.Set<Genre>(), g => g.GenreId, gen => gen.Id, (g, gen) => new { g, gen })
-                .Select(x => GameMapper.ToGameResponse(x.g,x.gen))
+                .Select(x => GameMapper.ToGameResponse(x.g, x.gen))
                 .ToListAsync(ct);
         }
 

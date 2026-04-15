@@ -1,6 +1,4 @@
-﻿using Application.Common.DTO.Request;
-using Application.Common.DTO.Response;
-using Domain.Aggregate;
+﻿using Application.Common.DTO.Response;
 
 namespace Application.Features.MovieServices.GetMoviesByCriteria
 {

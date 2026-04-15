@@ -1,6 +1,5 @@
-﻿using Domain.Enums;
-
+﻿
 namespace Application.Common.DTO.Response
 {
-    public record RoleResponse(ERole name);
+    public record RoleResponse(string name);
 }

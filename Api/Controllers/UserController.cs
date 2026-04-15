@@ -61,7 +61,7 @@ namespace Api.Controllers
             var command = new ChangePasswordCommand(
                 changePasswordRequest.newPassword,
                 changePasswordRequest.confirmPassword,
-                changePasswordRequest.oldPassword, 
+                changePasswordRequest.oldPassword,
                 userId.Value);
             await mediator.Send(command);
             return Ok();
@@ -81,7 +81,7 @@ namespace Api.Controllers
         }
         [Authorize(Roles = "Admin,User")]
         [HttpDelete]
-        public async Task<IActionResult>DeleteUserByYourself()
+        public async Task<IActionResult> DeleteUserByYourself()
         {
             var userId = getUserId();
             if (userId == null)

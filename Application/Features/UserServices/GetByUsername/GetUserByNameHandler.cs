@@ -17,9 +17,9 @@ namespace Application.Features.UserServices.GetBy
         public async Task<UserDetailsResponse?> Handle(GetUserByNameQuery request, CancellationToken cancellationToken)
         {
             return await appDbContext.Set<UserDetails>()
-                .Where(u=>u.Fullname.Name == request.name)
+                .Where(u => u.Fullname.Name == request.name)
                 .AsNoTracking()
-                .Select(u=>UserMapper.ToResponse(u))
+                .Select(u => UserMapper.ToResponse(u))
                 .FirstOrDefaultAsync(cancellationToken);
         }
     }

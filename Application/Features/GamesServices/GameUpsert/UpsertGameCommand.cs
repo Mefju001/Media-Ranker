@@ -2,17 +2,16 @@
 using Application.Common.DTO.Response;
 using Application.Common.Interfaces;
 using Domain.Enums;
-using MediatR;
 
 namespace Application.Features.GamesServices.GameUpsert
 {
     public record UpsertGameCommand(
-        int? id,
+        Guid? id,
         string Title,
         string Description,
         GenreRequest Genre,
         DateTime? ReleaseDate,
         string Language,
         string? Developer,
-        EPlatform Platform) : ICommand<GameResponse>;
+        List<EPlatform> Platforms) : ICommand<GameResponse>;
 }

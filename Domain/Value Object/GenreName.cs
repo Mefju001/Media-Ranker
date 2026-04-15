@@ -2,7 +2,7 @@
 
 namespace Domain.Value_Object;
 
-public record GenreName:ValueObject
+public record GenreName : ValueObject
 {
     public string Value { get; init; }
 

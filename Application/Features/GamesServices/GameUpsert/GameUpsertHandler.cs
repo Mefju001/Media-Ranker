@@ -29,7 +29,7 @@ namespace Application.Features.GamesServices.GameUpsert
             Game? game = null;
             if (request.id.HasValue)
             {
-                game = await mediaRepository.GetByIdAsync(request.id.Value, cancellationToken)?? throw new NotFoundException($"Game {request.id} not found");
+                game = await mediaRepository.GetByIdAsync(request.id.Value, cancellationToken) ?? throw new NotFoundException($"Game {request.id} not found");
             }
             if (game != null)
             {
@@ -41,7 +41,7 @@ namespace Application.Features.GamesServices.GameUpsert
                     new ReleaseDate(request.ReleaseDate!.Value),
                     genre.Id,
                     request.Developer!,
-                    request.Platform
+                    request.Platforms
                     );
             }
             else
@@ -53,7 +53,7 @@ namespace Application.Features.GamesServices.GameUpsert
                     new Language(request.Language),
                     new ReleaseDate(request.ReleaseDate!.Value),
                     genre.Id, request.Developer!,
-                    request.Platform);
+                    request.Platforms);
                 game = await mediaRepository.AddAsync(game, cancellationToken);
             }
             var action = isNew ? "dodana" : "zaktualizowana";

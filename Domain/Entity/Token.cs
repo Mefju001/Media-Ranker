@@ -2,7 +2,7 @@
 
 namespace Domain.Entity;
 
-public class Token:AggregateRoot<string>
+public class Token : AggregateRoot<string>
 {
     public string RefreshToken { get; private set; } = default!;
     public Guid UserId { get; init; }

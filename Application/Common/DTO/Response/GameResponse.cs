@@ -3,7 +3,7 @@
 namespace Application.Common.DTO.Response
 {
     public record GameResponse(
-        int id,
+        Guid id,
         string Title,
         string Description,
         GenreResponse Genre,
@@ -12,6 +12,6 @@ namespace Application.Common.DTO.Response
         List<ReviewResponse>? Reviews,
         MediaStatsResponse MediaStats,
         string? Developer,
-        EPlatform Platform
-        ) : MediaResponse(id, Title, Description, Genre, ReleaseDate, Language, Reviews),IResponse;
+        List<EPlatform> Platforms
+        ) : MediaResponse(id, Title, Description, Genre, ReleaseDate, Language, Reviews), IResponse;
 }

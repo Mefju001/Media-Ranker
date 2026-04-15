@@ -3,5 +3,5 @@ using MediatR;
 
 namespace Application.Features.GamesServices.DeleteById
 {
-    public record DeleteByIdCommand(int id) : ICommand<Unit>;
+    public record DeleteByIdCommand(Guid id) : ICommand<Unit>;
 }

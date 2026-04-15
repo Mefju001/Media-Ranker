@@ -1,6 +1,5 @@
 ﻿using Domain.Aggregate;
 using Infrastructure.Database.DBModels;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
@@ -11,7 +10,7 @@ namespace Infrastructure.Database.Config
         public void Configure(EntityTypeBuilder<UserDetails> builder)
         {
             builder.HasKey(x => x.Id);
-
+            builder.Property(x => x.Id).ValueGeneratedNever();
             builder.OwnsOne(x => x.Fullname, n =>
             {
                 n.Property(p => p.Name).HasColumnName("FirstName").HasMaxLength(50);

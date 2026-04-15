@@ -20,7 +20,7 @@ namespace Application.Features.MovieServices.AddListOfMovies
         public AddListOfMoviesHandler(IMediaRepository<Media> mediaRepository, IGenreHelperService genreHelperService, IMediator mediator, IDirectorHelperService directorHelperService)
         {
             this.genreHelperService = genreHelperService;
-            
+
             this.mediaRepository = mediaRepository;
             this.mediator = mediator;
             this.directorHelperService = directorHelperService;

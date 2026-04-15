@@ -1,6 +1,5 @@
 ﻿using Application.Common.Interfaces;
 using MediatR;
-using Microsoft.Extensions.Logging;
 
 
 namespace Application.Features.UserServices.DeleteUser

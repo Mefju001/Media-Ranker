@@ -2,7 +2,7 @@
 
 namespace Domain.Value_Object;
 
-public record Duration:ValueObject
+public record Duration : ValueObject
 {
     public TimeSpan Value { get; init; }
 

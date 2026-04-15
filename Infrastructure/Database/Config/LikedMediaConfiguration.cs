@@ -1,6 +1,5 @@
 ﻿using Domain.Aggregate;
 using Domain.Entity;
-using Infrastructure.Database.DBModels;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
@@ -10,8 +9,8 @@ namespace Infrastructure.Database.Config
     {
         public void Configure(EntityTypeBuilder<LikedMedia> builder)
         {
-            builder.HasIndex(lm => new { lm.UserId, lm.MediaId })
-                .IsUnique();
+            builder.HasKey(lm => new { lm.UserId, lm.MediaId });
+
             builder
                 .HasOne<UserDetails>()
                 .WithMany()

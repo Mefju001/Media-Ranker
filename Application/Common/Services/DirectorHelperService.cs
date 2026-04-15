@@ -5,7 +5,7 @@ using Domain.Aggregate;
 
 namespace Application.Common.Services
 {
-    public class DirectorHelperService:IDirectorHelperService
+    public class DirectorHelperService : IDirectorHelperService
     {
         private readonly IDirectorRepository directorRepository;
         public DirectorHelperService(IDirectorRepository directorRepository)
@@ -28,7 +28,7 @@ namespace Application.Common.Services
                 .ToList();
             var existingDirectors = await directorRepository.findByNames(uniquePairs, cancellationToken);
             var directorMap = existingDirectors.ToDictionary(
-               d => (d.Name.Trim(), d.Surname.Trim()));
+               d => (d.fullname.Name.Trim(), d.fullname.Surname.Trim()));
             foreach (var pair in uniquePairs)
             {
                 if (!directorMap.ContainsKey(pair))

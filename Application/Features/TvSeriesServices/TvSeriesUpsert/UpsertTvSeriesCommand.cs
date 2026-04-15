@@ -2,12 +2,11 @@
 using Application.Common.DTO.Response;
 using Application.Common.Interfaces;
 using Domain.Enums;
-using MediatR;
 
 namespace Application.Features.TvSeriesServices.TvSeriesUpsert
 {
     public record UpsertTvSeriesCommand(
-        int? id,
+        Guid? id,
         string title,
         string description,
         GenreRequest genre,

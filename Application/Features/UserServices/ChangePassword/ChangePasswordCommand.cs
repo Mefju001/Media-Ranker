@@ -1,5 +1,4 @@
-﻿using Application.Common.DTO.Request;
-using Application.Common.Interfaces;
+﻿using Application.Common.Interfaces;
 using MediatR;
 
 namespace Application.Features.UserServices.ChangePassword

@@ -29,8 +29,8 @@ namespace Api.Controllers
             return Ok(movies);
         }
         [AllowAnonymous]
-        [HttpGet("{id:int}")]
-        public async Task<IActionResult> GetById([FromRoute] int id)
+        [HttpGet("{id:guid}")]
+        public async Task<IActionResult> GetById([FromRoute] Guid id)
         {
             var query = new GetTvSeriesByIdQuery(id);
             var movie = await mediator.Send(query);
@@ -62,8 +62,8 @@ namespace Api.Controllers
             return Ok(created);
         }
         [Authorize(Roles = "Admin")]
-        [HttpPut("{id:int}")]
-        public async Task<IActionResult> UpdateTvSeries([FromRoute] int id, TvSeriesRequest tvSeriesRequest)
+        [HttpPut("{id:guid}")]
+        public async Task<IActionResult> UpdateTvSeries([FromRoute] Guid id, TvSeriesRequest tvSeriesRequest)
         {
             var command = new UpsertTvSeriesCommand(id,
                 tvSeriesRequest.title,
@@ -79,8 +79,8 @@ namespace Api.Controllers
             return Ok(updated);
         }
         [Authorize(Roles = "Admin")]
-        [HttpDelete("{id:int}")]
-        public async Task<IActionResult> Delete([FromRoute] int id)
+        [HttpDelete("{id:guid}")]
+        public async Task<IActionResult> Delete([FromRoute] Guid id)
         {
             var command = new DeleteByIdCommand(id);
             var deleted = await mediator.Send(command);

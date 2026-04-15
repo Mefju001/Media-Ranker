@@ -47,7 +47,7 @@ namespace Api.Controllers
         [HttpGet("{id:int}")]
         [ProducesResponseType(typeof(LikedMediaResponse), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public async Task<IActionResult> GetById([FromRoute] int id)
+        public async Task<IActionResult> GetById([FromRoute] Guid id)
         {
             var query = new GetByIdQuery(id);
             var response = await mediator.Send(query);
@@ -68,7 +68,7 @@ namespace Api.Controllers
             //return CreatedAtAction(nameof(GetById), new { id = response.id }, response);
         }
         [HttpDelete("{id:int}")]
-        public async Task<IActionResult> DeleteLikedMovie([FromRoute] int id)
+        public async Task<IActionResult> DeleteLikedMovie([FromRoute] Guid id)
         {
             var userId = GetCurrentUserId();
             var command = new DeleteLikedCommand(userId, id);

@@ -1,5 +1,4 @@
-﻿using System;
-using Microsoft.EntityFrameworkCore.Migrations;
+﻿using Microsoft.EntityFrameworkCore.Migrations;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 #nullable disable
@@ -55,8 +54,7 @@ namespace Infrastructure.Migrations
                 name: "Directors",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "integer", nullable: false)
-                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    Id = table.Column<Guid>(type: "uuid", nullable: false),
                     Name = table.Column<string>(type: "text", nullable: false),
                     Surname = table.Column<string>(type: "text", nullable: false)
                 },
@@ -69,8 +67,7 @@ namespace Infrastructure.Migrations
                 name: "Genres",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "integer", nullable: false)
-                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    Id = table.Column<Guid>(type: "uuid", nullable: false),
                     Name = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false)
                 },
                 constraints: table =>
@@ -229,22 +226,18 @@ namespace Infrastructure.Migrations
                 name: "Medias",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "integer", nullable: false)
-                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    Id = table.Column<Guid>(type: "uuid", nullable: false),
                     Title = table.Column<string>(type: "text", nullable: false),
                     Description = table.Column<string>(type: "text", nullable: false),
-                    GenreId = table.Column<int>(type: "integer", nullable: false),
+                    GenreId = table.Column<Guid>(type: "uuid", nullable: false),
                     ReleaseYear = table.Column<DateTime>(type: "timestamp without time zone", nullable: true),
                     Language = table.Column<string>(type: "text", nullable: false),
-                    AverageRating = table.Column<double>(type: "double precision", nullable: false),
-                    reviewCount = table.Column<int>(type: "integer", nullable: false),
-                    Stats_LastCalculated = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
                     CreatedAt = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
                     UpdatedAt = table.Column<DateTime>(type: "timestamp without time zone", nullable: true),
                     MediaType = table.Column<string>(type: "character varying(8)", maxLength: 8, nullable: false),
                     Developer = table.Column<string>(type: "character varying(200)", maxLength: 200, nullable: true),
-                    Platform = table.Column<string>(type: "text", nullable: true),
-                    DirectorId = table.Column<int>(type: "integer", nullable: true),
+                    Platforms = table.Column<string>(type: "jsonb", nullable: true),
+                    DirectorId = table.Column<Guid>(type: "uuid", nullable: true),
                     DurationMinutes = table.Column<TimeSpan>(type: "interval", nullable: true),
                     IsCinemaRelease = table.Column<bool>(type: "boolean", nullable: true),
                     Seasons = table.Column<int>(type: "integer", nullable: true),
@@ -267,10 +260,9 @@ namespace Infrastructure.Migrations
                 name: "LikedMedias",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "integer", nullable: false)
-                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    Id = table.Column<Guid>(type: "uuid", nullable: false),
                     UserId = table.Column<Guid>(type: "uuid", nullable: false),
-                    MediaId = table.Column<int>(type: "integer", nullable: false),
+                    MediaId = table.Column<Guid>(type: "uuid", nullable: false),
                     LikedDate = table.Column<DateTime>(type: "timestamp without time zone", nullable: false)
                 },
                 constraints: table =>
@@ -291,12 +283,31 @@ namespace Infrastructure.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "MediaStats",
+                columns: table => new
+                {
+                    MediaId = table.Column<Guid>(type: "uuid", nullable: false),
+                    AverageRating = table.Column<double>(type: "double precision", nullable: false),
+                    reviewCount = table.Column<int>(type: "integer", nullable: false),
+                    LastCalculated = table.Column<DateTime>(type: "timestamp without time zone", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_MediaStats", x => x.MediaId);
+                    table.ForeignKey(
+                        name: "FK_MediaStats_Medias_MediaId",
+                        column: x => x.MediaId,
+                        principalTable: "Medias",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Reviews",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "integer", nullable: false)
-                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    MediaId = table.Column<int>(type: "integer", nullable: false),
+                    Id = table.Column<Guid>(type: "uuid", nullable: false),
+                    MediaId = table.Column<Guid>(type: "uuid", nullable: false),
                     UserId = table.Column<Guid>(type: "uuid", nullable: false),
                     Username = table.Column<string>(type: "text", nullable: false),
                     Rating = table.Column<int>(type: "integer", nullable: false),
@@ -408,6 +419,9 @@ namespace Infrastructure.Migrations
 
             migrationBuilder.DropTable(
                 name: "LikedMedias");
+
+            migrationBuilder.DropTable(
+                name: "MediaStats");
 
             migrationBuilder.DropTable(
                 name: "Reviews");

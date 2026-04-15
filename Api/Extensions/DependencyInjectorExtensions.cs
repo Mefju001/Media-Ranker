@@ -6,7 +6,7 @@ namespace Api.Extensions
     {
         public static void RegisterAllTypes(this IServiceCollection services, Assembly assembly)
         {
-            var types = assembly.GetTypes().Where(t=>t.IsClass && !t.IsAbstract&& !t.IsInterface);
+            var types = assembly.GetTypes().Where(t => t.IsClass && !t.IsAbstract && !t.IsInterface);
             foreach (var type in types)
             {
                 var interfaces = type.GetInterfaces();

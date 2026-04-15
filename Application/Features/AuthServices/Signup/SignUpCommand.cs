@@ -1,5 +1,4 @@
 ﻿using Application.Common.Interfaces;
-using MediatR;
 
 namespace Application.Features.AuthServices.Signup
 {

@@ -31,7 +31,7 @@ namespace Infrastructure.Database.Repository
             var result = await userManager.CheckPasswordAsync(user, password);
             if (result == false) return null;
             var roles = await userManager.GetRolesAsync(user);
-            return new UserDTO(user.Id,user.UserName,user.Email,roles.ToList());
+            return new UserDTO(user.Id, user.UserName, user.Email, roles.ToList());
         }
         public async Task<UserDTO> GetUserById(Guid userId, CancellationToken cancellationToken)
         {
@@ -71,11 +71,11 @@ namespace Infrastructure.Database.Repository
                 UserName = username,
                 Email = email,
             };
-            var result = await userManager.CreateAsync(identityUser,password);
+            var result = await userManager.CreateAsync(identityUser, password);
             if (!result.Succeeded) throw new Exception("User creation failed: " + result.Errors.Select(e => e.Description));
             var defaultRoles = new List<string> { "User" };
             await userManager.AddToRolesAsync(identityUser, defaultRoles);
-            return new UserDTO(identityUser.Id,identityUser.UserName, identityUser.Email, defaultRoles);
+            return new UserDTO(identityUser.Id, identityUser.UserName, identityUser.Email, defaultRoles);
         }
 
         public async Task<string> GetUsernameById(Guid id, CancellationToken cancellationToken)

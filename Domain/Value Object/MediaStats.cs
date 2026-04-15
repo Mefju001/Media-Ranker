@@ -2,7 +2,7 @@
 
 namespace Domain.Value_Object;
 
-public record MediaStats:ValueObject
+public record MediaStats : ValueObject
 {
     public double AverageRating { get; init; }
     public int ReviewCount { get; init; }

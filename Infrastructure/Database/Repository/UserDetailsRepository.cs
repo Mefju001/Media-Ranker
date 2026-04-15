@@ -1,5 +1,6 @@
 ﻿using Domain.Aggregate;
 using Domain.Repository;
+using Microsoft.EntityFrameworkCore;
 
 namespace Infrastructure.Database.Repository
 {
@@ -8,6 +9,10 @@ namespace Infrastructure.Database.Repository
         public UserDetailsRepository(AppDbContext appDbContext) : base(appDbContext)
         {
 
+        }
+        public override Task<UserDetails?> GetByIdAsync(Guid id, CancellationToken ct)
+        {
+            return appDbContext.Set<UserDetails>().Include(u => u.LikedMedias).FirstOrDefaultAsync(u => u.Id == id, ct);
         }
     }
 }

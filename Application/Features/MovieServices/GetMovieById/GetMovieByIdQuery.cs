@@ -1,9 +1,8 @@
 ﻿using Application.Common.DTO.Response;
 using Application.Common.Interfaces;
-using MediatR;
 
 namespace Application.Features.MovieServices.GetMovieById
 {
-    public record GetMovieByIdQuery(int id) : IQuery<MovieResponse?>;
+    public record GetMovieByIdQuery(Guid id) : IQuery<MovieResponse?>;
 
 }

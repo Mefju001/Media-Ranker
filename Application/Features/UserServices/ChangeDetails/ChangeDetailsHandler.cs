@@ -11,7 +11,7 @@ namespace Application.Features.UserServices.ChangeDetails
         private readonly IUserDetailsRepository userDetailsRepository;
         public ChangeDetailsHandler(IUserDetailsRepository userDetailsRepository)
         {
-            
+
             this.userDetailsRepository = userDetailsRepository;
         }
         public async Task<Unit> Handle(ChangeDetailsCommand request, CancellationToken cancellationToken)

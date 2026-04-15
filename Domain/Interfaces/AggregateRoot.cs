@@ -1,13 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Security.Cryptography;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Domain.Base
+﻿namespace Domain.Base
 {
-    public abstract class AggregateRoot<TId>:Entity<TId>
+    public abstract class AggregateRoot<TId> : Entity<TId>
     {
         private readonly List<object> _domainEvents = new();
         public IReadOnlyCollection<object> DomainEvents => _domainEvents.AsReadOnly();

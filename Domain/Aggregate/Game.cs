@@ -1,5 +1,4 @@
 ﻿using Domain.Enums;
-using Domain.Interfaces;
 using Domain.Value_Object;
 
 namespace Domain.Aggregate;
@@ -7,20 +6,20 @@ namespace Domain.Aggregate;
 public class Game : Media
 {
     public string Developer { get; private set; } = default!;
-    public EPlatform Platform { get; private set; }
-
+    private List<EPlatform> platforms = new();
+    public IReadOnlyCollection<EPlatform> Platforms => platforms.AsReadOnly();
     private Game() { }
     public static Game Create(
-        string title, string desc, Language lang, ReleaseDate? date, int genre,
-        string developer, EPlatform platform, int id = 0)
+        string title, string desc, Language lang, ReleaseDate? date, Guid genre,
+        string developer, List<EPlatform> platforms, Guid? id = null)
     {
         Validate(developer);
-
+        ValidatePlatforms(platforms);
         var game = new Game
         {
-            Id = id,
+            Id = id ?? Guid.NewGuid(),
             Developer = developer,
-            Platform = platform
+            platforms = new List<EPlatform>(platforms)
         };
 
         game.SetBaseDetails(title, desc, lang, date, genre);
@@ -28,12 +27,13 @@ public class Game : Media
     }
 
     public void Update(
-        string title, string desc, Language lang, ReleaseDate? date, int genre,
-        string developer, EPlatform platform)
+        string title, string desc, Language lang, ReleaseDate? date, Guid genre,
+        string developer, List<EPlatform> platforms)
     {
         Validate(developer);
+        ValidatePlatforms(platforms);
         Developer = developer;
-        Platform = platform;
+        this.platforms = new List<EPlatform>(platforms);
 
         SetBaseDetails(title, desc, lang, date, genre);
     }
@@ -42,5 +42,10 @@ public class Game : Media
     {
         if (string.IsNullOrWhiteSpace(developer))
             throw new ArgumentException("Developer cannot be null or empty.");
+    }
+    private static void ValidatePlatforms(List<EPlatform> platforms)
+    {
+        if (platforms == null || !platforms.Any())
+            throw new ArgumentException("Game must have at least one platform.");
     }
 }

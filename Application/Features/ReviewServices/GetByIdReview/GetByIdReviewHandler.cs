@@ -16,7 +16,7 @@ namespace Application.Features.ReviewServices.GetByIdReview
         }
         public async Task<ReviewResponse?> Handle(GetByIdReviewQuery query, CancellationToken cancellationToken)
         {
-            return await appDbContext.Set<Review>().AsNoTrackingWithIdentityResolution().AsSplitQuery().Where(x=>x.Id==query.reviewId).Select(x => ReviewMapper.ToResponse(x)).FirstOrDefaultAsync(cancellationToken);
+            return await appDbContext.Set<Review>().AsNoTrackingWithIdentityResolution().AsSplitQuery().Where(x => x.Id == query.reviewId).Select(x => ReviewMapper.ToResponse(x)).FirstOrDefaultAsync(cancellationToken);
         }
     }
 }

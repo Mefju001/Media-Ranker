@@ -1,12 +1,6 @@
 ﻿using Domain.Aggregate;
-using Domain.Base;
 using Domain.Entity;
 using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Application.Common.Interfaces
 {
@@ -19,6 +13,6 @@ namespace Application.Common.Interfaces
         public DbSet<Review> Reviews { get; set; }
         public DbSet<Token> Tokens { get; set; }
         public DbSet<LikedMedia> LikedMedias { get; set; }
-        public DbSet<UserDetails> UsersDetails {  get; set; }
+        public DbSet<UserDetails> UsersDetails { get; set; }
     }
 }

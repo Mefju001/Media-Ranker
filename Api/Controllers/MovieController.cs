@@ -30,8 +30,8 @@ namespace Api.Controllers
             return Ok(movies);
         }
         [AllowAnonymous]
-        [HttpGet("{id:int}")]
-        public async Task<IActionResult> GetById([FromRoute] int id)
+        [HttpGet("{id:guid}")]
+        public async Task<IActionResult> GetById([FromRoute] Guid id)
         {
             var query = new GetMovieByIdQuery(id);
             var result = await mediator.Send(query);
@@ -64,8 +64,8 @@ namespace Api.Controllers
             return Ok(created);
         }
         [Authorize(Roles = "Admin")]
-        [HttpPut("{id:int}")]
-        public async Task<IActionResult> UpdateMovie([FromRoute] int id, [FromBody] MovieRequest movie)
+        [HttpPut("{id:guid}")]
+        public async Task<IActionResult> UpdateMovie([FromRoute] Guid id, [FromBody] MovieRequest movie)
         {
             var command = new UpsertMovieCommand(
                 id,
@@ -81,8 +81,8 @@ namespace Api.Controllers
             return Ok(updated);
         }
         [Authorize(Roles = "Admin")]
-        [HttpDelete("{id:int}")]
-        public async Task<IActionResult> Delete([FromRoute] int id)
+        [HttpDelete("{id:guid}")]
+        public async Task<IActionResult> Delete([FromRoute] Guid id)
         {
             var deleted = await mediator.Send(new DeleteByIdCommand(id));
             return NoContent();

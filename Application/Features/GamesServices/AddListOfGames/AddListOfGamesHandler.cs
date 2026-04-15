@@ -38,12 +38,13 @@ namespace Application.Features.GamesServices.AddListOfGames
                         new ReleaseDate(gameReq.ReleaseDate ?? DateTime.UtcNow),
                         genre.Id,
                         gameReq.Developer ?? "Unknown",
-                        gameReq.Platform);
+                        gameReq.Platforms);
             }).ToList();
             await mediaRepository.AddRangeAsync(games, cancellationToken);
             await mediator.Publish(new LogNotification("Information", "Nowa lista gier została dodana.", nameof(AddListOfGamesHandler)));
-            var genresById = genresMap.Values.ToDictionary(g => g.Id);
-            return games.Select(g => GameMapper.ToGameResponse(g, genresById[g.Id])).ToList();
+            var genresById = genresMap.Values.ToDictionary(
+                g => g.Id);
+            return games.Select(g => GameMapper.ToGameResponse(g, genresById[g.GenreId])).ToList();
         }
     }
 }

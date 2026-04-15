@@ -4,11 +4,11 @@ using Domain.Exceptions;
 using Domain.Interfaces;
 using Domain.Value_Object;
 
-public abstract class Media : AggregateRoot<int>,IAudited
+public abstract class Media : AggregateRoot<Guid>, IAudited
 {
     public string Title { get; private set; } = default!;
     public string Description { get; private set; } = default!;
-    public int GenreId { get; private set; }
+    public Guid GenreId { get; private set; }
     public ReleaseDate? ReleaseDate { get; private set; }
     public Language Language { get; private set; } = default!;
     public MediaStats Stats { get; private set; } = new(0, 0);
@@ -19,7 +19,7 @@ public abstract class Media : AggregateRoot<int>,IAudited
     protected Media() { }
 
 
-    protected void SetBaseDetails(string title, string description, Language language, ReleaseDate? releaseDate, int genreId)
+    protected void SetBaseDetails(string title, string description, Language language, ReleaseDate? releaseDate, Guid genreId)
     {
         if (string.IsNullOrWhiteSpace(title) || string.IsNullOrWhiteSpace(description))
             throw new ArgumentException("Title and Description are required.");
@@ -41,7 +41,7 @@ public abstract class Media : AggregateRoot<int>,IAudited
         RecalculateStats();
     }
 
-    public void EditReview(int reviewId, Guid userId, Rating rating, string comment)
+    public void EditReview(Guid reviewId, Guid userId, Rating rating, string comment)
     {
         var review = reviews.FirstOrDefault(r => r.Id == reviewId) ?? throw new NotFoundException("Review not found.");
         if (review.UserId != userId) throw new DomainException("Unauthorized edit.");
@@ -50,7 +50,7 @@ public abstract class Media : AggregateRoot<int>,IAudited
         RecalculateStats();
     }
 
-    public void DeleteReview(int reviewId)
+    public void DeleteReview(Guid reviewId)
     {
         var review = reviews.FirstOrDefault(r => r.Id == reviewId) ?? throw new DomainException("Review not found.");
         reviews.Remove(review);

@@ -2,26 +2,26 @@
 
 namespace Domain.Entity;
 
-public class LikedMedia : Entity<int>
+public class LikedMedia : Entity<Guid>
 {
     public Guid UserId { get; private set; }
-    public int MediaId { get; private set; }
+    public Guid MediaId { get; private set; }
     public DateTime LikedDate { get; private set; }
 
     private LikedMedia() { }
 
-    public static LikedMedia Create(Guid userId, int mediaId, int id = 0)
+    public static LikedMedia Create(Guid userId, Guid mediaId, Guid? id = null)
     {
         var liked = new LikedMedia
         {
-            Id = id,
+            Id = id ?? Guid.NewGuid(),
             UserId = userId,
             MediaId = mediaId,
             LikedDate = DateTime.UtcNow
         };
 
-       /* if (id == 0)
-            liked._domainEvents.Add(new MediaLiked(userId, mediaId));*/
+        /* if (id == 0)
+             liked._domainEvents.Add(new MediaLiked(userId, mediaId));*/
 
         return liked;
     }

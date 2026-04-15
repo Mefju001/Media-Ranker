@@ -1,5 +1,4 @@
-﻿using Application.Common.Interfaces;
-using MediatR;
+﻿using MediatR;
 using System.Diagnostics;
 
 namespace Api.Extensions
@@ -15,12 +14,13 @@ namespace Api.Extensions
             {
                 var response = await next();
                 timer.Stop();
-                logger.LogInformation("End Handled {RequestName} successfully in {Elapsed}ms", requestName,timer);
+                logger.LogInformation("End Handled {RequestName} successfully in {Elapsed}ms", requestName, timer);
                 return response;
-            }catch(Exception ex)
+            }
+            catch (Exception ex)
             {
                 timer.Stop();
-                logger.LogError(ex, "Error Failed to handle {RequestName} after {Elapsed}ms", requestName,timer);
+                logger.LogError(ex, "Error Failed to handle {RequestName} after {Elapsed}ms", requestName, timer);
                 throw;
             }
         }

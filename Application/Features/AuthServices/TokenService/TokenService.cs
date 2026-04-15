@@ -1,5 +1,4 @@
 ﻿using Domain.Entity;
-using Domain.Enums;
 using Domain.Exceptions;
 using Domain.Repository;
 using Microsoft.AspNetCore.Http;
@@ -12,7 +11,7 @@ using System.Text;
 
 namespace Application.Features.AuthServices.Common
 {
-    public class TokenService:ITokenService
+    public class TokenService : ITokenService
     {
         private readonly JwtSettings jwtSettings;
         private readonly ITokenRepository tokenRepository;
@@ -51,7 +50,7 @@ namespace Application.Features.AuthServices.Common
             {
                 claims.Add(new Claim(ClaimTypes.Role, role.ToString()));
             }
-            return CreateToken(claims,jwtSettings.Key,jwtSettings.AccessTokenExpirationMinutes);
+            return CreateToken(claims, jwtSettings.Key, jwtSettings.AccessTokenExpirationMinutes);
         }
 
         //Opaque token implementation could be added here in the future if needed, currently we are using JWT for both access and refresh tokens for simplicity.
@@ -64,7 +63,7 @@ namespace Application.Features.AuthServices.Common
                 new(ClaimTypes.Name, username),
                 new(JwtRegisteredClaimNames.Jti,jti)
             };
-            var refToken = CreateToken(claims,jwtSettings.Key2,jwtSettings.RefreshTokenExpirationDays*24*60);
+            var refToken = CreateToken(claims, jwtSettings.Key2, jwtSettings.RefreshTokenExpirationDays * 24 * 60);
             var httpContext = httpContextAccessor.HttpContext;
             var token = Token.Create(
                 jti,
@@ -97,7 +96,7 @@ namespace Application.Features.AuthServices.Common
                     ClockSkew = TimeSpan.Zero
                 };
                 var principal = handler.ValidateToken(token, tokenValidationParameters, out var validatedToken);
-                if (validatedToken is not JwtSecurityToken jwtToken || 
+                if (validatedToken is not JwtSecurityToken jwtToken ||
                     !jwtToken.Header.Alg.Equals(SecurityAlgorithms.HmacSha256, StringComparison.InvariantCultureIgnoreCase))
                 {
                     logger.LogWarning("Niepoprawny algorytm tokena.");

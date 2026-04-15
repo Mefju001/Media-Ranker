@@ -1,6 +1,6 @@
 ﻿namespace Application.Common.DTO.Response
 {
-    public record GenreResponse(int id, string Name)
+    public record GenreResponse(Guid id, string Name)
     {
     }
 }

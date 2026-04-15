@@ -4,7 +4,7 @@ namespace Domain.Aggregate;
 
 public class Movie : Media
 {
-    public int DirectorId { get; private set; }
+    public Guid DirectorId { get; private set; }
     public Duration Duration { get; private set; } = default!;
     public bool IsCinemaRelease { get; private set; }
 
@@ -12,14 +12,12 @@ public class Movie : Media
 
 
     public static Movie Create(
-        string title, string desc, Language lang, ReleaseDate? date, int genre,
-        int director, Duration duration, bool isCinema, int id = 0)
+        string title, string desc, Language lang, ReleaseDate? date, Guid genre,
+        Guid director, Duration duration, bool isCinema, Guid? id = null)
     {
-        Validate(director);
-
         var movie = new Movie
         {
-            Id = id,
+            Id = id ?? Guid.NewGuid(),
             DirectorId = director,
             Duration = duration,
             IsCinemaRelease = isCinema
@@ -31,10 +29,9 @@ public class Movie : Media
     }
 
     public void Update(
-        string title, string desc, Language lang, ReleaseDate? date, int genre,
-        int director, Duration duration, bool isCinema)
+        string title, string desc, Language lang, ReleaseDate? date, Guid genre,
+        Guid director, Duration duration, bool isCinema)
     {
-        Validate(director);
         DirectorId = director;
         Duration = duration;
         IsCinemaRelease = isCinema;
@@ -44,8 +41,5 @@ public class Movie : Media
 
     public void UpdateCinemaStatus(bool isCinemaRelease) => IsCinemaRelease = isCinemaRelease;
 
-    private static void Validate(int director)
-    {
-        if (director <= 0) throw new ArgumentException("Director ID must be greater than zero.");
-    }
+
 }

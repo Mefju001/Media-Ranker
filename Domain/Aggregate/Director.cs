@@ -1,34 +1,25 @@
 ﻿using Domain.Base;
+using Domain.Value_Object;
 
 namespace Domain.Aggregate;
 
-public class Director:AggregateRoot<int>
+public class Director : AggregateRoot<Guid>
 {
-    public string Name { get; private set; } = default!;
-    public string Surname { get; private set; } = default!;
+    public Fullname fullname { get; private set; } = default!;
 
     private Director() { }
-    public static Director Create(string name, string surname, int id = 0)
+    public static Director Create(string name, string surname, Guid? id = null)
     {
-        Validate(name, surname);
         return new Director
         {
-            Id = id,
-            Name = name,
-            Surname = surname
+            Id = id ?? Guid.NewGuid(),
+            fullname = new Fullname(name, surname)
         };
     }
 
     public void Update(string name, string surname)
     {
-        Validate(name, surname);
-        Name = name;
-        Surname = surname;
+        fullname = new Fullname(name, surname);
     }
 
-    private static void Validate(string name, string surname)
-    {
-        if (string.IsNullOrWhiteSpace(name) || string.IsNullOrWhiteSpace(surname))
-            throw new ArgumentException("Name and Surname are required.");
-    }
 }

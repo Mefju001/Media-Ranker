@@ -1,12 +1,11 @@
 ﻿using Domain.Base;
 using Domain.Entity;
-using Domain.Enums;
 using Domain.Interfaces;
 using Domain.Value_Object;
 
 namespace Domain.Aggregate;
 
-public class UserDetails : AggregateRoot<Guid>,IAudited
+public class UserDetails : AggregateRoot<Guid>, IAudited
 {
     public Fullname Fullname { get; private set; } = default!;
     public bool IsActive { get; private set; }
@@ -16,7 +15,7 @@ public class UserDetails : AggregateRoot<Guid>,IAudited
     public IReadOnlyCollection<LikedMedia> LikedMedias => likedMedias.AsReadOnly();
     private UserDetails() { }
 
-    public static UserDetails Create(Guid id,Fullname fullname)
+    public static UserDetails Create(Guid id, Fullname fullname)
     {
         return new UserDetails
         {
@@ -27,13 +26,13 @@ public class UserDetails : AggregateRoot<Guid>,IAudited
         };
     }
 
-    public void AddLikedMedia(int movieId)
+    public void AddLikedMedia(Guid movieId)
     {
         if (likedMedias.Any(lm => lm.MediaId.Equals(movieId)))
             throw new InvalidOperationException("Media is already liked.");
         likedMedias.Add(LikedMedia.Create(Id, movieId));
     }
-    public void RemoveLikedMedia(int movieId)
+    public void RemoveLikedMedia(Guid movieId)
     {
         var likedMedia = likedMedias.FirstOrDefault(lm => lm.MediaId.Equals(movieId));
         if (likedMedia == null)

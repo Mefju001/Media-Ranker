@@ -1,12 +1,9 @@
-﻿using Application;
-using Application.Common.DTO.Request;
-using Application.Common.DTO.Response;
+﻿using Application.Common.DTO.Request;
 using Application.Features.GamesServices.AddListOfGames;
 using Application.Features.GamesServices.DeleteById;
 using Application.Features.GamesServices.GameUpsert;
 using Application.Features.GamesServices.GetGameById;
 using Application.Features.GamesServices.GetGamesByCriteria;
-using Domain.Aggregate;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -31,8 +28,8 @@ namespace Api.Controllers
             return Ok(games);
         }
         [AllowAnonymous]
-        [HttpGet("{id:int}")]
-        public async Task<IActionResult> GetById([FromRoute] int id)
+        [HttpGet("{id:guid}")]
+        public async Task<IActionResult> GetById([FromRoute] Guid id)
         {
             var query = new GetGameByIdQuery(id);
             var games = await mediator.Send(query);
@@ -49,7 +46,7 @@ namespace Api.Controllers
                 gameRequest.ReleaseDate,
                 gameRequest.Language,
                 gameRequest.Developer,
-                gameRequest.Platform);
+                gameRequest.Platforms);
             var created = await mediator.Send(command);
             return CreatedAtAction(nameof(GetById), new { id = created.id }, created);
         }
@@ -62,8 +59,8 @@ namespace Api.Controllers
             return StatusCode(StatusCodes.Status201Created, createdGames);
         }
         [Authorize(Roles = "Admin")]
-        [HttpPut("{id:int}")]
-        public async Task<IActionResult> UpdateGame([FromRoute] int id, [FromBody] GameRequest gameRequest)
+        [HttpPut("{id:guid}")]
+        public async Task<IActionResult> UpdateGame([FromRoute] Guid id, [FromBody] GameRequest gameRequest)
         {
             var command = new UpsertGameCommand(id,
                 gameRequest.Title,
@@ -72,13 +69,13 @@ namespace Api.Controllers
                 gameRequest.ReleaseDate,
                 gameRequest.Language,
                 gameRequest.Developer,
-                gameRequest.Platform);
+                gameRequest.Platforms);
             var updated = await mediator.Send(command);
             return Ok(updated);
         }
         [Authorize(Roles = "Admin")]
-        [HttpDelete("{id:int}")]
-        public async Task<IActionResult> Delete([FromRoute] int id)
+        [HttpDelete("{id:guid}")]
+        public async Task<IActionResult> Delete([FromRoute] Guid id)
         {
             var command = new DeleteByIdCommand(id);
             await mediator.Send(command);

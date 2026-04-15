@@ -1,8 +1,8 @@
 ﻿using Application.Common.DTO.Response;
 using Application.Common.Interfaces;
+using Application.Mapper;
 using Domain.Aggregate;
 using Domain.Entity;
-using Domain.Exceptions;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 
@@ -20,34 +20,35 @@ namespace Application.Features.LikedServices.GetAllLikedByUser
         public async Task<List<LikedMediaResponse>> Handle(GetAllLikedByUserQuery request, CancellationToken cancellationToken)
         {
             return await appDbContext.Set<LikedMedia>()
+                .AsNoTracking()
                 .Where(l => l.UserId == request.userId)
-                .AsNoTrackingWithIdentityResolution()
-                .AsSplitQuery()
-                .Join(appDbContext.Set<UserDetails>(), l => l.UserId, u => u.Id, (l, u) => new { l, u })
-                .Join(appDbContext.Set<Media>(), lu => lu.l.MediaId, m => m.Id, (lu, m) => new { lu.l, lu.u, m })
-                .Join(appDbContext.Set<Genre>(), lum => lum.m.GenreId, g => g.Id, (lum, g) => new { lum.l, lum.u, lum.m, g })
-                .Select(l => new LikedMediaResponse
-                (l.l.Id,
-                 new UserDetailsResponse(l.u.Id, l.u.Fullname.Name, l.u.Fullname.Surname),
-                 new MediaResponse(
-                 l.m.Id,
-                 l.m.Title,
-                 l.m.Description,
-                 new GenreResponse(l.g.Id, l.g.Name),
-                 l.m.ReleaseDate,
-                 l.m.Language,
-                 l.m.Reviews.Select(r => new ReviewResponse(
-                        r.Id,
-                        r.MediaId,
-                        r.Username,
-                        r.Rating,
-                        r.Comment,
-                        r.AuditInfo.CreatedAt,
-                        r.AuditInfo.UpdatedAt
-                    )).ToList()),
-                 l.l.LikedDate))
-                .ToListAsync(cancellationToken)
-                ?? throw new NotFoundException($"No liked media found for user with ID {request.userId}");
+                .Join(appDbContext.Set<UserDetails>(),
+                    l => l.UserId, u => u.Id,
+                    (like, user) => new { like, user })
+
+                .Join(appDbContext.Set<Media>(),
+                    t => t.like.MediaId, m => m.Id,
+                    (t, media) => new { t.like, t.user, media })
+
+                .Join(appDbContext.Set<Genre>(),
+                    t => t.media.GenreId, g => g.Id,
+                    (t, genre) => new { t.like, t.user, t.media, genre })
+
+                .GroupJoin(appDbContext.Set<Director>(),
+                    t => (t.media as Movie).DirectorId, d => d.Id,
+                    (t, directors) => new { t, directors })
+                .SelectMany(
+                    temp => temp.directors.DefaultIfEmpty(),
+                    (temp, director) => new
+                    {
+                        Like = temp.t.like,
+                        User = temp.t.user,
+                        Media = temp.t.media,
+                        Genre = temp.t.genre,
+                        Director = director
+                    })
+                .Select(x => LikedMediaMapper.ToResponse(x.Like, x.User, x.Media, x.Genre, x.Director))
+                .ToListAsync(cancellationToken);
         }
     }
 }

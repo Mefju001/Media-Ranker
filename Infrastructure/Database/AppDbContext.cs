@@ -1,8 +1,6 @@
 using Application.Common.Interfaces;
 using Domain.Aggregate;
-using Domain.Base;
 using Domain.Entity;
-using Domain.Value_Object;
 using Infrastructure.Database.Config;
 using Infrastructure.Database.DBModels;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
@@ -27,6 +25,6 @@ namespace Infrastructure.Database
             modelBuilder.ApplyConfigurationsFromAssembly(typeof(UserConfiguration).Assembly);
             modelBuilder.ApplyConfigurationsFromAssembly(typeof(MediaConfiguration).Assembly);
         }
-      
+
     }
 }

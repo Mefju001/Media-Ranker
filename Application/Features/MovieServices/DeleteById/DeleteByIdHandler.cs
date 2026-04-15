@@ -14,7 +14,7 @@ namespace Application.Features.MovieServices.DeleteById
         private readonly IMediator mediator;
         public DeleteByIdHandler(IMediaRepository<Movie> mediaRepository, IMediator mediator)
         {
-            
+
             this.mediaRepository = mediaRepository;
             this.mediator = mediator;
         }

@@ -2,7 +2,7 @@
 
 namespace Domain.Value_Object
 {
-    public record Fullname:ValueObject
+    public record Fullname : ValueObject
     {
         public string Name { get; init; }
         public string Surname { get; init; }

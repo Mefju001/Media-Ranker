@@ -14,7 +14,7 @@ namespace Application.Features.MovieServices.GetMovieById
 
         public GetMovieByIdHandler(IAppDbContext appDbContext)
         {
-            
+
             this.appDbContext = appDbContext;
         }
 
@@ -25,20 +25,20 @@ namespace Application.Features.MovieServices.GetMovieById
                 .Where(m => m.Id == request.id)
                 .Join(appDbContext.Set<Genre>(), m => m.GenreId, g => g.Id, (m, g) => new { Movie = m, Genre = g })
                 .Join(appDbContext.Set<Director>(), mg => mg.Movie.DirectorId, d => d.Id, (mg, d) => new { mg.Movie, mg.Genre, Director = d })
-                .Select(m=> 
+                .Select(m =>
                 new MovieResponse(
                     m.Movie.Id,
-                    m.Movie.Title, 
+                    m.Movie.Title,
                     m.Movie.Description,
-                    new GenreResponse(m.Genre.Id,m.Genre.Name),
-                    new DirectorResponse(m.Director.Id,m.Director.Name,m.Director.Surname),
+                    new GenreResponse(m.Genre.Id, m.Genre.Name),
+                    new DirectorResponse(m.Director.Id, m.Director.fullname.Name, m.Director.fullname.Surname),
                     m.Movie.ReleaseDate,
                     m.Movie.Language,
-                    m.Movie.Reviews.Select(r=>new ReviewResponse(r.Id,r.MediaId,r.Username,r.Rating,r.Comment,r.AuditInfo.CreatedAt,r.AuditInfo.UpdatedAt)).ToList(),
-                    new MediaStatsResponse(m.Movie.Stats.AverageRating,m.Movie.Stats.ReviewCount,m.Movie.Stats.LastCalculated),
+                    m.Movie.Reviews.Select(r => new ReviewResponse(r.Id, r.MediaId, r.Username, r.Rating, r.Comment, r.AuditInfo.CreatedAt, r.AuditInfo.UpdatedAt)).ToList(),
+                    new MediaStatsResponse(m.Movie.Stats.AverageRating, m.Movie.Stats.ReviewCount, m.Movie.Stats.LastCalculated),
                     m.Movie.Duration,
                     m.Movie.IsCinemaRelease))
-                .FirstOrDefaultAsync(cancellationToken)??throw new NotFoundException("Movie not found");
+                .FirstOrDefaultAsync(cancellationToken) ?? throw new NotFoundException("Movie not found");
         }
     }
 }

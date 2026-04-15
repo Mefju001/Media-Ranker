@@ -39,13 +39,13 @@ namespace Api.Controllers
         }
         [Authorize(Roles = "User")]
         [HttpPost]
-        public async Task<IActionResult> AddReview([FromBody]ReviewRequest reviewRequest)
+        public async Task<IActionResult> AddReview([FromBody] ReviewRequest reviewRequest)
         {
             var userId = GetCurrentUserId();
             var command = new ReviewUpsertCommand
             (
                 null,
-                reviewRequest.movieId,
+                reviewRequest.MovieId,
                 userId,
                 reviewRequest.Rating,
                 reviewRequest.Comment
@@ -54,8 +54,8 @@ namespace Api.Controllers
             return CreatedAtAction(nameof(GetById), new { response.id }, response);
         }
         [Authorize(Roles = "User")]
-        [HttpPut("{id:int}")]
-        public async Task<IActionResult> UpdateReview([FromRoute] int id, [FromQuery] ReviewRequest reviewRequest)
+        [HttpPut("{id:guid}")]
+        public async Task<IActionResult> UpdateReview([FromRoute] Guid id, [FromQuery] ReviewRequest reviewRequest)
         {
             var userId = GetCurrentUserId();
             var command = new ReviewUpsertCommand
@@ -78,15 +78,15 @@ namespace Api.Controllers
             return Ok(reviews);
         }
         [Authorize(Roles = "User")]
-        [HttpGet("{id:int}")]
-        public async Task<IActionResult> GetById(int id)
+        [HttpGet("{id:guid}")]
+        public async Task<IActionResult> GetById(Guid id)
         {
             var query = new GetByIdReviewQuery(id);
             return Ok(await mediator.Send(query));
         }
         [Authorize(Roles = "User")]
-        [HttpDelete("{id:int}")]
-        public async Task<IActionResult> Delete(int mediaId, [FromRoute] int id)
+        [HttpDelete("{id:guid}")]
+        public async Task<IActionResult> Delete(Guid mediaId, [FromRoute] Guid id)
         {
             var command = new DeleteReviewCommand(mediaId, id);
             await mediator.Send(command);

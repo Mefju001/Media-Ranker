@@ -15,7 +15,7 @@ namespace Application.Features.ReviewServices.GetTheLastestReview
         public async Task<List<string>> Handle(GetTheLastestQuery request, CancellationToken cancellationToken)
         {
             return await appDbContext.Set<Review>().AsNoTracking()
-                .Join(appDbContext.Set<Media>(),r=>r.MediaId,m=>m.Id,(r,m)=> new {Review = r, Media = m})
+                .Join(appDbContext.Set<Media>(), r => r.MediaId, m => m.Id, (r, m) => new { Review = r, Media = m })
                 .OrderByDescending(x => x.Review.AuditInfo.CreatedAt)
                 .Take(10)
                 .Select(x => x.Media.Title)

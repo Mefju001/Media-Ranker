@@ -2,7 +2,6 @@
 using Application.Common.Interfaces;
 using Application.Features.GamesServices.AddListOfGames;
 using Application.Features.GamesServices.GameUpsert;
-using Application.Features.GamesServices.GetAll;
 using Application.Features.GamesServices.GetGamesByCriteria;
 using Domain.Aggregate;
 using Domain.Enums;

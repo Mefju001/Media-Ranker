@@ -1,11 +1,10 @@
 ﻿using Application.Common.DTO.Response;
-using Domain.Enums;
 
 namespace Application.Mapper
 {
     public static class RoleMapper
     {
-        public static RoleResponse ToResponse(ERole role)
+        public static RoleResponse ToResponse(string role)
         {
             return new RoleResponse(role)
             {

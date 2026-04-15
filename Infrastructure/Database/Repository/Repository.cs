@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Infrastructure.Database.Repository
 {
-    public class Repository<T,TId> : IRepository<T,TId> where T : AggregateRoot<TId>
+    public class Repository<T, TId> : IRepository<T, TId> where T : AggregateRoot<TId>
     {
         protected readonly AppDbContext appDbContext;
         public Repository(AppDbContext appDbContext)
@@ -14,7 +14,7 @@ namespace Infrastructure.Database.Repository
         }
         public virtual async Task<T> AddAsync(T entity, CancellationToken ct)
         {
-            var result = await appDbContext.Set<T>().AddAsync(entity,ct);
+            var result = await appDbContext.Set<T>().AddAsync(entity, ct);
             return result.Entity;
         }
 
@@ -40,7 +40,7 @@ namespace Infrastructure.Database.Repository
 
         public virtual async Task<T?> GetByIdAsync(TId id, CancellationToken ct)
         {
-            return await appDbContext.Set<T>().FirstOrDefaultAsync(x=>x.Id!.Equals(id), ct);
+            return await appDbContext.Set<T>().FirstOrDefaultAsync(x => x.Id!.Equals(id), ct);
         }
 
         public virtual void Remove(T entity)

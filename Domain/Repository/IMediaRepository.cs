@@ -1,9 +1,6 @@
-﻿using Domain.Aggregate;
-using Domain.Entity;
-
-namespace Application.Common.Interfaces
+﻿namespace Application.Common.Interfaces
 {
-    public interface IMediaRepository<T>:IRepository<T,int>where T : Media
+    public interface IMediaRepository<T> : IRepository<T, Guid> where T : Media
     {
     }
 }

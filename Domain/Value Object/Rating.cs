@@ -2,7 +2,7 @@
 
 namespace Domain.Value_Object;
 
-public record Rating:ValueObject
+public record Rating : ValueObject
 {
     public int Value { get; init; }
 

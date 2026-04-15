@@ -2,7 +2,7 @@
 
 namespace Domain.Value_Object;
 
-public record Language:ValueObject
+public record Language : ValueObject
 {
     public string Value { get; init; }
 

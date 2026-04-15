@@ -17,12 +17,12 @@ namespace Application.Features.MovieServices.GetMoviesByCriteria
         public async Task<List<MovieResponse>> Handler(GetMoviesByCriteriaQuery request, CancellationToken cancellationToken)
         {
             var query = appDbContext.Set<Movie>().AsNoTrackingWithIdentityResolution().AsSplitQuery();
-            query = ApplyFilters(query,request);
+            query = ApplyFilters(query, request);
             query = ApplySorting(query, request);
             return await query
                 .Join(appDbContext.Set<Genre>(), mov => mov.GenreId, gen => gen.Id, (mov, gen) => new { mov, gen })
                 .Join(appDbContext.Set<Director>(), mg => mg.mov.DirectorId, dir => dir.Id, (mg, dir) => new { mg.mov, mg.gen, dir })
-                .Select(m=>MovieMapper.ToMovieResponse(m.mov,m.gen,m.dir))
+                .Select(m => MovieMapper.ToMovieResponse(m.mov, m.gen, m.dir))
                 .ToListAsync(cancellationToken);
         }
         private IQueryable<Movie> ApplyFilters(IQueryable<Movie> query, GetMoviesByCriteriaQuery request)
@@ -50,7 +50,7 @@ namespace Application.Features.MovieServices.GetMoviesByCriteria
             if (!string.IsNullOrWhiteSpace(request.DirectorSurname) && !string.IsNullOrWhiteSpace(request.DirectorSurname))
             {
                 var genreIds = appDbContext.Set<Director>()
-                    .Where(gen => gen.Name == request.DirectorName && gen.Surname == request.DirectorSurname)
+                    .Where(gen => gen.fullname.Name == request.DirectorName && gen.fullname.Surname == request.DirectorSurname)
                     .Select(gen => gen.Id);
 
                 query = query.Where(g => genreIds.Contains(g.GenreId));

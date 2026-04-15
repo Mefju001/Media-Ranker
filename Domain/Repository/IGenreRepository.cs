@@ -2,11 +2,11 @@
 
 namespace Application.Common.Interfaces
 {
-    public interface IGenreRepository:IRepository<Genre,int>
+    public interface IGenreRepository : IRepository<Genre, Guid>
     {
-        Task<Dictionary<int, Genre>> GetByIdsAsync(List<int> ids, CancellationToken cancellationToken);
+        Task<Dictionary<Guid, Genre>> GetByIdsAsync(List<Guid> ids, CancellationToken cancellationToken);
         Task<Genre?> FirstOrDefaultForNameAsync(string name, CancellationToken cancellationToken);
         Task<List<Genre>> GetByNamesAsync(List<string> names, CancellationToken cancellationToken);
-        Task<Dictionary<int, Genre>> GetGenresDictionary(CancellationToken cancellationToken);
+        Task<Dictionary<Guid, Genre>> GetGenresDictionary(CancellationToken cancellationToken);
     }
 }

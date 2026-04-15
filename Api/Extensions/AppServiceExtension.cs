@@ -3,7 +3,6 @@ using Application.Common.Services;
 using Application.Features.AuthServices.Common;
 using Application.Features.LikedServices.GetAllLiked;
 using FluentValidation;
-using Infrastructure;
 using Infrastructure.BackgroundTasks;
 using Infrastructure.BackgroundTasks.Workers;
 using Infrastructure.Database;

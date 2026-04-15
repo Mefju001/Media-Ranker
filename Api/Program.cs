@@ -61,7 +61,7 @@ using (var scope = app.Services.CreateScope())
 {
     var dbContext = scope.ServiceProvider.GetRequiredService<AppDbContext>();
     dbContext.Database.Migrate();
-    if(!dbContext.Users.Any())
+    if (!dbContext.Users.Any())
     {
         var userManager = scope.ServiceProvider.GetRequiredService<UserManager<UserModel>>();
         var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<RoleModel>>();

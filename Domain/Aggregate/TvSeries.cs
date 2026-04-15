@@ -13,14 +13,14 @@ public class TvSeries : Media
     private TvSeries() { }
 
     public static TvSeries Create(
-        string title, string desc, Language lang, ReleaseDate? date, int genre,
-        int seasons, int episodes, string? network, EStatus status, int id = 0)
+        string title, string desc, Language lang, ReleaseDate? date, Guid genre,
+        int seasons, int episodes, string? network, EStatus status, Guid? id = null)
     {
         Validate(seasons, episodes);
 
         var series = new TvSeries
         {
-            Id = id,
+            Id = id ?? Guid.NewGuid(),
             Seasons = seasons,
             Episodes = episodes,
             Network = network,
@@ -32,7 +32,7 @@ public class TvSeries : Media
     }
 
     public void Update(
-        string title, string desc, Language lang, ReleaseDate? date, int genre,
+        string title, string desc, Language lang, ReleaseDate? date, Guid genre,
         int seasons, int episodes, string? network, EStatus status)
     {
         Validate(seasons, episodes);

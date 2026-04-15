@@ -26,14 +26,14 @@ namespace Application.Features.ReviewServices.UpsertReview
             var media = await mediaRepository.GetByIdAsync(request.mediaId.Value, cancellationToken) ?? throw new NotFoundException($"Media with id {request.mediaId.Value} not found.");
             if (request.id.HasValue)
             {
-                media.EditReview(request.id.Value,request.userId.Value,new Rating(request.Rating),request.Comment);
+                media.EditReview(request.id.Value, request.userId.Value, new Rating(request.Rating), request.Comment);
             }
             else
             {
                 var username = await userRepository.GetUsernameById(request.userId.Value, cancellationToken);
                 media.AddReview(request.userId.Value, new Rating(request.Rating), request.Comment, new Username(username));
             }
-            var review = media.Reviews.First(r=>r.UserId == request.userId.Value);
+            var review = media.Reviews.First(r => r.UserId == request.userId.Value);
             return ReviewMapper.ToResponse(review);
         }
     }

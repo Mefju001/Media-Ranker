@@ -1,5 +1,4 @@
 ﻿using Application.Common.DTO.Response;
-using Domain.Aggregate;
 
 namespace Application.Features.GamesServices.GetGamesByCriteria
 {

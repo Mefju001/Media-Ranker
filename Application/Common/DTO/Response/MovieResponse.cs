@@ -1,7 +1,7 @@
 ﻿namespace Application.Common.DTO.Response
 {
     public record MovieResponse(
-        int id,
+        Guid id,
         string Title,
         string Description,
         GenreResponse Genre,

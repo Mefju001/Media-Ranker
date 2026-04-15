@@ -4,9 +4,9 @@ using Domain.Value_Object;
 
 namespace Domain.Entity;
 
-public class Review:Entity<int>,IAudited
+public class Review : Entity<Guid>, IAudited
 {
-    public int MediaId { get; init; }
+    public Guid MediaId { get; init; }
     public Guid UserId { get; init; }
     public Username Username { get; init; } = default!;
     public Rating Rating { get; private set; } = default!;
@@ -16,8 +16,8 @@ public class Review:Entity<int>,IAudited
     private Review() { }
 
 
-    private Review(int id, int mediaId, Guid userId, Username username, Rating rating, string comment)
-        
+    private Review(Guid id, Guid mediaId, Guid userId, Username username, Rating rating, string comment)
+
     {
         MediaId = mediaId;
         UserId = userId;
@@ -26,13 +26,12 @@ public class Review:Entity<int>,IAudited
         Comment = comment;
     }
 
-    public static Review Create(Rating rating, string comment, int mediaId, Guid userId, Username username)
+    public static Review Create(Rating rating, string comment, Guid mediaId, Guid userId, Username username)
     {
         if (string.IsNullOrWhiteSpace(comment))
             throw new ArgumentException("Comment cannot be empty.");
 
-        
-        return new Review(0, mediaId, userId, username, rating, comment);
+        return new Review(Guid.NewGuid(), mediaId, userId, username, rating, comment);
     }
 
     public void Update(Rating rating, string comment)

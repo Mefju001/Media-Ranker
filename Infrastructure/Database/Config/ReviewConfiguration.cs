@@ -1,5 +1,4 @@
-﻿using Domain.Aggregate;
-using Domain.Entity;
+﻿using Domain.Entity;
 using Infrastructure.Database.DBModels;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;

@@ -9,7 +9,7 @@ namespace Infrastructure.BackgroundTasks.CleanService
     {
         private readonly ILogger<TokenCleanService> logger;
         private readonly ITokenRepository tokenRepository;
-        public TokenCleanService(ILogger<TokenCleanService> logger, 
+        public TokenCleanService(ILogger<TokenCleanService> logger,
             ITokenRepository tokenRepository)
         {
             this.logger = logger;

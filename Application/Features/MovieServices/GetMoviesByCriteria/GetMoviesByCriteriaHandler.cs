@@ -15,8 +15,8 @@ namespace Application.Features.MovieServices.GetMoviesByCriteria
 
         public async Task<List<MovieResponse>> Handle(GetMoviesByCriteriaQuery request, CancellationToken cancellationToken)
         {
-            var responses = await SortAndFilterService.Handler(request,cancellationToken);
-            
+            var responses = await SortAndFilterService.Handler(request, cancellationToken);
+
             return responses;
         }
     }

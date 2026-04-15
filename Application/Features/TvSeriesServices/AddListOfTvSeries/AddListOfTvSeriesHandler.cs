@@ -6,7 +6,6 @@ using Domain.Aggregate;
 using Domain.Exceptions;
 using Domain.Value_Object;
 using MediatR;
-using Microsoft.Extensions.Logging;
 
 namespace Application.Features.TvSeriesServices.AddListOfTvSeries
 {

@@ -2,7 +2,7 @@
 
 namespace Domain.Value_Object;
 
-public record Username:ValueObject
+public record Username : ValueObject
 {
     public string Value { get; init; }
 

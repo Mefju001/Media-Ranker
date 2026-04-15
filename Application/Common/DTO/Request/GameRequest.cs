@@ -10,6 +10,6 @@ namespace Application.Common.DTO.Request
         DateTime? ReleaseDate,
         string Language,
         string? Developer,
-        EPlatform Platform
+        List<EPlatform> Platforms
         );
 }

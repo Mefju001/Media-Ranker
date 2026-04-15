@@ -12,7 +12,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Infrastructure.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20260412162130_Initialize")]
+    [Migration("20260414210525_Initialize")]
     partial class Initialize
     {
         /// <inheritdoc />
@@ -27,19 +27,9 @@ namespace Infrastructure.Migrations
 
             modelBuilder.Entity("Domain.Aggregate.Director", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<string>("Surname")
-                        .IsRequired()
-                        .HasColumnType("text");
+                        .HasColumnType("uuid");
 
                     b.HasKey("Id");
 
@@ -48,11 +38,9 @@ namespace Infrastructure.Migrations
 
             modelBuilder.Entity("Domain.Aggregate.Genre", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+                        .HasColumnType("uuid");
 
                     b.HasKey("Id");
 
@@ -74,17 +62,15 @@ namespace Infrastructure.Migrations
 
             modelBuilder.Entity("Domain.Entity.LikedMedia", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+                        .HasColumnType("uuid");
 
                     b.Property<DateTime>("LikedDate")
                         .HasColumnType("timestamp without time zone");
 
-                    b.Property<int>("MediaId")
-                        .HasColumnType("integer");
+                    b.Property<Guid>("MediaId")
+                        .HasColumnType("uuid");
 
                     b.Property<Guid>("UserId")
                         .HasColumnType("uuid");
@@ -101,18 +87,16 @@ namespace Infrastructure.Migrations
 
             modelBuilder.Entity("Domain.Entity.Review", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+                        .HasColumnType("uuid");
 
                     b.Property<string>("Comment")
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<int>("MediaId")
-                        .HasColumnType("integer");
+                    b.Property<Guid>("MediaId")
+                        .HasColumnType("uuid");
 
                     b.Property<Guid>("UserId")
                         .HasColumnType("uuid");
@@ -255,18 +239,16 @@ namespace Infrastructure.Migrations
 
             modelBuilder.Entity("Media", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+                        .HasColumnType("uuid");
 
                     b.Property<string>("Description")
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<int>("GenreId")
-                        .HasColumnType("integer");
+                    b.Property<Guid>("GenreId")
+                        .HasColumnType("uuid");
 
                     b.Property<string>("MediaType")
                         .IsRequired()
@@ -400,9 +382,9 @@ namespace Infrastructure.Migrations
                         .HasMaxLength(200)
                         .HasColumnType("character varying(200)");
 
-                    b.Property<string>("Platform")
+                    b.Property<string>("Platforms")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasColumnType("jsonb");
 
                     b.HasDiscriminator().HasValue("Game");
                 });
@@ -411,8 +393,8 @@ namespace Infrastructure.Migrations
                 {
                     b.HasBaseType("Media");
 
-                    b.Property<int>("DirectorId")
-                        .HasColumnType("integer");
+                    b.Property<Guid>("DirectorId")
+                        .HasColumnType("uuid");
 
                     b.Property<bool>("IsCinemaRelease")
                         .HasColumnType("boolean")
@@ -442,12 +424,41 @@ namespace Infrastructure.Migrations
                     b.HasDiscriminator().HasValue("TvSeries");
                 });
 
+            modelBuilder.Entity("Domain.Aggregate.Director", b =>
+                {
+                    b.OwnsOne("Domain.Value_Object.Fullname", "fullname", b1 =>
+                        {
+                            b1.Property<Guid>("DirectorId")
+                                .HasColumnType("uuid");
+
+                            b1.Property<string>("Name")
+                                .IsRequired()
+                                .HasColumnType("text")
+                                .HasColumnName("Name");
+
+                            b1.Property<string>("Surname")
+                                .IsRequired()
+                                .HasColumnType("text")
+                                .HasColumnName("Surname");
+
+                            b1.HasKey("DirectorId");
+
+                            b1.ToTable("Directors");
+
+                            b1.WithOwner()
+                                .HasForeignKey("DirectorId");
+                        });
+
+                    b.Navigation("fullname")
+                        .IsRequired();
+                });
+
             modelBuilder.Entity("Domain.Aggregate.Genre", b =>
                 {
                     b.OwnsOne("Domain.Value_Object.GenreName", "Name", b1 =>
                         {
-                            b1.Property<int>("GenreId")
-                                .HasColumnType("integer");
+                            b1.Property<Guid>("GenreId")
+                                .HasColumnType("uuid");
 
                             b1.Property<string>("Value")
                                 .IsRequired()
@@ -559,8 +570,8 @@ namespace Infrastructure.Migrations
 
                     b.OwnsOne("Domain.Value_Object.AuditInfo", "AuditInfo", b1 =>
                         {
-                            b1.Property<int>("ReviewId")
-                                .HasColumnType("integer");
+                            b1.Property<Guid>("ReviewId")
+                                .HasColumnType("uuid");
 
                             b1.Property<DateTime>("CreatedAt")
                                 .HasColumnType("timestamp without time zone")
@@ -580,8 +591,8 @@ namespace Infrastructure.Migrations
 
                     b.OwnsOne("Domain.Value_Object.Rating", "Rating", b1 =>
                         {
-                            b1.Property<int>("ReviewId")
-                                .HasColumnType("integer");
+                            b1.Property<Guid>("ReviewId")
+                                .HasColumnType("uuid");
 
                             b1.Property<int>("Value")
                                 .HasColumnType("integer")
@@ -597,8 +608,8 @@ namespace Infrastructure.Migrations
 
                     b.OwnsOne("Domain.Value_Object.Username", "Username", b1 =>
                         {
-                            b1.Property<int>("ReviewId")
-                                .HasColumnType("integer");
+                            b1.Property<Guid>("ReviewId")
+                                .HasColumnType("uuid");
 
                             b1.Property<string>("Value")
                                 .IsRequired()
@@ -633,8 +644,8 @@ namespace Infrastructure.Migrations
 
                     b.OwnsOne("Domain.Value_Object.Language", "Language", b1 =>
                         {
-                            b1.Property<int>("MediaId")
-                                .HasColumnType("integer");
+                            b1.Property<Guid>("MediaId")
+                                .HasColumnType("uuid");
 
                             b1.Property<string>("Value")
                                 .IsRequired()
@@ -651,8 +662,8 @@ namespace Infrastructure.Migrations
 
                     b.OwnsOne("Domain.Value_Object.MediaStats", "Stats", b1 =>
                         {
-                            b1.Property<int>("MediaId")
-                                .HasColumnType("integer");
+                            b1.Property<Guid>("MediaId")
+                                .HasColumnType("uuid");
 
                             b1.Property<double>("AverageRating")
                                 .HasColumnType("double precision")
@@ -667,7 +678,7 @@ namespace Infrastructure.Migrations
 
                             b1.HasKey("MediaId");
 
-                            b1.ToTable("Medias");
+                            b1.ToTable("MediaStats", (string)null);
 
                             b1.WithOwner()
                                 .HasForeignKey("MediaId");
@@ -675,8 +686,8 @@ namespace Infrastructure.Migrations
 
                     b.OwnsOne("Domain.Value_Object.ReleaseDate", "ReleaseDate", b1 =>
                         {
-                            b1.Property<int>("MediaId")
-                                .HasColumnType("integer");
+                            b1.Property<Guid>("MediaId")
+                                .HasColumnType("uuid");
 
                             b1.Property<DateTime>("Value")
                                 .HasColumnType("timestamp without time zone")
@@ -692,8 +703,8 @@ namespace Infrastructure.Migrations
 
                     b.OwnsOne("Domain.Value_Object.AuditInfo", "AuditInfo", b1 =>
                         {
-                            b1.Property<int>("MediaId")
-                                .HasColumnType("integer");
+                            b1.Property<Guid>("MediaId")
+                                .HasColumnType("uuid");
 
                             b1.Property<DateTime>("CreatedAt")
                                 .HasColumnType("timestamp without time zone")
@@ -778,8 +789,8 @@ namespace Infrastructure.Migrations
                 {
                     b.OwnsOne("Domain.Value_Object.Duration", "Duration", b1 =>
                         {
-                            b1.Property<int>("MovieId")
-                                .HasColumnType("integer");
+                            b1.Property<Guid>("MovieId")
+                                .HasColumnType("uuid");
 
                             b1.Property<TimeSpan>("Value")
                                 .HasColumnType("interval")

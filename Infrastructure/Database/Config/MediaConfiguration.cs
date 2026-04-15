@@ -6,7 +6,7 @@ namespace Infrastructure.Database.Config
 {
     public class MediaConfiguration : IEntityTypeConfiguration<Media>
     {
-        public  void Configure(EntityTypeBuilder<Media> builder)
+        public void Configure(EntityTypeBuilder<Media> builder)
         {
             builder.HasKey(x => x.Id);
             builder
@@ -21,6 +21,9 @@ namespace Infrastructure.Database.Config
                 .HasValue<Game>("Game");
             builder.OwnsOne(m => m.Stats, sa =>
             {
+                sa.ToTable("MediaStats");
+                sa.WithOwner().HasForeignKey("MediaId");
+                sa.HasKey("MediaId");
                 sa.Property(s => s.AverageRating).HasColumnName("AverageRating");
                 sa.Property(s => s.ReviewCount).HasColumnName("reviewCount");
             });

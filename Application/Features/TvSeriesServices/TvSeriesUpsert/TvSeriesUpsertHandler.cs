@@ -5,7 +5,6 @@ using Application.Notification;
 using Domain.Aggregate;
 using Domain.Value_Object;
 using MediatR;
-using Microsoft.Extensions.Logging;
 
 namespace Application.Features.TvSeriesServices.TvSeriesUpsert
 {
@@ -17,7 +16,7 @@ namespace Application.Features.TvSeriesServices.TvSeriesUpsert
 
         public TvSeriesUpsertHandler(IGenreHelperService genreHelperService, IMediator mediator, IMediaRepository<TvSeries> mediaRepository)
         {
-            
+
             this.mediator = mediator;
             this.genreHelperService = genreHelperService;
             this.mediaRepository = mediaRepository;
@@ -63,7 +62,7 @@ namespace Application.Features.TvSeriesServices.TvSeriesUpsert
             }
             var action = isNew ? "dodana" : "zaktualizowana";
             await mediator.Publish(new LogNotification("Information", $"Nowy serial został {action}.", nameof(TvSeriesUpsertHandler)));
-            return TvSeriesMapper.ToTvSeriesResponse(tvSeries,genre);
+            return TvSeriesMapper.ToTvSeriesResponse(tvSeries, genre);
         }
     }
 }
