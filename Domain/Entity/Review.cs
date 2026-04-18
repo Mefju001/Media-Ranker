@@ -19,6 +19,7 @@ public class Review : Entity<Guid>, IAudited
     private Review(Guid id, Guid mediaId, Guid userId, Username username, Rating rating, string comment)
 
     {
+        Id = id;
         MediaId = mediaId;
         UserId = userId;
         Username = username;

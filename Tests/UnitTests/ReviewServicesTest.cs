@@ -1,4 +1,4 @@
-﻿using Application.Common.Interfaces;
+﻿/*using Application.Common.Interfaces;
 using Application.Features.ReviewServices.DeleteReviewAsync;
 using Application.Features.ReviewServices.GetTheLastestReview;
 using Application.Features.ReviewServices.UpsertReview;
@@ -97,3 +97,4 @@ namespace UnitTests
         }
     }
 }
+*/

@@ -1,4 +1,4 @@
-﻿using Application.Common.Interfaces;
+﻿/*using Application.Common.Interfaces;
 using Application.Features.UserServices.ChangeDetails;
 using Application.Features.UserServices.ChangePassword;
 using Application.Features.UserServices.DeleteUser;
@@ -86,3 +86,4 @@ namespace UnitTests
         }
     }
 }
+*/

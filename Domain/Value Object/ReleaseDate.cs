@@ -1,4 +1,5 @@
 ﻿using Domain.Base;
+using Domain.Exceptions;
 
 namespace Domain.Value_Object;
 
@@ -9,10 +10,10 @@ public record ReleaseDate : ValueObject
     public ReleaseDate(DateTime value)
     {
         if (value.Date > DateTime.UtcNow.Date)
-            throw new ArgumentOutOfRangeException(nameof(value), "Release date cannot be in the future.");
+            throw new DomainException("Release date cannot be in the future.");
 
         if (value.Year < 1800)
-            throw new ArgumentException("Release date is too far in the past.");
+            throw new DomainException("Release date is too far in the past.");
 
         Value = value.Date;
     }

@@ -1,4 +1,5 @@
 ﻿using Domain.Base;
+using Domain.Exceptions;
 
 namespace Domain.Value_Object;
 
@@ -9,9 +10,9 @@ public record Language : ValueObject
     public Language(string value)
     {
         if (string.IsNullOrWhiteSpace(value))
-            throw new ArgumentException("Language cannot be empty.", nameof(value));
+            throw new DomainException("Language cannot be empty.");
 
-        Value = value.Trim().ToUpper();
+        Value = value.Trim();
     }
 
     public static implicit operator string(Language lang) => lang.Value;
