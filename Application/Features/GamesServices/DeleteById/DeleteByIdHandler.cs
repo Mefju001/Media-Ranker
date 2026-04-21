@@ -23,7 +23,7 @@ namespace Application.Features.GamesServices.DeleteById
                 throw new NotFoundException($"The game with ID {request.id} does not exist");
             }
             mediaRepository.Remove(game);
-            await mediator.Publish(new LogNotification("Information", $"Usuwanie gry o id: {request.id}", nameof(DeleteByIdHandler)));
+            await mediator.Publish(new LogNotification("Information", $"usunięto grę o id: {request.id}", nameof(DeleteByIdHandler)));
             return Unit.Value;
         }
     }

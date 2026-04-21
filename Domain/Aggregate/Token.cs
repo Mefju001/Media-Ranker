@@ -1,6 +1,6 @@
 ﻿using Domain.Base;
 
-namespace Domain.Entity;
+namespace Domain.Aggregate;
 
 public class Token : AggregateRoot<string>
 {
@@ -35,7 +35,14 @@ public class Token : AggregateRoot<string>
             IsRevoked = false
         };
     }
-
+    public bool IsActiveAndBelongsToUser(Guid userId)
+    {
+        return UserId == userId && IsActive;
+    }
+    public bool IsExpiredOrRevoked()
+    {
+        return IsExpired || IsRevoked;
+    }
     public void Revoke()
     {
         if (IsRevoked) return;

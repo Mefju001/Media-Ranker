@@ -1,4 +1,4 @@
-﻿using Domain.Entity;
+﻿using Domain.Aggregate;
 using Domain.Repository;
 using Microsoft.EntityFrameworkCore;
 

@@ -4,12 +4,8 @@ using Domain.Exceptions;
 using Domain.Value_Object;
 
 
-namespace UnitTests.Domain
+namespace Tests.Domain
 {
-    /*Rodzaj testu, Metafora, Co testujesz w kodzie?
-    Unit Test(Domena),"Smak potrawy. Czy kucharz (Agregat) wie, że nie sypie się cukru do schabowego?","Walidacje, obliczanie średniej ocen, sprawdzanie czy użytkownik nie dubluje recenzji."
-    Integration Test(Service/Repo),Dostawca.Czy kelner(Service) potrafi przynieść odpowiednie danie z kuchni do stolika?,"Filtrowanie gier po gatunku, sortowanie po dacie, zapisywanie do bazy."
-    E2E / Functional Test(API),"Cała wizyta. Czy klient wejdzie, zamówi, zje i zapłaci bez problemów?",Czy po wysłaniu POST-a do /api/games gra faktycznie pojawia się w systemie.*/
     
     [TestClass]
     public class GameTests
