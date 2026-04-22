@@ -22,7 +22,7 @@ namespace Application.Features.MovieServices.DeleteById
         {
             var movie = await mediaRepository.GetByIdAsync(request.id, cancellationToken) ?? throw new NotFoundException($"Movie withid {request.id} does not exist.");
             mediaRepository.Remove(movie);
-            await mediator.Publish(new LogNotification("Information", $"Usuwanie filmu o id: {request.id}", nameof(GameUpsertHandler)));
+            await mediator.Publish(new LogNotification("Information", $"Usunięto film o id: {request.id}", nameof(DeleteByIdHandler)));
             return true;
         }
     }

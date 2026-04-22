@@ -25,7 +25,7 @@ namespace Application.Features.TvSeriesServices.DeleteById
                 throw new NotFoundException($"TvSeries with id {request.id} not found.");
             }
             mediaRepository.Remove(tvseries);
-            await mediator.Publish(new LogNotification("Information", $"Usuwanie serialu o id: {request.id}", nameof(GameUpsertHandler)));
+            await mediator.Publish(new LogNotification("Information", $"Usunięto serial o id: {request.id}", nameof(GameUpsertHandler)));
             return Unit.Value;
         }
     }

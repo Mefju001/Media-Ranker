@@ -3,6 +3,7 @@ using Application.Common.Interfaces;
 using Application.Mapper;
 using Application.Notification;
 using Domain.Aggregate;
+using Domain.Exceptions;
 using Domain.Value_Object;
 using MediatR;
 
@@ -29,7 +30,7 @@ namespace Application.Features.TvSeriesServices.TvSeriesUpsert
             TvSeries? tvSeries = null;
             if (request.id is not null)
             {
-                tvSeries = await mediaRepository.GetByIdAsync(request.id.Value, cancellationToken);
+                tvSeries = await mediaRepository.GetByIdAsync(request.id.Value, cancellationToken) ?? throw new NotFoundException($"TvSeries {request.id} not found");
             }
             if (tvSeries is not null)
             {
@@ -60,7 +61,7 @@ namespace Application.Features.TvSeriesServices.TvSeriesUpsert
                         request.Status);
                 tvSeries = await mediaRepository.AddAsync(tvSeries, cancellationToken);
             }
-            var action = isNew ? "dodana" : "zaktualizowana";
+            var action = isNew ? "dodana" : "zaktualizowany";
             await mediator.Publish(new LogNotification("Information", $"Nowy serial został {action}.", nameof(TvSeriesUpsertHandler)));
             return TvSeriesMapper.ToTvSeriesResponse(tvSeries, genre);
         }

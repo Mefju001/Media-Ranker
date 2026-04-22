@@ -3,6 +3,7 @@ using Application.Common.Interfaces;
 using Application.Mapper;
 using Application.Notification;
 using Domain.Aggregate;
+using Domain.Exceptions;
 using Domain.Value_Object;
 using MediatR;
 
@@ -31,7 +32,7 @@ namespace Application.Features.MovieServices.MovieUpsert
             Movie? movie = null;
             if (request.id.HasValue)
             {
-                movie = await mediaRepository.GetByIdAsync(request.id.Value, cancellationToken);
+                movie = await mediaRepository.GetByIdAsync(request.id.Value, cancellationToken) ?? throw new NotFoundException($"Movie {request.id} not found");
             }
             if (movie is not null)
             {
@@ -59,7 +60,7 @@ namespace Application.Features.MovieServices.MovieUpsert
                             request.IsCinemaRelease);
                 movie = await mediaRepository.AddAsync(movie, cancellationToken);
             }
-            var action = isNew ? "dodana" : "zaktualizowana";
+            var action = isNew ? "dodana" : "zaktualizowany";
             if (movie is null) throw new InvalidOperationException(nameof(movie));
             await mediator.Publish(new LogNotification("Information", $"Film został {action}.", nameof(MovieUpsertHandler)));
             return MovieMapper.ToMovieResponse(movie, genre, director);

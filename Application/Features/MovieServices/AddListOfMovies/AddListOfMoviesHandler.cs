@@ -14,10 +14,10 @@ namespace Application.Features.MovieServices.AddListOfMovies
     {
         private readonly IGenreHelperService genreHelperService;
         private readonly IDirectorHelperService directorHelperService;
-        private readonly IMediaRepository<Media> mediaRepository;
+        private readonly IMediaRepository<Movie> mediaRepository;
         private readonly IMediator mediator;
         //maybe add better response with info about which games were added and which not, and why.
-        public AddListOfMoviesHandler(IMediaRepository<Media> mediaRepository, IGenreHelperService genreHelperService, IMediator mediator, IDirectorHelperService directorHelperService)
+        public AddListOfMoviesHandler(IMediaRepository<Movie> mediaRepository, IGenreHelperService genreHelperService, IMediator mediator, IDirectorHelperService directorHelperService)
         {
             this.genreHelperService = genreHelperService;
 

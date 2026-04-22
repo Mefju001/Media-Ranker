@@ -25,11 +25,9 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Service\MovieService\" />
     <Folder Include="Service\LikedMediaService\" />
     <Folder Include="Service\UserDetailsService\" />
     <Folder Include="Service\ReviewService\" />
-    <Folder Include="Service\TvSeriesService\" />
   </ItemGroup>
 
 </Project>

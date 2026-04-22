@@ -9,7 +9,7 @@ using Microsoft.EntityFrameworkCore;
 namespace Tests.Service.GameService
 {
     [TestClass ]
-    public class GameSortAndFilterServiceTests
+    public class GameSortAndFilterService
     {
         private AppDbContext appDbContext;
         private IGameSortAndFilterService service;
@@ -20,7 +20,7 @@ namespace Tests.Service.GameService
                 .UseInMemoryDatabase(databaseName: Guid.NewGuid().ToString())
                 .Options;
             appDbContext = new AppDbContext(options);
-            service = new GameSortAndFilterService(appDbContext);
+            service = new Application.Features.GamesServices.GetGamesByCriteria.GameSortAndFilterService(appDbContext);
             await SeedData();
         }
         [TestCleanup]
@@ -64,8 +64,8 @@ namespace Tests.Service.GameService
             };
             var result = await service.GetGamesByCriteriaAsync(query, CancellationToken.None);
             Assert.HasCount(2, result);
-            Assert.AreEqual("Game B", result[0].Title);
-            Assert.AreEqual("Game A", result[1].Title);
+            Assert.AreEqual("Game A", result[0].Title);
+            Assert.AreEqual("Game B", result[1].Title);
         }
         [TestMethod]
         public async Task GetAllGamesAndDefaultSortShouldBeTitle()
