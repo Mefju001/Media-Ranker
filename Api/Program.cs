@@ -88,7 +88,7 @@ using (var scope = app.Services.CreateScope())
             {
                 await userManager.AddToRoleAsync(admin, "Admin");
                 await userManager.AddToRoleAsync(admin, "User");
-                var adminDetails = UserDetails.Create(admin.Id, new Fullname("Admin", "Admin"));
+                var adminDetails = UserDetails.Create(admin.Id, new Fullname("Admin", "Admin"), new Username("Admin"), Email.Create(adminEmail));
                 await dbContext.UsersDetails.AddAsync(adminDetails);
                 await dbContext.SaveChangesAsync();
             }

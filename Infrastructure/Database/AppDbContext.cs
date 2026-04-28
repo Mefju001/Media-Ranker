@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Infrastructure.Database
 {
-    public class AppDbContext : IdentityDbContext<UserModel, RoleModel, Guid>, IAppDbContext
+    public class AppDbContext : IdentityDbContext<UserModel, RoleModel, Guid>, IAppDbContext,IDisposable
     {
         public AppDbContext(DbContextOptions<AppDbContext> options) : base(options) { }
         public DbSet<Media> Medias { get; set; }

@@ -2,6 +2,7 @@
 using Application.Common.Interfaces;
 using Application.Mapper;
 using Domain.Exceptions;
+using Domain.Repository;
 using Domain.Value_Object;
 using MediatR;
 
@@ -10,9 +11,9 @@ namespace Application.Features.ReviewServices.UpsertReview
 {
     public class ReviewUpsertHandler : IRequestHandler<ReviewUpsertCommand, ReviewResponse>
     {
-        private readonly IUserRepository userRepository;
+        private readonly IUserDetailsRepository userRepository;
         private readonly IMediaRepository<Media> mediaRepository;
-        public ReviewUpsertHandler(IMediaRepository<Media> reviewRepository, IUserRepository userRepository, IMediaRepository<Media> mediaRepository)
+        public ReviewUpsertHandler(IMediaRepository<Media> reviewRepository, IUserDetailsRepository userRepository, IMediaRepository<Media> mediaRepository)
         {
             this.userRepository = userRepository;
             this.mediaRepository = mediaRepository;

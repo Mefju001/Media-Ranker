@@ -10,6 +10,8 @@ namespace Application.Mapper
             if (user is null) return null;
             return new UserDetailsResponse(
                 user.Id,
+                user.Username.Value,
+                user.Email.ToString(),
                 user.Fullname.Name,
                 user.Fullname.Surname
                 );

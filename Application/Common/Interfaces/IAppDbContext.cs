@@ -1,5 +1,6 @@
 ﻿using Domain.Aggregate;
 using Domain.Entity;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
 namespace Application.Common.Interfaces
@@ -14,5 +15,6 @@ namespace Application.Common.Interfaces
         public DbSet<Token> Tokens { get; set; }
         public DbSet<LikedMedia> LikedMedias { get; set; }
         public DbSet<UserDetails> UsersDetails { get; set; }
+
     }
 }

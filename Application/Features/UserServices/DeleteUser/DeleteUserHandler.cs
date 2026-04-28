@@ -6,21 +6,20 @@ namespace Application.Features.UserServices.DeleteUser
 {
     public class DeleteUserHandler : IRequestHandler<DeleteUserCommand, Unit>
     {
-        private readonly IUserRepository userRepository;
+        private readonly IIdentityService identityService;
 
-        public DeleteUserHandler(IUserRepository userRepository)
+        public DeleteUserHandler(IIdentityService identityService)
         {
-            this.userRepository = userRepository;
+            this.identityService = identityService;
         }
 
         public async Task<Unit> Handle(DeleteUserCommand request, CancellationToken cancellationToken)
         {
-            var result = await userRepository.DeleteUser(request.id);
-            if (!result.Succeeded)
+            if(request.id == Guid.Empty)
             {
-                var error = result.Errors.FirstOrDefault()?.Description ?? "Unknown error";
-                throw new Exception($"Could not delete user: {error}");
+                throw new ArgumentException("User ID cannot be empty.");
             }
+            await identityService.DeleteUser(request.id);
             return Unit.Value;
         }
     }

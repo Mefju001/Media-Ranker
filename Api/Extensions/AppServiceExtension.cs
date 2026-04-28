@@ -7,6 +7,7 @@ using Infrastructure.BackgroundTasks;
 using Infrastructure.BackgroundTasks.Workers;
 using Infrastructure.Database;
 using Infrastructure.Database.Repository;
+using Infrastructure.Service;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 
@@ -23,7 +24,7 @@ namespace Api.Extensions
             services.Configure<JwtSettings>(config.GetSection(JwtSettings.SectionName));
             services.AddScoped(typeof(IRepository<,>), typeof(Repository<,>));
             services.AddScoped(typeof(IMediaRepository<>), typeof(MediaRepository<>));
-            services.RegisterAllTypes(typeof(UserRepository).Assembly);
+            services.RegisterAllTypes(typeof(GenreRepository).Assembly);
             services.RegisterAllTypes(typeof(GenreHelperService).Assembly);
             services.AddHostedService<TokenBackgroundService>();
             services.AddHttpClient<LogSenderService>();

@@ -14,5 +14,10 @@ namespace Infrastructure.Database.Repository
         {
             return appDbContext.Set<UserDetails>().Include(u => u.LikedMedias).FirstOrDefaultAsync(u => u.Id == id, ct);
         }
+
+        public async Task<string?> GetUsernameById(Guid id, CancellationToken cancellationToken)
+        {
+            return await appDbContext.Set<UserDetails>().Where(u => u.Id == id).Select(u => u.Username.Value).FirstOrDefaultAsync(cancellationToken);
+        }
     }
 }

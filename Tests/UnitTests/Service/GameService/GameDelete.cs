@@ -62,7 +62,7 @@ namespace Tests.Service.GameService
             Assert.IsNull(gameInDb, "Gra powinna zostać usunięta z bazy danych.");
 
             mediatorMock.Verify(m => m.Publish(
-                It.Is<LogNotification>(n => n.Message.Contains("usunięto")),
+                It.Is<LogNotification>(n => n.Message.Contains("Usunięto")),
                 It.IsAny<CancellationToken>()), Times.Once);
         }
         [TestMethod]

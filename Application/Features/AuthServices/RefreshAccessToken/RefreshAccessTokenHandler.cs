@@ -10,11 +10,11 @@ namespace Application.Features.AuthServices.RefreshAccessToken
 {
     public class RefreshAccessTokenHandler : IRequestHandler<RefreshAccessTokenCommand, TokenResponse?>
     {
-        private readonly IUserRepository userRepository;
+        private readonly IIdentityService identityService;
         private readonly ITokenService tokenServices;
-        public RefreshAccessTokenHandler(IUserRepository userRepository, ITokenService refreshAccessToken)
+        public RefreshAccessTokenHandler(IIdentityService identityService, ITokenService refreshAccessToken)
         {
-            this.userRepository = userRepository;
+            this.identityService = identityService;
             this.tokenServices = refreshAccessToken;
         }
 
@@ -28,7 +28,7 @@ namespace Application.Features.AuthServices.RefreshAccessToken
                 throw new UnauthorizedException("Invalid token payload.");
             }
 
-            var user = await userRepository.GetUserById(userId, cancellationToken)
+            var user = await identityService.GetUserById(userId, cancellationToken)
                        ?? throw new NotFoundException("User no longer exists.");
 
             var accessToken = tokenServices.GenerateAccessToken(userId, user.Username, user.Roles);

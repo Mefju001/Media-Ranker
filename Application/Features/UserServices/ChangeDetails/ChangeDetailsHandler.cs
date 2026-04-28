@@ -16,8 +16,8 @@ namespace Application.Features.UserServices.ChangeDetails
         }
         public async Task<Unit> Handle(ChangeDetailsCommand request, CancellationToken cancellationToken)
         {
-            if (request == null)
-                throw new ArgumentException("you should fill that field");
+            if (request.userId == Guid.Empty )
+                throw new ArgumentException("you should fill the user ID");
             var user = await userDetailsRepository.GetByIdAsync(request.userId, cancellationToken) ?? throw new UserNotFoundException("Not found user");
             user.UpdateProfile(new Fullname(request.name, request.surname));
             return Unit.Value;

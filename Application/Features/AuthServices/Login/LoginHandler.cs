@@ -9,19 +9,19 @@ namespace Application.Features.AuthServices.Login
 {
     public class LoginHandler : IRequestHandler<LoginCommand, TokenResponse?>
     {
-        private readonly IUserRepository userRepository;
+        private readonly IIdentityService identityService;
         private readonly ITokenService tokenServices;
         private readonly ILogger<LoginHandler> logger;
-        public LoginHandler(IUserRepository userRepository, ITokenService tokenServices, ILogger<LoginHandler> logger)
+        public LoginHandler(IIdentityService identityService, ITokenService tokenServices, ILogger<LoginHandler> logger)
         {
-            this.userRepository = userRepository;
+            this.identityService = identityService;
             this.tokenServices = tokenServices;
             this.logger = logger;
         }
 
         public async Task<TokenResponse?> Handle(LoginCommand command, CancellationToken cancellationToken)
         {
-            var user = await userRepository.AuthenticateAsync(command.username, command.password);
+            var user = await identityService.AuthenticateAsync(command.username, command.password);
             if (user is null)
             {
                 logger.LogWarning("Failed login attempt for username: {Username}", command.username);

@@ -11,7 +11,7 @@ namespace Tests.Domain
         [TestMethod]
         public void Create_WithValidData_ShouldInitializeCorrectly()
         {
-            var userDetails = UserDetails.Create(Guid.NewGuid(), new Fullname("John", "Doe"));
+            var userDetails = UserDetails.Create(Guid.NewGuid(), new Fullname("John", "Doe"), new Username("johndoe"), Email.Create("johndoe@example.com"));
             Assert.IsNotNull(userDetails);
             Assert.AreEqual("John", userDetails.Fullname.Name);
             Assert.AreEqual("Doe", userDetails.Fullname.Surname);
@@ -21,25 +21,25 @@ namespace Tests.Domain
         [TestMethod]
         public void AddLikedMedia_ShouldAddMediaToLikedList()
         {
-            var userDetails = UserDetails.Create(Guid.NewGuid(), new Fullname("John", "Doe"));
+            var userDetails = UserDetails.Create(Guid.NewGuid(), new Fullname("John", "Doe"), new Username("johndoe"), Email.Create("johndoe@example.com"));
             var movieId = Guid.NewGuid();
             userDetails.AddLikedMedia(movieId);
-            Assert.AreEqual(1, userDetails.LikedMedias.Count);
+            Assert.HasCount(1, userDetails.LikedMedias);
             Assert.AreEqual(movieId, userDetails.LikedMedias.First().MediaId);
         }
         [TestMethod]
         public void RemoveLikedMedia_ShouldRemoveMediaFromLikedList()
         {
-            var userDetails = UserDetails.Create(Guid.NewGuid(), new Fullname("John", "Doe"));
+            var userDetails = UserDetails.Create(Guid.NewGuid(), new Fullname("John", "Doe"), new Username("johndoe"), Email.Create("johndoe@example.com"));
             var movieId = Guid.NewGuid();
             userDetails.AddLikedMedia(movieId);
             userDetails.RemoveLikedMedia(movieId);
-            Assert.AreEqual(0, userDetails.LikedMedias.Count);
+            Assert.IsEmpty(userDetails.LikedMedias);
         }
         [TestMethod]
         public void UpdateProfile_ShouldUpdateFullnameAndAuditInfo()
         {
-            var userDetails = UserDetails.Create(Guid.NewGuid(), new Fullname("John", "Doe"));
+            var userDetails = UserDetails.Create(Guid.NewGuid(), new Fullname("John", "Doe"), new Username("johndoe"), Email.Create("johndoe@example.com"));
             var oldAuditInfo = userDetails.AuditInfo;
 
             userDetails.UpdateProfile(new Fullname("Jane", "Smith"));
@@ -50,7 +50,7 @@ namespace Tests.Domain
         [TestMethod]
         public void AddLikedMedia_ShouldThrow_WhenMediaIsAlreadyLiked()
         {
-            var userDetails = UserDetails.Create(Guid.NewGuid(), new Fullname("John", "Doe"));
+            var userDetails = UserDetails.Create(Guid.NewGuid(), new Fullname("John", "Doe"), new Username("johndoe"), Email.Create("johndoe@example.com"));
             var movieId = Guid.NewGuid();
             userDetails.AddLikedMedia(movieId);
             Assert.Throws<InvalidOperationException>(() => userDetails.AddLikedMedia(movieId));
@@ -58,7 +58,7 @@ namespace Tests.Domain
         [TestMethod]
         public void UpdateProfile_ShouldThrow_WhenFullnameIsInvalid()
         {
-            var userDetails = UserDetails.Create(Guid.NewGuid(), new Fullname("John", "Doe"));
+            var userDetails = UserDetails.Create(Guid.NewGuid(), new Fullname("John", "Doe"), new Username("johndoe"), Email.Create("johndoe@example.com"));
             Assert.Throws<ArgumentException>(() => userDetails.UpdateProfile(new Fullname("", "")));
         }
     }

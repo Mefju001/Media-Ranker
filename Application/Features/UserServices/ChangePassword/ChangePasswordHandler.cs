@@ -6,24 +6,20 @@ using MediatR;
 
 namespace Application.Features.UserServices.ChangePassword
 {
+    // maybe change password too Value Object in the future
     public class ChangePasswordHandler : IRequestHandler<ChangePasswordCommand, Unit>
     {
-        private readonly IUserRepository userRepository;
+        private readonly IIdentityService identityService;
 
-        public ChangePasswordHandler(IUserRepository userRepository)
+        public ChangePasswordHandler(IIdentityService identityService)
         {
-            this.userRepository = userRepository;
+            this.identityService = identityService;
         }
         public async Task<Unit> Handle(ChangePasswordCommand request, CancellationToken cancellationToken)
         {
             if (request.newPassword != request.confirmPassword)
                 throw new PasswordMismatchException("The passwords provided are different.");
-            var result = await userRepository.ChangePassword(request.userId, request.oldPassword, request.newPassword);
-            if (!result.Succeeded)
-            {
-                var error = result.Errors.FirstOrDefault()?.Description ?? "Operation failed";
-                throw new InvalidCredentialsException($"Password change failed: {error}");
-            }
+            await identityService.ChangePassword(request.userId, request.oldPassword, request.newPassword);
             return Unit.Value;
         }
     }
