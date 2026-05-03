@@ -13,7 +13,7 @@ namespace Application.Features.ReviewServices.UpsertReview
     {
         private readonly IUserDetailsRepository userRepository;
         private readonly IMediaRepository<Media> mediaRepository;
-        public ReviewUpsertHandler(IMediaRepository<Media> reviewRepository, IUserDetailsRepository userRepository, IMediaRepository<Media> mediaRepository)
+        public ReviewUpsertHandler(IMediaRepository<Media> mediaRepository, IUserDetailsRepository userRepository)
         {
             this.userRepository = userRepository;
             this.mediaRepository = mediaRepository;
