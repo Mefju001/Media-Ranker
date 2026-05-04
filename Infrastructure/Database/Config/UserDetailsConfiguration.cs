@@ -36,6 +36,12 @@ namespace Infrastructure.Database.Config
                 ai.Property(a => a.CreatedAt).HasColumnName("CreatedAt");
                 ai.Property(a => a.UpdatedAt).HasColumnName("UpdatedAt");
             });
+            builder.HasMany(x => x.ToWatches)
+                   .WithOne()
+                   .HasForeignKey(x => x.UserId)
+                   .OnDelete(DeleteBehavior.Cascade);
+            builder.Navigation(x => x.ToWatches).UsePropertyAccessMode(PropertyAccessMode.Field);
+
             builder.HasMany(x => x.LikedMedias)
                    .WithOne()
                    .HasForeignKey(x => x.UserId)

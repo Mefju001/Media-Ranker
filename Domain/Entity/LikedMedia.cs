@@ -19,10 +19,6 @@ public class LikedMedia : Entity<Guid>
             MediaId = mediaId,
             LikedDate = DateTime.UtcNow
         };
-
-        /* if (id == 0)
-             liked._domainEvents.Add(new MediaLiked(userId, mediaId));*/
-
         return liked;
     }
 

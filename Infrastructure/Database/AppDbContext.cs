@@ -17,6 +17,7 @@ namespace Infrastructure.Database
         public DbSet<Review> Reviews { get; set; }
         public DbSet<Token> Tokens { get; set; }
         public DbSet<LikedMedia> LikedMedias { get; set; }
+        public DbSet<ToWatch> ToWatchlists { get; set; }
         public DbSet<UserDetails> UsersDetails { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)

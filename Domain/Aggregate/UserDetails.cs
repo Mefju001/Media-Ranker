@@ -16,6 +16,8 @@ public class UserDetails : AggregateRoot<Guid>, IAudited
 
     private readonly List<LikedMedia> likedMedias = new();
     public IReadOnlyCollection<LikedMedia> LikedMedias => likedMedias.AsReadOnly();
+    private readonly List<ToWatch> toWatches = new();
+    public IReadOnlyCollection<ToWatch> ToWatches => toWatches.AsReadOnly();
     private UserDetails() { }
 
     public static UserDetails Create(Guid? id, Fullname fullname, Username username, Email email)
@@ -30,7 +32,19 @@ public class UserDetails : AggregateRoot<Guid>, IAudited
             AuditInfo = new AuditInfo()
         };
     }
-
+    public void AddToWatch(Guid movieId)
+    {
+        if (toWatches.Any(tw => tw.MediaId.Equals(movieId)))
+            throw new DomainException("Media is already in to-watch list.");
+        toWatches.Add(ToWatch.Create(Id, movieId));
+    }
+    public void RemoveToWatch(Guid movieId)
+    {
+        var toWatch = toWatches.FirstOrDefault(tw => tw.MediaId.Equals(movieId));
+        if (toWatch == null)
+            throw new DomainException("Media is not in to-watch list.");
+        toWatches.Remove(toWatch);
+    }
     public void AddLikedMedia(Guid movieId)
     {
         if (likedMedias.Any(lm => lm.MediaId.Equals(movieId)))

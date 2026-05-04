@@ -19,6 +19,32 @@ namespace Tests.Domain
             Assert.IsNotNull(userDetails.AuditInfo);
         }
         [TestMethod]
+        public void AddMediaToWatchList_ShouldAddMediaToList()
+        {
+            var userDetails = UserDetails.Create(Guid.NewGuid(), new Fullname("John", "Doe"), new Username("johndoe"), Email.Create("johndoe@example.com"));
+            var movieId = Guid.NewGuid();
+            userDetails.AddToWatch(movieId);
+            Assert.HasCount(1, userDetails.ToWatches);
+            Assert.AreEqual(movieId, userDetails.ToWatches.First().MediaId);
+        }
+        [TestMethod]
+        public void RemoveMediaFromWatchList_ShouldRemoveMediaFromList()
+        {
+            var userDetails = UserDetails.Create(Guid.NewGuid(), new Fullname("John", "Doe"), new Username("johndoe"), Email.Create("johndoe@example.com"));
+            var movieId = Guid.NewGuid();
+            userDetails.AddToWatch(movieId);
+            userDetails.RemoveToWatch(movieId);
+            Assert.IsEmpty(userDetails.ToWatches);
+        }
+        [TestMethod]
+        public void AddMediaToWatchList_ShouldThrow_WhenMediaIsAlreadyInWatchList()
+        {
+            var userDetails = UserDetails.Create(Guid.NewGuid(), new Fullname("John", "Doe"), new Username("johndoe"), Email.Create("johndoe@example.com"));
+            var movieId = Guid.NewGuid();
+            userDetails.AddToWatch(movieId);
+            Assert.Throws<InvalidOperationException>(() => userDetails.AddToWatch(movieId));
+        }
+        [TestMethod]
         public void AddLikedMedia_ShouldAddMediaToLikedList()
         {
             var userDetails = UserDetails.Create(Guid.NewGuid(), new Fullname("John", "Doe"), new Username("johndoe"), Email.Create("johndoe@example.com"));
