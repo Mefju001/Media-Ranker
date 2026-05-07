@@ -50,7 +50,7 @@ namespace Tests.Service.TvSeriesService
         [TestMethod]
         public async Task GetGamesByCriteria_WhenFilterByTitle_ShouldReturnMatch()
         {
-            var query = new GetTvSeriesByCriteriaQuery
+            var query = new GetByCriteriaQuery
             {
                 TitleSearch = "Title 1"
             };
@@ -62,7 +62,7 @@ namespace Tests.Service.TvSeriesService
         [TestMethod]
         public async Task GetGamesByCriteria_WhenSortByDate_ShouldReturnOrdered()
         {
-            var query = new GetTvSeriesByCriteriaQuery
+            var query = new GetByCriteriaQuery
             {
                 SortByField = "Date",
                 IsDescending = true
@@ -75,7 +75,7 @@ namespace Tests.Service.TvSeriesService
         [TestMethod]
         public async Task GetAllGamesAndDefaultSortShouldBeTitle()
         {
-            var query = new GetTvSeriesByCriteriaQuery
+            var query = new GetByCriteriaQuery
             {
             };
             var result = await service.Handler(query, CancellationToken.None);

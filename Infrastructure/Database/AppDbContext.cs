@@ -1,4 +1,4 @@
-using Application.Common.Interfaces;
+using Application.Features.Common.Interfaces;
 using Domain.Aggregate;
 using Domain.Entity;
 using Infrastructure.Database.Config;
@@ -19,6 +19,7 @@ namespace Infrastructure.Database
         public DbSet<LikedMedia> LikedMedias { get; set; }
         public DbSet<ToWatch> ToWatchlists { get; set; }
         public DbSet<UserDetails> UsersDetails { get; set; }
+        public DbSet<UserInteractions> UserInteractions { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

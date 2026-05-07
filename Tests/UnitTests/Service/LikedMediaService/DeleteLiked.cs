@@ -17,9 +17,9 @@ namespace Tests.Service.LikedMediaService
     {
         private Guid userId;
         private Guid mediaId;
-        private DeleteLikedHandler handler;
+        private DeleteHandler handler;
         private AppDbContext context;
-        private ILogger<DeleteLikedHandler> logger;
+        private ILogger<DeleteHandler> logger;
         private IUserDetailsRepository userDetailsRepository;
 
         [TestInitialize]
@@ -29,9 +29,9 @@ namespace Tests.Service.LikedMediaService
                 .UseInMemoryDatabase(databaseName: Guid.NewGuid().ToString())
                 .Options;
             context = new AppDbContext(options);
-            logger = new Mock<ILogger<DeleteLikedHandler>>().Object;
+            logger = new Mock<ILogger<DeleteHandler>>().Object;
             userDetailsRepository = new UserDetailsRepository(context);
-            handler = new DeleteLikedHandler(userDetailsRepository, logger);
+            handler = new DeleteHandler(userDetailsRepository, logger);
             await SeedData();
         }
         [TestCleanup]
@@ -46,7 +46,7 @@ namespace Tests.Service.LikedMediaService
             var genre = Genre.Create("Name");
             var game = Game.Create("Title", "Desc", new Language("Eng"), new ReleaseDate(DateTime.Now), genre.Id, "Dev", new List<EPlatform> { EPlatform.PC });
             mediaId = game.Id;
-            user.AddLikedMedia(mediaId);
+            user.SetInteraction(mediaId, null, ERatingVote.Liked);
             context.UsersDetails.Add(user);
             await context.SaveChangesAsync();
         }
@@ -54,17 +54,17 @@ namespace Tests.Service.LikedMediaService
         public async Task Handle_DeleteLikedMedia_ShouldDelete()
         {
             var initialCheck = await context.UsersDetails
-                .Include(u => u.LikedMedias)
+                .Include(u => u.UserInteractions)
                 .FirstOrDefaultAsync(u => u.Id == userId);
-            Assert.IsTrue(initialCheck.LikedMedias.Any(m => m.MediaId == mediaId), "Dane powinny istnieć przed usunięciem");
+            Assert.IsTrue(initialCheck.UserInteractions.Any(m => m.Id.MediaId == mediaId), "Dane powinny istnieć przed usunięciem");
             var command = new DeleteLikedCommand(userId, mediaId);
             var result = await handler.Handle(command, CancellationToken.None);
             Assert.IsTrue(result);
             var user = await context.UsersDetails
-                .Include(u => u.LikedMedias)
+                .Include(u => u.UserInteractions)
                 .FirstOrDefaultAsync(u => u.Id == userId);
             Assert.IsNotNull(user);
-            Assert.IsFalse(user.LikedMedias.Any(m => m.MediaId == mediaId), "Media powinno zostać usunięte z ulubionych");
+            Assert.IsFalse(user.UserInteractions.Any(m => m.Id.MediaId == mediaId), "Media powinno zostać usunięte z ulubionych");
         }
         [TestMethod]
         public async Task Handle_DeleteLikedMedia_UserNotFound_ShouldThrow()

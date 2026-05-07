@@ -1,5 +1,5 @@
-﻿using Application.Common.DTO.Request;
-using Application.Common.Interfaces;
+﻿using Application.Features.Common.DTO.Request;
+using Application.Features.Common.Interfaces;
 using Application.Features.UserServices.ChangeDetails;
 using Application.Features.UserServices.ChangePassword;
 using Application.Features.UserServices.DeleteUser;
@@ -88,7 +88,7 @@ namespace Api.Controllers
             {
                 return Unauthorized();
             }
-            var command = new DeleteUserCommand(userId.Value);
+            var command = new DeleteByIdCommand(userId.Value);
             await mediator.Send(command);
             return NoContent();
         }

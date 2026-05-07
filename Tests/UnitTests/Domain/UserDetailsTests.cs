@@ -1,6 +1,8 @@
 ﻿
 
 using Domain.Aggregate;
+using Domain.Enums;
+using Domain.Exceptions;
 using Domain.Value_Object;
 
 namespace Tests.Domain
@@ -19,48 +21,36 @@ namespace Tests.Domain
             Assert.IsNotNull(userDetails.AuditInfo);
         }
         [TestMethod]
-        public void AddMediaToWatchList_ShouldAddMediaToList()
+        public void SetInteraction_ShouldAddNewInteraction()
         {
             var userDetails = UserDetails.Create(Guid.NewGuid(), new Fullname("John", "Doe"), new Username("johndoe"), Email.Create("johndoe@example.com"));
-            var movieId = Guid.NewGuid();
-            userDetails.AddToWatch(movieId);
-            Assert.HasCount(1, userDetails.ToWatches);
-            Assert.AreEqual(movieId, userDetails.ToWatches.First().MediaId);
+            var mediaId = Guid.NewGuid();
+            userDetails.SetInteraction(mediaId, ETypeInteractions.WATCHING, ERatingVote.Liked);
+            Assert.HasCount(1, userDetails.UserInteractions);
         }
         [TestMethod]
-        public void RemoveMediaFromWatchList_ShouldRemoveMediaFromList()
+        public void RemoveInteraction_ShouldRemoveExistingInteraction()
         {
             var userDetails = UserDetails.Create(Guid.NewGuid(), new Fullname("John", "Doe"), new Username("johndoe"), Email.Create("johndoe@example.com"));
-            var movieId = Guid.NewGuid();
-            userDetails.AddToWatch(movieId);
-            userDetails.RemoveToWatch(movieId);
-            Assert.IsEmpty(userDetails.ToWatches);
+            var mediaId = Guid.NewGuid();
+            userDetails.SetInteraction(mediaId, ETypeInteractions.WATCHING, null);
+            userDetails.RemoveInteraction(mediaId);
+            Assert.HasCount(0, userDetails.UserInteractions);
+
         }
         [TestMethod]
-        public void AddMediaToWatchList_ShouldThrow_WhenMediaIsAlreadyInWatchList()
+        public void SetInteraction_ShouldUpdateExistingInteraction()
         {
             var userDetails = UserDetails.Create(Guid.NewGuid(), new Fullname("John", "Doe"), new Username("johndoe"), Email.Create("johndoe@example.com"));
-            var movieId = Guid.NewGuid();
-            userDetails.AddToWatch(movieId);
-            Assert.Throws<InvalidOperationException>(() => userDetails.AddToWatch(movieId));
-        }
-        [TestMethod]
-        public void AddLikedMedia_ShouldAddMediaToLikedList()
-        {
-            var userDetails = UserDetails.Create(Guid.NewGuid(), new Fullname("John", "Doe"), new Username("johndoe"), Email.Create("johndoe@example.com"));
-            var movieId = Guid.NewGuid();
-            userDetails.AddLikedMedia(movieId);
-            Assert.HasCount(1, userDetails.LikedMedias);
-            Assert.AreEqual(movieId, userDetails.LikedMedias.First().MediaId);
-        }
-        [TestMethod]
-        public void RemoveLikedMedia_ShouldRemoveMediaFromLikedList()
-        {
-            var userDetails = UserDetails.Create(Guid.NewGuid(), new Fullname("John", "Doe"), new Username("johndoe"), Email.Create("johndoe@example.com"));
-            var movieId = Guid.NewGuid();
-            userDetails.AddLikedMedia(movieId);
-            userDetails.RemoveLikedMedia(movieId);
-            Assert.IsEmpty(userDetails.LikedMedias);
+            var mediaId = Guid.NewGuid();
+            userDetails.SetInteraction(mediaId, ETypeInteractions.WATCHING, null);
+            Assert.HasCount(1, userDetails.UserInteractions);
+            Assert.AreEqual(ETypeInteractions.WATCHING, userDetails.UserInteractions.First().TypeInteractions);
+            Assert.IsNull(userDetails.UserInteractions.First().RatingVote);
+            userDetails.SetInteraction(mediaId, ETypeInteractions.COMPLETED, ERatingVote.Liked);
+            Assert.HasCount(1, userDetails.UserInteractions);
+            Assert.AreEqual(ETypeInteractions.COMPLETED, userDetails.UserInteractions.First().TypeInteractions);
+            Assert.AreEqual(ERatingVote.Liked, userDetails.UserInteractions.First().RatingVote);
         }
         [TestMethod]
         public void UpdateProfile_ShouldUpdateFullnameAndAuditInfo()
@@ -73,14 +63,7 @@ namespace Tests.Domain
             Assert.AreEqual("Smith", userDetails.Fullname.Surname);
             Assert.IsNotNull(userDetails.AuditInfo.UpdatedAt);
         }
-        [TestMethod]
-        public void AddLikedMedia_ShouldThrow_WhenMediaIsAlreadyLiked()
-        {
-            var userDetails = UserDetails.Create(Guid.NewGuid(), new Fullname("John", "Doe"), new Username("johndoe"), Email.Create("johndoe@example.com"));
-            var movieId = Guid.NewGuid();
-            userDetails.AddLikedMedia(movieId);
-            Assert.Throws<InvalidOperationException>(() => userDetails.AddLikedMedia(movieId));
-        }
+
         [TestMethod]
         public void UpdateProfile_ShouldThrow_WhenFullnameIsInvalid()
         {

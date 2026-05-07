@@ -62,10 +62,9 @@ namespace Tests.Service.LikedMediaService
         public async Task Handle_AddLiked_ShouldAddLikedMedia()
         {
             var command = new AddLikedCommand(userId, mediaId);
-
             var result = await handler.Handle(command, CancellationToken.None);
             await appDbContext.SaveChangesAsync();
-            var likedMedia = await appDbContext.LikedMedias.FirstOrDefaultAsync(lm => lm.UserId == userId && lm.MediaId == mediaId);
+            var likedMedia = await appDbContext.UserInteractions.FirstOrDefaultAsync(lm => lm.UserId == userId && lm.MediaId == mediaId);
             Assert.IsTrue(result);
             Assert.IsNotNull(likedMedia);
             Assert.AreEqual(likedMedia.UserId, userId);

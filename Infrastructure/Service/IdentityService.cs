@@ -1,5 +1,5 @@
-﻿using Application.Common.DTO;
-using Application.Common.Interfaces;
+﻿using Application.Features.Common.DTO;
+using Application.Features.Common.Interfaces;
 using Domain.Exceptions;
 using Infrastructure.Database.DBModels;
 using Microsoft.AspNetCore.Identity;

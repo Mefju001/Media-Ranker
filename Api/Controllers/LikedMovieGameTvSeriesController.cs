@@ -1,6 +1,5 @@
-﻿using Application.Common.DTO.Request;
-using Application.Common.DTO.Response;
-using Application.Common.Interfaces;
+﻿using Application.Features.Common.Interfaces;
+using Application.Features.Liked.Common;
 using Application.Features.LikedServices.AddLiked;
 using Application.Features.LikedServices.Delete;
 using Application.Features.LikedServices.GetAllLiked;
@@ -41,7 +40,7 @@ namespace Api.Controllers
         public async Task<IActionResult> GetLikedByUser()
         {
             var userId = GetCurrentUserId();
-            var query = new GetAllLikedByUserQuery(userId);
+            var query = new GetAllForUserQuery(userId);
             return Ok(await mediator.Send(query));
         }
         [HttpGet("{id:int}")]

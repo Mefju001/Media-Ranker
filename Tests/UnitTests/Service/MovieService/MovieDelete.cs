@@ -1,6 +1,6 @@
 ﻿using Application.Common.Interfaces;
+using Application.Features.Common.Notification;
 using Application.Features.MovieServices.DeleteById;
-using Application.Notification;
 using Domain.Aggregate;
 using Domain.Exceptions;
 using Domain.Value_Object;

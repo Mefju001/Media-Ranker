@@ -1,4 +1,4 @@
-﻿using Application.Common.DTO.Request;
+﻿using Application.Features.TvSeries.Common;
 using Application.Features.TvSeriesServices.AddListOfTvSeries;
 using Application.Features.TvSeriesServices.DeleteById;
 using Application.Features.TvSeriesServices.GetTvSeriesByCriteria;
@@ -23,7 +23,7 @@ namespace Api.Controllers
         }
         [AllowAnonymous]
         [HttpGet]
-        public async Task<IActionResult> Get([FromQuery] GetTvSeriesByCriteriaQuery tvSeriesQuery)
+        public async Task<IActionResult> Get([FromQuery] GetByCriteriaQuery tvSeriesQuery)
         {
             var movies = await mediator.Send(tvSeriesQuery);
             return Ok(movies);

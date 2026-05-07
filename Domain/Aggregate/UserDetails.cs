@@ -1,8 +1,10 @@
 ﻿using Domain.Base;
 using Domain.Entity;
+using Domain.Enums;
 using Domain.Exceptions;
 using Domain.Interfaces;
 using Domain.Value_Object;
+using Microsoft.VisualBasic;
 
 namespace Domain.Aggregate;
 
@@ -14,10 +16,8 @@ public class UserDetails : AggregateRoot<Guid>, IAudited
     public bool IsActive { get; private set; }
     public AuditInfo AuditInfo { get; private set; } = new();
 
-    private readonly List<LikedMedia> likedMedias = new();
-    public IReadOnlyCollection<LikedMedia> LikedMedias => likedMedias.AsReadOnly();
-    private readonly List<ToWatch> toWatches = new();
-    public IReadOnlyCollection<ToWatch> ToWatches => toWatches.AsReadOnly();
+    private readonly List<UserInteractions> userInteractions = new();
+    public IReadOnlyCollection<UserInteractions> UserInteractions => userInteractions.AsReadOnly();
     private UserDetails() { }
 
     public static UserDetails Create(Guid? id, Fullname fullname, Username username, Email email)
@@ -32,32 +32,67 @@ public class UserDetails : AggregateRoot<Guid>, IAudited
             AuditInfo = new AuditInfo()
         };
     }
-    public void AddToWatch(Guid movieId)
+    public void SetTypeInteractions(Guid mediaId, ETypeInteractions? type)
     {
-        if (toWatches.Any(tw => tw.MediaId.Equals(movieId)))
-            throw new DomainException("Media is already in to-watch list.");
-        toWatches.Add(ToWatch.Create(Id, movieId));
+        var interaction = GetOrAdd(mediaId);
+        interaction.UpdateTypeInteractions(type);
+
+        CleanupAndAudit(interaction);
     }
-    public void RemoveToWatch(Guid movieId)
+
+    public void SetRatingVote(Guid mediaId, ERatingVote? vote)
     {
-        var toWatch = toWatches.FirstOrDefault(tw => tw.MediaId.Equals(movieId));
-        if (toWatch == null)
-            throw new DomainException("Media is not in to-watch list.");
-        toWatches.Remove(toWatch);
+        var interaction = GetOrAdd(mediaId);
+        interaction.UpdateRatingVote(vote);
+
+        CleanupAndAudit(interaction);
     }
-    public void AddLikedMedia(Guid movieId)
+
+    public void SetInteraction(Guid mediaId, ETypeInteractions? type, ERatingVote? vote)
     {
-        if (likedMedias.Any(lm => lm.MediaId.Equals(movieId)))
-            throw new DomainException("Media is already liked.");
-        likedMedias.Add(LikedMedia.Create(Id, movieId));
+        var interaction = GetOrAdd(mediaId);
+        interaction.UpdateInteraction(type, vote);
+
+        CleanupAndAudit(interaction);
     }
-    public void RemoveLikedMedia(Guid movieId)
+
+
+    private UserInteractions GetOrAdd(Guid mediaId)
     {
-        var likedMedia = likedMedias.FirstOrDefault(lm => lm.MediaId.Equals(movieId));
-        if (likedMedia == null)
-            throw new DomainException("Media is not in liked list.");
-        likedMedias.Remove(likedMedia);
+        var existing = userInteractions.FirstOrDefault(ui =>
+            ui.Id.UserId == this.Id && ui.Id.MediaId == mediaId);
+
+        if (existing == null)
+        {
+            existing = Entity.UserInteractions.Create(this.Id, mediaId, null, null);
+            userInteractions.Add(existing);
+        }
+        return existing;
     }
+
+    private void CleanupAndAudit(UserInteractions interaction)
+    {
+        if (interaction.TypeInteractions == null && interaction.RatingVote == null)
+        {
+            userInteractions.Remove(interaction);
+        }
+
+        AuditInfo = AuditInfo.MarkAsUpdated();
+    }
+    public void RemoveInteraction(Guid mediaId)
+    {
+        var interaction = userInteractions.FirstOrDefault(ui =>
+            ui.Id.UserId == this.Id && ui.Id.MediaId == mediaId);
+
+        if (interaction == null)
+        {
+            throw new DomainException("Interaction not found for this user and media.");
+        }
+
+        userInteractions.Remove(interaction);
+        AuditInfo = AuditInfo.MarkAsUpdated();
+    }
+
 
     public void UpdateProfile(Fullname fullname)
     {

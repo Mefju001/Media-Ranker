@@ -1,9 +1,11 @@
 ﻿using Application.Common.DTO.Request;
 using Application.Common.Interfaces;
 using Application.Common.Services;
+using Application.Features.Common.Interfaces;
+using Application.Features.Common.Notification;
 using Application.Features.MovieServices.AddListOfMovies;
+using Application.Features.TvSeries.Common;
 using Application.Features.TvSeriesServices.AddListOfTvSeries;
-using Application.Notification;
 using Domain.Aggregate;
 using Domain.Enums;
 using Infrastructure.Database;

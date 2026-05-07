@@ -45,7 +45,7 @@ namespace Tests.Service.GameService
         [TestMethod]
         public async Task GetGamesByCriteria_WhenFilterByTitle_ShouldReturnMatch() 
         {
-            var query = new GetGamesByCriteriaQuery
+            var query = new GetByCriteriaQuery
             {
                 title = "Game A"
             };
@@ -57,7 +57,7 @@ namespace Tests.Service.GameService
         [TestMethod]
         public async Task GetGamesByCriteria_WhenSortByDate_ShouldReturnOrdered() 
         {
-            var query = new GetGamesByCriteriaQuery
+            var query = new GetByCriteriaQuery
             {
                 sortByField = "Date",
                 IsDescending = true
@@ -70,7 +70,7 @@ namespace Tests.Service.GameService
         [TestMethod]
         public async Task GetAllGamesAndDefaultSortShouldBeTitle()
         {
-            var query = new GetGamesByCriteriaQuery
+            var query = new GetByCriteriaQuery
             {
             };
             var result = await service.GetGamesByCriteriaAsync(query, CancellationToken.None);

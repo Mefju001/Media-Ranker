@@ -1,8 +1,8 @@
 ﻿using Application.Common.DTO.Request;
 using Application.Common.Interfaces;
-using Application.Common.Services;
+using Application.Features.Common.HelperServices;
+using Application.Features.Common.Notification;
 using Application.Features.GamesServices.GameUpsert;
-using Application.Notification;
 using Domain.Aggregate;
 using Domain.Enums;
 using Domain.Exceptions;
@@ -24,7 +24,7 @@ namespace Tests.Service.GameService
         private IMediaRepository<Game> repository;
         private Mock<IMediator> mediatorMock;
         private GenreHelperService genreHelperMock;
-        private GameUpsertHandler handler;
+        private UpsertHandler handler;
         [TestInitialize]
         public async Task Setup()
         {
@@ -35,7 +35,7 @@ namespace Tests.Service.GameService
             genreHelperMock = new GenreHelperService(new GenreRepository(context));
             repository = new MediaRepository<Game>(context);
             mediatorMock = new Mock<IMediator>();
-            handler = new GameUpsertHandler(genreHelperMock, mediatorMock.Object, repository);
+            handler = new UpsertHandler(genreHelperMock, mediatorMock.Object, repository);
             await SeedData();
         }
         [TestCleanup]
@@ -57,7 +57,7 @@ namespace Tests.Service.GameService
         [TestMethod]
         public async Task Handle_WhenIdIsNull_ShouldCreateNewGame()
         {
-            var command = new UpsertGameCommand(
+            var command = new UpsertCommand(
                 null,
                 "New Game",
                 "Description",
@@ -83,7 +83,7 @@ namespace Tests.Service.GameService
         [TestMethod]
         public async Task Handle_WhenIdIsNotNull_ShouldUpdateExistingGame()
         {
-            var command = new UpsertGameCommand(
+            var command = new UpsertCommand(
                             GameId,
                             "New Game",
                             "Description",
@@ -107,7 +107,7 @@ namespace Tests.Service.GameService
         [TestMethod]
         public async Task Handle_WhenGenreDoesNotExist_ShouldCreateNewGenre()
         {
-            var command = new UpsertGameCommand(
+            var command = new UpsertCommand(
                 null,
                 "New Game",
                 "Description",
@@ -127,7 +127,7 @@ namespace Tests.Service.GameService
         [TestMethod]
         public async Task Handle_GenreRequestIsEmpty_ShouldThrowArgumentException()
         {
-            var command = new UpsertGameCommand(
+            var command = new UpsertCommand(
                             null,
                             "New Game",
                             "Description",
@@ -142,7 +142,7 @@ namespace Tests.Service.GameService
         [TestMethod]
         public async Task Handle_WhenGameDoesNotExist_ShouldThrowNotFoundException()
         {
-            var command = new UpsertGameCommand(
+            var command = new UpsertCommand(
                             Guid.NewGuid(),
                             "New Game",
                             "Description",
@@ -157,7 +157,7 @@ namespace Tests.Service.GameService
         [TestMethod]
         public async Task Handle_ChangeGenreToExisting_ShouldUpdateGameGenre()
         {
-            var command = new UpsertGameCommand(
+            var command = new UpsertCommand(
                             GameId,
                             "Game A",
                             "Description A",

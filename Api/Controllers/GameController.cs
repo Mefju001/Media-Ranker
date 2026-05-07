@@ -1,4 +1,4 @@
-﻿using Application.Common.DTO.Request;
+﻿using Application.Features.Games.Command;
 using Application.Features.GamesServices.AddListOfGames;
 using Application.Features.GamesServices.DeleteById;
 using Application.Features.GamesServices.GameUpsert;
@@ -22,7 +22,7 @@ namespace Api.Controllers
         }
         [AllowAnonymous]
         [HttpGet]
-        public async Task<IActionResult> Get([FromQuery] GetGamesByCriteriaQuery gameQuery)
+        public async Task<IActionResult> Get([FromQuery] GetByCriteriaQuery gameQuery)
         {
             var games = await mediator.Send(gameQuery);
             return Ok(games);
@@ -39,7 +39,7 @@ namespace Api.Controllers
         [HttpPost]
         public async Task<IActionResult> AddGame([FromBody] GameRequest gameRequest)
         {
-            var command = new UpsertGameCommand(null,
+            var command = new UpsertCommand(null,
                 gameRequest.Title,
                 gameRequest.Description,
                 gameRequest.Genre,
@@ -62,7 +62,7 @@ namespace Api.Controllers
         [HttpPut("{id:guid}")]
         public async Task<IActionResult> UpdateGame([FromRoute] Guid id, [FromBody] GameRequest gameRequest)
         {
-            var command = new UpsertGameCommand(id,
+            var command = new UpsertCommand(id,
                 gameRequest.Title,
                 gameRequest.Description,
                 gameRequest.Genre,

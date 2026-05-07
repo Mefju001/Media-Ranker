@@ -12,7 +12,7 @@ namespace Infrastructure.Database.Repository
         }
         public override Task<UserDetails?> GetByIdAsync(Guid id, CancellationToken ct)
         {
-            return appDbContext.Set<UserDetails>().Include(u => u.LikedMedias).FirstOrDefaultAsync(u => u.Id == id, ct);
+            return appDbContext.Set<UserDetails>().Include(u => u.UserInteractions).FirstOrDefaultAsync(u => u.Id == id, ct);
         }
 
         public async Task<string?> GetUsernameById(Guid id, CancellationToken cancellationToken)

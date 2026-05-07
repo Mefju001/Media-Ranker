@@ -1,8 +1,8 @@
-﻿using Application.Common.DTO.Request;
-using Application.Common.Interfaces;
-using Application.Features.AuthServices.Login;
-using Application.Features.AuthServices.Logout;
-using Application.Features.AuthServices.Signup;
+﻿using Application.Features.Auth.Login;
+using Application.Features.Auth.Logout;
+using Application.Features.Auth.Signup;
+using Application.Features.Common.DTO.Request;
+using Application.Features.Common.Interfaces;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;

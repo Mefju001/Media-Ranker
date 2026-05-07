@@ -20,7 +20,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Features\RecommendationService\" />
+    <Folder Include="Features\Recommendation\" />
   </ItemGroup>
 
 </Project>

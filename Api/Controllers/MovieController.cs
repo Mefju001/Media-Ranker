@@ -1,4 +1,4 @@
-using Application.Common.DTO.Request;
+using Application.Features.Movie.Common;
 using Application.Features.MovieServices.AddListOfMovies;
 using Application.Features.MovieServices.DeleteById;
 using Application.Features.MovieServices.GetMovieById;

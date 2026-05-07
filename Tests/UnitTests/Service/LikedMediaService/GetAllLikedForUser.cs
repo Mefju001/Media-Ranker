@@ -4,19 +4,14 @@ using Domain.Enums;
 using Domain.Value_Object;
 using Infrastructure.Database;
 using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Runtime.InteropServices.Marshalling;
-using System.Text;
-using System.Threading.Tasks;
+
 
 namespace Tests.Service.LikedMediaService
 {
     [TestClass]
     public class GetAllLikedForUser
     {
-        private GetAllLikedByUserHandler handler;
+        private GetAllForUserHandler handler;
         private AppDbContext appDbContext;
         private Guid mediaId1;
         private Guid mediaId2;
@@ -28,7 +23,7 @@ namespace Tests.Service.LikedMediaService
                 .UseInMemoryDatabase(databaseName: Guid.NewGuid().ToString())
                 .Options;
             appDbContext = new AppDbContext(options);
-            handler = new GetAllLikedByUserHandler(appDbContext);
+            handler = new GetAllForUserHandler(appDbContext);
             await SeedData();
         }
         [TestCleanup]
@@ -50,14 +45,15 @@ namespace Tests.Service.LikedMediaService
             appDbContext.Medias.Add(game);
             var game2 = Game.Create("Game A", "Description A", new Language("English"), new ReleaseDate(DateTime.UtcNow.AddDays(-5)), genre2.Id, "Developer A", new List<EPlatform>() { EPlatform.PlayStation5 });
             mediaId2 = game2.Id;
-            userDetails.AddLikedMedia(game.Id);
-            userDetails.AddLikedMedia(game2.Id);
-            appDbContext.Medias.Add(game2); await appDbContext.SaveChangesAsync();
+            userDetails.SetInteraction(game.Id, null, ERatingVote.Liked);
+            userDetails.SetInteraction(game2.Id, null, ERatingVote.Liked);
+            appDbContext.Medias.Add(game2); 
+            await appDbContext.SaveChangesAsync();
         }
         [TestMethod]
         public async Task Handle_GetAllLikedForUser_ShouldReturnListOfMedias()
         {
-            var result = await handler.Handle(new GetAllLikedByUserQuery(userId), CancellationToken.None);
+            var result = await handler.Handle(new GetAllForUserQuery(userId), CancellationToken.None);
             Assert.HasCount(2, result);
             Assert.IsTrue(result.Any(m => m.Media.id == mediaId1));
             Assert.IsTrue(result.Any(m => m.Media.id == mediaId2));
@@ -68,14 +64,14 @@ namespace Tests.Service.LikedMediaService
             var newUserDetails = UserDetails.Create(null, new Fullname("Jane", "Smith"), new Username("janesmith"), Email.Create("janesmith@example.com"));
             appDbContext.UsersDetails.Add(newUserDetails);
             await appDbContext.SaveChangesAsync();
-            var result = await handler.Handle(new GetAllLikedByUserQuery(newUserDetails.Id), CancellationToken.None);
+            var result = await handler.Handle(new GetAllForUserQuery(newUserDetails.Id), CancellationToken.None);
             Assert.HasCount(0, result);
         }
         [TestMethod]
         public async Task Handle_GetAllLikedButUserDontExist_ShouldReturnEmptyList()
         {
             var nonExistentUserId = Guid.NewGuid();
-            var result = await handler.Handle(new GetAllLikedByUserQuery(nonExistentUserId), CancellationToken.None);
+            var result = await handler.Handle(new GetAllForUserQuery(nonExistentUserId), CancellationToken.None);
             Assert.HasCount(0, result);
         }
     }

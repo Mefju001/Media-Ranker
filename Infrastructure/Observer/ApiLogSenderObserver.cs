@@ -1,4 +1,4 @@
-﻿using Application.Notification;
+﻿using Application.Features.Common.Notification;
 using MediatR;
 using Microsoft.Extensions.Configuration;
 using System.Text.Json;

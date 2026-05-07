@@ -1,0 +1,34 @@
+﻿using Application.Features.AuthServices.Common;
+using Application.Features.Common.Interfaces;
+using Domain.Exceptions;
+using MediatR;
+using Microsoft.Extensions.Logging;
+
+namespace Application.Features.Auth.Login
+{
+    public class LoginHandler : IRequestHandler<LoginCommand, LoginResponse?>
+    {
+        private readonly IIdentityService identityService;
+        private readonly ITokenService tokenServices;
+        private readonly ILogger<LoginHandler> logger;
+        public LoginHandler(IIdentityService identityService, ITokenService tokenServices, ILogger<LoginHandler> logger)
+        {
+            this.identityService = identityService;
+            this.tokenServices = tokenServices;
+            this.logger = logger;
+        }
+
+        public async Task<LoginResponse?> Handle(LoginCommand command, CancellationToken cancellationToken)
+        {
+            var user = await identityService.AuthenticateAsync(command.username, command.password);
+            if (user is null)
+            {
+                logger.LogWarning("Failed login attempt for username: {Username}", command.username);
+                throw new InvalidCredentialsException("Wrong username or password");
+            }
+            var accessToken = tokenServices.GenerateAccessToken(user.Id, user.Username, user.Roles);
+            var refreshToken = await tokenServices.GenerateRefreshToken(user.Id, user.Username, cancellationToken);
+            return new LoginResponse(user.Id, user.Username, accessToken, refreshToken);
+        }
+    }
+}

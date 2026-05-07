@@ -1,5 +1,5 @@
-﻿using Application.Common.DTO.Request;
-using Application.Common.Interfaces;
+﻿using Application.Features.Common.Interfaces;
+using Application.Features.Reviews.Upsert;
 using Application.Features.ReviewServices.DeleteReviewAsync;
 using Application.Features.ReviewServices.GetAllReviewsAsync;
 using Application.Features.ReviewServices.GetByIdReview;
