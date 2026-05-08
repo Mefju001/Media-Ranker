@@ -6,7 +6,7 @@ using MediatR;
 
 namespace Application.Features.ToWatch.Add
 {
-    public class AddHandler:IRequestHandler<AddCommand, Unit>
+    internal class AddHandler:IRequestHandler<AddCommand, Unit>
     {
         private readonly IMediaRepository<Media> mediaRepository;
         private readonly IUserDetailsRepository userDetailsRepository;

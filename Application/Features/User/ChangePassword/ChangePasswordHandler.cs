@@ -1,4 +1,4 @@
-﻿using Application.Features.Common.Interfaces;
+﻿using Application.Features.Auth.Common;
 using Domain.Exceptions;
 using MediatR;
 
@@ -7,7 +7,7 @@ using MediatR;
 namespace Application.Features.User.ChangePassword
 {
     // maybe change password too Value Object in the future
-    public class ChangePasswordHandler : IRequestHandler<ChangePasswordCommand, Unit>
+    internal class ChangePasswordHandler : IRequestHandler<ChangePasswordCommand, Unit>
     {
         private readonly IIdentityService identityService;
 

@@ -4,7 +4,6 @@ using Domain.Enums;
 using Domain.Exceptions;
 using Domain.Interfaces;
 using Domain.Value_Object;
-using Microsoft.VisualBasic;
 
 namespace Domain.Aggregate;
 

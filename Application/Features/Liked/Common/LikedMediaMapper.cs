@@ -1,7 +1,7 @@
-﻿using Application.Features.Common.Mapper;
-using Application.Features.Games.Common;
+﻿using Application.Features.Games.Common;
 using Application.Features.Movie.Common;
 using Application.Features.TvSeries.Common;
+using Application.Features.User.Common;
 using Domain.Aggregate;
 using Domain.Entity;
 

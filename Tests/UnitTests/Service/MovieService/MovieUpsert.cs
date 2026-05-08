@@ -2,9 +2,10 @@
 
 using Application.Common.DTO.Request;
 using Application.Common.Interfaces;
-using Application.Features.Common.HelperServices;
 using Application.Features.Common.Notification;
+using Application.Features.Directors;
 using Application.Features.GamesServices.GameUpsert;
+using Application.Features.Genres;
 using Application.Features.MovieServices.MovieUpsert;
 using Domain.Aggregate;
 using Domain.Enums;

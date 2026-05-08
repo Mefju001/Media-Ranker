@@ -1,9 +1,9 @@
-﻿using Application.Features.TvSeries.Common;
-using Application.Features.TvSeriesServices.AddListOfTvSeries;
-using Application.Features.TvSeriesServices.DeleteById;
-using Application.Features.TvSeriesServices.GetTvSeriesByCriteria;
-using Application.Features.TvSeriesServices.GetTvSeriesById;
-using Application.Features.TvSeriesServices.TvSeriesUpsert;
+﻿using Application.Features.TvSeries.AddRange;
+using Application.Features.TvSeries.Common;
+using Application.Features.TvSeries.DeleteById;
+using Application.Features.TvSeries.GetByCriteria;
+using Application.Features.TvSeries.GetById;
+using Application.Features.TvSeries.Upsert;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -32,7 +32,7 @@ namespace Api.Controllers
         [HttpGet("{id:guid}")]
         public async Task<IActionResult> GetById([FromRoute] Guid id)
         {
-            var query = new GetTvSeriesByIdQuery(id);
+            var query = new GetByIdQuery(id);
             var movie = await mediator.Send(query);
             return Ok(movie);
         }
@@ -40,7 +40,7 @@ namespace Api.Controllers
         [HttpPost]
         public async Task<IActionResult> AddTvSeries(TvSeriesRequest tvSeriesRequest)
         {
-            var command = new UpsertTvSeriesCommand(null,
+            var command = new UpsertCommand(null,
                 tvSeriesRequest.title,
                 tvSeriesRequest.description,
                 tvSeriesRequest.genre,
@@ -57,7 +57,7 @@ namespace Api.Controllers
         [HttpPost("Bulk")]
         public async Task<IActionResult> AddListOfSeries(List<TvSeriesRequest> tvSeriesRequests)
         {
-            var command = new AddListOfTvSeriesCommand(tvSeriesRequests);
+            var command = new AddRangeCommand(tvSeriesRequests);
             var created = await mediator.Send(command);
             return Ok(created);
         }
@@ -65,7 +65,7 @@ namespace Api.Controllers
         [HttpPut("{id:guid}")]
         public async Task<IActionResult> UpdateTvSeries([FromRoute] Guid id, TvSeriesRequest tvSeriesRequest)
         {
-            var command = new UpsertTvSeriesCommand(id,
+            var command = new UpsertCommand(id,
                 tvSeriesRequest.title,
                 tvSeriesRequest.description,
                 tvSeriesRequest.genre,

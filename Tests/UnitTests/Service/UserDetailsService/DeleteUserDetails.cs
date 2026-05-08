@@ -1,4 +1,4 @@
-﻿using Application.Features.Common.Interfaces;
+﻿using Application.Features.Auth.Common;
 using Application.Features.UserServices.DeleteUser;
 using Infrastructure.Database;
 using Infrastructure.Database.DBModels;

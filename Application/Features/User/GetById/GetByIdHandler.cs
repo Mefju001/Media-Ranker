@@ -1,13 +1,12 @@
-﻿using Application.Features.Common.DTO.Response;
-using Application.Features.Common.Interfaces;
-using Application.Features.Common.Mapper;
+﻿using Application.Features.Common.Interfaces;
+using Application.Features.User.Common;
 using Domain.Aggregate;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 
 namespace Application.Features.User.GetById
 {
-    public class GetByIdHandler : IRequestHandler<GetByIdQuery, UserDetailsResponse?>
+    internal class GetByIdHandler : IRequestHandler<GetByIdQuery, UserDetailsResponse?>
     {
         private readonly IAppDbContext appDbContext;
         public GetByIdHandler(IAppDbContext appDbContext)

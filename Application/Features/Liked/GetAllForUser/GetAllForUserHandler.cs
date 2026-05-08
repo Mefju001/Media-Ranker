@@ -7,7 +7,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Application.Features.Liked.GetAllForUser
 {
-    public class GetAllForUserHandler : IRequestHandler<GetAllForUserQuery, List<LikedMediaResponse>>
+    internal class GetAllForUserHandler : IRequestHandler<GetAllForUserQuery, List<LikedMediaResponse>>
     {
         private readonly IAppDbContext appDbContext;
 

@@ -6,7 +6,7 @@ using MediatR;
 
 namespace Application.Features.User.ChangeDetails
 {
-    public class ChangeDetailsHandler : IRequestHandler<ChangeDetailsCommand, Unit>
+    internal class ChangeDetailsHandler : IRequestHandler<ChangeDetailsCommand, Unit>
     {
         private readonly IUserDetailsRepository userDetailsRepository;
         public ChangeDetailsHandler(IUserDetailsRepository userDetailsRepository)

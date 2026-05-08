@@ -1,12 +1,13 @@
-using Application.Features.Movie.Common;
-using Application.Features.MovieServices.AddListOfMovies;
-using Application.Features.MovieServices.DeleteById;
-using Application.Features.MovieServices.GetMovieById;
-using Application.Features.MovieServices.GetMoviesByCriteria;
-using Application.Features.MovieServices.MovieUpsert;
+
+using Application.Features.Movies.Common;
+using Application.Features.Movies.GetMovieById;
+using Application.Features.Movies.GetByCriteria;
+using Application.Features.Movies.Upsert;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Application.Features.Movies.AddRange;
+using Application.Features.Movies.DeleteById;
 
 namespace Api.Controllers
 {
@@ -24,7 +25,7 @@ namespace Api.Controllers
 
         [AllowAnonymous]
         [HttpGet]
-        public async Task<IActionResult> Get([FromQuery] GetMoviesByCriteriaQuery moviesQuery)
+        public async Task<IActionResult> Get([FromQuery] GetByCriteriaQuery moviesQuery)
         {
             var movies = await mediator.Send(moviesQuery);
             return Ok(movies);
@@ -33,7 +34,7 @@ namespace Api.Controllers
         [HttpGet("{id:guid}")]
         public async Task<IActionResult> GetById([FromRoute] Guid id)
         {
-            var query = new GetMovieByIdQuery(id);
+            var query = new GetByIdQuery(id);
             var result = await mediator.Send(query);
             if (result is null) return NotFound();
             return Ok(result);
@@ -42,7 +43,7 @@ namespace Api.Controllers
         [HttpPost]
         public async Task<IActionResult> AddMovie([FromBody] MovieRequest movie)
         {
-            var command = new UpsertMovieCommand(
+            var command = new UpsertCommand(
                 null,
                 movie.Title,
                 movie.Description,
@@ -59,7 +60,7 @@ namespace Api.Controllers
         [HttpPost("Bulk")]
         public async Task<IActionResult> AddMovies([FromBody] List<MovieRequest> movies)
         {
-            var command = new AddListOfMoviesCommand(movies);
+            var command = new AddRangeCommand(movies);
             var created = await mediator.Send(command);
             return Ok(created);
         }
@@ -67,7 +68,7 @@ namespace Api.Controllers
         [HttpPut("{id:guid}")]
         public async Task<IActionResult> UpdateMovie([FromRoute] Guid id, [FromBody] MovieRequest movie)
         {
-            var command = new UpsertMovieCommand(
+            var command = new UpsertCommand(
                 id,
                 movie.Title,
                 movie.Description,

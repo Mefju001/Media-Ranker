@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Application.Features.ToWatch.GetAll
 {
-    public class GetAllHandler:IRequestHandler<GetAllQuery, List<ToWatchResponse>>
+    internal class GetAllHandler:IRequestHandler<GetAllQuery, List<ToWatchResponse>>
     {
         private IAppDbContext appDbContext;
         public GetAllHandler(IAppDbContext appDbContext)

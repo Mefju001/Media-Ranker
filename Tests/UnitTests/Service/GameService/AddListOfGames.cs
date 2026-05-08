@@ -1,9 +1,9 @@
 ﻿using Application.Common.DTO.Request;
 using Application.Common.Interfaces;
-using Application.Features.Common.HelperServices;
 using Application.Features.Common.Notification;
 using Application.Features.Games.Command;
 using Application.Features.GamesServices.AddListOfGames;
+using Application.Features.Genres;
 using Domain.Aggregate;
 using Domain.Enums;
 using Infrastructure.Database;

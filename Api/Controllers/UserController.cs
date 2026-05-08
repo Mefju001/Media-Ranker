@@ -1,13 +1,12 @@
-﻿using Application.Features.Common.DTO.Request;
-using Application.Features.Common.Interfaces;
-using Application.Features.UserServices.ChangeDetails;
-using Application.Features.UserServices.ChangePassword;
-using Application.Features.UserServices.DeleteUser;
-using Application.Features.UserServices.GetBy;
-using Application.Features.UserServices.GetById;
+﻿using Application.Features.Common.Interfaces;
+using Application.Features.User.DeleteById;
+using Application.Features.User.GetByName;
+using Application.Features.User.GetById;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Application.Features.User.ChangePassword;
+using Application.Features.User.ChangeDetails;
 
 namespace Api.Controllers
 {
@@ -41,7 +40,7 @@ namespace Api.Controllers
         [HttpGet("{name}")]
         public async Task<IActionResult> GetBy([FromRoute] string name)
         {
-            var query = new GetUserByNameQuery(name);
+            var query = new GetByNameQuery(name);
             var result = await mediator.Send(query);
             if (result == null)
             {

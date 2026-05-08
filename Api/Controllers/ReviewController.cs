@@ -1,10 +1,9 @@
 ﻿using Application.Features.Common.Interfaces;
+using Application.Features.Reviews.DeleteById;
+using Application.Features.Reviews.GetAll;
+using Application.Features.Reviews.GetById;
+using Application.Features.Reviews.GetTheLastestTitle;
 using Application.Features.Reviews.Upsert;
-using Application.Features.ReviewServices.DeleteReviewAsync;
-using Application.Features.ReviewServices.GetAllReviewsAsync;
-using Application.Features.ReviewServices.GetByIdReview;
-using Application.Features.ReviewServices.GetTheLastestReview;
-using Application.Features.ReviewServices.UpsertReview;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -33,7 +32,7 @@ namespace Api.Controllers
         [HttpGet]
         public async Task<IActionResult> GetAll()
         {
-            var query = new GetAllReviewsQuery();
+            var query = new GetAllQuery();
             var reviews = await mediator.Send(query);
             return Ok(reviews);
         }
@@ -42,7 +41,7 @@ namespace Api.Controllers
         public async Task<IActionResult> AddReview([FromBody] ReviewRequest reviewRequest)
         {
             var userId = GetCurrentUserId();
-            var command = new ReviewUpsertCommand
+            var command = new UpsertCommand
             (
                 null,
                 reviewRequest.MovieId,
@@ -58,7 +57,7 @@ namespace Api.Controllers
         public async Task<IActionResult> UpdateReview([FromRoute] Guid id, [FromQuery] ReviewRequest reviewRequest)
         {
             var userId = GetCurrentUserId();
-            var command = new ReviewUpsertCommand
+            var command = new UpsertCommand
             (
                 id,
                 null,
@@ -73,7 +72,7 @@ namespace Api.Controllers
         [HttpGet("TheLatest")]
         public async Task<IActionResult> GetAllSortedByLatestAsync()
         {
-            var query = new GetTheLastestQuery();
+            var query = new GetTheLastestTitleQuery();
             var reviews = await mediator.Send(query);
             return Ok(reviews);
         }
@@ -81,14 +80,14 @@ namespace Api.Controllers
         [HttpGet("{id:guid}")]
         public async Task<IActionResult> GetById(Guid id)
         {
-            var query = new GetByIdReviewQuery(id);
+            var query = new GetByIdQuery(id);
             return Ok(await mediator.Send(query));
         }
         [Authorize(Roles = "User")]
         [HttpDelete("{id:guid}")]
         public async Task<IActionResult> Delete(Guid mediaId, [FromRoute] Guid id)
         {
-            var command = new DeleteReviewCommand(mediaId, id);
+            var command = new DeleteByIdCommand(mediaId, id);
             await mediator.Send(command);
             return NoContent();
         }

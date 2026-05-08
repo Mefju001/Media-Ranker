@@ -3,7 +3,7 @@
 
 namespace Application.Features.Auth.CleanTokens
 {
-    public class CleanTokensHandler : IRequestHandler<CleanTokensCommand, Unit>
+    internal class CleanTokensHandler : IRequestHandler<CleanTokensCommand, Unit>
     {
         private readonly ITokenCleanService tokenCleanupService;
         public CleanTokensHandler(ITokenCleanService tokenCleanupService)

@@ -1,13 +1,12 @@
-﻿using Application.Features.Common.DTO.Response;
-using Application.Features.Common.Interfaces;
-using Application.Features.Common.Mapper;
+﻿using Application.Features.Common.Interfaces;
+using Application.Features.User.Common;
 using Domain.Aggregate;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 
 namespace Application.Features.User.GetByName
 {
-    public class GetByNameHandler : IRequestHandler<GetByNameQuery, UserDetailsResponse?>
+    internal class GetByNameHandler : IRequestHandler<GetByNameQuery, UserDetailsResponse?>
     {
         private readonly IAppDbContext appDbContext;
         public GetByNameHandler(IAppDbContext appDbContext)

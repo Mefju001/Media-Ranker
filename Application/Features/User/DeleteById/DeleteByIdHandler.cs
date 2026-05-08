@@ -1,10 +1,10 @@
-﻿using Application.Features.Common.Interfaces;
+﻿using Application.Features.Auth.Common;
 using MediatR;
 
 
 namespace Application.Features.User.DeleteById
 {
-    public class DeleteByIdHandler : IRequestHandler<DeleteByIdCommand, Unit>
+    internal class DeleteByIdHandler : IRequestHandler<DeleteByIdCommand, Unit>
     {
         private readonly IIdentityService identityService;
 

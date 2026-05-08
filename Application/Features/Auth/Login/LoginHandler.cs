@@ -1,12 +1,11 @@
-﻿using Application.Features.AuthServices.Common;
-using Application.Features.Common.Interfaces;
+﻿using Application.Features.Auth.Common;
 using Domain.Exceptions;
 using MediatR;
 using Microsoft.Extensions.Logging;
 
 namespace Application.Features.Auth.Login
 {
-    public class LoginHandler : IRequestHandler<LoginCommand, LoginResponse?>
+    internal class LoginHandler : IRequestHandler<LoginCommand, LoginResponse?>
     {
         private readonly IIdentityService identityService;
         private readonly ITokenService tokenServices;

@@ -1,4 +1,4 @@
-﻿using Application.Features.Common.Interfaces;
+﻿using Application.Features.Auth.Common;
 using Application.Features.UserServices.ChangePassword;
 using Domain.Exceptions;
 using MediatR;

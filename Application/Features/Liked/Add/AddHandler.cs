@@ -7,7 +7,7 @@ using Microsoft.Extensions.Logging;
 
 namespace Application.Features.Liked.Add
 {
-    public class AddHandler : IRequestHandler<AddCommand, bool>
+    internal class AddHandler : IRequestHandler<AddCommand, bool>
     {
         private readonly ILogger<AddHandler> logger;
         private readonly IMediaRepository<Media> mediaRepository;

@@ -4,7 +4,7 @@ using MediatR;
 
 namespace Application.Features.ToWatch.Remove
 {
-    public class RemoveHandler : IRequestHandler<RemoveCommand, Unit>
+    internal class RemoveHandler : IRequestHandler<RemoveCommand, Unit>
     {
         private readonly IUserDetailsRepository userDetailsRepository;
         public RemoveHandler(IUserDetailsRepository userDetailsRepository)

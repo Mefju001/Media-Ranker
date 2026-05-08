@@ -8,7 +8,7 @@ using MediatR;
 
 namespace Application.Features.Reviews.Upsert
 {
-    public class UpsertHandler : IRequestHandler<UpsertCommand, ReviewResponse>
+    internal class UpsertHandler : IRequestHandler<UpsertCommand, ReviewResponse>
     {
         private readonly IUserDetailsRepository userRepository;
         private readonly IMediaRepository<Media> mediaRepository;

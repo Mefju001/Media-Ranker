@@ -1,6 +1,5 @@
-﻿using Application.Features.Auth.RefreshAccessToken;
-using Application.Features.AuthServices.Common;
-using Application.Features.Common.Interfaces;
+﻿using Application.Features.Auth.Common;
+using Application.Features.Auth.RefreshAccessToken;
 using Domain.Exceptions;
 using MediatR;
 using System.Security.Claims;
@@ -8,7 +7,7 @@ using System.Security.Claims;
 
 namespace Application.Features.AuthServices.RefreshAccessToken
 {
-    public class RefreshAccessTokenHandler : IRequestHandler<RefreshAccessTokenCommand, TokenResponse?>
+    internal class RefreshAccessTokenHandler : IRequestHandler<RefreshAccessTokenCommand, TokenResponse?>
     {
         private readonly IIdentityService identityService;
         private readonly ITokenService tokenServices;

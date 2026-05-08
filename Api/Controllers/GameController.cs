@@ -1,9 +1,9 @@
 ﻿using Application.Features.Games.Command;
-using Application.Features.GamesServices.AddListOfGames;
-using Application.Features.GamesServices.DeleteById;
-using Application.Features.GamesServices.GameUpsert;
-using Application.Features.GamesServices.GetGameById;
-using Application.Features.GamesServices.GetGamesByCriteria;
+using Application.Features.Games.AddRange;
+using Application.Features.Games.DeleteById;
+using Application.Features.Games.Upsert;
+using Application.Features.Games.GetById;
+using Application.Features.Games.GetByCriteria;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -31,7 +31,7 @@ namespace Api.Controllers
         [HttpGet("{id:guid}")]
         public async Task<IActionResult> GetById([FromRoute] Guid id)
         {
-            var query = new GetGameByIdQuery(id);
+            var query = new GetByIdQuery(id);
             var games = await mediator.Send(query);
             return Ok(games);
         }
@@ -54,7 +54,7 @@ namespace Api.Controllers
         [HttpPost("Bulk")]
         public async Task<IActionResult> AddListOfGames([FromBody] List<GameRequest> gameRequests)
         {
-            var command = new AddListOfGamesCommand(gameRequests);
+            var command = new AddRangeCommand(gameRequests);
             var createdGames = await mediator.Send(command);
             return StatusCode(StatusCodes.Status201Created, createdGames);
         }

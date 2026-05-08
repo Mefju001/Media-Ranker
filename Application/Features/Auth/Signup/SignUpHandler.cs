@@ -1,5 +1,4 @@
-﻿using Application.Features.AuthServices.Common;
-using Application.Features.Common.Interfaces;
+﻿using Application.Features.Auth.Common;
 using Domain.Aggregate;
 using Domain.Exceptions;
 using Domain.Repository;
@@ -10,7 +9,7 @@ using Microsoft.Extensions.Logging;
 
 namespace Application.Features.Auth.Signup
 {
-    public class SignUpHandler : IRequestHandler<SignUpCommand, SignUpResponse>
+    internal class SignUpHandler : IRequestHandler<SignUpCommand, SignUpResponse>
     {
         private readonly IIdentityService identityService;
         private readonly IUserDetailsRepository userDetailsRepository;

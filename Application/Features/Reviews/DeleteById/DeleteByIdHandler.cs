@@ -4,7 +4,7 @@ using MediatR;
 
 namespace Application.Features.Reviews.DeleteById
 {
-    public class DeleteByIdHandler : IRequestHandler<DeleteByIdCommand, bool>
+    internal class DeleteByIdHandler : IRequestHandler<DeleteByIdCommand, bool>
     {
         private readonly IMediaRepository<Media> mediaRepository;
         public DeleteByIdHandler(IMediaRepository<Media> mediaRepository)

@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Application.Features.Reviews.GetAll
 {
-    public class GetAllHandler : IRequestHandler<GetAllQuery, List<ReviewResponse>>
+    internal class GetAllHandler : IRequestHandler<GetAllQuery, List<ReviewResponse>>
     {
         private readonly IAppDbContext appDbContext;
         public GetAllHandler(IAppDbContext appDbContext)

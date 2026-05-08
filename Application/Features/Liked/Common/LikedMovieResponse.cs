@@ -1,4 +1,5 @@
 ﻿using Application.Features.Common.DTO.Response;
+using Application.Features.User.Common;
 
 namespace Application.Features.Liked.Common
 {
