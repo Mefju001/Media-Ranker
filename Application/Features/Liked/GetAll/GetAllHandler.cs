@@ -7,14 +7,14 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Application.Features.Liked.GetAll
 {
-    internal class GetAllHandler : IRequestHandler<GetAllQuery, List<LikedMediaResponse>>
+    internal class GetAllHandler : IRequestHandler<GetAllQuery, List<LikedResponse>>
     {
         private readonly IAppDbContext appDbContext;
         public GetAllHandler(IAppDbContext appDbContext)
         {
             this.appDbContext = appDbContext;
         }
-        public async Task<List<LikedMediaResponse>> Handle(GetAllQuery request, CancellationToken cancellationToken)
+        public async Task<List<LikedResponse>> Handle(GetAllQuery request, CancellationToken cancellationToken)
         {
 
             return await appDbContext.Set<UserInteractions>()

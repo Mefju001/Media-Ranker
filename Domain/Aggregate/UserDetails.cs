@@ -59,7 +59,7 @@ public class UserDetails : AggregateRoot<Guid>, IAudited
     private UserInteractions GetOrAdd(Guid mediaId)
     {
         var existing = userInteractions.FirstOrDefault(ui =>
-            ui.Id.UserId == this.Id && ui.Id.MediaId == mediaId);
+            ui.UserId == this.Id && ui.MediaId == mediaId);
 
         if (existing == null)
         {
@@ -81,7 +81,7 @@ public class UserDetails : AggregateRoot<Guid>, IAudited
     public void RemoveInteraction(Guid mediaId)
     {
         var interaction = userInteractions.FirstOrDefault(ui =>
-            ui.Id.UserId == this.Id && ui.Id.MediaId == mediaId);
+            ui.UserId == this.Id && ui.MediaId == mediaId);
 
         if (interaction == null)
         {

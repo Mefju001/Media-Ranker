@@ -1,13 +1,12 @@
 ﻿using Application.Common.Interfaces;
-using Application.Features.AuthServices.Common;
-using Application.Features.Genres;
-using Application.Features.LikedServices.GetAllLiked;
+using Application.Features.Auth.Common;
+using Application.Features.Genres.GenreManager;
+using Application.Features.Genres.GetAll;
 using FluentValidation;
-using Infrastructure.BackgroundTasks;
-using Infrastructure.BackgroundTasks.Workers;
+using Infrastructure.BackgroundTasks.CleanTokens.Workers;
+using Infrastructure.BackgroundTasks.LogSender;
 using Infrastructure.Database;
 using Infrastructure.Database.Repository;
-using Infrastructure.Service;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 
@@ -25,7 +24,7 @@ namespace Api.Extensions
             services.AddScoped(typeof(IRepository<,>), typeof(Repository<,>));
             services.AddScoped(typeof(IMediaRepository<>), typeof(MediaRepository<>));
             services.RegisterAllTypes(typeof(GenreRepository).Assembly);
-            services.RegisterAllTypes(typeof(GenreHelperService).Assembly);
+            services.RegisterAllTypes(typeof(IGenreManager).Assembly);
             services.AddHostedService<TokenBackgroundService>();
             services.AddHttpClient<LogSenderService>();
             services.AddTransient(typeof(IPipelineBehavior<,>), typeof(ValidationBehavior<,>));

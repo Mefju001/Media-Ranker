@@ -3,5 +3,5 @@ using Application.Features.Liked.Common;
 
 namespace Application.Features.Liked.GetAll
 {
-    public record GetAllQuery : IQuery<List<LikedMediaResponse>>;
+    public record GetAllQuery : IQuery<List<LikedResponse>>;
 }

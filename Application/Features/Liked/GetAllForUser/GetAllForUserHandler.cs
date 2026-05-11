@@ -7,7 +7,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Application.Features.Liked.GetAllForUser
 {
-    internal class GetAllForUserHandler : IRequestHandler<GetAllForUserQuery, List<LikedMediaResponse>>
+    internal class GetAllForUserHandler : IRequestHandler<GetAllForUserQuery, List<LikedResponse>>
     {
         private readonly IAppDbContext appDbContext;
 
@@ -16,7 +16,7 @@ namespace Application.Features.Liked.GetAllForUser
             this.appDbContext = appDbContext;
         }
 
-        public async Task<List<LikedMediaResponse>> Handle(GetAllForUserQuery request, CancellationToken cancellationToken)
+        public async Task<List<LikedResponse>> Handle(GetAllForUserQuery request, CancellationToken cancellationToken)
         {
             return await appDbContext.Set<UserInteractions>()
                 .AsNoTracking()

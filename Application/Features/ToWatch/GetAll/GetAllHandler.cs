@@ -1,4 +1,5 @@
 ﻿using Application.Features.Common.Interfaces;
+using Domain.Enums;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 
@@ -14,13 +15,13 @@ namespace Application.Features.ToWatch.GetAll
 
         public async Task<List<ToWatchResponse>> Handle(GetAllQuery request, CancellationToken cancellationToken)
         {
-            return await appDbContext.ToWatchlists.Where(x => x.UserId == request.UserId)
+            return await appDbContext.UserInteractions.Where(x => x.UserId == request.UserId && x.TypeInteractions == ETypeInteractions.WANT_TO_WATCH)
                 .Select(x => new ToWatchResponse
                 (
                     x.Id,
                     x.UserId,
                     x.MediaId,
-                    x.LikedDate
+                    x.InteractionDate
                 )).ToListAsync(cancellationToken);
         }
     }

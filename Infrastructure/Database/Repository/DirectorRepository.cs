@@ -11,7 +11,7 @@ namespace Infrastructure.Database.Repository
         {
             return await appDbContext.Directors.AsNoTracking().FirstOrDefaultAsync(d => d.fullname.Name == name && d.fullname.Surname == surname, cancellationToken);
         }
-        public async Task<List<Director>> findByNames(List<(string, string)> fullnames, CancellationToken cancellationToken)
+        public async Task<List<Director>> FindByNamesAsync(List<(string, string)> fullnames, CancellationToken cancellationToken)
         {
             var names = fullnames.Select(x => x.Item1).Distinct().ToList();
             var surnames = fullnames.Select(x => x.Item2).Distinct().ToList();

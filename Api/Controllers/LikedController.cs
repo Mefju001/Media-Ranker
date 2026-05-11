@@ -44,7 +44,7 @@ namespace Api.Controllers
             return Ok(await mediator.Send(query));
         }
         [HttpGet("{id:int}")]
-        [ProducesResponseType(typeof(LikedMediaResponse), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(LikedResponse), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<IActionResult> GetById([FromRoute] Guid id)
         {

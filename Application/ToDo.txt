@@ -1,0 +1,1 @@
+﻿Może edycja MediaStats według typów mediów, np. osobno dla filmów, muzyki, gier itp.

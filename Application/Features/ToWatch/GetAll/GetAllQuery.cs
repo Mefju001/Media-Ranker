@@ -1,5 +1,4 @@
-﻿using Application.Features.ToWatch.GetAll;
-using MediatR;
+﻿using MediatR;
 
 namespace Application.Features.ToWatch.GetAll
 {

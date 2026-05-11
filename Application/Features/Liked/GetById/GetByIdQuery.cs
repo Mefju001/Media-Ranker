@@ -3,5 +3,5 @@ using Application.Features.Liked.Common;
 
 namespace Application.Features.Liked.GetById
 {
-    public record GetByIdQuery(Guid id) : IQuery<LikedMediaResponse?>;
+    public record GetByIdQuery(Guid id) : IQuery<LikedResponse?>;
 }

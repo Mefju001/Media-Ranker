@@ -1,7 +1,4 @@
-﻿using MediatR;
-using Microsoft.AspNetCore.Identity;
-
-
+﻿
 namespace Application.Features.Auth.Common
 {
     public interface IIdentityService

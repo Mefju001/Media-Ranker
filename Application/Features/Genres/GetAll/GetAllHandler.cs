@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Application.Features.Genres.GetAll
 {
-    public class GetAllHandler : IRequestHandler<GetAllQuery, List<GenreResponse>>
+    internal class GetAllHandler : IRequestHandler<GetAllQuery, List<GenreResponse>>
     {
         private readonly IAppDbContext appDbContext;
         public GetAllHandler(IAppDbContext appDbContext)

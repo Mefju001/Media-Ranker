@@ -1,6 +1,6 @@
 ﻿namespace Application.Features.Auth.Common
 {
-    internal class JwtSettings
+    public class JwtSettings
     {
         public const string SectionName = "Jwt";
         public string Key { get; init; } = string.Empty;

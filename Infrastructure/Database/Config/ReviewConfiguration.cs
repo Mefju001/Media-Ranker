@@ -1,4 +1,5 @@
-﻿using Domain.Entity;
+﻿using Domain.Aggregate;
+using Domain.Entity;
 using Infrastructure.Database.DBModels;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
@@ -11,6 +12,10 @@ namespace Infrastructure.Database.Config
         {
             builder.HasKey(r => r.Id);
             builder.HasOne<UserModel>()
+                .WithMany()
+                .HasForeignKey(r => r.UserId)
+                .OnDelete(DeleteBehavior.Cascade);
+            builder.HasOne<UserDetails>()
                 .WithMany()
                 .HasForeignKey(r => r.UserId)
                 .OnDelete(DeleteBehavior.Cascade);

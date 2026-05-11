@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Application.Features.Liked.GetById
 {
-    internal class GetByIdHandler : IRequestHandler<GetByIdQuery, LikedMediaResponse?>
+    internal class GetByIdHandler : IRequestHandler<GetByIdQuery, LikedResponse?>
     {
         private readonly IAppDbContext appDbContext;
         public GetByIdHandler(IAppDbContext appDbContext)
@@ -16,7 +16,7 @@ namespace Application.Features.Liked.GetById
             this.appDbContext = appDbContext;
         }
 
-        public async Task<LikedMediaResponse?> Handle(GetByIdQuery request, CancellationToken cancellationToken)
+        public async Task<LikedResponse?> Handle(GetByIdQuery request, CancellationToken cancellationToken)
         {
             return await appDbContext.Set<UserInteractions>()
                 .AsNoTracking()

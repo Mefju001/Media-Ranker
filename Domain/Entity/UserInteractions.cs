@@ -3,17 +3,17 @@ using Domain.Enums;
 
 namespace Domain.Entity
 {
-    public record struct UserMediaId(Guid UserId, Guid MediaId);
-    public class UserInteractions:Entity<UserMediaId>
+    public class UserInteractions:Entity<Guid>
     {
-        public Guid UserId => Id.UserId;
-        public Guid MediaId => Id.MediaId;
+        public Guid UserId { get; init; }
+        public Guid MediaId {  get; init; }
         public ERatingVote? RatingVote {  get; private set; }
         public ETypeInteractions? TypeInteractions { get; private set; }
         public DateTime InteractionDate { get; private set; }
-
-        private UserInteractions(Guid userId, ETypeInteractions? typeInteractions, ERatingVote? ratingVote, Guid mediaId) : base(new UserMediaId(userId, mediaId))
+        private UserInteractions() { }
+        private UserInteractions(Guid userId, ETypeInteractions? typeInteractions, ERatingVote? ratingVote, Guid mediaId, Guid? id=null)
         {
+            Id = id ?? Guid.NewGuid();
             TypeInteractions = typeInteractions;
             RatingVote = ratingVote;
             InteractionDate = DateTime.UtcNow;

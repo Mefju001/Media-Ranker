@@ -38,7 +38,7 @@ namespace Api.Controllers
         }
         [Authorize(Roles = "Admin")]
         [HttpGet("{name}")]
-        public async Task<IActionResult> GetBy([FromRoute] string name)
+        public async Task<IActionResult> GetByName([FromRoute] string name)
         {
             var query = new GetByNameQuery(name);
             var result = await mediator.Send(query);

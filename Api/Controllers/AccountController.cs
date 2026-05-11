@@ -2,7 +2,6 @@
 using Application.Features.Auth.Logout;
 using Application.Features.Auth.Signup;
 using Application.Features.Common.Interfaces;
-using Application.Features.User;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;

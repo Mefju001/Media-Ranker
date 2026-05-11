@@ -16,10 +16,8 @@ namespace Infrastructure.Database
         public DbSet<Director> Directors { get; set; }
         public DbSet<Review> Reviews { get; set; }
         public DbSet<Token> Tokens { get; set; }
-        public DbSet<LikedMedia> LikedMedias { get; set; }
-        public DbSet<ToWatch> ToWatchlists { get; set; }
-        public DbSet<UserDetails> UsersDetails { get; set; }
         public DbSet<UserInteractions> UserInteractions { get; set; }
+        public DbSet<UserDetails> UsersDetails { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -27,6 +25,5 @@ namespace Infrastructure.Database
             modelBuilder.ApplyConfigurationsFromAssembly(typeof(UserConfiguration).Assembly);
             modelBuilder.ApplyConfigurationsFromAssembly(typeof(MediaConfiguration).Assembly);
         }
-
     }
 }
