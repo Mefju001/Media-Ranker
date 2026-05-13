@@ -2,7 +2,7 @@
 using Application.Features.Directors.Common;
 using Domain.Aggregate;
 
-namespace Application.Features.Directors_MOZE_EDYCJA.Manager
+namespace Application.Features.Directors.Manager
 {
     internal class DirectorManager : IDirectorManager
     {

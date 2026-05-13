@@ -7,20 +7,20 @@ using System.Linq.Expressions;
 
 namespace Application.Features.Games.GetByCriteria
 {
-    internal class SortAndFilterService : IGameSortAndFilterService
+    internal class SortAndFilterService : ISortAndFilterService
     {
         private readonly IAppDbContext appDbContext;
         public SortAndFilterService(IAppDbContext appDbContext)
         {
             this.appDbContext = appDbContext;
         }
-        public async Task<List<GameResponse>> GetGamesByCriteriaAsync(GetByCriteriaQuery request, CancellationToken ct)
+        public async Task<List<GameResponse>> GetByCriteriaAsync(GetByCriteriaQuery request, CancellationToken ct)
         {
             var query = appDbContext.Set<Game>().AsNoTrackingWithIdentityResolution().AsSplitQuery();
             query = ApplyFilters(query, request);
             query = ApplySorting(query, request);
             return await query
-                .Join(appDbContext.Set<Domain.Aggregate.Genre>(), g => g.GenreId, gen => gen.Id, (g, gen) => new { g, gen })
+                .Join(appDbContext.Set<Genre>(), g => g.GenreId, gen => gen.Id, (g, gen) => new { g, gen })
                 .Select(x => GameMapper.ToGameResponse(x.g, x.gen))
                 .ToListAsync(ct);
         }
@@ -32,7 +32,7 @@ namespace Application.Features.Games.GetByCriteria
 
             if (!string.IsNullOrWhiteSpace(request.genreName))
             {
-                var genreIds = appDbContext.Set<Domain.Aggregate.Genre>()
+                var genreIds = appDbContext.Set<Genre>()
                     .Where(gen => gen.Name.Value.Contains(request.genreName))
                     .Select(gen => gen.Id);
 

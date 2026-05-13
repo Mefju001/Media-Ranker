@@ -14,6 +14,8 @@ namespace Domain.Entity
         private UserInteractions(Guid userId, ETypeInteractions? typeInteractions, ERatingVote? ratingVote, Guid mediaId, Guid? id=null)
         {
             Id = id ?? Guid.NewGuid();
+            MediaId = mediaId;
+            UserId = userId;
             TypeInteractions = typeInteractions;
             RatingVote = ratingVote;
             InteractionDate = DateTime.UtcNow;

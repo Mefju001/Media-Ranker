@@ -20,5 +20,5 @@ namespace Application.Features.TvSeries.Common
         int Episodes,
         string? Network,
         EStatus Status
-        ): MediaResponse, IResponse;
+        ): MediaResponse(id, Title, Description, Genre, ReleaseDate, Language, MediaStats), IResponse;
 }

@@ -1,5 +1,4 @@
 ﻿using Application.Common.Interfaces;
-using Application.Features.Common.Notification;
 using Application.Features.Games.Upsert;
 using Application.Features.Genres.Common;
 using Application.Features.Genres.GenreManager;
@@ -9,9 +8,7 @@ using Domain.Exceptions;
 using Domain.Value_Object;
 using Infrastructure.Database;
 using Infrastructure.Database.Repository;
-using MediatR;
 using Microsoft.EntityFrameworkCore;
-using Moq;
 
 
 namespace Tests.Service.GameService
@@ -22,7 +19,6 @@ namespace Tests.Service.GameService
         private Guid GameId;
         private AppDbContext context;
         private IMediaRepository<Game> repository;
-        private Mock<IMediator> mediatorMock;
         private IGenreManager genreHelperMock;
         private UpsertHandler handler;
         [TestInitialize]
@@ -34,8 +30,7 @@ namespace Tests.Service.GameService
             context = new AppDbContext(options);
             genreHelperMock = new GenreManager(new GenreRepository(context));
             repository = new MediaRepository<Game>(context);
-            mediatorMock = new Mock<IMediator>();
-            handler = new UpsertHandler(genreHelperMock, mediatorMock.Object, repository);
+            handler = new UpsertHandler(genreHelperMock, repository);
             await SeedData();
         }
         [TestCleanup]
@@ -76,9 +71,7 @@ namespace Tests.Service.GameService
             Assert.IsNotNull(gameInDb);
             Assert.AreEqual("New Game", gameInDb.Title);
 
-            mediatorMock.Verify(m => m.Publish(
-                It.Is<LogNotification>(n => n.Message.Contains("dodana")),
-                It.IsAny<CancellationToken>()), Times.Once);
+            
         }
         [TestMethod]
         public async Task Handle_WhenIdIsNotNull_ShouldUpdateExistingGame()
@@ -100,9 +93,7 @@ namespace Tests.Service.GameService
             Assert.IsNotNull(gameInDb);
             Assert.AreEqual("New Game", gameInDb.Title);
             Assert.AreEqual("Description", gameInDb.Description);
-            mediatorMock.Verify(m => m.Publish(
-                It.Is<LogNotification>(n => n.Message.Contains("zaktualizowana")),
-                It.IsAny<CancellationToken>()), Times.Once);
+            
         }
         [TestMethod]
         public async Task Handle_WhenGenreDoesNotExist_ShouldCreateNewGenre()

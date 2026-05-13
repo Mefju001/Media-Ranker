@@ -1,24 +1,21 @@
 ﻿using Application.Common.Interfaces;
-using domain = Domain.Aggregate;
+using Application.Features.Genres.GenreManager;
+using Application.Features.TvSeries.Common;
 using Domain.Exceptions;
 using Domain.Value_Object;
 using MediatR;
-using Application.Features.TvSeries.Common;
-using Application.Features.Genres.GenreManager;
-using Application.Features.Common.Notification;
+using domain = Domain.Aggregate;
 
 namespace Application.Features.TvSeries.Upsert
 {
     internal class UpsertHandler : IRequestHandler<UpsertCommand, TvSeriesResponse>
     {
-        private readonly IMediator mediator;
         private readonly IGenreManager genreHelperService;
         private readonly IMediaRepository<domain.TvSeries> mediaRepository;
 
-        public UpsertHandler(IGenreManager genreHelperService, IMediator mediator, IMediaRepository<domain.TvSeries> mediaRepository)
+        public UpsertHandler(IGenreManager genreHelperService, IMediaRepository<domain.TvSeries> mediaRepository)
         {
 
-            this.mediator = mediator;
             this.genreHelperService = genreHelperService;
             this.mediaRepository = mediaRepository;
         }
@@ -26,7 +23,6 @@ namespace Application.Features.TvSeries.Upsert
         public async Task<TvSeriesResponse> Handle(UpsertCommand request, CancellationToken cancellationToken)
         {
             var genre = await genreHelperService.GetOrCreateAsync(request.genre, cancellationToken);
-            var isNew = false;
             domain.TvSeries? tvSeries = null;
             if (request.id is not null)
             {
@@ -48,7 +44,6 @@ namespace Application.Features.TvSeries.Upsert
             }
             else
             {
-                isNew = true;
                 tvSeries = domain.TvSeries.Create(
                         request.title,
                         request.description,
@@ -61,8 +56,6 @@ namespace Application.Features.TvSeries.Upsert
                         request.Status);
                 tvSeries = await mediaRepository.AddAsync(tvSeries, cancellationToken);
             }
-            var action = isNew ? "dodana" : "zaktualizowany";
-            await mediator.Publish(new LogNotification("Information", $"Nowy serial został {action}.", nameof(UpsertHandler)));
             return TvSeriesMapper.ToTvSeriesResponse(tvSeries, genre);
         }
     }

@@ -6,6 +6,7 @@ namespace Application.Features.Common.Interfaces
 {
     public interface IAppDbContext
     {
+        public DbContext Context { get; }
         public DbSet<T> Set<T>() where T : class;
         public DbSet<Media> Medias { get; set; }
         public DbSet<Genre> Genres { get; set; }

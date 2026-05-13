@@ -56,9 +56,9 @@ namespace Api.Controllers
             }
             return Ok(response);
         }
-        [ProducesResponseType(typeof(LikedMediaRequest), StatusCodes.Status201Created)]
+        [ProducesResponseType(typeof(LikedRequest), StatusCodes.Status201Created)]
         [HttpPost]
-        public async Task<IActionResult> Add([FromBody] LikedMediaRequest liked)
+        public async Task<IActionResult> Add([FromBody] LikedRequest liked)
         {
             var userId = GetCurrentUserId();
             var command = new AddCommand(userId, liked.MediaId);

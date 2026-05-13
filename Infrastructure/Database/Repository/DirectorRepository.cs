@@ -1,4 +1,5 @@
 ﻿using Application.Common.Interfaces;
+using Application.Features.Common.Interfaces;
 using Domain.Aggregate;
 using Microsoft.EntityFrameworkCore;
 
@@ -6,7 +7,7 @@ namespace Infrastructure.Database.Repository
 {
     public class DirectorRepository : Repository<Director, Guid>, IDirectorRepository
     {
-        public DirectorRepository(AppDbContext context) : base(context) { }
+        public DirectorRepository(IAppDbContext context) : base(context) { }
         public async Task<Director?> FirstOrDefaultForNameAndSurnameAsync(string name, string surname, CancellationToken cancellationToken)
         {
             return await appDbContext.Directors.AsNoTracking().FirstOrDefaultAsync(d => d.fullname.Name == name && d.fullname.Surname == surname, cancellationToken);

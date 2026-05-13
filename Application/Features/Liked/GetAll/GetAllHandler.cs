@@ -25,7 +25,7 @@ namespace Application.Features.Liked.GetAll
                 .Join(appDbContext.Set<Genre>(), lum => lum.m.GenreId, g => g.Id, (lum, g) => new { lum.l, lum.u, lum.m, g })
                 .GroupJoin(appDbContext.Set<Director>(), x => (x.m as Movie).DirectorId, d => d.Id, (x, directors) => new { x, directors })
                 .SelectMany(temp => temp.directors.DefaultIfEmpty(), (temp, director) => new { temp.x, director })
-                .Select(l => LikedMediaMapper.ToResponse(l.x.l, l.x.u, l.x.m, l.x.g, l.director))
+                .Select(l => LikedMapper.ToResponse(l.x.l, l.x.u, l.x.m, l.x.g, l.director))
                 .ToListAsync(cancellationToken);
         }
     }

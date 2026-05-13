@@ -1,8 +1,9 @@
 ﻿using Domain.Exceptions;
 using FluentValidation;
 using MediatR;
+using Microsoft.Extensions.Logging;
 
-namespace Api.Extensions
+namespace Application.Behaviours
 {
     public class ErrorHandlingBehaviour<TRequest, TResponse>(ILogger<TRequest> logger) : IPipelineBehavior<TRequest, TResponse>
         where TRequest : IRequest<TResponse>

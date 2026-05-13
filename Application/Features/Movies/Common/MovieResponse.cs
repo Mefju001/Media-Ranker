@@ -19,6 +19,6 @@ namespace Application.Features.Movies.Common
         TimeSpan Duration,
         bool IsCinemaRelease
 
-        ):MediaResponse,IResponse;
+        ):MediaResponse(id, Title, Description, Genre, ReleaseDate, Language, MediaStats),IResponse;
 
 }

@@ -1,5 +1,4 @@
 ﻿using Application.Common.Interfaces;
-using Application.Features.Common.Notification;
 using Domain.Aggregate;
 using Domain.Exceptions;
 using MediatR;
@@ -9,11 +8,9 @@ namespace Application.Features.Games.DeleteById
     internal class DeleteByIdHandler : IRequestHandler<DeleteByIdCommand, Unit>
     {
         private readonly IMediaRepository<Game> mediaRepository;
-        private readonly IMediator mediator;
-        public DeleteByIdHandler(IMediaRepository<Game> mediaRepository, IMediator mediator)
+        public DeleteByIdHandler(IMediaRepository<Game> mediaRepository)
         {
             this.mediaRepository = mediaRepository;
-            this.mediator = mediator;
         }
         public async Task<Unit> Handle(DeleteByIdCommand request, CancellationToken cancellationToken)
         {
@@ -23,7 +20,6 @@ namespace Application.Features.Games.DeleteById
                 throw new NotFoundException($"The game with ID {request.id} does not exist");
             }
             mediaRepository.Remove(game);
-            await mediator.Publish(new LogNotification("Information", $"Usunięto grę o id: {request.id}", nameof(DeleteByIdHandler)));
             return Unit.Value;
         }
     }

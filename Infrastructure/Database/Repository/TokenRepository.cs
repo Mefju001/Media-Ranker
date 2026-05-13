@@ -1,4 +1,5 @@
-﻿using Domain.Aggregate;
+﻿using Application.Features.Common.Interfaces;
+using Domain.Aggregate;
 using Domain.Repository;
 using Microsoft.EntityFrameworkCore;
 
@@ -7,8 +8,8 @@ namespace Infrastructure.Database.Repository
 {
     public class TokenRepository : ITokenRepository
     {
-        private readonly AppDbContext appDbContext;
-        public TokenRepository(AppDbContext appDbContext)
+        private readonly IAppDbContext appDbContext;
+        public TokenRepository(IAppDbContext appDbContext)
         {
             this.appDbContext = appDbContext;
         }

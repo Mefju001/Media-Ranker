@@ -55,7 +55,7 @@ namespace Tests.Service.ToWatchService
             var result = appDbContext.UsersDetails.Include(u => u.UserInteractions).FirstOrDefault(u => u.Id == userId);
             Assert.IsNotNull(result);
             Assert.HasCount(1, result.UserInteractions);
-            Assert.AreEqual(gameId, result.UserInteractions.First().Id.MediaId);
+            Assert.AreEqual(gameId, result.UserInteractions.First().MediaId);
         }
         [TestMethod]
         public async Task TestAdd_ShouldThrowNotFoundException()

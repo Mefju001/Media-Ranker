@@ -56,7 +56,7 @@ namespace Tests.Service.LikedMediaService
             var initialCheck = await context.UsersDetails
                 .Include(u => u.UserInteractions)
                 .FirstOrDefaultAsync(u => u.Id == userId);
-            Assert.IsTrue(initialCheck.UserInteractions.Any(m => m.Id.MediaId == mediaId), "Dane powinny istnieć przed usunięciem");
+            Assert.IsTrue(initialCheck.UserInteractions.Any(m => m.MediaId == mediaId), "Dane powinny istnieć przed usunięciem");
             var command = new DeleteByIdCommand(userId, mediaId);
             var result = await handler.Handle(command, CancellationToken.None);
             Assert.IsTrue(result);
@@ -64,7 +64,7 @@ namespace Tests.Service.LikedMediaService
                 .Include(u => u.UserInteractions)
                 .FirstOrDefaultAsync(u => u.Id == userId);
             Assert.IsNotNull(user);
-            Assert.IsFalse(user.UserInteractions.Any(m => m.Id.MediaId == mediaId), "Media powinno zostać usunięte z ulubionych");
+            Assert.IsFalse(user.UserInteractions.Any(m => m.MediaId == mediaId), "Media powinno zostać usunięte z ulubionych");
         }
         [TestMethod]
         public async Task Handle_DeleteLikedMedia_UserNotFound_ShouldThrow()

@@ -1,7 +1,7 @@
 ﻿using Application.Common.Interfaces;
 using Application.Features.Common.Notification;
 using Application.Features.Directors.Common;
-using Application.Features.Directors_MOZE_EDYCJA.Manager;
+using Application.Features.Directors.Manager;
 using Application.Features.Genres.Common;
 using Application.Features.Genres.GenreManager;
 using Application.Features.Movies.AddRange;
@@ -21,7 +21,6 @@ namespace Tests.Service.MovieService
         private AppDbContext context;
         private AddRangeHandler handler;
         private IMediaRepository<Movie> movieRepository;
-        private Mock<IMediator> mediatorMock;
         private IGenreManager genreHelperService;
         private IDirectorManager directorHelperService;
         [TestInitialize]
@@ -31,11 +30,10 @@ namespace Tests.Service.MovieService
                 .UseInMemoryDatabase(databaseName: Guid.NewGuid().ToString())
                 .Options;
             context = new AppDbContext(options);
-            mediatorMock = new Mock<IMediator>();
             movieRepository = new MediaRepository<Movie>(context);
             genreHelperService = new GenreManager(new GenreRepository(context));
             directorHelperService = new DirectorManager(new DirectorRepository(context));
-            handler = new AddRangeHandler(movieRepository, genreHelperService, mediatorMock.Object, directorHelperService);
+            handler = new AddRangeHandler(movieRepository, genreHelperService, directorHelperService);
         }
         [TestCleanup]
         public void Cleanup()
@@ -74,9 +72,6 @@ namespace Tests.Service.MovieService
             await context.SaveChangesAsync();
             Assert.IsNotNull(result);
             Assert.HasCount(2, result);
-            mediatorMock.Verify(m => m.Publish(
-                It.Is<LogNotification>(n => n.Message.Contains("dodana")),
-                It.IsAny<CancellationToken>()), Times.Once);
             var moviesInDb = await context.Medias.ToListAsync();
             Assert.IsNotNull(moviesInDb);
             Assert.IsTrue(moviesInDb.Any(m => m.Title == "Movie 1"));

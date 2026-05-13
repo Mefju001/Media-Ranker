@@ -46,7 +46,7 @@ namespace Application.Features.Liked.GetAllForUser
                         Genre = temp.t.genre,
                         Director = director
                     })
-                .Select(x => LikedMediaMapper.ToResponse(x.Like, x.User, x.Media, x.Genre, x.Director))
+                .Select(x => LikedMapper.ToResponse(x.Like, x.User, x.Media, x.Genre, x.Director))
                 .ToListAsync(cancellationToken);
         }
     }

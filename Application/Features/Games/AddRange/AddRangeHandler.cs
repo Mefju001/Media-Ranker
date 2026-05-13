@@ -15,10 +15,8 @@ namespace Application.Features.Games.AddRange
     {
         private readonly IGenreManager genreManager;
         private readonly IMediaRepository<Game> mediaRepository;
-        private readonly IMediator mediator;
-        public AddRangeHandler(IMediator mediator, IGenreManager genreManager, IMediaRepository<Game> mediaRepository)
+        public AddRangeHandler( IGenreManager genreManager, IMediaRepository<Game> mediaRepository)
         {
-            this.mediator = mediator;
             this.genreManager = genreManager;
             this.mediaRepository = mediaRepository;
         }
@@ -43,7 +41,6 @@ namespace Application.Features.Games.AddRange
                         gameReq.Platforms);
             }).ToList();
             await mediaRepository.AddRangeAsync(games, cancellationToken);
-            await mediator.Publish(new LogNotification("Information", "Nowa lista gier została dodana.", nameof(AddRangeHandler)));
             var genresById = genresDict.Values.ToDictionary(
                 g => g.id);
             return games.Select(g => GameMapper.ToGameResponse(g, genresById[g.GenreId])).ToList();

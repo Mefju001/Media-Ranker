@@ -13,20 +13,17 @@ namespace Application.Features.Games.Upsert
     internal class UpsertHandler : IRequestHandler<UpsertCommand, GameResponse>
     {
         private readonly IMediaRepository<Game> mediaRepository;
-        private readonly IMediator mediator;
         private readonly IGenreManager genreHelperService;
 
-        public UpsertHandler(IGenreManager genreHelperService, IMediator mediator, IMediaRepository<Game> mediaRepository)
+        public UpsertHandler(IGenreManager genreHelperService, IMediaRepository<Game> mediaRepository)
         {
             this.mediaRepository = mediaRepository;
-            this.mediator = mediator;
             this.genreHelperService = genreHelperService;
         }
 
         public async Task<GameResponse> Handle(UpsertCommand request, CancellationToken cancellationToken)
         {
             var genre = await genreHelperService.GetOrCreateAsync(request.Genre, cancellationToken);
-            var isNew = false;
             Game? game = null;
             if (request.id.HasValue)
             {
@@ -47,7 +44,6 @@ namespace Application.Features.Games.Upsert
             }
             else
             {
-                isNew = true;
                 game = Game.Create(
                     request.Title,
                     request.Description,
@@ -57,8 +53,7 @@ namespace Application.Features.Games.Upsert
                     request.Platforms);
                 game = await mediaRepository.AddAsync(game, cancellationToken);
             }
-            var action = isNew ? "dodana" : "zaktualizowana";
-            await mediator.Publish(new LogNotification("Information", $"Gra została {action}. ID:{game.Id}", nameof(UpsertHandler)));
+            
             return GameMapper.ToGameResponse(game, genre);
         }
     }

@@ -55,8 +55,8 @@ namespace Tests.Service.LikedMediaService
         {
             var result = await handler.Handle(new GetAllForUserQuery(userId), CancellationToken.None);
             Assert.HasCount(2, result);
-            Assert.IsTrue(result.Any(m => m.Media.id == mediaId1));
-            Assert.IsTrue(result.Any(m => m.Media.id == mediaId2));
+            Assert.IsTrue(result.Any(m => m.MediaResponse.id == mediaId1));
+            Assert.IsTrue(result.Any(m => m.MediaResponse.id == mediaId2));
         }
         [TestMethod]
         public async Task Handle_GetAllLikeForUser_ShouldReturnEmptyList()

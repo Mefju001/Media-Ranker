@@ -8,7 +8,6 @@ using Domain.Aggregate;
 using Domain.Enums;
 using Infrastructure.Database;
 using Infrastructure.Database.Repository;
-using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Moq;
 
@@ -20,7 +19,6 @@ namespace Tests.Service.TvSeriesService
         private AppDbContext context;
         private AddRangeHandler handler;
         private IMediaRepository<TvSeries> repository;
-        private Mock<IMediator> mediatorMock;
         private IGenreManager genreHelperService;
         [TestInitialize]
         public void Initialize()
@@ -29,10 +27,9 @@ namespace Tests.Service.TvSeriesService
                 .UseInMemoryDatabase(databaseName: Guid.NewGuid().ToString())
                 .Options;
             context = new AppDbContext(options);
-            mediatorMock = new Mock<IMediator>();
             repository = new MediaRepository<TvSeries>(context);
             genreHelperService = new GenreManager(new GenreRepository(context));
-            handler = new AddRangeHandler(mediatorMock.Object, genreHelperService, repository);
+            handler = new AddRangeHandler(genreHelperService, repository);
         }
         [TestCleanup]
         public void Cleanup()
@@ -74,9 +71,6 @@ namespace Tests.Service.TvSeriesService
             await context.SaveChangesAsync();
             Assert.IsNotNull(result);
             Assert.HasCount(2, result);
-            mediatorMock.Verify(m => m.Publish(
-                It.Is<LogNotification>(n => n.Message.Contains("dodana")),
-                It.IsAny<CancellationToken>()), Times.Once);
             var moviesInDb = await context.Medias.ToListAsync();
             Assert.IsNotNull(moviesInDb);
             Assert.IsTrue(moviesInDb.Any(m => m.Title == "Title 1"));

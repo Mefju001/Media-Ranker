@@ -12,7 +12,7 @@ namespace Tests.Service.GameService
     public class SortAndFilterService
     {
         private AppDbContext appDbContext;
-        private IGameSortAndFilterService service;
+        private ISortAndFilterService service;
         [TestInitialize]
         public async Task Setup()
         {
@@ -46,7 +46,7 @@ namespace Tests.Service.GameService
         public async Task GetGamesByCriteria_WhenFilterByTitle_ShouldReturnMatch() 
         {
             var query = new GetByCriteriaQuery("Game A", null, null, null, null, null,null,true);
-            var result = await service.GetGamesByCriteriaAsync(query, CancellationToken.None);
+            var result = await service.GetByCriteriaAsync(query, CancellationToken.None);
             Assert.HasCount(1, result);
             Assert.AreEqual("Game A", result[0].Title);
         }
@@ -55,7 +55,7 @@ namespace Tests.Service.GameService
         public async Task GetGamesByCriteria_WhenSortByDate_ShouldReturnOrdered() 
         {
             var query = new GetByCriteriaQuery(null, null, null, null, null, null, "Date", true);
-            var result = await service.GetGamesByCriteriaAsync(query, CancellationToken.None);
+            var result = await service.GetByCriteriaAsync(query, CancellationToken.None);
             Assert.HasCount(2, result);
             Assert.AreEqual("Game A", result[0].Title);
             Assert.AreEqual("Game B", result[1].Title);
@@ -63,7 +63,7 @@ namespace Tests.Service.GameService
         [TestMethod]
         public async Task GetAllGamesAndDefaultSortShouldBeTitle()
         {
-            var query = new GetByCriteriaQuery(null, null, null, null, null, null, null, true); var result = await service.GetGamesByCriteriaAsync(query, CancellationToken.None);
+            var query = new GetByCriteriaQuery(null, null, null, null, null, null, null, true); var result = await service.GetByCriteriaAsync(query, CancellationToken.None);
             Assert.HasCount(2, result);
             Assert.AreEqual("Game A", result[0].Title);
             Assert.AreEqual("Game B", result[1].Title);

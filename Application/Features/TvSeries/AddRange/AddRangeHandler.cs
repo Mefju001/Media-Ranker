@@ -1,11 +1,10 @@
 ﻿using Application.Common.Interfaces;
-using domain = Domain.Aggregate;
+using Application.Features.Genres.GenreManager;
+using Application.Features.TvSeries.Common;
 using Domain.Exceptions;
 using Domain.Value_Object;
 using MediatR;
-using Application.Features.TvSeries.Common;
-using Application.Features.Genres.GenreManager;
-using Application.Features.Common.Notification;
+using domain = Domain.Aggregate;
 
 namespace Application.Features.TvSeries.AddRange
 {
@@ -15,10 +14,8 @@ namespace Application.Features.TvSeries.AddRange
     {
         private readonly IGenreManager genreHelperService;
         private readonly IMediaRepository<domain.TvSeries> mediaRepository;
-        private readonly IMediator mediator;
-        public AddRangeHandler(IMediator mediator, IGenreManager genreHelperService, IMediaRepository<domain.TvSeries> mediaRepository)
+        public AddRangeHandler( IGenreManager genreHelperService, IMediaRepository<domain.TvSeries> mediaRepository)
         {
-            this.mediator = mediator;
             this.genreHelperService = genreHelperService;
             this.mediaRepository = mediaRepository;
         }
@@ -36,7 +33,6 @@ namespace Application.Features.TvSeries.AddRange
                 return domain.TvSeries.Create(tv.title, tv.description, new Language(tv.Language), new ReleaseDate(tv.ReleaseDate), genre.id, tv.Seasons, tv.Episodes, tv.Network, tv.Status);
             }).ToList();
             await mediaRepository.AddRangeAsync(tvSeries, cancellationToken);
-            await mediator.Publish(new LogNotification("Information", "Nowa lista seriali została dodana.", nameof(AddRangeHandler)));
             var genresById = genres.Values.ToDictionary(g => g.id);
             return tvSeries.Select(tv => TvSeriesMapper.ToTvSeriesResponse(tv, genresById[tv.GenreId])).ToList();
         }

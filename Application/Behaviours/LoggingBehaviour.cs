@@ -1,7 +1,8 @@
 ﻿using MediatR;
+using Microsoft.Extensions.Logging;
 using System.Diagnostics;
 
-namespace Api.Extensions
+namespace Application.Behaviours
 {
     public class LoggingBehaviour<TRequest, TResponse>(ILogger<TRequest> logger) : IPipelineBehavior<TRequest, TResponse> where TRequest : IRequest<TResponse>
     {

@@ -18,5 +18,5 @@ namespace Application.Features.Games.Command
         MediaStatsResponse MediaStats,
         string? Developer,
         List<EPlatform> Platforms
-        ) : MediaResponse, IResponse;
+        ) : MediaResponse(id, Title, Description, Genre, ReleaseDate, Language, MediaStats), IResponse;
 }

@@ -1,4 +1,5 @@
 ﻿using Application.Common.Interfaces;
+using Application.Features.Common.Interfaces;
 using Domain.Base;
 using Microsoft.EntityFrameworkCore;
 
@@ -7,8 +8,8 @@ namespace Infrastructure.Database.Repository
 {
     public class Repository<T, TId> : IRepository<T, TId> where T : AggregateRoot<TId>
     {
-        protected readonly AppDbContext appDbContext;
-        public Repository(AppDbContext appDbContext)
+        protected readonly IAppDbContext appDbContext;
+        public Repository(IAppDbContext appDbContext)
         {
             this.appDbContext = appDbContext;
         }

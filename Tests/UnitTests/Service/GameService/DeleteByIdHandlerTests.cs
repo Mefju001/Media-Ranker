@@ -19,7 +19,6 @@ namespace Tests.Service.GameService
         private readonly Guid gameId = Guid.NewGuid();
         private AppDbContext context;
         private DeleteByIdHandler handler;
-        private Mock<IMediator> mediatorMock;
         private IMediaRepository<Game> repository;
         [TestInitialize]
         public async Task TestInitialize()
@@ -27,10 +26,9 @@ namespace Tests.Service.GameService
             var options = new DbContextOptionsBuilder<AppDbContext>()
                 .UseInMemoryDatabase(databaseName: Guid.NewGuid().ToString())
                 .Options;
-            mediatorMock = new Mock<IMediator>();
             context = new AppDbContext(options);
             repository = new MediaRepository<Game>(context);
-            handler = new DeleteByIdHandler(repository, mediatorMock.Object);
+            handler = new DeleteByIdHandler(repository);
             await SeedData();
         }
         private async Task SeedData()
@@ -55,10 +53,6 @@ namespace Tests.Service.GameService
 
             var gameInDb = await context.Medias.FindAsync(gameId);
             Assert.IsNull(gameInDb, "Gra powinna zostać usunięta z bazy danych.");
-
-            mediatorMock.Verify(m => m.Publish(
-                It.Is<LogNotification>(n => n.Message.Contains("Usunięto")),
-                It.IsAny<CancellationToken>()), Times.Once);
         }
         [TestMethod]
         public async Task Handle_DeleteById_ShouldThrowNotFoundException()

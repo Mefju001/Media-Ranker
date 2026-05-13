@@ -1,5 +1,4 @@
 ﻿using Application.Common.Interfaces;
-using Application.Features.Common.Notification;
 using Application.Features.TvSeries.DeleteById;
 using Domain.Aggregate;
 using Domain.Enums;
@@ -7,9 +6,7 @@ using Domain.Exceptions;
 using Domain.Value_Object;
 using Infrastructure.Database;
 using Infrastructure.Database.Repository;
-using MediatR;
 using Microsoft.EntityFrameworkCore;
-using Moq;
 
 namespace Tests.Service.TvSeriesService
 {
@@ -18,7 +15,6 @@ namespace Tests.Service.TvSeriesService
     {
         private readonly Guid id = Guid.NewGuid();
         private AppDbContext appDbContext;
-        private Mock<IMediator> mockMediator;
         private IMediaRepository<TvSeries> repository;
         private DeleteByIdHandler handler;
         [TestInitialize]
@@ -29,8 +25,7 @@ namespace Tests.Service.TvSeriesService
                 .Options;
             appDbContext = new AppDbContext(options);
             repository = new MediaRepository<TvSeries>(appDbContext);
-            mockMediator = new Mock<IMediator>();
-            handler = new DeleteByIdHandler(repository, mockMediator.Object);
+            handler = new DeleteByIdHandler(repository);
             await SeedData();
         }
         private async Task SeedData()
@@ -56,10 +51,6 @@ namespace Tests.Service.TvSeriesService
 
             var tvSeriesInDb = await appDbContext.Medias.FindAsync(id);
             Assert.IsNull(tvSeriesInDb, "Film powinien zostać usunięty z bazy danych.");
-
-            mockMediator.Verify(m => m.Publish(
-                It.Is<LogNotification>(n => n.Message.Contains("Usunięto")),
-                It.IsAny<CancellationToken>()), Times.Once);
         }
         [TestMethod]
         public async Task Handle_DeleteById_ShouldThrowNotFoundException()

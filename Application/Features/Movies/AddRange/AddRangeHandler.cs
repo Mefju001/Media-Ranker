@@ -1,6 +1,5 @@
 ﻿using Application.Common.Interfaces;
-using Application.Features.Common.Notification;
-using Application.Features.Directors_MOZE_EDYCJA.Manager;
+using Application.Features.Directors.Manager;
 using Application.Features.Genres.GenreManager;
 using Application.Features.Movies.Common;
 using Domain.Aggregate;
@@ -15,14 +14,12 @@ namespace Application.Features.Movies.AddRange
         private readonly IGenreManager genreHelperService;
         private readonly IDirectorManager directorHelperService;
         private readonly IMediaRepository<Movie> mediaRepository;
-        private readonly IMediator mediator;
         //maybe add better response with info about which games were added and which not, and why.
-        public AddRangeHandler(IMediaRepository<Movie> mediaRepository, IGenreManager genreHelperService, IMediator mediator, IDirectorManager directorHelperService)
+        public AddRangeHandler(IMediaRepository<Movie> mediaRepository, IGenreManager genreHelperService, IDirectorManager directorHelperService)
         {
             this.genreHelperService = genreHelperService;
 
             this.mediaRepository = mediaRepository;
-            this.mediator = mediator;
             this.directorHelperService = directorHelperService;
         }
         public async Task<List<MovieResponse>> Handle(AddRangeCommand requests, CancellationToken cancellationToken)
@@ -51,7 +48,6 @@ namespace Application.Features.Movies.AddRange
                     movieReq.IsCinemaRelease);
             }).ToList();
             await mediaRepository.AddRangeAsync(movies, cancellationToken);
-            await mediator.Publish(new LogNotification("Information", "Nowa lista filmów została dodana.", nameof(AddRangeHandler)));
             var directorById = dictionaryDirectors.Values.ToDictionary(d => d.id);
             var genreById = dictionaryGenres.Values.ToDictionary(g => g.id);
             return movies.Select(m =>

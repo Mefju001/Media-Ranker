@@ -22,7 +22,6 @@ namespace Tests.Service.TvSeriesService
         private Guid tvSeriesId;
         private AppDbContext context;
         private IMediaRepository<TvSeries> repository;
-        private Mock<IMediator> mediatorMock;
         private IGenreManager genreHelperService;
         private UpsertHandler handler;
         [TestInitialize]
@@ -34,8 +33,7 @@ namespace Tests.Service.TvSeriesService
             context = new AppDbContext(options);
             genreHelperService = new GenreManager(new GenreRepository(context));
             repository = new MediaRepository<TvSeries>(context);
-            mediatorMock = new Mock<IMediator>();
-            handler = new UpsertHandler(genreHelperService, mediatorMock.Object, repository);
+            handler = new UpsertHandler(genreHelperService, repository);
             await SeedData();
         }
         [TestCleanup]
@@ -77,10 +75,6 @@ namespace Tests.Service.TvSeriesService
             var tvSeriesInDb = await context.Medias.FirstOrDefaultAsync(g => g.Title == "New Title");
             Assert.IsNotNull(tvSeriesInDb);
             Assert.AreEqual("New Title", tvSeriesInDb.Title);
-
-            mediatorMock.Verify(m => m.Publish(
-                It.Is<LogNotification>(n => n.Message.Contains("dodana")),
-                It.IsAny<CancellationToken>()), Times.Once);
         }
 
         [TestMethod]
@@ -105,9 +99,7 @@ namespace Tests.Service.TvSeriesService
             Assert.IsNotNull(gameInDb);
             Assert.AreEqual("New Title", gameInDb.Title);
             Assert.AreEqual("Description", gameInDb.Description);
-            mediatorMock.Verify(m => m.Publish(
-                It.Is<LogNotification>(n => n.Message.Contains("zaktualizowany")),
-                It.IsAny<CancellationToken>()), Times.Once);
+           
         }
         [TestMethod]
         public async Task Handle_WhenGenreDoesNotExist_ShouldCreateNewGenre()

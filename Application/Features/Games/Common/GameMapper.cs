@@ -1,6 +1,5 @@
 ﻿using Application.Features.Games.Command;
 using Application.Features.Genres.GetAll;
-using Application.Features.Movies;
 using Application.Features.Movies.Common;
 using Application.Features.Reviews.Common;
 using Domain.Aggregate;

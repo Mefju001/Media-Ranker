@@ -1,4 +1,5 @@
 ﻿using Application.Common.Interfaces;
+using Application.Features.Common.Interfaces;
 using Domain.Aggregate;
 using Microsoft.EntityFrameworkCore;
 
@@ -7,7 +8,7 @@ namespace Infrastructure.Database.Repository
     public class GenreRepository : Repository<Genre, Guid>, IGenreRepository
     {
 
-        public GenreRepository(AppDbContext context) : base(context) { }
+        public GenreRepository(IAppDbContext context) : base(context) { }
 
         public async Task<Genre?> FirstOrDefaultForNameAsync(string name, CancellationToken cancellationToken)
         {

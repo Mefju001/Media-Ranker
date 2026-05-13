@@ -18,6 +18,7 @@ namespace Infrastructure.Database
         public DbSet<Token> Tokens { get; set; }
         public DbSet<UserInteractions> UserInteractions { get; set; }
         public DbSet<UserDetails> UsersDetails { get; set; }
+        public DbContext Context { get { return this; } }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

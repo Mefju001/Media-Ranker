@@ -6,16 +6,16 @@ namespace Application.Features.Games.GetByCriteria
 {
     internal class GetByCriteriaHandler : IRequestHandler<GetByCriteriaQuery, List<GameResponse>>
     {
-        private readonly IGameSortAndFilterService SortAndFilterService;
+        private readonly ISortAndFilterService SortAndFilterService;
 
-        public GetByCriteriaHandler(IGameSortAndFilterService sortAndFilterService)
+        public GetByCriteriaHandler(ISortAndFilterService sortAndFilterService)
         {
             SortAndFilterService = sortAndFilterService;
         }
 
         public async Task<List<GameResponse>> Handle(GetByCriteriaQuery request, CancellationToken cancellationToken)
         {
-            var Response = await SortAndFilterService.GetGamesByCriteriaAsync(request, cancellationToken);
+            var Response = await SortAndFilterService.GetByCriteriaAsync(request, cancellationToken);
             return Response;
         }
 

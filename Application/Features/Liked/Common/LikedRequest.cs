@@ -1,5 +1,5 @@
 ﻿namespace Application.Features.Liked.Common
 {
-    public record LikedMediaRequest(Guid MediaId);
+    public record LikedRequest(Guid MediaId);
 }
 

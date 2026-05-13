@@ -1,7 +1,7 @@
 ﻿using Application.Common.Interfaces;
 using Application.Features.Common.Notification;
 using Application.Features.Directors.Common;
-using Application.Features.Directors_MOZE_EDYCJA.Manager;
+using Application.Features.Directors.Manager;
 using Application.Features.Genres.Common;
 using Application.Features.Genres.GenreManager;
 using Application.Features.Movies.Upsert;
@@ -22,7 +22,6 @@ namespace Tests.Service.MovieService
         private Guid MovieId;
         private AppDbContext context;
         private IMediaRepository<Movie> repository;
-        private Mock<IMediator> mediatorMock;
         private IGenreManager genreHelperService;
         private IDirectorManager directorHelperService;
         private UpsertHandler handler;
@@ -36,8 +35,7 @@ namespace Tests.Service.MovieService
             genreHelperService = new GenreManager(new GenreRepository(context));
             directorHelperService = new DirectorManager(new DirectorRepository(context));
             repository = new MediaRepository<Movie>(context);
-            mediatorMock = new Mock<IMediator>();
-            handler = new UpsertHandler(directorHelperService, genreHelperService, mediatorMock.Object, repository);
+            handler = new UpsertHandler(directorHelperService, genreHelperService, repository);
             await SeedData();
         }
         [TestCleanup]
@@ -80,10 +78,6 @@ namespace Tests.Service.MovieService
             var movieInDb = await context.Medias.FirstOrDefaultAsync(g => g.Title == "New Movie");
             Assert.IsNotNull(movieInDb);
             Assert.AreEqual("New Movie", movieInDb.Title);
-
-            mediatorMock.Verify(m => m.Publish(
-                It.Is<LogNotification>(n => n.Message.Contains("dodana")),
-                It.IsAny<CancellationToken>()), Times.Once);
         }
         
         [TestMethod]
@@ -107,9 +101,6 @@ namespace Tests.Service.MovieService
             Assert.IsNotNull(gameInDb);
             Assert.AreEqual("New Movie", gameInDb.Title);
             Assert.AreEqual("Description", gameInDb.Description);
-            mediatorMock.Verify(m => m.Publish(
-                It.Is<LogNotification>(n => n.Message.Contains("zaktualizowany")),
-                It.IsAny<CancellationToken>()), Times.Once);
         }
         [TestMethod]
         public async Task Handle_WhenGenreDoesNotExist_ShouldCreateNewGenre()

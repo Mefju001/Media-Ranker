@@ -48,7 +48,7 @@ namespace Api.Controllers
                 gameRequest.Developer,
                 gameRequest.Platforms);
             var created = await mediator.Send(command);
-            return CreatedAtAction(nameof(GetById), new { id = created.id }, created);
+            return CreatedAtAction(nameof(GetById), new { Id = created.id }, created);
         }
         [Authorize(Roles = "Admin")]
         [HttpPost("Bulk")]

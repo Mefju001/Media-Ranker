@@ -1,1 +1,4 @@
-﻿Może edycja MediaStats według typów mediów, np. osobno dla filmów, muzyki, gier itp.
+﻿!!!!!!!!!!!!Extensions ogarnąć jutro!!!!!!!!!!!
+
+
+Może edycja MediaStats według typów mediów, np. osobno dla filmów, muzyki, gier itp.

@@ -1,4 +1,5 @@
-﻿using Domain.Aggregate;
+﻿using Application.Features.Common.Interfaces;
+using Domain.Aggregate;
 using Domain.Repository;
 using Microsoft.EntityFrameworkCore;
 
@@ -6,7 +7,7 @@ namespace Infrastructure.Database.Repository
 {
     public class UserDetailsRepository : Repository<UserDetails, Guid>, IUserDetailsRepository
     {
-        public UserDetailsRepository(AppDbContext appDbContext) : base(appDbContext)
+        public UserDetailsRepository(IAppDbContext appDbContext) : base(appDbContext)
         {
 
         }

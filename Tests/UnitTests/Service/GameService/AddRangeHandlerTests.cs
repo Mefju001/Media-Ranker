@@ -1,16 +1,13 @@
 ﻿using Application.Common.Interfaces;
-using Application.Features.Common.Notification;
+using Application.Features.Games.AddRange;
 using Application.Features.Games.Command;
+using Application.Features.Genres.Common;
+using Application.Features.Genres.GenreManager;
 using Domain.Aggregate;
 using Domain.Enums;
 using Infrastructure.Database;
 using Infrastructure.Database.Repository;
-using MediatR;
 using Microsoft.EntityFrameworkCore;
-using Moq;
-using Application.Features.Genres.GenreManager;
-using Application.Features.Games.AddRange;
-using Application.Features.Genres.Common;
 
 namespace Tests.Service.GameService
 {
@@ -18,7 +15,6 @@ namespace Tests.Service.GameService
     public class AddRangeHandlerTests
     {
         private AppDbContext context;
-        private Mock<IMediator> mockMediator;
         private AddRangeHandler handler;
         private IGenreManager genreHelperService;
         private IMediaRepository<Game> gameRepository;
@@ -32,8 +28,7 @@ namespace Tests.Service.GameService
             context = new AppDbContext(options);
             genreHelperService = new GenreManager(new GenreRepository(context));
             gameRepository = new MediaRepository<Game>(context);
-            mockMediator = new Mock<IMediator>();
-            handler = new AddRangeHandler(mockMediator.Object, genreHelperService, gameRepository);
+            handler = new AddRangeHandler(genreHelperService, gameRepository);
         }
         [TestCleanup]
         public void Cleanup()
@@ -70,9 +65,6 @@ namespace Tests.Service.GameService
             await context.SaveChangesAsync();
             Assert.IsNotNull(result);
             Assert.HasCount(2, result);
-            mockMediator.Verify(m => m.Publish(
-                It.Is<LogNotification>(n => n.Message.Contains("dodana")),
-                It.IsAny<CancellationToken>()), Times.Once);
             var gamesInDb = await context.Medias.ToListAsync();
             Assert.IsNotNull(gamesInDb);
             Assert.IsTrue(gamesInDb.Any(g => g.Title == "Game 1"));
