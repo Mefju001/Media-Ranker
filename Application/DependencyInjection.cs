@@ -18,7 +18,7 @@ namespace Application
                 cfg.AddOpenBehavior(typeof(ErrorHandlingBehaviour<,>));
                 cfg.AddOpenBehavior(typeof(ValidationBehavior<,>));
                 cfg.AddOpenBehavior(typeof(TransactionBehaviour<,>));
-                cfg.AddOpenBehavior(typeof(SendNotificationBehaviour<,>));
+                //cfg.AddOpenBehavior(typeof(SendNotificationBehaviour<,>));
             });
             services.AddValidatorsFromAssembly(typeof(DependencyInjection).Assembly);
             services.RegisterAllTypes(typeof(IGenreManager).Assembly);

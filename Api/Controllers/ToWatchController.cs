@@ -53,7 +53,7 @@ namespace Api.Controllers
             var response = await mediator.Send(command);
             return Ok();
         }
-        [HttpDelete("{id:int}")]
+        [HttpDelete("{id:Guid}")]
         public async Task<IActionResult> DeleteById([FromRoute] Guid id)
         {
             var userId = GetCurrentUserId();

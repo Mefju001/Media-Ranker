@@ -1,4 +1,5 @@
 ﻿using Api.Extensions;
+using Application.Features.Auth.Common;
 
 namespace Api
 {
@@ -8,6 +9,7 @@ namespace Api
         {
             services.AddIdentityServices(config);
             services.AddSwaggerConfiguration(config);
+            services.Configure<JwtSettings>(config.GetSection("Jwt"));
             return services;
         }
     }

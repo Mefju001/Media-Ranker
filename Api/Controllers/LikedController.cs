@@ -11,8 +11,8 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Api.Controllers
 {
-    [Authorize(Roles = "User")]
-    [ApiController()]
+    [Authorize]
+    [ApiController]
     [Route("api/[controller]")]
     public class LikedController : ControllerBase
     {
@@ -29,6 +29,9 @@ namespace Api.Controllers
             if (userId is null) throw new UnauthorizedAccessException();
             return userId.Value;
         }
+        [AllowAnonymous]
+        [HttpGet("test")]
+        public IActionResult Test() => Ok("Routing działa!");
         [HttpGet]
         public async Task<IActionResult> GetAll()
         {
@@ -43,7 +46,7 @@ namespace Api.Controllers
             var query = new GetAllForUserQuery(userId);
             return Ok(await mediator.Send(query));
         }
-        [HttpGet("{id:int}")]
+        [HttpGet("{id:Guid}")]
         [ProducesResponseType(typeof(LikedResponse), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<IActionResult> GetById([FromRoute] Guid id)
@@ -65,7 +68,7 @@ namespace Api.Controllers
             var response = await mediator.Send(command);
             return Ok();
         }
-        [HttpDelete("{id:int}")]
+        [HttpDelete("{id:Guid}")]
         public async Task<IActionResult> DeleteById([FromRoute] Guid id)
         {
             var userId = GetCurrentUserId();

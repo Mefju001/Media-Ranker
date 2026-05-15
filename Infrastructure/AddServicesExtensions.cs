@@ -15,15 +15,19 @@ namespace Infrastructure
     {
         public static void AddServices(this IServiceCollection services)
         {
+            services.AddHttpContextAccessor();
             services.AddHostedService<TokenBackgroundService>();
             services.AddHttpClient<LogSenderService>();
             services.AddScoped(typeof(IRepository<,>), typeof(Repository<,>));
             services.AddScoped(typeof(IAppDbContext), typeof(AppDbContext));
             services.AddScoped(typeof(IMediaRepository<>), typeof(MediaRepository<>));
             services.RegisterAllTypes(typeof(DirectorRepository).Assembly);
-            services.AddIdentity<UserModel, RoleModel>()
-                    .AddEntityFrameworkStores<AppDbContext>()
-                    .AddDefaultTokenProviders();
+            services.AddIdentityCore<UserModel>(options=>
+            {
+            })
+                .AddRoles<RoleModel>()
+                .AddEntityFrameworkStores<AppDbContext>()
+                .AddDefaultTokenProviders();
         }
     }
 }

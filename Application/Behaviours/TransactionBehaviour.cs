@@ -8,6 +8,10 @@ namespace Application.Behaviours
     {
         public async Task<TResponse> Handle(TRequest request, RequestHandlerDelegate<TResponse> next, CancellationToken cancellationToken)
         {
+            if (app.Context.Database.CurrentTransaction != null)
+            {
+                return await next();
+            }
             using var transaction = await app.Context.Database.BeginTransactionAsync(cancellationToken);
             try
             {

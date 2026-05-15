@@ -12,13 +12,10 @@ using Infrastructure.Database;
 using Infrastructure.Database.DBModels;
 using Infrastructure.Database.Repository;
 using MediatR;
+using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Diagnostics;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Logging.Abstractions;
-using Microsoft.Extensions.Options;
-using Moq;
 
 
 namespace Tests.Service.LikedMediaService
@@ -26,19 +23,21 @@ namespace Tests.Service.LikedMediaService
     [TestClass]
     public class AddHandlerTests
     {
+        private SqliteConnection _connection;
         private IServiceProvider _serviceProvider;
         private Guid _userId;
         private Guid _mediaId;
         [TestInitialize]
         public async Task setup()
         {
+            _connection = new SqliteConnection("Data Source=:memory:");
+            _connection.Open();
+
             var services = new ServiceCollection();
 
-            // Baza danych
             services.AddDbContext<AppDbContext>(options =>
             {
-                options.UseInMemoryDatabase("TestDb");
-                options.ConfigureWarnings(x => x.Ignore(InMemoryEventId.TransactionIgnoredWarning));
+                options.UseSqlite(_connection);
             });
             services.AddScoped<IAppDbContext>(provider=>
                 provider.GetRequiredService<AppDbContext>());
@@ -54,7 +53,17 @@ namespace Tests.Service.LikedMediaService
             services.AddScoped<IUserDetailsRepository, UserDetailsRepository>();
             services.AddLogging(builder => builder.AddConsole());
             _serviceProvider = services.BuildServiceProvider();
+            using (var scope = _serviceProvider.CreateScope())
+            {
+                var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+                await db.Database.EnsureCreatedAsync();
+            }
             await SeedData();
+            using (var scope = _serviceProvider.CreateScope())
+            {
+                var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+                db.ChangeTracker.Clear();
+            }
         }
         private async Task SeedData()
         {
@@ -69,40 +78,30 @@ namespace Tests.Service.LikedMediaService
             db.UsersDetails.Add(userDetails);
 
             var genre = Genre.Create("Name");
-            var game = Game.Create("Title", "Desc", new Language("Eng"), new ReleaseDate(DateTime.Now), genre.Id, "Dev", new List<EPlatform> { EPlatform.PC });
+            var game = Game.Create("Title", "Desc", new Language("Eng"), new ReleaseDate(DateTime.UtcNow.AddDays(-1)), genre.Id, "Dev", new List<EPlatform> { EPlatform.PC });
             _mediaId = game.Id;
 
             db.Genres.Add(genre);
             db.Medias.Add(game);
 
             await db.SaveChangesAsync();
-            db.ChangeTracker.Clear();
         }
         [TestMethod]
         public async Task Handle_AddLiked_ShouldAddLikedMedia()
         {
             using var scope = _serviceProvider.CreateScope();
 
-            var testdb = scope.ServiceProvider.GetRequiredService<AppDbContext>();
-
-            var userInDb = await testdb.Users.FindAsync(_userId);
-            var userDetailsInDb = await testdb.UsersDetails.FindAsync(_userId);
-            if (userInDb == null || userDetailsInDb == null)
-            {
-                var count = await testdb.Users.CountAsync();
-                Assert.Fail($"Użytkownik {_userId} nie istnieje! W bazie jest {count} osób.");
-            }
 
             var mediator = scope.ServiceProvider.GetRequiredService<IMediator>();
             var command = new AddCommand(_userId, _mediaId);
 
 
             var result = await mediator.Send(command);
-
+            
 
             using var assertScope = _serviceProvider.CreateScope();
             var db = assertScope.ServiceProvider.GetRequiredService<AppDbContext>();
-
+            //await db.SaveChangesAsync();
             var likedMedia = await db.UserInteractions
                 .FirstOrDefaultAsync(lm => lm.UserId == _userId && lm.MediaId == _mediaId);
 

@@ -1,6 +1,6 @@
-﻿using Microsoft.AspNetCore.Authentication.JwtBearer;
+﻿using Application.Features.Auth.Common;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
-using System.Security.Claims;
 using System.Text;
 
 namespace Api.Extensions
@@ -9,28 +9,53 @@ namespace Api.Extensions
     {
         public static IServiceCollection AddIdentityServices(this IServiceCollection services, IConfiguration config)
         {
-            var key = config["Jwt:Key"];
-            if (string.IsNullOrEmpty(key))
+            var jwtSettings = new JwtSettings();
+            config.GetSection(JwtSettings.SectionName).Bind(jwtSettings);
+
+            services.ConfigureApplicationCookie(options =>
             {
-                throw new InvalidOperationException("JWT Key is missing from the configuration. Please add it to appsettings.json under 'Jwt' section.");
-            }
-            services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-                .AddJwtBearer(options =>
+                options.Events.OnRedirectToLogin = context =>
                 {
-                    options.TokenValidationParameters = new TokenValidationParameters
+                    context.Response.StatusCode = StatusCodes.Status401Unauthorized;
+                    return Task.CompletedTask;
+                };
+            });
+
+            services.AddAuthentication(options =>
+            {
+                options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+                options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
+            })
+                    .AddJwtBearer(options =>
+            {
+                options.TokenValidationParameters = new TokenValidationParameters
+                {
+                    ValidateIssuer = true,
+                    ValidateAudience = true,
+                    ValidateLifetime = true,
+                    ValidateIssuerSigningKey = true,
+                    ValidIssuer = jwtSettings.Issuer,
+                    ValidAudience = jwtSettings.Audience,
+                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSettings.Key)),
+                    ClockSkew = TimeSpan.Zero
+                };
+                options.Events = new JwtBearerEvents
+                {
+                    OnChallenge = context =>
                     {
-                        RoleClaimType = ClaimTypes.Role,
-                        ValidateIssuer = true,
-                        ValidateAudience = true,
-                        ValidateLifetime = true,
-                        ValidateIssuerSigningKey = true,
-                        ValidIssuer = config["Jwt:Issuer"],
-                        ValidAudience = config["Jwt:Audience"],
-                        IssuerSigningKey = new SymmetricSecurityKey(
-                                Encoding.UTF8.GetBytes(key)
-                                )
-                    };
-                });
+                        context.HandleResponse();
+                        context.Response.StatusCode = 401;
+                        context.Response.ContentType = "application/json";
+                        return context.Response.WriteAsync("{\"message\": \"Brak autoryzacji - Twoj token jest niewazny lub go nie ma\"}");
+                    },
+                    OnAuthenticationFailed = context =>
+                    {
+                        Console.WriteLine($"JWT Auth Failed: {context.Exception.Message}");
+                        return Task.CompletedTask;
+                    }
+                };
+            });
             return services;
         }
     }
