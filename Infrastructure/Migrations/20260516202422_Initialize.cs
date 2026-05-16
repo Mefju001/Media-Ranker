@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore.Migrations;
+﻿using System;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 #nullable disable
@@ -205,6 +206,8 @@ namespace Infrastructure.Migrations
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
+                    Username = table.Column<string>(type: "character varying(50)", maxLength: 50, nullable: false),
+                    Email = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false),
                     FirstName = table.Column<string>(type: "character varying(50)", maxLength: 50, nullable: false),
                     LastName = table.Column<string>(type: "character varying(50)", maxLength: 50, nullable: false),
                     IsActive = table.Column<bool>(type: "boolean", nullable: false),
@@ -257,32 +260,6 @@ namespace Infrastructure.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "LikedMedias",
-                columns: table => new
-                {
-                    Id = table.Column<Guid>(type: "uuid", nullable: false),
-                    UserId = table.Column<Guid>(type: "uuid", nullable: false),
-                    MediaId = table.Column<Guid>(type: "uuid", nullable: false),
-                    LikedDate = table.Column<DateTime>(type: "timestamp without time zone", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_LikedMedias", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_LikedMedias_Medias_MediaId",
-                        column: x => x.MediaId,
-                        principalTable: "Medias",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_LikedMedias_UsersDetails_UserId",
-                        column: x => x.UserId,
-                        principalTable: "UsersDetails",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
                 name: "MediaStats",
                 columns: table => new
                 {
@@ -330,6 +307,40 @@ namespace Infrastructure.Migrations
                         principalTable: "Medias",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_Reviews_UsersDetails_UserId",
+                        column: x => x.UserId,
+                        principalTable: "UsersDetails",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "UserInteractions",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uuid", nullable: false),
+                    UserId = table.Column<Guid>(type: "uuid", nullable: false),
+                    MediaId = table.Column<Guid>(type: "uuid", nullable: false),
+                    RatingVote = table.Column<int>(type: "integer", nullable: true),
+                    TypeInteractions = table.Column<int>(type: "integer", nullable: true),
+                    InteractionDate = table.Column<DateTime>(type: "timestamp without time zone", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_UserInteractions", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_UserInteractions_Medias_MediaId",
+                        column: x => x.MediaId,
+                        principalTable: "Medias",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_UserInteractions_UsersDetails_UserId",
+                        column: x => x.UserId,
+                        principalTable: "UsersDetails",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateIndex(
@@ -370,17 +381,6 @@ namespace Infrastructure.Migrations
                 unique: true);
 
             migrationBuilder.CreateIndex(
-                name: "IX_LikedMedias_MediaId",
-                table: "LikedMedias",
-                column: "MediaId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_LikedMedias_UserId_MediaId",
-                table: "LikedMedias",
-                columns: new[] { "UserId", "MediaId" },
-                unique: true);
-
-            migrationBuilder.CreateIndex(
                 name: "IX_Medias_GenreId",
                 table: "Medias",
                 column: "GenreId");
@@ -394,6 +394,17 @@ namespace Infrastructure.Migrations
                 name: "IX_Reviews_UserId",
                 table: "Reviews",
                 column: "UserId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_UserInteractions_MediaId",
+                table: "UserInteractions",
+                column: "MediaId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_UserInteractions_UserId_MediaId",
+                table: "UserInteractions",
+                columns: new[] { "UserId", "MediaId" },
+                unique: true);
         }
 
         /// <inheritdoc />
@@ -418,9 +429,6 @@ namespace Infrastructure.Migrations
                 name: "Directors");
 
             migrationBuilder.DropTable(
-                name: "LikedMedias");
-
-            migrationBuilder.DropTable(
                 name: "MediaStats");
 
             migrationBuilder.DropTable(
@@ -430,19 +438,22 @@ namespace Infrastructure.Migrations
                 name: "Tokens");
 
             migrationBuilder.DropTable(
-                name: "AspNetRoles");
+                name: "UserInteractions");
 
             migrationBuilder.DropTable(
-                name: "UsersDetails");
+                name: "AspNetRoles");
 
             migrationBuilder.DropTable(
                 name: "Medias");
 
             migrationBuilder.DropTable(
-                name: "AspNetUsers");
+                name: "UsersDetails");
 
             migrationBuilder.DropTable(
                 name: "Genres");
+
+            migrationBuilder.DropTable(
+                name: "AspNetUsers");
         }
     }
 }

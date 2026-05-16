@@ -3,6 +3,7 @@ using System;
 using Infrastructure.Database;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Infrastructure.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260516202422_Initialize")]
+    partial class Initialize
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -132,7 +135,6 @@ namespace Infrastructure.Migrations
             modelBuilder.Entity("Domain.Entity.UserInteractions", b =>
                 {
                     b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
                     b.Property<DateTime>("InteractionDate")
@@ -147,15 +149,12 @@ namespace Infrastructure.Migrations
                     b.Property<int?>("TypeInteractions")
                         .HasColumnType("integer");
 
-                    b.Property<Guid?>("UserDetailsId")
-                        .HasColumnType("uuid");
-
                     b.Property<Guid>("UserId")
                         .HasColumnType("uuid");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("UserDetailsId");
+                    b.HasIndex("MediaId");
 
                     b.HasIndex("UserId", "MediaId")
                         .IsUnique();
@@ -565,6 +564,12 @@ namespace Infrastructure.Migrations
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
+                    b.HasOne("Domain.Aggregate.UserDetails", null)
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.HasOne("Infrastructure.Database.DBModels.UserModel", null)
                         .WithMany()
                         .HasForeignKey("UserId")
@@ -639,9 +644,17 @@ namespace Infrastructure.Migrations
 
             modelBuilder.Entity("Domain.Entity.UserInteractions", b =>
                 {
+                    b.HasOne("Media", null)
+                        .WithMany()
+                        .HasForeignKey("MediaId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.HasOne("Domain.Aggregate.UserDetails", null)
                         .WithMany("UserInteractions")
-                        .HasForeignKey("UserDetailsId");
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("Media", b =>

@@ -2,5 +2,5 @@
 
 namespace Application.Features.Movies.DeleteById
 {
-    public record DeleteByIdCommand(Guid id) : ICommand<bool>;
+    public record DeleteByIdCommand(Guid id) : ICommand<bool>, ISendNotificationCommand;
 }

@@ -3,7 +3,6 @@ using System;
 using Infrastructure.Database;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
-using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -12,11 +11,9 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Infrastructure.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20260414210525_Initialize")]
-    partial class Initialize
+    partial class AppDbContextModelSnapshot : ModelSnapshot
     {
-        /// <inheritdoc />
-        protected override void BuildTargetModel(ModelBuilder modelBuilder)
+        protected override void BuildModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -47,70 +44,7 @@ namespace Infrastructure.Migrations
                     b.ToTable("Genres");
                 });
 
-            modelBuilder.Entity("Domain.Aggregate.UserDetails", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .HasColumnType("uuid");
-
-                    b.Property<bool>("IsActive")
-                        .HasColumnType("boolean");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("UsersDetails");
-                });
-
-            modelBuilder.Entity("Domain.Entity.LikedMedia", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
-
-                    b.Property<DateTime>("LikedDate")
-                        .HasColumnType("timestamp without time zone");
-
-                    b.Property<Guid>("MediaId")
-                        .HasColumnType("uuid");
-
-                    b.Property<Guid>("UserId")
-                        .HasColumnType("uuid");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("MediaId");
-
-                    b.HasIndex("UserId", "MediaId")
-                        .IsUnique();
-
-                    b.ToTable("LikedMedias");
-                });
-
-            modelBuilder.Entity("Domain.Entity.Review", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
-
-                    b.Property<string>("Comment")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<Guid>("MediaId")
-                        .HasColumnType("uuid");
-
-                    b.Property<Guid>("UserId")
-                        .HasColumnType("uuid");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("MediaId");
-
-                    b.HasIndex("UserId");
-
-                    b.ToTable("Reviews");
-                });
-
-            modelBuilder.Entity("Domain.Entity.Token", b =>
+            modelBuilder.Entity("Domain.Aggregate.Token", b =>
                 {
                     b.Property<string>("Id")
                         .HasColumnType("text");
@@ -143,6 +77,86 @@ namespace Infrastructure.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Tokens");
+                });
+
+            modelBuilder.Entity("Domain.Aggregate.UserDetails", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("Email")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)")
+                        .HasColumnName("Email");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("boolean");
+
+                    b.Property<string>("Username")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)")
+                        .HasColumnName("Username");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("UsersDetails");
+                });
+
+            modelBuilder.Entity("Domain.Entity.Review", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("Comment")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<Guid>("MediaId")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uuid");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("MediaId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("Reviews");
+                });
+
+            modelBuilder.Entity("Domain.Entity.UserInteractions", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime>("InteractionDate")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<Guid>("MediaId")
+                        .HasColumnType("uuid");
+
+                    b.Property<int?>("RatingVote")
+                        .HasColumnType("integer");
+
+                    b.Property<int?>("TypeInteractions")
+                        .HasColumnType("integer");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uuid");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("MediaId");
+
+                    b.HasIndex("UserId", "MediaId")
+                        .IsUnique();
+
+                    b.ToTable("UserInteractions");
                 });
 
             modelBuilder.Entity("Infrastructure.Database.DBModels.RoleModel", b =>
@@ -539,27 +553,18 @@ namespace Infrastructure.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("Domain.Entity.LikedMedia", b =>
-                {
-                    b.HasOne("Media", null)
-                        .WithMany()
-                        .HasForeignKey("MediaId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("Domain.Aggregate.UserDetails", null)
-                        .WithMany("LikedMedias")
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
-
             modelBuilder.Entity("Domain.Entity.Review", b =>
                 {
                     b.HasOne("Media", null)
                         .WithMany("Reviews")
                         .HasForeignKey("MediaId")
                         .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("Domain.Aggregate.UserDetails", null)
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("Infrastructure.Database.DBModels.UserModel", null)
@@ -631,6 +636,21 @@ namespace Infrastructure.Migrations
                         .IsRequired();
 
                     b.Navigation("Username")
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("Domain.Entity.UserInteractions", b =>
+                {
+                    b.HasOne("Media", null)
+                        .WithMany()
+                        .HasForeignKey("MediaId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Domain.Aggregate.UserDetails", null)
+                        .WithMany("UserInteractions")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
 
@@ -810,7 +830,7 @@ namespace Infrastructure.Migrations
 
             modelBuilder.Entity("Domain.Aggregate.UserDetails", b =>
                 {
-                    b.Navigation("LikedMedias");
+                    b.Navigation("UserInteractions");
                 });
 
             modelBuilder.Entity("Media", b =>

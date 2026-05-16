@@ -14,5 +14,5 @@ namespace Application.Features.Movies.Upsert
         DateTime? ReleaseDate,
         string Language,
         TimeSpan Duration,
-        bool IsCinemaRelease) : ICommand<MovieResponse>;
+        bool IsCinemaRelease) : ICommand<MovieResponse>, ISendNotificationCommand;
 }

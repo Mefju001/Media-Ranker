@@ -33,40 +33,36 @@ public class UserDetails : AggregateRoot<Guid>, IAudited
     }
     public void SetTypeInteractions(Guid mediaId, ETypeInteractions? type)
     {
-        var interaction = GetOrAdd(mediaId);
-        interaction.UpdateTypeInteractions(type);
+        var existing = userInteractions.FirstOrDefault(ui => ui.MediaId == mediaId);
 
-        CleanupAndAudit(interaction);
+        if (existing == null)
+        {
+            var newInteraction = Entity.UserInteractions.Create(Id, mediaId, type, null);
+            userInteractions.Add(newInteraction);
+            CleanupAndAudit(newInteraction);
+        }
+        else
+        {
+            existing.UpdateTypeInteractions(type);
+            CleanupAndAudit(existing);
+        }
     }
 
     public void SetRatingVote(Guid mediaId, ERatingVote? vote)
     {
-        var interaction = GetOrAdd(mediaId);
-        interaction.UpdateRatingVote(vote);
-
-        CleanupAndAudit(interaction);
-    }
-
-    public void SetInteraction(Guid mediaId, ETypeInteractions? type, ERatingVote? vote)
-    {
-        var interaction = GetOrAdd(mediaId);
-        interaction.UpdateInteraction(type, vote);
-
-        CleanupAndAudit(interaction);
-    }
-
-
-    private UserInteractions GetOrAdd(Guid mediaId)
-    {
-        var existing = userInteractions.FirstOrDefault(ui =>
-            ui.UserId == Id && ui.MediaId == mediaId);
+        var existing = userInteractions.FirstOrDefault(ui => ui.MediaId == mediaId);
 
         if (existing == null)
         {
-            existing = Entity.UserInteractions.Create(Id, mediaId, null, null);
-            userInteractions.Add(existing);
+            var newInteraction = Entity.UserInteractions.Create(Id, mediaId, null, vote);
+            userInteractions.Add(newInteraction);
+            CleanupAndAudit(newInteraction);
         }
-        return existing;
+        else
+        {
+            existing.UpdateRatingVote(vote);
+            CleanupAndAudit(existing);
+        }
     }
 
     private void CleanupAndAudit(UserInteractions interaction)

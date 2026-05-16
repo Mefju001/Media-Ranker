@@ -11,9 +11,9 @@ namespace Domain.Entity
         public ETypeInteractions? TypeInteractions { get; private set; }
         public DateTime InteractionDate { get; private set; }
         private UserInteractions() { }
-        private UserInteractions(Guid userId, ETypeInteractions? typeInteractions, ERatingVote? ratingVote, Guid mediaId, Guid? id=null)
+        private UserInteractions(Guid id, Guid mediaId, Guid userId, ETypeInteractions? typeInteractions, ERatingVote? ratingVote)
         {
-            Id = id ?? Guid.NewGuid();
+            Id = id;
             MediaId = mediaId;
             UserId = userId;
             TypeInteractions = typeInteractions;
@@ -38,7 +38,7 @@ namespace Domain.Entity
         }
         public static UserInteractions Create(Guid userId, Guid mediaId, ETypeInteractions? typeInteractions, ERatingVote? ratingVote)
         {
-            return new UserInteractions(userId, typeInteractions, ratingVote, mediaId);
+            return new UserInteractions(Guid.NewGuid(), mediaId, userId, typeInteractions, ratingVote);
         }
     }
 }

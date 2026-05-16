@@ -3,5 +3,5 @@ using Application.Features.Games.Command;
 
 namespace Application.Features.Games.AddRange
 {
-    public record AddRangeCommand(List<GameRequest> games) : ICommand<List<GameResponse>>;
+    public record AddRangeCommand(List<GameRequest> games) : ICommand<List<GameResponse>>, ISendNotificationCommand;
 }

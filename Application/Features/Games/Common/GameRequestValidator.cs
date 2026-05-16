@@ -1,5 +1,4 @@
-﻿using Domain.Enums;
-using FluentValidation;
+﻿using FluentValidation;
 
 namespace Application.Features.Games.Command
 {
@@ -34,7 +33,7 @@ namespace Application.Features.Games.Command
                 .NotEmpty()
                 .ForEach(platformRule => platformRule
                     .IsInEnum().WithMessage("The value entered is incorrect.")
-                    .NotEqual(EPlatform.PC)
+                    .NotEqual("PC")
                     .WithMessage("You must enter the correct value, not the default value."));
             RuleFor(Request => Request.Developer)
                 .NotEmpty()

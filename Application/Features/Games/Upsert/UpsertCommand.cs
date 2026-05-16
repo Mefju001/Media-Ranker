@@ -1,7 +1,6 @@
 ﻿using Application.Features.Common.Interfaces;
 using Application.Features.Games.Command;
 using Application.Features.Genres.Common;
-using Domain.Enums;
 
 namespace Application.Features.Games.Upsert
 {
@@ -13,5 +12,5 @@ namespace Application.Features.Games.Upsert
         DateTime? ReleaseDate,
         string Language,
         string? Developer,
-        List<EPlatform> Platforms) : ICommand<GameResponse>;
+        List<string> Platforms) : ICommand<GameResponse>,ISendNotificationCommand;
 }

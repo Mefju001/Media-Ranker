@@ -4,7 +4,9 @@ using Application.Features.Games.Command;
 using Application.Features.Games.Common;
 using Application.Features.Genres.GenreManager;
 using Domain.Aggregate;
+using Domain.Enums;
 using Domain.Exceptions;
+using Domain.Extensions;
 using Domain.Value_Object;
 using MediatR;
 
@@ -38,12 +40,13 @@ namespace Application.Features.Games.AddRange
                         new ReleaseDate(gameReq.ReleaseDate ?? DateTime.UtcNow),
                         genre.id,
                         gameReq.Developer ?? "Unknown",
-                        gameReq.Platforms);
+                        EPlatformExtensions.ToEnum(gameReq.Platforms));
             }).ToList();
             await mediaRepository.AddRangeAsync(games, cancellationToken);
             var genresById = genresDict.Values.ToDictionary(
                 g => g.id);
             return games.Select(g => GameMapper.ToGameResponse(g, genresById[g.GenreId])).ToList();
         }
+        
     }
 }

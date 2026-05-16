@@ -1,11 +1,11 @@
 ﻿using Application.Common.Interfaces;
 using Application.Features.Common.Interfaces;
 using Domain.Aggregate;
+using Domain.Entity;
 using Domain.Enums;
 using Domain.Exceptions;
 using Domain.Repository;
 using MediatR;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 
 namespace Application.Features.Liked.Add
@@ -40,11 +40,6 @@ namespace Application.Features.Liked.Add
                 throw new NotFoundException("Media not found.");
             }
             user.SetRatingVote(request.MediaId, ERatingVote.Liked);
-            var debugInteractionsCount = user.UserInteractions.Count;
-            var isTracked = _context.Context.ChangeTracker.Entries<UserDetails>().Any(e => e.Entity.Id == user.Id);
-
-            logger.LogInformation("Liczba interakcji w pamięci: {Count}, Czy EF śledzi użytkownika: {IsTracked}",
-                debugInteractionsCount, isTracked);
             return true;
         }
     }

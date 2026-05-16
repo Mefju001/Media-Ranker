@@ -5,6 +5,7 @@ using Application.Features.Games.Common;
 using Application.Features.Genres.GenreManager;
 using Domain.Aggregate;
 using Domain.Exceptions;
+using Domain.Extensions;
 using Domain.Value_Object;
 using MediatR;
 
@@ -39,7 +40,7 @@ namespace Application.Features.Games.Upsert
                     new ReleaseDate(request.ReleaseDate!.Value),
                     genre.id,
                     request.Developer!,
-                    request.Platforms
+                    EPlatformExtensions.ToEnum(request.Platforms)
                     );
             }
             else
@@ -50,7 +51,7 @@ namespace Application.Features.Games.Upsert
                     new Language(request.Language),
                     new ReleaseDate(request.ReleaseDate!.Value),
                     genre.id, request.Developer!,
-                    request.Platforms);
+                    EPlatformExtensions.ToEnum(request.Platforms));
                 game = await mediaRepository.AddAsync(game, cancellationToken);
             }
             

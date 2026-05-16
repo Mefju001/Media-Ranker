@@ -3,5 +3,5 @@ using Application.Features.TvSeries.Common;
 
 namespace Application.Features.TvSeries.AddRange
 {
-    public record AddRangeCommand(List<TvSeriesRequest> tvSeries) : ICommand<List<TvSeriesResponse>>;
+    public record AddRangeCommand(List<TvSeriesRequest> tvSeries) : ICommand<List<TvSeriesResponse>>, ISendNotificationCommand;
 }

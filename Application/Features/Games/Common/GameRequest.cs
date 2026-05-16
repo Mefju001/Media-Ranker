@@ -11,6 +11,6 @@ namespace Application.Features.Games.Command
         DateTime? ReleaseDate,
         string Language,
         string? Developer,
-        List<EPlatform> Platforms
+        List<string> Platforms
         );
 }

@@ -18,7 +18,10 @@ namespace Application.Behaviours
                     !t.Name.EndsWith("Dto")&&
                     !t.Name.EndsWith("Query")&&
                     
-                    !typeof(IHostedService).IsAssignableFrom(t))
+                    !typeof(IHostedService).IsAssignableFrom(t)&&
+
+                    !t.Name.EndsWith("Behaviour") &&
+                    !t.Name.EndsWith("Handler"))
                     ,publicOnly:false)
                     .AsMatchingInterface()
                     .AsImplementedInterfaces()

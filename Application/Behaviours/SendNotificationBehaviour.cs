@@ -6,7 +6,7 @@ using System.Diagnostics;
 namespace Application.Behaviours
 {
     internal class SendNotificationBehaviour<TRequest, TResponse>(IMediator mediator) : IPipelineBehavior<TRequest, TResponse>
-            where TRequest : ICommand<TResponse>
+            where TRequest : ISendNotificationCommand
     {
         public async Task<TResponse> Handle(TRequest request, RequestHandlerDelegate<TResponse> next, CancellationToken cancellationToken)
         {

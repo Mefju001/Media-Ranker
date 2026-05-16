@@ -1,5 +1,4 @@
 ﻿using Domain.Aggregate;
-using Domain.Entity;
 using Domain.Value_Object;
 using Infrastructure.Database.DBModels;
 using Microsoft.EntityFrameworkCore;
@@ -41,26 +40,10 @@ namespace Infrastructure.Database.Config
                    .WithOne()
                    .HasForeignKey<UserDetails>(ud => ud.Id)
                    .OnDelete(DeleteBehavior.Cascade);
-            builder.OwnsMany(x => x.UserInteractions, ui =>
-            {
-                ui.ToTable("UserInteractions");
-
-                ui.HasKey(x => x.Id);
-                ui.Property(x => x.Id).ValueGeneratedNever();
-
-                ui.HasIndex(x => new { x.UserId, x.MediaId }).IsUnique();
-
-                ui.Property(x => x.TypeInteractions).IsRequired(false);
-                ui.Property(x => x.RatingVote).IsRequired(false);
-
-                ui.HasOne<Media>()
-                  .WithMany()
-                  .HasForeignKey(x => x.MediaId)
-                  .OnDelete(DeleteBehavior.Cascade);
-
-                ui.WithOwner()
-                  .HasForeignKey(x => x.UserId);
-            });
+            builder.HasMany(u => u.UserInteractions)
+               .WithOne()
+               .HasForeignKey(ui => ui.UserId)
+               .OnDelete(DeleteBehavior.Cascade);
         }
     }
 }
