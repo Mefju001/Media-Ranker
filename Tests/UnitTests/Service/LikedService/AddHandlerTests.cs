@@ -25,8 +25,8 @@ namespace Tests.Service.LikedMediaService
     {
         private SqliteConnection _connection;
         private IServiceProvider _serviceProvider;
-        private Guid _userId;
-        private Guid _mediaId;
+        private Guid userId;
+        private Guid mediaId;
         [TestInitialize]
         public async Task setup()
         {
@@ -71,15 +71,15 @@ namespace Tests.Service.LikedMediaService
             var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
 
             var user = new UserModel(Guid.NewGuid(), "username", "password", "email");
-            _userId = user.Id;
-            var userDetails = UserDetails.Create(_userId, new Fullname("Name", "Surname"), new Username("username"), Email.Create("email@example.com"));
+            userId = user.Id;
+            var userDetails = UserDetails.Create(userId, new Fullname("Name", "Surname"), new Username("username"), Email.Create("email@example.com"));
 
             db.Users.Add(user);
             db.UsersDetails.Add(userDetails);
 
             var genre = Genre.Create("Name");
             var game = Game.Create("Title", "Desc", new Language("Eng"), new ReleaseDate(DateTime.UtcNow.AddDays(-1)), genre.Id, "Dev", new List<EPlatform> { EPlatform.PC });
-            _mediaId = game.Id;
+            mediaId = game.Id;
 
             db.Genres.Add(genre);
             db.Medias.Add(game);
@@ -89,37 +89,40 @@ namespace Tests.Service.LikedMediaService
         [TestMethod]
         public async Task Handle_AddLiked_ShouldAddLikedMedia()
         {
-            using var scope = _serviceProvider.CreateScope();
+            bool result;
+            using (var scope = _serviceProvider.CreateScope())
+            {
+                var mediator = scope.ServiceProvider.GetRequiredService<IMediator>();
+                var command = new AddCommand(userId, mediaId);
+                result = await mediator.Send(command);
+            }
 
+            using (var assertScope = _serviceProvider.CreateScope())
+            {
+                var db = assertScope.ServiceProvider.GetRequiredService<AppDbContext>();
+                var likedMedia = await db.UserInteractions
+                    .FirstOrDefaultAsync(lm => lm.UserId == userId && lm.MediaId == mediaId);
+                Assert.IsTrue(result);
+                Assert.IsNotNull(likedMedia);
+                Assert.AreEqual(userId, likedMedia.UserId);
+                Assert.AreEqual(mediaId, likedMedia.MediaId);
+            }
 
-            var mediator = scope.ServiceProvider.GetRequiredService<IMediator>();
-            var command = new AddCommand(_userId, _mediaId);
-
-
-            var result = await mediator.Send(command);
             
-
-            using var assertScope = _serviceProvider.CreateScope();
-            var db = assertScope.ServiceProvider.GetRequiredService<AppDbContext>();
-            //await db.SaveChangesAsync();
-            var likedMedia = await db.UserInteractions
-                .FirstOrDefaultAsync(lm => lm.UserId == _userId && lm.MediaId == _mediaId);
-
-            Assert.IsTrue(result);
-            Assert.IsNotNull(likedMedia);
-            Assert.AreEqual(_userId, likedMedia.UserId);
-            Assert.AreEqual(_mediaId, likedMedia.MediaId);
         }
 
         [TestMethod]
         public async Task Handle_AddLikedWhereUserIdIsNull_ShouldThrowNotFoundException()
         {
-            using var scope = _serviceProvider.CreateScope();
-            var mediator = scope.ServiceProvider.GetRequiredService<IMediator>();
+            using (var scope = _serviceProvider.CreateScope())
+            {
+                var mediator = scope.ServiceProvider.GetRequiredService<IMediator>();
 
-            var command = new AddCommand(Guid.NewGuid(), _mediaId);
+                var command = new AddCommand(Guid.NewGuid(), mediaId);
 
-            await Assert.ThrowsExactlyAsync<NotFoundException>(() => mediator.Send(command));
+                await Assert.ThrowsExactlyAsync<NotFoundException>(() => mediator.Send(command));
+            }
+            ;
         }
     }
 }

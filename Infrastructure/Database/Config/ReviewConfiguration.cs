@@ -11,6 +11,7 @@ namespace Infrastructure.Database.Config
         public void Configure(EntityTypeBuilder<Review> builder)
         {
             builder.HasKey(r => r.Id);
+            builder.Property(r=>r.Id).ValueGeneratedNever();
             builder.HasOne<UserModel>()
                 .WithMany()
                 .HasForeignKey(r => r.UserId)
@@ -22,7 +23,7 @@ namespace Infrastructure.Database.Config
             builder.HasOne<Media>()
                 .WithMany(m => m.Reviews)
                 .HasForeignKey(r => r.MediaId)
-                .OnDelete(DeleteBehavior.Restrict);
+                .OnDelete(DeleteBehavior.Cascade);
             builder.OwnsOne(r => r.AuditInfo, ai =>
             {
                 ai.Property(a => a.CreatedAt).HasColumnName("CreatedAt");

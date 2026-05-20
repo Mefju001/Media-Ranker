@@ -1,13 +1,20 @@
-﻿using Application.Common.Interfaces;
+﻿using Application.Behaviours;
+using Application.Common.Interfaces;
+using Application.Features.Common.Interfaces;
 using Application.Features.Common.Notification;
 using Application.Features.Movies.DeleteById;
 using Domain.Aggregate;
 using Domain.Exceptions;
+using Domain.Repository;
 using Domain.Value_Object;
+using FluentValidation;
 using Infrastructure.Database;
 using Infrastructure.Database.Repository;
 using MediatR;
+using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using Moq;
 
 namespace Tests.Service.MovieService
@@ -16,60 +23,86 @@ namespace Tests.Service.MovieService
     public class DeleteByIdHandlerTests
     {
         private readonly Guid id = Guid.NewGuid();
-        private AppDbContext appDbContext;
-        private Mock<IMediator> mockMediator;
-        private IMediaRepository<Movie> movieRepository;
-        private DeleteByIdHandler handler;
+        private SqliteConnection _connection;
+        private IServiceProvider _serviceProvider;
         [TestInitialize]
         public async Task Initialize()
         {
-            var options = new DbContextOptionsBuilder<AppDbContext>()
-                .UseInMemoryDatabase(databaseName: Guid.NewGuid().ToString())
-                .Options;
-            appDbContext = new AppDbContext(options);
-            movieRepository = new MediaRepository<Movie>(appDbContext);
-            mockMediator = new Mock<IMediator>();
-            handler = new DeleteByIdHandler(movieRepository, mockMediator.Object);
+            _connection = new SqliteConnection("Data Source=:memory:");
+            _connection.Open();
+
+            var services = new ServiceCollection();
+
+            services.AddDbContext<AppDbContext>(options =>
+            {
+                options.UseSqlite(_connection);
+            });
+            services.AddScoped<IAppDbContext>(provider =>
+                provider.GetRequiredService<AppDbContext>());
+            services.AddValidatorsFromAssembly(typeof(DeleteByIdCommand).Assembly);
+            services.AddMediatR(cfg => {
+                cfg.RegisterServicesFromAssembly(typeof(DeleteByIdHandler).Assembly);
+                cfg.AddOpenBehavior(typeof(ErrorHandlingBehaviour<,>));
+                cfg.AddOpenBehavior(typeof(LoggingBehaviour<,>));
+                cfg.AddOpenBehavior(typeof(ValidationBehavior<,>));
+                cfg.AddOpenBehavior(typeof(TransactionBehaviour<,>));
+            });
+            services.AddScoped<IMediaRepository<Movie>, MediaRepository<Movie>>();
+            services.AddLogging(builder => builder.AddConsole());
+            _serviceProvider = services.BuildServiceProvider();
+            using (var scope = _serviceProvider.CreateScope())
+            {
+                var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+                await db.Database.EnsureCreatedAsync();
+            }
             await SeedData();
+            using (var scope = _serviceProvider.CreateScope())
+            {
+                var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+                db.ChangeTracker.Clear();
+            }
         }
         private async Task SeedData()
         {
+            using var scope = _serviceProvider.CreateScope();
+            var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
             var genreId = Guid.NewGuid();
             var directorId = Guid.NewGuid();
             var genre = Genre.Create("Genre1", genreId);
-            appDbContext.Genres.Add(genre);
+            db.Genres.Add(genre);
             var director = Director.Create("Director1", "Director1", directorId);
-            appDbContext.Directors.Add(director);
+            db.Directors.Add(director);
             var movieInDb = Movie.Create("Test Movie", "Description", new Language("English"), new ReleaseDate(DateTime.UtcNow), genreId, directorId, new Duration(TimeSpan.FromMinutes(120)), true,id);
-            appDbContext.Medias.Add(movieInDb);
-            await appDbContext.SaveChangesAsync();
-        }
-        [TestCleanup]
-        public void TestCleanup()
-        {
-            appDbContext.Dispose();
+            db.Medias.Add(movieInDb);
+            await db.SaveChangesAsync();
         }
         [TestMethod]
         public async Task Handle_DeleteMovieById_ShouldDeleteMovieFromDb()
         {
-            var result = await handler.Handle(new DeleteByIdCommand(id), CancellationToken.None);
-            await appDbContext.SaveChangesAsync();
-
-            var movieInDb = await appDbContext.Medias.FindAsync(id);
-            Assert.IsNull(movieInDb, "Film powinien zostać usunięty z bazy danych.");
-
-            mockMediator.Verify(m => m.Publish(
-                It.Is<LogNotification>(n => n.Message.Contains("Usunięto")),
-                It.IsAny<CancellationToken>()), Times.Once);
+            using (var scope = _serviceProvider.CreateScope())
+            {
+                var mediator = scope.ServiceProvider.GetRequiredService<IMediator>();
+                var result = await mediator.Send(new DeleteByIdCommand(id), CancellationToken.None);
+            }
+            using (var assertScope = _serviceProvider.CreateScope())
+            {
+                var appDbContext = assertScope.ServiceProvider.GetRequiredService<AppDbContext>();
+                var movieInDb = await appDbContext.Medias.FindAsync(id);
+                Assert.IsNull(movieInDb, "Film powinien zostać usunięty z bazy danych.");
+            }
         }
         [TestMethod]
         public async Task Handle_DeleteById_ShouldThrowNotFoundException()
         {
             var nonExistentMovieId = Guid.NewGuid();
-            await Assert.ThrowsExactlyAsync<NotFoundException>(async () =>
+            using (var scope = _serviceProvider.CreateScope())
             {
-                await handler.Handle(new DeleteByIdCommand(nonExistentMovieId), CancellationToken.None);
-            });
+                var handler = scope.ServiceProvider.GetRequiredService<IRequestHandler<DeleteByIdCommand, bool>>();
+                await Assert.ThrowsExactlyAsync<NotFoundException>(async () =>
+                {
+                    await handler.Handle(new DeleteByIdCommand(nonExistentMovieId), CancellationToken.None);
+                });
+            };
         }
     }
 }

@@ -1,14 +1,21 @@
-﻿using Application.Common.Interfaces;
+﻿using Application.Behaviours;
+using Application.Common.Interfaces;
+using Application.Features.Common.Interfaces;
 using Application.Features.Common.Notification;
 using Application.Features.Games.DeleteById;
 using Domain.Aggregate;
 using Domain.Enums;
 using Domain.Exceptions;
+using Domain.Repository;
 using Domain.Value_Object;
+using FluentValidation;
 using Infrastructure.Database;
 using Infrastructure.Database.Repository;
 using MediatR;
+using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using Moq;
 
 namespace Tests.Service.GameService
@@ -17,22 +24,44 @@ namespace Tests.Service.GameService
     public class DeleteByIdHandlerTests
     {
         private readonly Guid gameId = Guid.NewGuid();
-        private AppDbContext context;
-        private DeleteByIdHandler handler;
-        private IMediaRepository<Game> repository;
+        private SqliteConnection _connection;
+        private IServiceProvider _serviceProvider;
         [TestInitialize]
         public async Task TestInitialize()
         {
-            var options = new DbContextOptionsBuilder<AppDbContext>()
-                .UseInMemoryDatabase(databaseName: Guid.NewGuid().ToString())
-                .Options;
-            context = new AppDbContext(options);
-            repository = new MediaRepository<Game>(context);
-            handler = new DeleteByIdHandler(repository);
+            _connection = new SqliteConnection("Data Source=:memory:");
+            _connection.Open();
+
+            var services = new ServiceCollection();
+
+            services.AddDbContext<AppDbContext>(options =>
+            {
+                options.UseSqlite(_connection);
+            });
+            services.AddScoped<IAppDbContext>(provider =>
+                provider.GetRequiredService<AppDbContext>());
+            services.AddValidatorsFromAssembly(typeof(DeleteByIdCommand).Assembly);
+            services.AddMediatR(cfg => {
+                cfg.RegisterServicesFromAssembly(typeof(DeleteByIdHandler).Assembly);
+                cfg.AddOpenBehavior(typeof(ErrorHandlingBehaviour<,>));
+                cfg.AddOpenBehavior(typeof(LoggingBehaviour<,>));
+                cfg.AddOpenBehavior(typeof(ValidationBehavior<,>));
+                cfg.AddOpenBehavior(typeof(TransactionBehaviour<,>));
+            });
+            services.AddScoped<IMediaRepository<Game>, MediaRepository<Game>>();
+            services.AddLogging(builder => builder.AddConsole());
+            _serviceProvider = services.BuildServiceProvider();
+            using (var scope = _serviceProvider.CreateScope())
+            {
+                var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+                await db.Database.EnsureCreatedAsync();
+            }
             await SeedData();
         }
         private async Task SeedData()
         {
+            using var scope = _serviceProvider.CreateScope();
+            var context = scope.ServiceProvider.GetRequiredService<AppDbContext>();
             var genreId = Guid.NewGuid();
             var genre = Genre.Create("Action", genreId);
             context.Genres.Add(genre);
@@ -40,28 +69,33 @@ namespace Tests.Service.GameService
             context.Medias.Add(game);
             await context.SaveChangesAsync();
         }
-        [TestCleanup]
-        public void TestCleanup()
-        {
-            context.Dispose();
-        }
         [TestMethod]
         public async Task Handle_DeleteGameById_ShouldDeleteGameFromDb()
         {
-            var result = await handler.Handle(new DeleteByIdCommand(gameId), CancellationToken.None);
-            await context.SaveChangesAsync();
-
-            var gameInDb = await context.Medias.FindAsync(gameId);
-            Assert.IsNull(gameInDb, "Gra powinna zostać usunięta z bazy danych.");
+            using (var scope = _serviceProvider.CreateScope())
+            {
+                var mediator = _serviceProvider.GetRequiredService<IMediator>();
+                var result = await mediator.Send(new DeleteByIdCommand(gameId), CancellationToken.None);
+            }
+            using(var scope2 = _serviceProvider.CreateScope())
+            {
+                var context = scope2.ServiceProvider.GetRequiredService<AppDbContext>();
+                var gameInDb = await context.Medias.FindAsync(gameId);
+                Assert.IsNull(gameInDb, "Gra powinna zostać usunięta z bazy danych.");
+            }
         }
         [TestMethod]
         public async Task Handle_DeleteById_ShouldThrowNotFoundException()
         {
             var nonExistentGameId = Guid.NewGuid();
-            await Assert.ThrowsExactlyAsync<NotFoundException>(async () =>
+            using (var scope = _serviceProvider.CreateScope())
             {
-                await handler.Handle(new DeleteByIdCommand(nonExistentGameId), CancellationToken.None);
-            });
+                var mediator = _serviceProvider.GetRequiredService<IMediator>();
+                await Assert.ThrowsExactlyAsync<NotFoundException>(async () =>
+                {
+                    await mediator.Send(new DeleteByIdCommand(nonExistentGameId), CancellationToken.None);
+                });
+            }
         }
     }
 }

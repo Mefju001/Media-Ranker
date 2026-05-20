@@ -26,7 +26,9 @@
     <ProjectReference Include="..\Domain\Domain.csproj" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Features\Watched\" />
+    <Folder Include="Features\Watched\Add\" />
+    <Folder Include="Features\Watched\DeleteById\" />
+    <Folder Include="Features\Watched\GetAll\" />
     <Folder Include="Features\Watching\GetAll\" />
     <Folder Include="Features\Watching\Add\" />
     <Folder Include="Features\Watching\DeleteById\" />

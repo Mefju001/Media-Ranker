@@ -1,9 +1,21 @@
-﻿using Application.Features.Liked.GetAllForUser;
+﻿using Application.Behaviours;
+using Application.Common.Interfaces;
+using Application.Features.Common.Interfaces;
+using Application.Features.Liked.Add;
+using Application.Features.Liked.GetAllForUser;
 using Domain.Aggregate;
 using Domain.Enums;
+using Domain.Repository;
 using Domain.Value_Object;
+using FluentValidation;
 using Infrastructure.Database;
+using Infrastructure.Database.DBModels;
+using Infrastructure.Database.Repository;
+using MediatR;
+using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 
 
 namespace Tests.Service.LikedMediaService
@@ -11,68 +23,122 @@ namespace Tests.Service.LikedMediaService
     [TestClass]
     public class GetAllForUserHandlerTests
     {
-        private GetAllForUserHandler handler;
-        private AppDbContext appDbContext;
+        private SqliteConnection _connection;
+        private IServiceProvider _serviceProvider;
         private Guid mediaId1;
         private Guid mediaId2;
         private Guid userId;
         [TestInitialize]
         public async Task Initialize()
         {
-            var options = new DbContextOptionsBuilder<AppDbContext>()
-                .UseInMemoryDatabase(databaseName: Guid.NewGuid().ToString())
-                .Options;
-            appDbContext = new AppDbContext(options);
-            handler = new GetAllForUserHandler(appDbContext);
+            _connection = new SqliteConnection("Data Source=:memory:");
+            _connection.Open();
+
+            var services = new ServiceCollection();
+
+            services.AddDbContext<AppDbContext>(options =>
+            {
+                options.UseSqlite(_connection);
+            });
+            services.AddScoped<IAppDbContext>(provider =>
+                provider.GetRequiredService<AppDbContext>());
+            services.AddValidatorsFromAssembly(typeof(AddCommand).Assembly);
+            services.AddMediatR(cfg => {
+                cfg.RegisterServicesFromAssembly(typeof(AddHandler).Assembly);
+                cfg.AddOpenBehavior(typeof(ErrorHandlingBehaviour<,>));
+                cfg.AddOpenBehavior(typeof(LoggingBehaviour<,>));
+                cfg.AddOpenBehavior(typeof(ValidationBehavior<,>));
+                cfg.AddOpenBehavior(typeof(TransactionBehaviour<,>));
+            });
+            services.AddScoped<IMediaRepository<Media>, MediaRepository<Media>>();
+            services.AddScoped<IUserDetailsRepository, UserDetailsRepository>();
+            services.AddLogging(builder => builder.AddConsole());
+            _serviceProvider = services.BuildServiceProvider();
+            using (var scope = _serviceProvider.CreateScope())
+            {
+                var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+                await db.Database.EnsureCreatedAsync();
+            }
             await SeedData();
-        }
-        [TestCleanup]
-        public void Cleanup()
-        {
-            appDbContext.Dispose();
+            using (var scope = _serviceProvider.CreateScope())
+            {
+                var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+                db.ChangeTracker.Clear();
+            }
         }
         private async Task SeedData()
         {
-            var userDetails = UserDetails.Create(null, new Fullname("John", "Doe"), new Username("johndoe"), Email.Create("johndoe@example.com"));
-            userId = userDetails.Id;
-            appDbContext.UsersDetails.Add(userDetails);
-            var genre = Genre.Create("Action", Guid.NewGuid());
-            appDbContext.Genres.Add(genre);
-            var genre2 = Genre.Create("Adventure", Guid.NewGuid());
-            appDbContext.Genres.Add(genre2);
-            var game = Game.Create("Game B", "Description B", new Language("English"), new ReleaseDate(DateTime.UtcNow.AddDays(-10)), genre.Id, "Developer B", new List<EPlatform>() { EPlatform.PC });
-            mediaId1 = game.Id;
-            appDbContext.Medias.Add(game);
-            var game2 = Game.Create("Game A", "Description A", new Language("English"), new ReleaseDate(DateTime.UtcNow.AddDays(-5)), genre2.Id, "Developer A", new List<EPlatform>() { EPlatform.PlayStation5 });
-            mediaId2 = game2.Id;
-            userDetails.SetInteraction(game.Id, null, ERatingVote.Liked);
-            userDetails.SetInteraction(game2.Id, null, ERatingVote.Liked);
-            appDbContext.Medias.Add(game2); 
-            await appDbContext.SaveChangesAsync();
+            using var scope = _serviceProvider.CreateScope();
+            var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+
+            var user = new UserModel(Guid.NewGuid(), "username", "password", "email");
+            userId = user.Id;
+            var userDetails = UserDetails.Create(userId, new Fullname("Name", "Surname"), new Username("username"), Email.Create("email@example.com"));
+
+            db.Users.Add(user);
+            db.UsersDetails.Add(userDetails);
+
+            var genre = Genre.Create("Name");
+            var gameA = Game.Create("Title A", "Desc", new Language("Eng"), new ReleaseDate(DateTime.UtcNow.AddDays(-1)), genre.Id, "Dev", new List<EPlatform> { EPlatform.PC });
+            mediaId1 = gameA.Id;
+            var gameB = Game.Create("Title B", "Desc", new Language("Eng"), new ReleaseDate(DateTime.UtcNow.AddDays(-1)), genre.Id, "Dev", new List<EPlatform> { EPlatform.PC });
+            mediaId2 = gameB.Id;
+
+            userDetails.SetInteraction(gameA.Id, ETypeInteractions.COMPLETED, ERatingVote.Liked);
+            userDetails.SetInteraction(gameB.Id, ETypeInteractions.COMPLETED, ERatingVote.Liked);
+            db.Genres.Add(genre);
+            db.Medias.Add(gameA);
+            db.Medias.Add(gameB);
+
+            await db.SaveChangesAsync();
         }
         [TestMethod]
         public async Task Handle_GetAllLikedForUser_ShouldReturnListOfMedias()
         {
-            var result = await handler.Handle(new GetAllForUserQuery(userId), CancellationToken.None);
-            Assert.HasCount(2, result);
-            Assert.IsTrue(result.Any(m => m.MediaResponse.id == mediaId1));
-            Assert.IsTrue(result.Any(m => m.MediaResponse.id == mediaId2));
+            using (var scope = _serviceProvider.CreateScope())
+            {
+                var mediator = scope.ServiceProvider.GetRequiredService<IMediator>();
+                var command = new GetAllForUserQuery(userId);
+
+                var result = await mediator.Send(command);
+                Assert.HasCount(2, result);
+                Assert.IsTrue(result.Any(m => m.MediaResponse.id == mediaId1));
+                Assert.IsTrue(result.Any(m => m.MediaResponse.id == mediaId2));
+            }
         }
         [TestMethod]
         public async Task Handle_GetAllLikeForUser_ShouldReturnEmptyList()
         {
-            var newUserDetails = UserDetails.Create(null, new Fullname("Jane", "Smith"), new Username("janesmith"), Email.Create("janesmith@example.com"));
-            appDbContext.UsersDetails.Add(newUserDetails);
-            await appDbContext.SaveChangesAsync();
-            var result = await handler.Handle(new GetAllForUserQuery(newUserDetails.Id), CancellationToken.None);
-            Assert.HasCount(0, result);
+            var testUserId = Guid.NewGuid();
+
+            using (var scope = _serviceProvider.CreateScope())
+            {
+                var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+                var user = new UserModel(testUserId, "username", "password", "email");
+                db.Users.Add(user);
+                var newUserDetails = UserDetails.Create(testUserId, new Fullname("Jane", "Smith"), new Username("janesmith"), Email.Create("janesmith@example.com"));
+                db.UsersDetails.Add(newUserDetails);
+                await db.Context.SaveChangesAsync();
+            }
+            using (var scope2 = _serviceProvider.CreateScope())
+            {
+                var mediator = scope2.ServiceProvider.GetRequiredService<IMediator>();
+                var command = new GetAllForUserQuery(testUserId);
+                var result = await mediator.Send(command);
+                Assert.HasCount(0, result);
+            }
         }
         [TestMethod]
         public async Task Handle_GetAllLikedButUserDontExist_ShouldReturnEmptyList()
         {
             var nonExistentUserId = Guid.NewGuid();
-            var result = await handler.Handle(new GetAllForUserQuery(nonExistentUserId), CancellationToken.None);
-            Assert.HasCount(0, result);
+            using (var scope2 = _serviceProvider.CreateScope())
+            {
+                var mediator = scope2.ServiceProvider.GetRequiredService<IMediator>();
+                var command = new GetAllForUserQuery(nonExistentUserId);
+                var result = await mediator.Send(command);
+                Assert.HasCount(0, result);
+            }
         }
     }
 }

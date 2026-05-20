@@ -1,10 +1,9 @@
 ﻿using Application.Behaviours;
 using Application.Common.Interfaces;
 using Application.Features.Common.Interfaces;
-using Application.Features.TvSeries.DeleteById;
+using Application.Features.TvSeries.GetByCriteria;
 using Domain.Aggregate;
 using Domain.Enums;
-using Domain.Exceptions;
 using Domain.Repository;
 using Domain.Value_Object;
 using FluentValidation;
@@ -19,13 +18,12 @@ using Microsoft.Extensions.Logging;
 namespace Tests.Service.TvSeriesService
 {
     [TestClass]
-    public class DeleteByIdHandlerTests
+    public class GetByCriteriaTests
     {
-        private readonly Guid id = Guid.NewGuid();
         private SqliteConnection _connection;
         private IServiceProvider _serviceProvider;
         [TestInitialize]
-        public async Task Initialize()
+        public async Task Setup()
         {
             _connection = new SqliteConnection("Data Source=:memory:");
             _connection.Open();
@@ -38,15 +36,17 @@ namespace Tests.Service.TvSeriesService
             });
             services.AddScoped<IAppDbContext>(provider =>
                 provider.GetRequiredService<AppDbContext>());
-            services.AddValidatorsFromAssembly(typeof(DeleteByIdCommand).Assembly);
+            services.AddValidatorsFromAssembly(typeof(GetByCriteriaQuery).Assembly);
             services.AddMediatR(cfg => {
-                cfg.RegisterServicesFromAssembly(typeof(DeleteByIdHandler).Assembly);
+                cfg.RegisterServicesFromAssembly(typeof(GetByCriteriaHandler).Assembly);
                 cfg.AddOpenBehavior(typeof(ErrorHandlingBehaviour<,>));
                 cfg.AddOpenBehavior(typeof(LoggingBehaviour<,>));
                 cfg.AddOpenBehavior(typeof(ValidationBehavior<,>));
                 cfg.AddOpenBehavior(typeof(TransactionBehaviour<,>));
             });
             services.AddScoped<IMediaRepository<TvSeries>, MediaRepository<TvSeries>>();
+            services.AddScoped<IGenreRepository, GenreRepository>();
+            services.AddScoped<ISortAndFilterService, SortAndFilterService>();
             services.AddLogging(builder => builder.AddConsole());
             _serviceProvider = services.BuildServiceProvider();
             using (var scope = _serviceProvider.CreateScope())
@@ -60,35 +60,59 @@ namespace Tests.Service.TvSeriesService
         {
             using var scope = _serviceProvider.CreateScope();
             var appDbContext = _serviceProvider.GetRequiredService<AppDbContext>();
-            var genreId = Guid.NewGuid();
-            var directorId = Guid.NewGuid();
-            var genre = Genre.Create("Genre1", genreId);
+            var genre = Genre.Create("Action", Guid.NewGuid());
             appDbContext.Genres.Add(genre);
-            var movieInDb = TvSeries.Create("Title 1","desc", new Language("Lang"),new ReleaseDate(DateTime.UtcNow),genre.Id,2,30,"Netflix",EStatus.Unknown,id);
-            appDbContext.Medias.Add(movieInDb);
-            await appDbContext.SaveChangesAsync();
+            var genre2 = Genre.Create("Adventure", Guid.NewGuid());
+            appDbContext.Genres.Add(genre2);
+            var tvSeries = TvSeries.Create("Title 1","desc",new Language("Lang"), new ReleaseDate(DateTime.UtcNow.AddDays(-10)), genre.Id, 2, 20, "Netflix", EStatus.Upcoming);
+            appDbContext.Medias.Add(tvSeries);
+            var tvSeries2 = TvSeries.Create("Title 2", "desc", new Language("Lang"), new ReleaseDate(DateTime.UtcNow.AddDays(-15)), genre2.Id, 2, 20, "Netflix", EStatus.Upcoming);
+            appDbContext.Medias.Add(tvSeries2);
+            appDbContext.SaveChanges();
         }
+
+
         [TestMethod]
-        public async Task Handle_DeleteMovieById_ShouldDeleteMovieFromDb()
+        public async Task GetGamesByCriteria_WhenFilterByTitle_ShouldReturnMatch()
         {
             using var scope = _serviceProvider.CreateScope();
             var mediator = _serviceProvider.GetRequiredService<IMediator>();
-            var result = await mediator.Send(new DeleteByIdCommand(id), CancellationToken.None);
-            using var scope2 = _serviceProvider.CreateScope();
-            var appDbContext = _serviceProvider.GetRequiredService<AppDbContext>();
-            var tvSeriesInDb = await appDbContext.Medias.FindAsync(id);
-            Assert.IsNull(tvSeriesInDb, "Film powinien zostać usunięty z bazy danych.");
-        }
-        [TestMethod]
-        public async Task Handle_DeleteById_ShouldThrowNotFoundException()
-        {
-            using var scope = _serviceProvider.CreateScope();
-            var mediator = _serviceProvider.GetRequiredService<IMediator>();
-            var nonExistentMovieId = Guid.NewGuid();
-            await Assert.ThrowsExactlyAsync<NotFoundException>(async () =>
+            var query = new GetByCriteriaQuery
             {
-                await mediator.Send(new DeleteByIdCommand(nonExistentMovieId), CancellationToken.None);
-            });
+                TitleSearch = "Title 1"
+            };
+            var result = await mediator.Send(query, CancellationToken.None);
+            Assert.HasCount(1, result);
+            Assert.AreEqual("Title 1", result[0].Title);
+        }
+
+        [TestMethod]
+        public async Task GetGamesByCriteria_WhenSortByDate_ShouldReturnOrdered()
+        {
+            using var scope = _serviceProvider.CreateScope();
+            var mediator = _serviceProvider.GetRequiredService<IMediator>();
+            var query = new GetByCriteriaQuery
+            {
+                SortByField = "Date",
+                IsDescending = true
+            };
+            var result = await mediator.Send(query, CancellationToken.None);
+            Assert.HasCount(2, result);
+            Assert.AreEqual("Title 1", result[0].Title);
+            Assert.AreEqual("Title 2", result[1].Title);
+        }
+        [TestMethod]
+        public async Task GetAllGamesAndDefaultSortShouldBeTitle()
+        {
+            using var scope = _serviceProvider.CreateScope();
+            var mediator = _serviceProvider.GetRequiredService<IMediator>();
+            var query = new GetByCriteriaQuery
+            {
+            };
+            var result = await mediator.Send(query, CancellationToken.None);
+            Assert.HasCount(2, result);
+            Assert.AreEqual("Title 1", result[0].Title);
+            Assert.AreEqual("Title 2", result[1].Title);
         }
     }
 }

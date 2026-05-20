@@ -15,14 +15,12 @@ namespace Application.Features.Liked.Add
         private readonly ILogger<AddHandler> logger;
         private readonly IMediaRepository<Media> mediaRepository;
         private readonly IUserDetailsRepository userDetailsRepository;
-        private readonly IAppDbContext _context;
 
-        public AddHandler(ILogger<AddHandler> logger, IMediaRepository<Media> mediaRepository, IUserDetailsRepository userDetailsRepository, IAppDbContext context)
+        public AddHandler(ILogger<AddHandler> logger, IMediaRepository<Media> mediaRepository, IUserDetailsRepository userDetailsRepository)
         {
             this.logger = logger;
             this.mediaRepository = mediaRepository;
             this.userDetailsRepository = userDetailsRepository;
-            this._context = context;
         }
 
         public async Task<bool> Handle(AddCommand request, CancellationToken cancellationToken)
