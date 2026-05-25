@@ -1,39 +1,36 @@
 ﻿using Application.Features.Common.Interfaces;
 using Application.Features.Liked.Common;
 using Domain.Aggregate;
-using Domain.Entity;
 using Domain.Enums;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 
-namespace Application.Features.Liked.GetAllForUser
+namespace Application.Features.Watching.GetAll
 {
-    internal class GetAllForUserHandler : IRequestHandler<GetAllForUserQuery, List<LikedResponse>>
+    internal class GetAllHandler : IRequestHandler<GetAllQuery, List<LikedResponse>>
     {
         private readonly IAppDbContext appDbContext;
-
-        public GetAllForUserHandler(IAppDbContext appDbContext)
+        public GetAllHandler(IAppDbContext appDbContext)
         {
             this.appDbContext = appDbContext;
         }
-
-        public async Task<List<LikedResponse>> Handle(GetAllForUserQuery request, CancellationToken cancellationToken)
+        public async Task<List<LikedResponse>> Handle(GetAllQuery request, CancellationToken cancellationToken)
         {
-            return await appDbContext.Set<UserInteractions>()
+            return await appDbContext.UserInteractions
+                .Where(x => x.UserId == request.UserId && x.TypeInteractions == ETypeInteractions.WATCHING)
                 .AsSplitQuery()
                 .AsNoTracking()
-                .Where(l => l.UserId == request.userId&& l.RatingVote == ERatingVote.Liked)
                 .Join(appDbContext.Set<UserDetails>(),
                     l => l.UserId, u => u.Id,
-                    (like, user) => new { like, user })
+                    (watching, user) => new { watching, user })
 
                 .Join(appDbContext.Set<Media>(),
-                    t => t.like.MediaId, m => m.Id,
-                    (t, media) => new { t.like, t.user, media })
+                    t => t.watching.MediaId, m => m.Id,
+                    (t, media) => new { t.watching, t.user, media })
 
                 .Join(appDbContext.Set<Genre>(),
                     t => t.media.GenreId, g => g.Id,
-                    (t, genre) => new { t.like, t.user, t.media, genre })
+                    (t, genre) => new { t.watching, t.user, t.media, genre })
 
                 .GroupJoin(appDbContext.Set<Director>(),
                     t => (t.media as Movie).DirectorId, d => d.Id,
@@ -42,13 +39,13 @@ namespace Application.Features.Liked.GetAllForUser
                     temp => temp.directors.DefaultIfEmpty(),
                     (temp, director) => new
                     {
-                        Like = temp.t.like,
+                        Watching = temp.t.watching,
                         User = temp.t.user,
                         Media = temp.t.media,
                         Genre = temp.t.genre,
                         Director = director
                     })
-                .Select(x => LikedMapper.ToResponse(x.Like, x.User, x.Media, x.Genre, x.Director))
+                .Select(x => LikedMapper.ToResponse(x.Watching, x.User, x.Media, x.Genre, x.Director))
                 .ToListAsync(cancellationToken);
         }
     }

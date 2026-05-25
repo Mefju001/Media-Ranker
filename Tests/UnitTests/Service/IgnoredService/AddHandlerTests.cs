@@ -1,7 +1,7 @@
 ﻿using Application.Behaviours;
 using Application.Common.Interfaces;
 using Application.Features.Common.Interfaces;
-using Application.Features.Liked.Add;
+using Application.Features.Ignored.Add;
 using Domain.Aggregate;
 using Domain.Enums;
 using Domain.Exceptions;
@@ -17,18 +17,16 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 
-
-namespace Tests.Service.LikedMediaService
+namespace Tests.Service.IgnoredService
 {
     [TestClass]
     public class AddHandlerTests
     {
+        private Guid GameId, UserId;
         private SqliteConnection _connection;
         private IServiceProvider _serviceProvider;
-        private Guid userId;
-        private Guid mediaId;
         [TestInitialize]
-        public async Task setup()
+        public async Task Setup()
         {
             _connection = new SqliteConnection("Data Source=:memory:");
             _connection.Open();
@@ -39,11 +37,11 @@ namespace Tests.Service.LikedMediaService
             {
                 options.UseSqlite(_connection);
             });
-            services.AddScoped<IAppDbContext>(provider=>
+            services.AddScoped<IAppDbContext>(provider =>
                 provider.GetRequiredService<AppDbContext>());
-            services.AddValidatorsFromAssembly(typeof(AddCommand).Assembly);
+            services.AddValidatorsFromAssembly(typeof(AddHandler).Assembly);
             services.AddMediatR(cfg => {
-                cfg.RegisterServicesFromAssembly(typeof(AddHandler).Assembly);
+                cfg.RegisterServicesFromAssembly(typeof(AddCommand).Assembly);
                 cfg.AddOpenBehavior(typeof(ErrorHandlingBehaviour<,>));
                 cfg.AddOpenBehavior(typeof(LoggingBehaviour<,>));
                 cfg.AddOpenBehavior(typeof(ValidationBehavior<,>));
@@ -59,11 +57,6 @@ namespace Tests.Service.LikedMediaService
                 await db.Database.EnsureCreatedAsync();
             }
             await SeedData();
-            using (var scope = _serviceProvider.CreateScope())
-            {
-                var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
-                db.ChangeTracker.Clear();
-            }
         }
         private async Task SeedData()
         {
@@ -71,15 +64,15 @@ namespace Tests.Service.LikedMediaService
             var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
 
             var user = new UserModel(Guid.NewGuid(), "username", "password", "email");
-            userId = user.Id;
-            var userDetails = UserDetails.Create(userId, new Fullname("Name", "Surname"), new Username("username"), Email.Create("email@example.com"));
+            UserId = user.Id;
+            var userDetails = UserDetails.Create(UserId, new Fullname("Name", "Surname"), new Username("username"), Email.Create("email@example.com"));
 
             db.Users.Add(user);
             db.UsersDetails.Add(userDetails);
 
             var genre = Genre.Create("Name");
             var game = Game.Create("Title", "Desc", new Language("Eng"), new ReleaseDate(DateTime.UtcNow.AddDays(-1)), genre.Id, "Dev", new List<EPlatform> { EPlatform.PC });
-            mediaId = game.Id;
+            GameId = game.Id;
 
             db.Genres.Add(genre);
             db.Medias.Add(game);
@@ -87,13 +80,13 @@ namespace Tests.Service.LikedMediaService
             await db.SaveChangesAsync();
         }
         [TestMethod]
-        public async Task Handle_AddLiked_ShouldAddLikedMedia()
+        public async Task Handle_AddIgnored_ShouldAddIgnoredMedia()
         {
             bool result;
             using (var scope = _serviceProvider.CreateScope())
             {
                 var mediator = scope.ServiceProvider.GetRequiredService<IMediator>();
-                var command = new AddCommand(userId, mediaId);
+                var command = new AddCommand(GameId, UserId);
                 result = await mediator.Send(command);
             }
 
@@ -101,24 +94,24 @@ namespace Tests.Service.LikedMediaService
             {
                 var db = assertScope.ServiceProvider.GetRequiredService<AppDbContext>();
                 var likedMedia = await db.UserInteractions
-                    .FirstOrDefaultAsync(lm => lm.UserId == userId && lm.MediaId == mediaId);
+                    .FirstOrDefaultAsync(lm => lm.UserId == UserId && lm.MediaId == GameId);
                 Assert.IsTrue(result);
                 Assert.IsNotNull(likedMedia);
-                Assert.AreEqual(userId, likedMedia.UserId);
-                Assert.AreEqual(mediaId, likedMedia.MediaId);
+                Assert.AreEqual(UserId, likedMedia.UserId);
+                Assert.AreEqual(GameId, likedMedia.MediaId);
             }
 
-            
+
         }
 
         [TestMethod]
-        public async Task Handle_AddLikedWhereUserIdIsNull_ShouldThrowNotFoundException()
+        public async Task Handle_AddIgnoredWhereUserIdIsNull_ShouldThrowNotFoundException()
         {
             using (var scope = _serviceProvider.CreateScope())
             {
                 var mediator = scope.ServiceProvider.GetRequiredService<IMediator>();
 
-                var command = new AddCommand(Guid.NewGuid(), mediaId);
+                var command = new AddCommand(Guid.NewGuid(), GameId);
 
                 await Assert.ThrowsExactlyAsync<NotFoundException>(() => mediator.Send(command));
             }

@@ -1,10 +1,7 @@
 ﻿using Application.Features.Common.Interfaces;
-using Application.Features.Liked.Add;
+using Application.Features.Ignored.Add;
+using Application.Features.Ignored.DeleteById;
 using Application.Features.Liked.Common;
-using Application.Features.Liked.DeleteById;
-using Application.Features.Liked.GetAll;
-using Application.Features.Liked.GetAllForUser;
-using Application.Features.Liked.GetById;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -14,11 +11,11 @@ namespace Api.Controllers
     [Authorize]
     [ApiController]
     [Route("api/[controller]")]
-    public class LikedController : ControllerBase
+    public class IgnoredController: ControllerBase
     {
         private readonly IMediator mediator;
         private readonly ICurrentUserContext currentUserContext;
-        public LikedController(IMediator mediator, ICurrentUserContext currentUserContext)
+        public IgnoredController(IMediator mediator, ICurrentUserContext currentUserContext)
         {
             this.mediator = mediator;
             this.currentUserContext = currentUserContext;
@@ -29,19 +26,12 @@ namespace Api.Controllers
             if (userId is null) throw new UnauthorizedAccessException();
             return userId.Value;
         }
-        [HttpGet("ForUser")]
-        public async Task<IActionResult> GetLikedByUser()
-        {
-            var userId = GetCurrentUserId();
-            var query = new GetAllForUserQuery(userId);
-            return Ok(await mediator.Send(query));
-        }
         [ProducesResponseType(typeof(LikedRequest), StatusCodes.Status201Created)]
         [HttpPost]
         public async Task<IActionResult> Add([FromBody] LikedRequest liked)
         {
             var userId = GetCurrentUserId();
-            var command = new AddCommand(userId, liked.MediaId);
+            var command = new AddCommand(liked.MediaId, userId);
             var response = await mediator.Send(command);
             return Ok();
         }
@@ -49,7 +39,7 @@ namespace Api.Controllers
         public async Task<IActionResult> DeleteById([FromRoute] Guid id)
         {
             var userId = GetCurrentUserId();
-            var command = new DeleteByIdCommand(userId, id);
+            var command = new DeleteByIdCommand(id, userId);
             await mediator.Send(command);
             return NoContent();
         }

@@ -1,7 +1,4 @@
 ﻿using Application.Common.Interfaces;
-using Application.Features.Common.Interfaces;
-using Domain.Aggregate;
-using Domain.Entity;
 using Domain.Enums;
 using Domain.Exceptions;
 using Domain.Repository;
