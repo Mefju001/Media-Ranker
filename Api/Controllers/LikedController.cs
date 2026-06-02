@@ -36,9 +36,9 @@ namespace Api.Controllers
             var query = new GetAllForUserQuery(userId);
             return Ok(await mediator.Send(query));
         }
-        [ProducesResponseType(typeof(LikedRequest), StatusCodes.Status201Created)]
+        [ProducesResponseType(typeof(UserInteractionsRequest), StatusCodes.Status201Created)]
         [HttpPost]
-        public async Task<IActionResult> Add([FromBody] LikedRequest liked)
+        public async Task<IActionResult> Add([FromBody] UserInteractionsRequest liked)
         {
             var userId = GetCurrentUserId();
             var command = new AddCommand(userId, liked.MediaId);

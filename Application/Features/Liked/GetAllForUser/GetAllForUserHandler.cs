@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Application.Features.Liked.GetAllForUser
 {
-    internal class GetAllForUserHandler : IRequestHandler<GetAllForUserQuery, List<LikedResponse>>
+    internal class GetAllForUserHandler : IRequestHandler<GetAllForUserQuery, List<UserInteractionsMapper>>
     {
         private readonly IAppDbContext appDbContext;
 
@@ -17,7 +17,7 @@ namespace Application.Features.Liked.GetAllForUser
             this.appDbContext = appDbContext;
         }
 
-        public async Task<List<LikedResponse>> Handle(GetAllForUserQuery request, CancellationToken cancellationToken)
+        public async Task<List<UserInteractionsMapper>> Handle(GetAllForUserQuery request, CancellationToken cancellationToken)
         {
             return await appDbContext.Set<UserInteractions>()
                 .AsSplitQuery()
@@ -48,7 +48,7 @@ namespace Application.Features.Liked.GetAllForUser
                         Genre = temp.t.genre,
                         Director = director
                     })
-                .Select(x => LikedMapper.ToResponse(x.Like, x.User, x.Media, x.Genre, x.Director))
+                .Select(x => UserIntegrationsMapper.ToResponse(x.Like, x.User, x.Media, x.Genre, x.Director))
                 .ToListAsync(cancellationToken);
         }
     }

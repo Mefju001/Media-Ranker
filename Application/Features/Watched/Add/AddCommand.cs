@@ -1,12 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Application.Features.Common.Interfaces;
 
 namespace Application.Features.Watched.Add
 {
-    internal class AddCommand
-    {
-    }
+    public record AddCommand(Guid userId,Guid mediaId) : ICommand<bool>;
 }

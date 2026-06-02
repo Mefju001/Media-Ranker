@@ -3,5 +3,5 @@ using Application.Features.Liked.Common;
 
 namespace Application.Features.Watching.GetAll
 {
-    public record GetAllQuery(Guid UserId) : IQuery<List<LikedResponse>>;
+    public record GetAllQuery(Guid UserId) : IQuery<List<UserInteractionsMapper>>;
 }

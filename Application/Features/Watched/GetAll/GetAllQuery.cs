@@ -1,12 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Application.Features.Common.Interfaces;
+using Application.Features.Liked.Common;
 
 namespace Application.Features.Watched.GetAll
 {
-    internal class GetAllQuery
-    {
-    }
+    public record GetAllQuery(Guid userId):IQuery<List<UserInteractionsMapper>>;
 }

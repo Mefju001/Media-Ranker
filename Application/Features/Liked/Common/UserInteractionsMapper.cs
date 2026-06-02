@@ -8,9 +8,9 @@ using Application.Features.Movies.Common;
 
 namespace Application.Features.Liked.Common
 {
-    public class LikedMapper
+    public class UserIntegrationsMapper
     {
-        public static LikedResponse ToResponse(
+        public static UserInteractionsMapper ToResponse(
         UserInteractions likedMedia,
         UserDetails user,
         Media media,
@@ -29,27 +29,27 @@ namespace Application.Features.Liked.Common
 
             throw new Exception("Brak danych o typie mediów");
         }
-        private static LikedResponse ToResponse(UserInteractions likedMedia, UserDetails userDomain, Movie movieDomain, Genre genreDomain, Director director)
+        private static UserInteractionsMapper ToResponse(UserInteractions likedMedia, UserDetails userDomain, Movie movieDomain, Genre genreDomain, Director director)
         {
-            return new LikedResponse(
+            return new UserInteractionsMapper(
                 likedMedia.Id,
                 UserMapper.ToResponse(userDomain),
                 MovieMapper.ToMovieResponse(movieDomain,genreDomain, director),
                 likedMedia.InteractionDate
             );
         }
-        private static LikedResponse ToResponse(UserInteractions likedMedia, UserDetails userDomain, Game gameDomain, Genre genreDomain)
+        private static UserInteractionsMapper ToResponse(UserInteractions likedMedia, UserDetails userDomain, Game gameDomain, Genre genreDomain)
         {
-            return new LikedResponse(
+            return new UserInteractionsMapper(
                 likedMedia.Id,
                 UserMapper.ToResponse(userDomain),
                 GameMapper.ToGameResponse(gameDomain, genreDomain),
                 likedMedia.InteractionDate
             );
         }
-        private static LikedResponse ToResponse(UserInteractions likedMedia, UserDetails userDomain, domain.TvSeries tvSeriesDomain, Genre genreDomain)
+        private static UserInteractionsMapper ToResponse(UserInteractions likedMedia, UserDetails userDomain, domain.TvSeries tvSeriesDomain, Genre genreDomain)
         {
-            return new LikedResponse(
+            return new UserInteractionsMapper(
                 likedMedia.Id,
                 UserMapper.ToResponse(userDomain),
                 TvSeriesMapper.ToTvSeriesResponse(tvSeriesDomain, genreDomain),

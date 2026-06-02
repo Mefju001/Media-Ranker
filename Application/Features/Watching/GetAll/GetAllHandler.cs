@@ -7,14 +7,14 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Application.Features.Watching.GetAll
 {
-    internal class GetAllHandler : IRequestHandler<GetAllQuery, List<LikedResponse>>
+    internal class GetAllHandler : IRequestHandler<GetAllQuery, List<UserInteractionsMapper>>
     {
         private readonly IAppDbContext appDbContext;
         public GetAllHandler(IAppDbContext appDbContext)
         {
             this.appDbContext = appDbContext;
         }
-        public async Task<List<LikedResponse>> Handle(GetAllQuery request, CancellationToken cancellationToken)
+        public async Task<List<UserInteractionsMapper>> Handle(GetAllQuery request, CancellationToken cancellationToken)
         {
             return await appDbContext.UserInteractions
                 .Where(x => x.UserId == request.UserId && x.TypeInteractions == ETypeInteractions.WATCHING)
@@ -45,7 +45,7 @@ namespace Application.Features.Watching.GetAll
                         Genre = temp.t.genre,
                         Director = director
                     })
-                .Select(x => LikedMapper.ToResponse(x.Watching, x.User, x.Media, x.Genre, x.Director))
+                .Select(x => UserIntegrationsMapper.ToResponse(x.Watching, x.User, x.Media, x.Genre, x.Director))
                 .ToListAsync(cancellationToken);
         }
     }

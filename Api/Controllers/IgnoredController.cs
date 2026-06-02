@@ -26,9 +26,9 @@ namespace Api.Controllers
             if (userId is null) throw new UnauthorizedAccessException();
             return userId.Value;
         }
-        [ProducesResponseType(typeof(LikedRequest), StatusCodes.Status201Created)]
+        [ProducesResponseType(typeof(UserInteractionsRequest), StatusCodes.Status201Created)]
         [HttpPost]
-        public async Task<IActionResult> Add([FromBody] LikedRequest liked)
+        public async Task<IActionResult> Add([FromBody] UserInteractionsRequest liked)
         {
             var userId = GetCurrentUserId();
             var command = new AddCommand(liked.MediaId, userId);
