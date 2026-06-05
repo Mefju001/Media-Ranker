@@ -3,6 +3,6 @@ using Application.Features.Liked.Common;
 
 namespace Application.Features.Liked.GetAllForUser
 {
-    public record GetAllForUserQuery(Guid userId) : IQuery<List<UserInteractionsMapper>>;
+    public record GetAllForUserQuery(Guid userId) : IQuery<List<UserInteractionsResponse>>;
 
 }
