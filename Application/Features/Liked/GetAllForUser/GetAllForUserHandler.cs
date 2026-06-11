@@ -4,7 +4,6 @@ using Domain.Aggregate;
 using Domain.Entity;
 using Domain.Enums;
 using MediatR;
-using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using Microsoft.EntityFrameworkCore;
 
 namespace Application.Features.Liked.GetAllForUser
@@ -21,7 +20,6 @@ namespace Application.Features.Liked.GetAllForUser
         public async Task<List<UserInteractionsResponse>> Handle(GetAllForUserQuery request, CancellationToken cancellationToken)
         {
             var rawData =  await appDbContext.Set<UserInteractions>()
-                .AsSplitQuery()
                 .AsNoTracking()
                 .Where(l => l.UserId == request.userId&& l.RatingVote == ERatingVote.Liked)
                 .ToListAsync(cancellationToken);
@@ -48,7 +46,7 @@ namespace Application.Features.Liked.GetAllForUser
                 {
                     director = directors.TryGetValue(movie.DirectorId, out var d) ? d : null;
                 }
-                return UserIntegrationsMapper.ToResponse(x, user, media, genre, director);
+                return UserInteractionsMapper.ToResponse(x, user, media, genre, director);
             }).ToList();
             return response;
         }

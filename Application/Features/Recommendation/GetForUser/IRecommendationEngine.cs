@@ -8,6 +8,6 @@ namespace Application.Features.Recommendation.GetForUser
 {
     public interface IRecommendationEngine
     {
-        Task<List<Media>> GetMediasAsync(UserProfileData profile, UserPreferencesData prefs, CancellationToken cancellation);
+        Task<List<Media>> GetMediasAsync(UserProfileDto profile, UserPreferencesDto prefs, CancellationToken cancellation);
     }
 }

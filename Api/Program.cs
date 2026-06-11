@@ -2,6 +2,7 @@ using Api;
 using Api.Controllers;
 using Application;
 using Infrastructure;
+using Infrastructure.Database;
 using System.Text.Json.Serialization;
 
 var MyAllowSpecificOrigins = "_myAllowSpecificOrigins";

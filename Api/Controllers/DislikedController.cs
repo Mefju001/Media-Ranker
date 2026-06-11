@@ -1,22 +1,21 @@
 ﻿using Application.Features.Common.Interfaces;
+using Application.Features.Disliked.Add;
+using Application.Features.Disliked.DeleteById;
 using Application.Features.Liked.Common;
-using Application.Features.ToWatch.Add;
-using Application.Features.ToWatch.DeleteById;
-using Application.Features.ToWatch.GetAll;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Api.Controllers
 {
-    [Authorize(Roles = "User")]
+    [Authorize]
     [ApiController]
     [Route("api/[controller]")]
-    public class ToWatchController:ControllerBase
+    public class DislikedController : ControllerBase
     {
         private readonly IMediator mediator;
         private readonly ICurrentUserContext currentUserContext;
-        public ToWatchController(IMediator mediator, ICurrentUserContext currentUserContext)
+        public DislikedController(IMediator mediator, ICurrentUserContext currentUserContext)
         {
             this.mediator = mediator;
             this.currentUserContext = currentUserContext;
@@ -26,14 +25,6 @@ namespace Api.Controllers
             var userId = currentUserContext.UserId;
             if (userId is null) throw new UnauthorizedAccessException();
             return userId.Value;
-        }
-        [HttpGet]
-        public async Task<IActionResult> GetAll()
-        {
-            var userId = GetCurrentUserId();
-            var query = new GetAllQuery(userId);
-            var movies = await mediator.Send(query);
-            return Ok(movies);
         }
         [ProducesResponseType(typeof(UserInteractionsRequest), StatusCodes.Status201Created)]
         [HttpPost]
@@ -52,6 +43,5 @@ namespace Api.Controllers
             await mediator.Send(command);
             return NoContent();
         }
-
     }
 }

@@ -11,7 +11,7 @@ namespace Application.Features.Recommendation.GetForUser
         {
             this.appDbContext = appDbContext;
         }
-        public async Task<List<Media>> GetMediasAsync(UserProfileData profile, UserPreferencesData prefs, CancellationToken cancellation)
+        public async Task<List<Media>> GetMediasAsync(UserProfileDto profile, UserPreferencesDto prefs, CancellationToken cancellation)
         {
             var movies = await GetMoviesAsync(profile, prefs, cancellation);
             var tvShows = await GetTvShowsAsync(profile, prefs, cancellation);
@@ -22,7 +22,7 @@ namespace Application.Features.Recommendation.GetForUser
                 .Concat(games)
                 .ToList();
         }
-        private async Task<List<Movie>> GetMoviesAsync(UserProfileData profile, UserPreferencesData prefs, CancellationToken cancellation)
+        private async Task<List<Movie>> GetMoviesAsync(UserProfileDto profile, UserPreferencesDto prefs, CancellationToken cancellation)
         {
             return await appDbContext.Medias
                 .AsNoTracking()
@@ -44,7 +44,7 @@ namespace Application.Features.Recommendation.GetForUser
                 .ToListAsync(cancellation);
         }
 
-        private async Task<List<Domain.Aggregate.TvSeries>> GetTvShowsAsync(UserProfileData profile, UserPreferencesData prefs, CancellationToken cancellation)
+        private async Task<List<Domain.Aggregate.TvSeries>> GetTvShowsAsync(UserProfileDto profile, UserPreferencesDto prefs, CancellationToken cancellation)
         {
             return await appDbContext.Medias
                 .AsNoTracking()
@@ -66,7 +66,7 @@ namespace Application.Features.Recommendation.GetForUser
                 .ToListAsync(cancellation);
         }
 
-        private async Task<List<Game>> GetGamesAsync(UserProfileData profile, UserPreferencesData prefs, CancellationToken cancellation)
+        private async Task<List<Game>> GetGamesAsync(UserProfileDto profile, UserPreferencesDto prefs, CancellationToken cancellation)
         {
             return await appDbContext.Medias
                 .AsNoTracking()

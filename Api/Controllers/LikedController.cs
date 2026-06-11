@@ -2,9 +2,7 @@
 using Application.Features.Liked.Add;
 using Application.Features.Liked.Common;
 using Application.Features.Liked.DeleteById;
-using Application.Features.Liked.GetAll;
 using Application.Features.Liked.GetAllForUser;
-using Application.Features.Liked.GetById;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;

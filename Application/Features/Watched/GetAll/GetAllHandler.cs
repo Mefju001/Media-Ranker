@@ -1,52 +1,52 @@
 ﻿using Application.Features.Common.Interfaces;
 using Application.Features.Liked.Common;
 using Domain.Aggregate;
+using Domain.Entity;
 using Domain.Enums;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 
 namespace Application.Features.Watched.GetAll
 {
-    internal class GetAllHandler : IRequestHandler<GetAllQuery, List<UserInteractionsMapper>>
+    internal class GetAllHandler : IRequestHandler<GetAllQuery, List<UserInteractionsResponse>>
     {
         private readonly IAppDbContext appDbContext;
         public GetAllHandler(IAppDbContext appDbContext)
         {
             this.appDbContext = appDbContext;
         }
-        public async Task<List<UserInteractionsMapper>> Handle(GetAllQuery request, CancellationToken cancellationToken)
+        public async Task<List<UserInteractionsResponse>> Handle(GetAllQuery request, CancellationToken cancellationToken)
         {
-            return await appDbContext.UserInteractions
-                .Where(x => x.UserId == request.userId && x.TypeInteractions == ETypeInteractions.COMPLETED)
-                .AsSplitQuery()
+            var rawData = await appDbContext.Set<UserInteractions>()
                 .AsNoTracking()
-                .Join(appDbContext.Set<UserDetails>(),
-                    l => l.UserId, u => u.Id,
-                    (completed, user) => new { completed, user })
-
-                .Join(appDbContext.Set<Media>(),
-                    t => t.completed.MediaId, m => m.Id,
-                    (t, media) => new { t.completed, t.user, media })
-
-                .Join(appDbContext.Set<Genre>(),
-                    t => t.media.GenreId, g => g.Id,
-                    (t, genre) => new { t.completed, t.user, t.media, genre })
-
-                .GroupJoin(appDbContext.Set<Director>(),
-                    t => (t.media as Movie).DirectorId, d => d.Id,
-                    (t, directors) => new { t, directors })
-                .SelectMany(
-                    temp => temp.directors.DefaultIfEmpty(),
-                    (temp, director) => new
-                    {
-                        Completed = temp.t.completed,
-                        User = temp.t.user,
-                        Media = temp.t.media,
-                        Genre = temp.t.genre,
-                        Director = director
-                    })
-                .Select(x => UserIntegrationsMapper.ToResponse(x.Completed, x.User, x.Media, x.Genre, x.Director))
+                .Where(l => l.UserId == request.userId && l.TypeInteractions == ETypeInteractions.COMPLETED)
                 .ToListAsync(cancellationToken);
+            if (!rawData.Any())
+            {
+                return new List<UserInteractionsResponse>();
+            }
+            var usersIds = rawData.Select(x => x.UserId).Distinct().ToList();
+            var users = await appDbContext.UsersDetails.AsNoTracking().Where(u => usersIds.Contains(u.Id)).ToDictionaryAsync(u => u.Id, u => u, cancellationToken);
+            var mediasIds = rawData.Select(x => x.MediaId).Distinct().ToList();
+            var medias = await appDbContext.Medias.AsNoTracking().Where(m => mediasIds.Contains(m.Id)).ToDictionaryAsync(m => m.Id, m => m, cancellationToken);
+            var genresIds = medias.Select(x => x.Value.GenreId).Distinct().ToList();
+            var genres = await appDbContext.Genres.AsNoTracking().Where(g => genresIds.Contains(g.Id)).ToDictionaryAsync(g => g.Id, g => g, cancellationToken);
+            var movies = medias.Values.OfType<Movie>().ToList();
+            var directorsIds = movies.Select(x => x.DirectorId).Distinct().ToList();
+            var directors = await appDbContext.Directors.AsNoTracking().Where(d => directorsIds.Contains(d.Id)).ToDictionaryAsync(d => d.Id, d => d, cancellationToken);
+            var response = rawData.Select(x =>
+            {
+                var user = users.TryGetValue(x.UserId, out var u) ? u : null;
+                var media = medias.TryGetValue(x.MediaId, out var m) ? m : null;
+                var genre = media != null && genres.TryGetValue(media.GenreId, out var g) ? g : null;
+                Director? director = null;
+                if (media is Movie movie)
+                {
+                    director = directors.TryGetValue(movie.DirectorId, out var d) ? d : null;
+                }
+                return UserInteractionsMapper.ToResponse(x, user, media, genre, director);
+            }).ToList();
+            return response;
         }
     }
 }

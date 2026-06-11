@@ -1,13 +1,12 @@
 ﻿using Domain.Aggregate;
 using Domain.Value_Object;
-using Infrastructure.Database;
 using Infrastructure.Database.DBModels;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace Infrastructure
+namespace Infrastructure.Database
 {
     public static class SeedUsers
     {

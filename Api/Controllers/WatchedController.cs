@@ -1,22 +1,22 @@
 ﻿using Application.Features.Common.Interfaces;
 using Application.Features.Liked.Common;
-using Application.Features.ToWatch.Add;
-using Application.Features.ToWatch.DeleteById;
-using Application.Features.ToWatch.GetAll;
+using Application.Features.Watched.Add;
+using Application.Features.Watched.DeleteById;
+using Application.Features.Watched.GetAll;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Api.Controllers
 {
-    [Authorize(Roles = "User")]
+    [Authorize]
     [ApiController]
     [Route("api/[controller]")]
-    public class ToWatchController:ControllerBase
+    public class WatchedController:ControllerBase
     {
         private readonly IMediator mediator;
         private readonly ICurrentUserContext currentUserContext;
-        public ToWatchController(IMediator mediator, ICurrentUserContext currentUserContext)
+        public WatchedController(IMediator mediator, ICurrentUserContext currentUserContext)
         {
             this.mediator = mediator;
             this.currentUserContext = currentUserContext;
@@ -52,6 +52,5 @@ namespace Api.Controllers
             await mediator.Send(command);
             return NoContent();
         }
-
     }
 }

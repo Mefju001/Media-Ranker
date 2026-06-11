@@ -1,4 +1,5 @@
 ﻿using Application.Behaviours;
+using Application.Dependency_Behaviours.Behaviours;
 using Application.Features.Genres.GenreManager;
 using FluentValidation;
 using Microsoft.Extensions.Configuration;
@@ -18,9 +19,11 @@ namespace Application
                 cfg.AddOpenBehavior(typeof(ErrorHandlingBehaviour<,>));
                 cfg.AddOpenBehavior(typeof(ValidationBehavior<,>));
                 cfg.AddOpenBehavior(typeof(TransactionBehaviour<,>));
-                //cfg.AddOpenBehavior(typeof(SendNotificationBehaviour<,>));
+                cfg.AddOpenBehavior(typeof(CachingBehaviour<,>));
+                cfg.AddOpenBehavior(typeof(SendNotificationBehaviour<,>));
             });
             services.AddValidatorsFromAssembly(typeof(DependencyInjection).Assembly);
+            services.AddMemoryCache();
             services.RegisterAllTypes(typeof(IGenreManager).Assembly);
             return services;
         }

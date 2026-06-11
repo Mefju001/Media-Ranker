@@ -3,6 +3,7 @@ using Application.Features.Games.Command;
 using Application.Features.Games.Common;
 using Domain.Aggregate;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Caching.Memory;
 using System.Linq.Expressions;
 
 namespace Application.Features.Games.GetByCriteria
@@ -10,9 +11,11 @@ namespace Application.Features.Games.GetByCriteria
     internal class SortAndFilterService : ISortAndFilterService
     {
         private readonly IAppDbContext appDbContext;
-        public SortAndFilterService(IAppDbContext appDbContext)
+        private readonly IMemoryCache memoryCache;
+        public SortAndFilterService(IAppDbContext appDbContext, IMemoryCache memoryCache)
         {
             this.appDbContext = appDbContext;
+            this.memoryCache = memoryCache;
         }
         public async Task<List<GameResponse>> GetByCriteriaAsync(GetByCriteriaQuery request, CancellationToken ct)
         {

@@ -1,11 +1,10 @@
 ﻿using Application.Features.Common.Interfaces;
 using Application.Features.Liked.Common;
-using Application.Features.Recommendation.GetForUser;
 using Domain.Aggregate;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 
-namespace Application.Features.Reccomendation.GetForUser
+namespace Application.Features.Recommendation.GetForUser
 {
     internal class GetForUserHandler : IRequestHandler<GetForUserQuery, List<MediaResponse>>
     {
@@ -27,7 +26,7 @@ namespace Application.Features.Reccomendation.GetForUser
             {
                 return await ColdStart(cancellationToken);
             }
-            var userRecommendationProfile = UserRecommendationProfile.Create(userInteractions);
+            var userRecommendationProfile = UserRecommendationProfileDto.Create(userInteractions);
             var userPreferencesData = await FetchPreferencesAsync(userRecommendationProfile, cancellationToken);
             var recommendationResults = await recommendationEngine.GetMediasAsync(userRecommendationProfile, userPreferencesData, cancellationToken);
             return await MapToResponsesAsync(recommendationResults, cancellationToken);
@@ -50,14 +49,14 @@ namespace Application.Features.Reccomendation.GetForUser
                 return m.ToResponse(genres[m.GenreId], director);
             }).ToList();
         }
-        private async Task<UserPreferencesData> FetchPreferencesAsync(UserProfileData profile, CancellationToken cancellation)
+        private async Task<UserPreferencesDto> FetchPreferencesAsync(UserProfileDto profile, CancellationToken cancellation)
         {
             var favoriteMedias = await appDbContext.Medias
                         .AsNoTracking()
                         .Where(m => profile.FavLikedMediaIds.Contains(m.Id) || profile.WantToWatchMediaIds.Contains(m.Id))
                         .ToListAsync(cancellation);
 
-            return new UserPreferencesData(
+            return new UserPreferencesDto(
                 GenreIds: favoriteMedias.Select(m => m.GenreId).Distinct().ToList(),
                 DirectorIds: favoriteMedias.OfType<Movie>().Select(m => m.DirectorId).Distinct().ToList(),
                 Developers: favoriteMedias.OfType<Game>().Select(m => m.Developer).Distinct().ToList(),
@@ -70,7 +69,7 @@ namespace Application.Features.Reccomendation.GetForUser
             var medias = await appDbContext.Medias
                                             .AsSplitQuery()
                                             .AsNoTracking()
-                                            .Where(m => m.ReleaseDate > DateTime.UtcNow.AddMonths(-6))
+                                            .Where(m => m.ReleaseDate.Value > DateTime.UtcNow.AddMonths(-6))
                                             .OrderByDescending(m => m.Stats.AverageRating)
                                             .Join(appDbContext.Set<Genre>(),
                                             t => t.GenreId, g => g.Id,

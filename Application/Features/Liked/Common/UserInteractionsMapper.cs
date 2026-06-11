@@ -8,7 +8,7 @@ using Application.Features.Movies.Common;
 
 namespace Application.Features.Liked.Common
 {
-    public class UserIntegrationsMapper
+    public class UserInteractionsMapper
     {
         public static UserInteractionsResponse ToResponse(
         UserInteractions likedMedia,
