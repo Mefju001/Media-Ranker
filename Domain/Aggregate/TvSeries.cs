@@ -1,9 +1,10 @@
 ﻿using Domain.Enums;
+using Domain.Interfaces;
 using Domain.Value_Object;
 
 namespace Domain.Aggregate;
 
-public class TvSeries : Media
+public class TvSeries : Media, MediaInfo
 {
     public int Seasons { get; private set; }
     public int Episodes { get; private set; }

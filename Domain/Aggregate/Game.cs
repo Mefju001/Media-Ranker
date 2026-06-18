@@ -1,9 +1,10 @@
 ﻿using Domain.Enums;
+using Domain.Interfaces;
 using Domain.Value_Object;
 
 namespace Domain.Aggregate;
 
-public class Game : Media
+public class Game : Media, MediaInfo
 {
     public string Developer { get; private set; } = default!;
     private List<EPlatform> platforms = new();

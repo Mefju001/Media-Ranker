@@ -1,8 +1,9 @@
-﻿using Domain.Value_Object;
+﻿using Domain.Interfaces;
+using Domain.Value_Object;
 
 namespace Domain.Aggregate;
 
-public class Movie : Media
+public class Movie : Media, MediaInfo
 {
     public Guid DirectorId { get; private set; }
     public Duration Duration { get; private set; } = default!;

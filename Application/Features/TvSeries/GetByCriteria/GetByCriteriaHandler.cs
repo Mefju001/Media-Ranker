@@ -1,23 +1,52 @@
-﻿using Application.Features.TvSeries.Common;
+﻿using Application.Features.Common.Interfaces;
+using Application.Features.TvSeries.Common;
+using Domain.Specification;
+using Infrastructure;
 using MediatR;
+using Microsoft.EntityFrameworkCore;
 
 
 namespace Application.Features.TvSeries.GetByCriteria
 {
     internal class GetByCriteriaHandler : IRequestHandler<GetByCriteriaQuery, List<TvSeriesResponse>>
     {
-        private readonly ISortAndFilterService SortAndFilterService;
+        private readonly IAppDbContext appDbContext;
 
-        public GetByCriteriaHandler(ISortAndFilterService sortAndFilterService)
+        public GetByCriteriaHandler(IAppDbContext appDbContext)
         {
-            SortAndFilterService = sortAndFilterService;
+            this.appDbContext = appDbContext;
         }
 
 
         public async Task<List<TvSeriesResponse>> Handle(GetByCriteriaQuery request, CancellationToken cancellationToken)
         {
-            var Response = await SortAndFilterService.Handler(request, cancellationToken);
-            return Response;
+            var query =  appDbContext.Set<Domain.Aggregate.TvSeries>().AsNoTracking().AsQueryable();
+            var genresDictionary = await appDbContext.Genres.AsNoTracking()
+                .ToDictionaryAsync(g=>g.Id, g=>g, cancellationToken);
+            List<Guid>? searchGenresId = null;
+            if (!string.IsNullOrWhiteSpace(request.genreName))
+            {
+                searchGenresId = genresDictionary
+                    .Where(g => g.Value.Name.Value.Contains(request.genreName))
+                    .Select(g => g.Key)
+                    .ToList();
+            }
+            var criteria = new TvSeriesFilterSpecification
+            (
+                request.TitleSearch,
+                request.MinRating,
+                request.ReleaseYear,
+                searchGenresId,
+                request.seasons,
+                request.episodes,
+                request.network,
+                request.status,
+                request.SortByField,
+                request.IsDescending
+            );
+            var result = SpecificationEvaluator.GetQuery(query, criteria);
+            var response = await result.Select(x => TvSeriesMapper.ToTvSeriesResponse(x, genresDictionary.GetValueOrDefault(x.GenreId)!)).ToListAsync(cancellationToken);
+            return  response;
         }
     }
 }

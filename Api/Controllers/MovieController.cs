@@ -1,13 +1,14 @@
 
+using Application.Features.Movies.AddRange;
 using Application.Features.Movies.Common;
-using Application.Features.Movies.GetMovieById;
+using Application.Features.Movies.DeleteById;
 using Application.Features.Movies.GetByCriteria;
+using Application.Features.Movies.GetMovieById;
 using Application.Features.Movies.Upsert;
+using Azure.Core;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Application.Features.Movies.AddRange;
-using Application.Features.Movies.DeleteById;
 
 namespace Api.Controllers
 {

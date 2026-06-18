@@ -1,16 +1,11 @@
 ﻿using Application.Features.Common.Interfaces;
 using MediatR;
 using Microsoft.Extensions.Caching.Memory;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Application.Dependency_Behaviours.Behaviours
 {
     public class CachingBehaviour<TRequest, TResponse> : IPipelineBehavior<TRequest, TResponse>
-     where TRequest : IQueryable<TResponse>
+     where TRequest : IQuery<TResponse>
     {
         private readonly IMemoryCache memoryCache;
         public CachingBehaviour(IMemoryCache memoryCache)
