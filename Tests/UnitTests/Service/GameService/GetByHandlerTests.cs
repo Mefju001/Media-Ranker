@@ -49,7 +49,6 @@ namespace Tests.Service.GameService
             });
             services.AddScoped<IMediaRepository<Media>, MediaRepository<Media>>();
             services.AddScoped<IUserDetailsRepository, UserDetailsRepository>();
-            services.AddScoped<ISortAndFilterService, SortAndFilterService>();
             services.AddScoped<IGenreRepository, GenreRepository>();
             services.AddLogging(builder => builder.AddConsole());
             _serviceProvider = services.BuildServiceProvider();

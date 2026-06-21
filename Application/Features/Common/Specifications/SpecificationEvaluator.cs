@@ -1,11 +1,10 @@
-﻿using Application.Features.Common.Interfaces;
-using Domain.Interfaces;
+﻿using Domain.Interfaces;
 
-namespace Infrastructure
+namespace Application.Features.Common.Specifications
 {
     public static class SpecificationEvaluator
     {
-        public static IQueryable<TEntity> GetQuery<TEntity>(IQueryable<TEntity> inputQuery, ISpecification<TEntity> spec) where TEntity : class
+        public static IQueryable<TEntity> GetQuery<TEntity>(IQueryable<TEntity> inputQuery, ISpecification<TEntity> spec) where TEntity : MediaInfo
         {
             var query = inputQuery;
             foreach (var criteria in spec.Criteria)
@@ -23,5 +22,5 @@ namespace Infrastructure
             return query;
         }
     }
-    }
 }
+

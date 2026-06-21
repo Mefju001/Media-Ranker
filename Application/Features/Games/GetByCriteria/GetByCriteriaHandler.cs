@@ -1,9 +1,9 @@
 ﻿using Application.Features.Common.Interfaces;
+using Application.Features.Common.Specifications;
 using Application.Features.Games.Command;
 using Application.Features.Games.Common;
 using Domain.Aggregate;
 using Domain.Specification;
-using Infrastructure;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 

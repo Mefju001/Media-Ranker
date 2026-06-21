@@ -44,7 +44,6 @@ namespace Tests.Service.MovieService
             services.AddScoped<IMediaRepository<Media>, MediaRepository<Media>>();
             services.AddScoped<IGenreRepository, GenreRepository>();
             services.AddScoped<IDirectorRepository, DirectorRepository>();
-            services.AddScoped<ISortAndFilterService, SortAndFilterService>();
             services.AddLogging(builder => builder.AddConsole());
             _serviceProvider = services.BuildServiceProvider();
             using (var scope = _serviceProvider.CreateScope())

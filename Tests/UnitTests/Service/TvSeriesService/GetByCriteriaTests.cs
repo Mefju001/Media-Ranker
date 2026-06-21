@@ -46,7 +46,6 @@ namespace Tests.Service.TvSeriesService
             });
             services.AddScoped<IMediaRepository<TvSeries>, MediaRepository<TvSeries>>();
             services.AddScoped<IGenreRepository, GenreRepository>();
-            services.AddScoped<ISortAndFilterService, SortAndFilterService>();
             services.AddLogging(builder => builder.AddConsole());
             _serviceProvider = services.BuildServiceProvider();
             using (var scope = _serviceProvider.CreateScope())

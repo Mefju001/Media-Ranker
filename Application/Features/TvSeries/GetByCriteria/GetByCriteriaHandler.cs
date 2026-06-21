@@ -1,7 +1,7 @@
 ﻿using Application.Features.Common.Interfaces;
+using Application.Features.Common.Specifications;
 using Application.Features.TvSeries.Common;
 using Domain.Specification;
-using Infrastructure;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 
@@ -20,7 +20,7 @@ namespace Application.Features.TvSeries.GetByCriteria
 
         public async Task<List<TvSeriesResponse>> Handle(GetByCriteriaQuery request, CancellationToken cancellationToken)
         {
-            var query =  appDbContext.Set<Domain.Aggregate.TvSeries>().AsNoTracking().AsQueryable();
+            var query = appDbContext.Medias.OfType<Domain.Aggregate.TvSeries>().AsNoTracking().AsQueryable();
             var genresDictionary = await appDbContext.Genres.AsNoTracking()
                 .ToDictionaryAsync(g=>g.Id, g=>g, cancellationToken);
             List<Guid>? searchGenresId = null;
