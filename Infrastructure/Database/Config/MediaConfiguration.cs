@@ -9,6 +9,7 @@ namespace Infrastructure.Database.Config
         public void Configure(EntityTypeBuilder<Media> builder)
         {
             builder.HasKey(x => x.Id);
+            builder.Property(r => r.Id).ValueGeneratedNever();
             builder
                 .HasOne<Genre>()
                 .WithMany()
@@ -25,7 +26,8 @@ namespace Infrastructure.Database.Config
                 sa.WithOwner().HasForeignKey("MediaId");
                 sa.HasKey("MediaId");
                 sa.Property(s => s.AverageRating).HasColumnName("AverageRating");
-                sa.Property(s => s.ReviewCount).HasColumnName("reviewCount");
+                sa.Property(s => s.ReviewCount).HasColumnName("ReviewCount");
+                sa.HasIndex(s => s.AverageRating);
             });
             builder.OwnsOne(m => m.AuditInfo, ai =>
             {
@@ -35,10 +37,12 @@ namespace Infrastructure.Database.Config
             builder.OwnsOne(m => m.ReleaseDate, rd =>
             {
                 rd.Property(r => r.Value).HasColumnName("ReleaseYear");
+                rd.HasIndex(r => r.Value);
             });
             builder.OwnsOne(m => m.Language, l =>
             {
                 l.Property(lang => lang.Value).HasColumnName("Language");
+                l.HasIndex(lang => lang.Value);
             });
         }
     }

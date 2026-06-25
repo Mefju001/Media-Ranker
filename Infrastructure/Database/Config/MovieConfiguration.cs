@@ -20,6 +20,7 @@ namespace Infrastructure.Database.Config
 
             builder.Property(m => m.DirectorId)
                 .IsRequired();
+            builder.HasIndex(m => m.DirectorId);
         }
     }
 }
