@@ -12,25 +12,23 @@ namespace Infrastructure.Database.Config
         {
             builder.HasKey(x => x.Id);
             builder.Property(x => x.Id).ValueGeneratedNever();
-            builder.OwnsOne(x => x.Fullname, n =>
+            builder.OwnsOne(m => m.Fullname, ai =>
             {
-                n.Property(p => p.Name).HasColumnName("FirstName").HasMaxLength(50);
-                n.Property(p => p.Surname).HasColumnName("LastName").HasMaxLength(50);
+                ai.Property(a => a.FirstName).IsRequired();
+                ai.Property(a => a.LastName).IsRequired();
+                ai.HasIndex(p => new { p.FirstName, p.LastName });
             });
             builder.Property(x => x.Username)
-            .HasConversion(
-                v => v.ToString(),
-                v => new Username(v)
-            )
-            .HasColumnName("Username")
-            .HasMaxLength(50);
+                .HasMaxLength(50)
+                .IsRequired();
             builder.Property(x => x.Email)
                 .HasConversion(
                     v => v.ToString(),
                     v => Email.Create(v)
                 )
                 .HasColumnName("Email")
-                .HasMaxLength(100);
+                .HasMaxLength(100)
+                .IsRequired();
             builder.OwnsOne(m => m.AuditInfo, ai =>
             {
                 ai.Property(a => a.CreatedAt).HasColumnName("CreatedAt");

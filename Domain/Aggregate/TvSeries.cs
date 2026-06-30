@@ -1,4 +1,5 @@
 ﻿using Domain.Enums;
+using Domain.Exceptions;
 using Domain.Interfaces;
 using Domain.Value_Object;
 
@@ -6,63 +7,54 @@ namespace Domain.Aggregate;
 
 public class TvSeries : Media, MediaInfo
 {
-    public int Seasons { get; private set; }
-    public int Episodes { get; private set; }
+    public SeasonDetails SeasonAndEpisode { get; private set; } = default!;
     public string? Network { get; private set; }
-    public EStatus Status { get; private set; }
+    public ETvSeriesStatus Status { get; private set; }
 
     private TvSeries() { }
 
     public static TvSeries Create(
-        string title, string desc, Language lang, ReleaseDate? date, Guid genre,
-        int seasons, int episodes, string? network, EStatus status, Guid? id = null)
+        string title, string desc, string lang, ReleaseDate? date, Guid genre,
+        SeasonDetails seasonAndEpisode, string? network, ETvSeriesStatus status, Guid? id = null)
     {
-        Validate(seasons, episodes);
 
         var series = new TvSeries
         {
             Id = id ?? Guid.NewGuid(),
-            Seasons = seasons,
-            Episodes = episodes,
-            Network = network,
-            Status = status
-        };
 
+        };
         series.SetBaseDetails(title, desc, lang, date, genre);
+        series.SeasonAndEpisode = seasonAndEpisode;
+        series.Network = network;
+        series.Status = status;
         return series;
     }
 
     public void Update(
-        string title, string desc, Language lang, ReleaseDate? date, Guid genre,
-        int seasons, int episodes, string? network, EStatus status)
+        string title, string desc, string lang, ReleaseDate? date, Guid genre,
+        SeasonDetails seasonAndEpisode, string? network, ETvSeriesStatus status)
     {
-        Validate(seasons, episodes);
-        Seasons = seasons;
-        Episodes = episodes;
+        if (Status == ETvSeriesStatus.Canceled)
+            throw new DomainException("Cannot update details of a canceled TV series.");
+        if (Status == ETvSeriesStatus.Ended)
+            throw new DomainException("Cannot change status of an already ended TV series.");
+        SeasonAndEpisode = seasonAndEpisode;
         Network = network;
         Status = status;
 
         SetBaseDetails(title, desc, lang, date, genre);
     }
 
-    public void UpdateSeasons(int seasons)
-    {
-        if (seasons <= 0) throw new ArgumentException("Seasons must be > 0");
-        Seasons = seasons;
-    }
-
-    public void UpdateEpisodes(int episodes)
-    {
-        if (episodes <= 0) throw new ArgumentException("Episodes must be > 0");
-        Episodes = episodes;
-    }
-
+    public void UpdateSeasonAndEpisode(SeasonDetails seasonAndEpisode) => SeasonAndEpisode = seasonAndEpisode ?? throw new DomainException(nameof(seasonAndEpisode));
     public void UpdateNetwork(string? network) => Network = network;
-    public void UpdateStatus(EStatus status) => Status = status;
 
-    private static void Validate(int seasons, int episodes)
-    {
-        if (seasons <= 0 || episodes <= 0)
-            throw new ArgumentException("Seasons and Episodes must be greater than zero.");
+    public void UpdateStatus(ETvSeriesStatus status) {
+        if (Status == ETvSeriesStatus.Canceled)
+            throw new DomainException("Cannot change status of a canceled TV series.");
+
+        if (Status == ETvSeriesStatus.Ended)
+            throw new DomainException("Cannot change status of an already ended TV series.");
+        Status = status; 
     }
+
 }

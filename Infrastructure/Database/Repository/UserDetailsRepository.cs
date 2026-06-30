@@ -18,7 +18,7 @@ namespace Infrastructure.Database.Repository
 
         public async Task<string?> GetUsernameById(Guid id, CancellationToken cancellationToken)
         {
-            return await appDbContext.Set<UserDetails>().Where(u => u.Id == id).Select(u => u.Username.Value).FirstOrDefaultAsync(cancellationToken);
+            return await appDbContext.Set<UserDetails>().Where(u => u.Id == id).Select(u => u.Username).FirstOrDefaultAsync(cancellationToken);
         }
     }
 }

@@ -40,7 +40,7 @@ namespace Application.Features.Movies.AddRange
                 var director = dictionaryDirectors[(movieReq.Director.Name, movieReq.Director.Surname)];
                 return Movie.Create(movieReq.Title,
                     movieReq.Description,
-                    new Language(movieReq.Language),
+                    movieReq.Language,
                     new ReleaseDate(movieReq.ReleaseDate),
                     genre.id,
                     director.id,

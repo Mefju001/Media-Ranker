@@ -31,7 +31,7 @@ namespace Application.Features.Reviews.Upsert
             else
             {
                 var username = await userRepository.GetUsernameById(request.userId.Value, cancellationToken);
-                media.AddReview(request.userId.Value, new Rating(request.Rating), request.Comment, new Username(username));
+                media.AddReview(request.userId.Value, new Rating(request.Rating), request.Comment, username);
             }
             var review = media.Reviews.First(r => r.UserId == request.userId.Value);
             return ReviewMapper.ToResponse(review);

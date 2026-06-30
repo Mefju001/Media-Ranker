@@ -36,7 +36,7 @@ namespace Application.Features.Movies.Upsert
                 movie.Update(
                     request.Title,
                     request.Description,
-                    new Language(request.Language),
+                    request.Language,
                     new ReleaseDate(request.ReleaseDate!.Value),
                     genre.id,
                     director.id,
@@ -48,7 +48,7 @@ namespace Application.Features.Movies.Upsert
             {
                 movie = Movie.Create(request.Title,
                             request.Description,
-                            new Language(request.Language),
+                            request.Language,
                             new ReleaseDate(request.ReleaseDate!.Value),
                             genre.id,
                             director.id,

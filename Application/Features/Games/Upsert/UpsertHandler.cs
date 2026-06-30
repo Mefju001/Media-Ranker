@@ -36,7 +36,7 @@ namespace Application.Features.Games.Upsert
                     (
                     request.Title,
                     request.Description,
-                    new Language(request.Language),
+                    request.Language,
                     new ReleaseDate(request.ReleaseDate!.Value),
                     genre.id,
                     request.Developer!,
@@ -48,7 +48,7 @@ namespace Application.Features.Games.Upsert
                 game = Game.Create(
                     request.Title,
                     request.Description,
-                    new Language(request.Language),
+                    request.Language,
                     new ReleaseDate(request.ReleaseDate!.Value),
                     genre.id, request.Developer!,
                     EPlatformExtensions.ToEnum(request.Platforms));

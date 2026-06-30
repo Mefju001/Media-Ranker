@@ -10,13 +10,13 @@ namespace Infrastructure.Database.Repository
         public DirectorRepository(IAppDbContext context) : base(context) { }
         public async Task<Director?> FirstOrDefaultForNameAndSurnameAsync(string name, string surname, CancellationToken cancellationToken)
         {
-            return await appDbContext.Directors.AsNoTracking().FirstOrDefaultAsync(d => d.fullname.Name == name && d.fullname.Surname == surname, cancellationToken);
+            return await appDbContext.Directors.AsNoTracking().FirstOrDefaultAsync(d => d.fullname.FirstName == name && d.fullname.LastName == surname, cancellationToken);
         }
         public async Task<List<Director>> FindByNamesAsync(List<(string, string)> fullnames, CancellationToken cancellationToken)
         {
             var names = fullnames.Select(x => x.Item1).Distinct().ToList();
             var surnames = fullnames.Select(x => x.Item2).Distinct().ToList();
-            var results = await appDbContext.Directors.Where(d => names.Contains(d.fullname.Name) && surnames.Contains(d.fullname.Surname)).AsNoTracking().ToListAsync(cancellationToken);
+            var results = await appDbContext.Directors.Where(d => names.Contains(d.fullname.FirstName) && surnames.Contains(d.fullname.LastName)).AsNoTracking().ToListAsync(cancellationToken);
             return results;
         }
         public Task<Dictionary<Guid, Director>> GetDirectorsDictionary(CancellationToken cancellationToken)

@@ -15,9 +15,15 @@ namespace Infrastructure.Database.Config
                     .IsRequired();
             });
 
-            builder.Property(m => m.IsCinemaRelease)
-                .HasColumnName("IsCinemaRelease");
-
+            builder.Property(m => m.DistributionType)
+                .HasConversion<string>()
+                .IsRequired();
+            builder.HasIndex(m => m.DistributionType);
+            builder.Property(m => m.Status)
+                .HasConversion<string>()
+                .HasColumnName("MovieStatus")
+                .IsRequired();
+            builder.HasIndex(m => m.Status);
             builder.Property(m => m.DirectorId)
                 .IsRequired();
             builder.HasIndex(m => m.DirectorId);

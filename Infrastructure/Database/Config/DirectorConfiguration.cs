@@ -13,9 +13,9 @@ namespace Infrastructure.Database.Config
             builder.Property(r => r.Id).ValueGeneratedNever();
             builder.OwnsOne(d => d.fullname, a =>
             {
-                a.Property(p => p.Name).HasColumnName("Name").IsRequired();
-                a.Property(p => p.Surname).HasColumnName("Surname").IsRequired();
-                a.HasIndex(p => new { p.Name, p.Surname });
+                a.Property(p => p.FirstName).IsRequired();
+                a.Property(p => p.LastName).IsRequired();
+                a.HasIndex(p => new { p.FirstName, p.LastName });
             });
         }
     }

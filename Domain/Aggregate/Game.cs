@@ -1,4 +1,5 @@
 ﻿using Domain.Enums;
+using Domain.Exceptions;
 using Domain.Interfaces;
 using Domain.Value_Object;
 
@@ -6,47 +7,62 @@ namespace Domain.Aggregate;
 
 public class Game : Media, MediaInfo
 {
-    public string Developer { get; private set; } = default!;
-    private List<EPlatform> platforms = new();
-    public IReadOnlyCollection<EPlatform> Platforms => platforms.AsReadOnly();
+    public EGameStatus Status { get; private set; }  = EGameStatus.Announced;
+    public GameDetails Details { get; private set; } = default!;
+    public PegiRating PegiRating {  get; private set; } = PegiRating.Pegi3;
+    public GamePlatforms Platforms { get; private set; } = default!;
+    public bool SupportsCrossPlay { get; private set; } = false;
+
     private Game() { }
+
     public static Game Create(
-        string title, string desc, Language lang, ReleaseDate? date, Guid genre,
-        string developer, List<EPlatform> platforms, Guid? id = null)
+        string title, string desc, string lang, ReleaseDate? date, Guid genre,
+        GameDetails gameDetails, int pegiRating, List<EPlatform> platforms, EGameStatus status, bool supportsCrossPlay, Guid? id = null)
     {
-        Validate(developer);
-        ValidatePlatforms(platforms);
         var game = new Game
         {
-            Id = id ?? Guid.NewGuid(),
-            Developer = developer,
-            platforms = new List<EPlatform>(platforms)
+            Id = id ?? Guid.NewGuid()
         };
-
         game.SetBaseDetails(title, desc, lang, date, genre);
+        game.Platforms = game.DeterminePlayablePlatforms(platforms);
+        game.Details = gameDetails ?? throw new DomainException(nameof(gameDetails));
+        game.PegiRating = PegiRating.FromValue(pegiRating);
+        game.Status = status;
+        game.SupportsCrossPlay = supportsCrossPlay;
         return game;
     }
 
     public void Update(
-        string title, string desc, Language lang, ReleaseDate? date, Guid genre,
-        string developer, List<EPlatform> platforms)
+        string title, string desc, string lang, ReleaseDate? date, Guid genre,
+        GameDetails gameDetails, int pegiRating, List<EPlatform> platforms, EGameStatus status, bool supportsCrossPlay)
     {
-        Validate(developer);
-        ValidatePlatforms(platforms);
-        Developer = developer;
-        this.platforms = new List<EPlatform>(platforms);
+        if (Status == EGameStatus.Cancelled)
+            throw new DomainException("Cannot update a cancelled game.");
+
+        Details = gameDetails ?? throw new DomainException(nameof(gameDetails));
+        PegiRating = PegiRating.FromValue(pegiRating);
+        Status = status;
+        SupportsCrossPlay = supportsCrossPlay;
+
+        Platforms = DeterminePlayablePlatforms(platforms);
 
         SetBaseDetails(title, desc, lang, date, genre);
     }
 
-    private static void Validate(string developer)
-    {
-        if (string.IsNullOrWhiteSpace(developer))
-            throw new ArgumentException("Developer cannot be null or empty.");
-    }
-    private static void ValidatePlatforms(List<EPlatform> platforms)
+    private GamePlatforms DeterminePlayablePlatforms(List<EPlatform> platforms)
     {
         if (platforms == null || !platforms.Any())
-            throw new ArgumentException("Game must have at least one platform.");
+            throw new DomainException("Game must have at least one platform.");
+
+        var all = new HashSet<EPlatform>();
+        foreach (var p in platforms)
+        {
+            all.Add(p);
+
+            if (p == EPlatform.PlayStation4) all.Add(EPlatform.PlayStation5);
+            if (p == EPlatform.XboxOne) all.Add(EPlatform.XboxSeries);
+        }
+
+        return new GamePlatforms(all.ToList());
     }
 }

@@ -1,5 +1,4 @@
-﻿using Domain.Aggregate;
-using Domain.Entity;
+﻿using Domain.Entity;
 using Infrastructure.Database.DBModels;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
@@ -16,27 +15,20 @@ namespace Infrastructure.Database.Config
                 .WithMany()
                 .HasForeignKey(r => r.UserId)
                 .OnDelete(DeleteBehavior.Cascade);
-            builder.HasOne<UserDetails>()
-                .WithMany()
-                .HasForeignKey(r => r.UserId)
-                .OnDelete(DeleteBehavior.Cascade);
             builder.HasOne<Media>()
                 .WithMany(m => m.Reviews)
                 .HasForeignKey(r => r.MediaId)
                 .OnDelete(DeleteBehavior.Cascade);
             builder.OwnsOne(r => r.AuditInfo, ai =>
             {
-                ai.Property(a => a.CreatedAt).HasColumnName("CreatedAt");
+                ai.Property(a => a.CreatedAt).HasColumnName("CreatedAt").IsRequired();
                 ai.Property(a => a.UpdatedAt).HasColumnName("UpdatedAt");
             });
             builder.OwnsOne(r => r.Rating, r =>
             {
-                r.Property(r => r.Value).HasColumnName("Rating");
+                r.Property(r => r.Value).HasColumnName("Rating").IsRequired();
             });
-            builder.OwnsOne(r => r.Username, u =>
-            {
-                u.Property(u => u.Value).HasColumnName("Username");
-            });
+            builder.Property(r => r.Username).IsRequired();
         }
     }
 }

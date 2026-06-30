@@ -10,11 +10,21 @@ namespace Infrastructure.Database.Config
         {
             builder.HasKey(x => x.Id);
             builder.Property(r => r.Id).ValueGeneratedNever();
+            builder.Property(m => m.Title)
+            .HasMaxLength(250)
+            .IsRequired();
+            builder.Property(m => m.Description)
+                .HasMaxLength(2000)
+                .IsRequired();
+            builder.Property(m => m.Language)
+                .HasMaxLength(50)
+                .IsRequired();
             builder
                 .HasOne<Genre>()
                 .WithMany()
                 .IsRequired()
-                .HasForeignKey(m => m.GenreId);
+                .HasForeignKey(m => m.GenreId)
+                .OnDelete(DeleteBehavior.Restrict);
             builder
                 .HasDiscriminator<string>("MediaType")
                 .HasValue<Movie>("Movie")
@@ -25,8 +35,8 @@ namespace Infrastructure.Database.Config
                 sa.ToTable("MediaStats");
                 sa.WithOwner().HasForeignKey("MediaId");
                 sa.HasKey("MediaId");
-                sa.Property(s => s.AverageRating).HasColumnName("AverageRating");
-                sa.Property(s => s.ReviewCount).HasColumnName("ReviewCount");
+                sa.Property(s => s.AverageRating);
+                sa.Property(s => s.ReviewCount);
                 sa.HasIndex(s => s.AverageRating);
             });
             builder.OwnsOne(m => m.AuditInfo, ai =>
@@ -39,11 +49,7 @@ namespace Infrastructure.Database.Config
                 rd.Property(r => r.Value).HasColumnName("ReleaseYear");
                 rd.HasIndex(r => r.Value);
             });
-            builder.OwnsOne(m => m.Language, l =>
-            {
-                l.Property(lang => lang.Value).HasColumnName("Language");
-                l.HasIndex(lang => lang.Value);
-            });
+            builder.Navigation(m=>m.Reviews).HasField("reviews").UsePropertyAccessMode(PropertyAccessMode.Field);
         }
     }
 }

@@ -12,7 +12,7 @@ namespace Infrastructure.Database.Repository
 
         public async Task<Genre?> FirstOrDefaultForNameAsync(string name, CancellationToken cancellationToken)
         {
-            return await appDbContext.Genres.FirstOrDefaultAsync(g => g.Name.Value == name, cancellationToken);
+            return await appDbContext.Genres.FirstOrDefaultAsync(g => g.Name == name, cancellationToken);
         }
         public async Task<Dictionary<Guid, Genre>> GetByIdsAsync(List<Guid> ids, CancellationToken cancellationToken)
         {
@@ -20,7 +20,7 @@ namespace Infrastructure.Database.Repository
         }
         public async Task<List<Genre>> GetByNamesAsync(List<string> names, CancellationToken cancellationToken)
         {
-            return await appDbContext.Genres.AsNoTracking().Where(g => names.Contains(g.Name.Value)).ToListAsync(cancellationToken);
+            return await appDbContext.Genres.AsNoTracking().Where(g => names.Contains(g.Name)).ToListAsync(cancellationToken);
         }
         public async Task<Dictionary<Guid, Genre>> GetGenresDictionary(CancellationToken cancellationToken)
         {

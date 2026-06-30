@@ -12,12 +12,7 @@ public record AuditInfo : ValueObject
         CreatedAt = DateTime.UtcNow;
         UpdatedAt = null;
     }
-
-    private AuditInfo(DateTime createdAt, DateTime? updatedAt)
-    {
-        CreatedAt = createdAt;
-        UpdatedAt = updatedAt;
-    }
+    
 
     public AuditInfo MarkAsUpdated() => this with { UpdatedAt = DateTime.UtcNow };
 }

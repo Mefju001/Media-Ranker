@@ -36,7 +36,7 @@ namespace Application.Features.Games.AddRange
                 return Game.Create(
                         gameReq.Title,
                         gameReq.Description,
-                        new Language(gameReq.Language),
+                        gameReq.Language,
                         new ReleaseDate(gameReq.ReleaseDate ?? DateTime.UtcNow),
                         genre.id,
                         gameReq.Developer ?? "Unknown",

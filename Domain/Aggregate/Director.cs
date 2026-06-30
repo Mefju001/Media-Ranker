@@ -13,13 +13,13 @@ public class Director : AggregateRoot<Guid>
         return new Director
         {
             Id = id ?? Guid.NewGuid(),
-            fullname = new Fullname(name, surname)
+            fullname = Fullname.Create(name, surname)
         };
     }
 
     public void Update(string name, string surname)
     {
-        fullname = new Fullname(name, surname);
+        fullname = Fullname.Create(name, surname);
     }
 
 }

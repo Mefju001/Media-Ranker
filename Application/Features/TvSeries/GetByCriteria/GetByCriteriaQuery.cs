@@ -13,7 +13,7 @@ namespace Application.Features.TvSeries.GetByCriteria
         public int? seasons { get; set; }
         public int? episodes { get; set; }
         public string? network { get; set; }
-        public EStatus? status { get; set; }
+        public ETvSeriesStatus? status { get; set; }
 
 
         public string? SortByField { get; set; }

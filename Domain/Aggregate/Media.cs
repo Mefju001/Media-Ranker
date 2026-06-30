@@ -10,7 +10,7 @@ public abstract class Media : AggregateRoot<Guid>, IAudited
     public string Description { get; private set; } = default!;
     public Guid GenreId { get; private set; }
     public ReleaseDate? ReleaseDate { get; private set; }
-    public Language Language { get; private set; } = default!;
+    public string Language { get; private set; } = default!;
     public MediaStats Stats { get; private set; } = new(0, 0);
     public AuditInfo AuditInfo { get; private set; } = new();
 
@@ -19,11 +19,21 @@ public abstract class Media : AggregateRoot<Guid>, IAudited
     protected Media() { }
 
 
-    protected void SetBaseDetails(string title, string description, Language language, ReleaseDate? releaseDate, Guid genreId)
+    protected void SetBaseDetails(string title, string description, string language, ReleaseDate? releaseDate, Guid genreId)
     {
         if (string.IsNullOrWhiteSpace(title) || string.IsNullOrWhiteSpace(description))
-            throw new ArgumentException("Title and Description are required.");
-        this.AuditInfo = AuditInfo.MarkAsUpdated();
+            throw new DomainException("Title and Description are required.");
+
+        if (string.IsNullOrWhiteSpace(language))
+            throw new DomainException("Language is required.");
+
+        if (genreId == Guid.Empty)
+            throw new DomainException("Genre identifier cannot be empty.");
+
+        if (!string.IsNullOrEmpty(Title))
+        {
+            AuditInfo = AuditInfo.MarkAsUpdated();
+        }
         Title = title;
         Description = description;
         Language = language;
@@ -32,31 +42,55 @@ public abstract class Media : AggregateRoot<Guid>, IAudited
     }
     public bool HasUserReviewed(Guid userId) => reviews.Any(r => r.UserId == userId);
 
-    public void AddReview(Guid userId, Rating rating, string comment, Username username)
+    public void AddReview(Guid userId, Rating rating, string comment, string username)
     {
         if (reviews.Any(r => r.UserId == userId))
             throw new DomainException("User already reviewed this media.");
-        var review = Review.Create(rating, comment, this.Id, userId, username);
+        var review = Review.Create(rating, comment, Id, userId, username);
         reviews.Add(review);
-        RecalculateStats();
+        ApplyReviewToStats(rating.Value);
     }
 
     public void EditReview(Guid reviewId, Guid userId, Rating rating, string comment)
     {
-        var review = reviews.FirstOrDefault(r => r.Id == reviewId) ?? throw new NotFoundException("Review not found.");
+        var review = reviews.FirstOrDefault(r => r.Id == reviewId) ?? throw new DomainException("Review not found.");
         if (review.UserId != userId) throw new DomainException("Unauthorized edit.");
-
+        double oldRatingValue = review.Rating.Value;
         review.Update(rating, comment);
-        RecalculateStats();
+        UpdateReviewInStats(oldRatingValue, rating.Value);
     }
 
     public void DeleteReview(Guid reviewId)
     {
         var review = reviews.FirstOrDefault(r => r.Id == reviewId) ?? throw new DomainException("Review not found.");
+        double ratingValueToRemove = review.Rating.Value;
         reviews.Remove(review);
-        RecalculateStats();
+        RemoveReviewFromStats(ratingValueToRemove);
     }
-    private void RecalculateStats() =>
-        Stats = new MediaStats(reviews.Any() ? reviews.Average(r => r.Rating) : 0, reviews.Count);
+    private void ApplyReviewToStats(double newRating)
+    {
+        int newCount = Stats.ReviewCount + 1;
+        double newAverage = Stats.AverageRating + ((newRating - Stats.AverageRating) / newCount);
+        Stats = new MediaStats(newAverage, newCount);
+    }
+
+    private void UpdateReviewInStats(double oldRating, double newRating)
+    {
+        if (Stats.ReviewCount == 0) return;
+        double newAverage = Stats.AverageRating + ((newRating - oldRating) / Stats.ReviewCount);
+        Stats = new MediaStats(newAverage, Stats.ReviewCount);
+    }
+
+    private void RemoveReviewFromStats(double removedRating)
+    {
+        int newCount = Stats.ReviewCount - 1;
+        if (newCount <= 0)
+        {
+            Stats = new MediaStats(0, 0);
+            return;
+        }
+        double newAverage = ((Stats.AverageRating * Stats.ReviewCount) - removedRating) / newCount;
+        Stats = new MediaStats(newAverage, newCount);
+    }
 
 }

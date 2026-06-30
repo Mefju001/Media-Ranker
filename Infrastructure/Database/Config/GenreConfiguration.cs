@@ -11,14 +11,8 @@ namespace Infrastructure.Database.Config
         {
             builder.HasKey(g => g.Id);
             builder.Property(r => r.Id).ValueGeneratedNever();
-            builder.OwnsOne(g => g.Name, n =>
-            {
-                n.Property(p => p.Value)
-                    .HasColumnName("Name")
-                    .IsRequired()
-                    .HasMaxLength(100);
-                n.HasIndex(p => p.Value);
-            });
+            builder.Property(g => g.Name).IsRequired().HasMaxLength(100);
+            builder.HasIndex(g => g.Name).IsUnique();
         }
     }
 }

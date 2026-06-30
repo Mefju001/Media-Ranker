@@ -19,6 +19,6 @@ namespace Application.Features.TvSeries.Common
         int Seasons,
         int Episodes,
         string? Network,
-        EStatus Status
+        ETvSeriesStatus Status
         ): MediaResponse(id, Title, Description, Genre, ReleaseDate, Language, MediaStats), IResponse;
 }

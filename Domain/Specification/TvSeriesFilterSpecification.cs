@@ -15,7 +15,7 @@ namespace Domain.Specification
             };
         public TvSeriesFilterSpecification(string? TitleSearch,
         double? MinRating, int? ReleaseYear, List<Guid>? genreIds,
-        int? seasons, int? episodes, string? network, EStatus? status,
+        int? seasons, int? episodes, string? network, ETvSeriesStatus? status,
         string? SortByField, bool IsDescending)
         {
             if (!string.IsNullOrWhiteSpace(TitleSearch))

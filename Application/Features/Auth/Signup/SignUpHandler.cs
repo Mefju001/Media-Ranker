@@ -32,7 +32,7 @@ namespace Application.Features.Auth.Signup
                 throw new BadRequestException("User with that username or email already exists");
             }
             var userModel = await identityService.CreateUserWithDefaultRole(request.username, request.password, request.email);
-            var user = UserDetails.Create(userModel.Id, new Fullname(request.name, request.surname), new Username(request.username), Email.Create(request.email));
+            var user = UserDetails.Create(userModel.Id, Fullname.Create(request.name, request.surname), request.username, Email.Create(request.email));
             await userDetailsRepository.AddAsync(user, cancellationToken);
             var accessToken = tokenService.GenerateAccessToken(user.Id, userModel.Username, userModel.Roles);
             var refreshToken = await tokenService.GenerateRefreshToken(user.Id, userModel.Username, cancellationToken);

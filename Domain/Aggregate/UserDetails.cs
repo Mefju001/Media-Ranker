@@ -9,17 +9,17 @@ namespace Domain.Aggregate;
 
 public class UserDetails : AggregateRoot<Guid>, IAudited
 {
-    public Username Username { get; private set; } = default!;
+    public string Username { get; private set; } = default!;
     public Email Email { get; private set; } = null!;
     public Fullname Fullname { get; private set; } = default!;
-    public bool IsActive { get; private set; }
+    public bool IsActive { get; private set; } = true;
     public AuditInfo AuditInfo { get; private set; } = new();
 
     private readonly List<UserInteractions> userInteractions = new();
     public IReadOnlyCollection<UserInteractions> UserInteractions => userInteractions.AsReadOnly();
     private UserDetails() { }
 
-    public static UserDetails Create(Guid? id, Fullname fullname, Username username, Email email)
+    public static UserDetails Create(Guid? id, Fullname fullname, string username, Email email)
     {
         return new UserDetails
         {
@@ -128,7 +128,7 @@ public class UserDetails : AggregateRoot<Guid>, IAudited
         this.Email = email;
         AuditInfo = AuditInfo.MarkAsUpdated();
     }
-    public void UpdateUsername(Username username)
+    public void UpdateUsername(string username)
     {
         this.Username = username;
         AuditInfo = AuditInfo.MarkAsUpdated();
