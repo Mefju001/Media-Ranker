@@ -1,10 +1,6 @@
 ﻿using Application.Common.Interfaces;
-using Application.Features.Common.Notification;
-using Application.Features.Games.Command;
-using Application.Features.Games.Common;
 using Application.Features.Genres.GenreManager;
 using Domain.Aggregate;
-using Domain.Enums;
 using Domain.Exceptions;
 using Domain.Extensions;
 using Domain.Value_Object;
@@ -12,8 +8,7 @@ using MediatR;
 
 namespace Application.Features.Games.AddRange
 {
-    //maybe add better response with info about which games were added and which not, and why.
-    internal class AddRangeHandler : IRequestHandler<AddRangeCommand, List<GameResponse>>
+    internal class AddRangeHandler : IRequestHandler<AddRangeCommand, List<Guid>>
     {
         private readonly IGenreManager genreManager;
         private readonly IMediaRepository<Game> mediaRepository;
@@ -22,7 +17,7 @@ namespace Application.Features.Games.AddRange
             this.genreManager = genreManager;
             this.mediaRepository = mediaRepository;
         }
-        public async Task<List<GameResponse>> Handle(AddRangeCommand requests, CancellationToken cancellationToken)
+        public async Task<List<Guid>> Handle(AddRangeCommand requests, CancellationToken cancellationToken)
         {
             if (requests.games == null || !requests.games.Any()) return [];
             if (requests.games.Count > 500)
@@ -37,15 +32,16 @@ namespace Application.Features.Games.AddRange
                         gameReq.Title,
                         gameReq.Description,
                         gameReq.Language,
-                        new ReleaseDate(gameReq.ReleaseDate ?? DateTime.UtcNow),
+                        new ReleaseDate(gameReq.ReleaseDate!.Value),
                         genre.id,
-                        gameReq.Developer ?? "Unknown",
-                        EPlatformExtensions.ToEnum(gameReq.Platforms));
+                        new GameDetails(gameReq.Developer, gameReq.Engine),
+                        gameReq.PegiRating,
+                        EPlatformExtensions.ToEnum(gameReq.Platforms),
+                        EGameStatusExtensions.ToEnum(gameReq.GameStatus),
+                        gameReq.SupportsCrossPlay);
             }).ToList();
             await mediaRepository.AddRangeAsync(games, cancellationToken);
-            var genresById = genresDict.Values.ToDictionary(
-                g => g.id);
-            return games.Select(g => GameMapper.ToGameResponse(g, genresById[g.GenreId])).ToList();
+            return games.Select(g => g.Id).ToList();
         }
         
     }

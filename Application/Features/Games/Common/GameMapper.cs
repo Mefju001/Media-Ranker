@@ -19,8 +19,11 @@ namespace Application.Features.Games.Common
                 game.Language,
                 game.Reviews?.Select(r => ReviewMapper.ToResponse(r)).ToList() ?? new List<ReviewResponse>(),
                 MediaStatsMapper.ToResponse(game.Stats!) ?? new MediaStatsResponse(0, 0, null),
-                game.Developer,
-                game.Platforms.ToList()
+                game.Details.Developer,
+                game.Details.Engine,
+                game.PegiRating.AgeValue,
+                game.SupportsCrossPlay,
+                game.Platforms.Values.ToList()
                 );
         }
         public static GameResponse ToGameResponse(Game game, GenreResponse genreResponse)
@@ -34,8 +37,11 @@ namespace Application.Features.Games.Common
                 game.Language,
                 game.Reviews?.Select(r => ReviewMapper.ToResponse(r)).ToList() ?? new List<ReviewResponse>(),
                 MediaStatsMapper.ToResponse(game.Stats!) ?? new MediaStatsResponse(0, 0, null),
-                game.Developer,
-                game.Platforms.ToList()
+                game.Details.Developer,
+                game.Details.Engine,
+                game.PegiRating.AgeValue,
+                game.SupportsCrossPlay,
+                game.Platforms.Values.ToList()
             );
         }
     }

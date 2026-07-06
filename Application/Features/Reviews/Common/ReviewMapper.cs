@@ -9,7 +9,7 @@ namespace Application.Features.Reviews.Common
             return new ReviewResponse(
                 review.Id,
                 review.MediaId,
-                review.Username.Value,
+                review.Username,
                 review.Rating,
                 review.Comment,
                 review.AuditInfo.CreatedAt,

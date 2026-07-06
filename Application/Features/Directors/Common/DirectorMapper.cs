@@ -8,8 +8,8 @@ namespace Application.Features.Directors.Common
         {
             return new DirectorResponse(
                 director.Id,
-                director.fullname.Name,
-                director.fullname.Surname
+                director.fullname.FirstName,
+                director.fullname.LastName
                );
         }
     }

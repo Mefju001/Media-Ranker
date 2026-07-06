@@ -27,7 +27,7 @@ namespace Application.Features.Movies.GetByCriteria
             if(request.GenreName is not null)
             {
                 searchGenreIds = genreDictionary.Values
-                    .Where(g => g.Name.Value.Contains(request.GenreName))
+                    .Where(g => g.Name.Contains(request.GenreName))
                     .Select(g => g.Id)
                     .ToList();
             }
@@ -35,7 +35,7 @@ namespace Application.Features.Movies.GetByCriteria
             if(request.DirectorName is not null)
             {
                 searchDirectorIds = directorDictionary.Values
-                    .Where(d => d.fullname.Name.Contains(request.DirectorName)||d.fullname.Surname.Contains(request.DirectorName))
+                    .Where(d => d.fullname.FirstName.Contains(request.DirectorName)||d.fullname.LastName.Contains(request.DirectorName))
                     .Select(d => d.Id)
                     .ToList();
             }

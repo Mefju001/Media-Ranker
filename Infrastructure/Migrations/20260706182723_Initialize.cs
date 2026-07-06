@@ -56,8 +56,8 @@ namespace Infrastructure.Migrations
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
-                    Name = table.Column<string>(type: "text", nullable: false),
-                    Surname = table.Column<string>(type: "text", nullable: false)
+                    fullname_FirstName = table.Column<string>(type: "text", nullable: false),
+                    fullname_LastName = table.Column<string>(type: "text", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -208,8 +208,8 @@ namespace Infrastructure.Migrations
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
                     Username = table.Column<string>(type: "character varying(50)", maxLength: 50, nullable: false),
                     Email = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false),
-                    FirstName = table.Column<string>(type: "character varying(50)", maxLength: 50, nullable: false),
-                    LastName = table.Column<string>(type: "character varying(50)", maxLength: 50, nullable: false),
+                    Fullname_FirstName = table.Column<string>(type: "text", nullable: false),
+                    Fullname_LastName = table.Column<string>(type: "text", nullable: false),
                     IsActive = table.Column<bool>(type: "boolean", nullable: false),
                     CreatedAt = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
                     UpdatedAt = table.Column<DateTime>(type: "timestamp without time zone", nullable: true)
@@ -230,23 +230,28 @@ namespace Infrastructure.Migrations
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
-                    Title = table.Column<string>(type: "text", nullable: false),
-                    Description = table.Column<string>(type: "text", nullable: false),
+                    Title = table.Column<string>(type: "character varying(250)", maxLength: 250, nullable: false),
+                    Description = table.Column<string>(type: "character varying(2000)", maxLength: 2000, nullable: false),
                     GenreId = table.Column<Guid>(type: "uuid", nullable: false),
                     ReleaseYear = table.Column<DateTime>(type: "timestamp without time zone", nullable: true),
-                    Language = table.Column<string>(type: "text", nullable: false),
+                    Language = table.Column<string>(type: "character varying(50)", maxLength: 50, nullable: false),
                     CreatedAt = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
                     UpdatedAt = table.Column<DateTime>(type: "timestamp without time zone", nullable: true),
                     MediaType = table.Column<string>(type: "character varying(8)", maxLength: 8, nullable: false),
+                    GameStatus = table.Column<string>(type: "character varying(50)", maxLength: 50, nullable: true),
                     Developer = table.Column<string>(type: "character varying(200)", maxLength: 200, nullable: true),
-                    Platforms = table.Column<string>(type: "jsonb", nullable: true),
+                    Engine = table.Column<string>(type: "character varying(200)", maxLength: 200, nullable: true),
+                    PegiRating = table.Column<int>(type: "integer", nullable: true),
+                    Platforms = table.Column<string[]>(type: "text[]", nullable: true),
+                    SupportsCrossPlay = table.Column<bool>(type: "boolean", nullable: true),
                     DirectorId = table.Column<Guid>(type: "uuid", nullable: true),
                     DurationMinutes = table.Column<TimeSpan>(type: "interval", nullable: true),
-                    IsCinemaRelease = table.Column<bool>(type: "boolean", nullable: true),
-                    Seasons = table.Column<int>(type: "integer", nullable: true),
-                    Episodes = table.Column<int>(type: "integer", nullable: true),
+                    DistributionType = table.Column<string>(type: "text", nullable: true),
+                    MovieStatus = table.Column<string>(type: "text", nullable: true),
+                    Season = table.Column<int>(type: "integer", nullable: true),
+                    Episode = table.Column<int>(type: "integer", nullable: true),
                     Network = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: true),
-                    Status = table.Column<string>(type: "text", nullable: true)
+                    TvSeriesStatus = table.Column<string>(type: "text", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -256,7 +261,7 @@ namespace Infrastructure.Migrations
                         column: x => x.GenreId,
                         principalTable: "Genres",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateTable(
@@ -265,7 +270,7 @@ namespace Infrastructure.Migrations
                 {
                     MediaId = table.Column<Guid>(type: "uuid", nullable: false),
                     AverageRating = table.Column<double>(type: "double precision", nullable: false),
-                    reviewCount = table.Column<int>(type: "integer", nullable: false),
+                    ReviewCount = table.Column<int>(type: "integer", nullable: false),
                     LastCalculated = table.Column<DateTime>(type: "timestamp without time zone", nullable: false)
                 },
                 constraints: table =>
@@ -305,12 +310,6 @@ namespace Infrastructure.Migrations
                         name: "FK_Reviews_Medias_MediaId",
                         column: x => x.MediaId,
                         principalTable: "Medias",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
-                    table.ForeignKey(
-                        name: "FK_Reviews_UsersDetails_UserId",
-                        column: x => x.UserId,
-                        principalTable: "UsersDetails",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -381,9 +380,71 @@ namespace Infrastructure.Migrations
                 unique: true);
 
             migrationBuilder.CreateIndex(
+                name: "IX_Directors_fullname_FirstName_fullname_LastName",
+                table: "Directors",
+                columns: new[] { "fullname_FirstName", "fullname_LastName" });
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Genres_Name",
+                table: "Genres",
+                column: "Name",
+                unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Medias_Developer",
+                table: "Medias",
+                column: "Developer");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Medias_DirectorId",
+                table: "Medias",
+                column: "DirectorId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Medias_DistributionType",
+                table: "Medias",
+                column: "DistributionType");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Medias_Engine",
+                table: "Medias",
+                column: "Engine");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Medias_GenreId",
                 table: "Medias",
                 column: "GenreId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Medias_MovieStatus",
+                table: "Medias",
+                column: "MovieStatus");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Medias_Network",
+                table: "Medias",
+                column: "Network");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Medias_Platforms",
+                table: "Medias",
+                column: "Platforms")
+                .Annotation("Npgsql:IndexMethod", "gin");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Medias_ReleaseYear",
+                table: "Medias",
+                column: "ReleaseYear");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Medias_TvSeriesStatus",
+                table: "Medias",
+                column: "TvSeriesStatus");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_MediaStats_AverageRating",
+                table: "MediaStats",
+                column: "AverageRating");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Reviews_MediaId",
@@ -405,6 +466,11 @@ namespace Infrastructure.Migrations
                 table: "UserInteractions",
                 columns: new[] { "UserId", "MediaId" },
                 unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_UsersDetails_Fullname_FirstName_Fullname_LastName",
+                table: "UsersDetails",
+                columns: new[] { "Fullname_FirstName", "Fullname_LastName" });
         }
 
         /// <inheritdoc />

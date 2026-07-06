@@ -18,10 +18,10 @@ namespace Application.Features.TvSeries.Common
                 tvSeries.Language,
                 tvSeries.Reviews?.Select(r => ReviewMapper.ToResponse(r)).ToList() ?? new List<ReviewResponse>(),
                 MediaStatsMapper.ToResponse(tvSeries.Stats!) ?? new MediaStatsResponse(0, 0, null),
-                tvSeries.Seasons,
-                tvSeries.Episodes,
+                tvSeries.SeasonAndEpisode.Seasons,
+                tvSeries.SeasonAndEpisode.Episodes,
                 tvSeries.Network,
-                tvSeries.Status);
+                tvSeries.Status.ToString());
         }
         public static TvSeriesResponse ToTvSeriesResponse(domain.TvSeries tvSeries, GenreResponse genreResponse)
         {
@@ -34,10 +34,10 @@ namespace Application.Features.TvSeries.Common
                 tvSeries.Language,
                 tvSeries.Reviews?.Select(r => ReviewMapper.ToResponse(r)).ToList() ?? new List<ReviewResponse>(),
                 MediaStatsMapper.ToResponse(tvSeries.Stats!) ?? new MediaStatsResponse(0, 0, null),
-                tvSeries.Seasons,
-                tvSeries.Episodes,
+                tvSeries.SeasonAndEpisode.Seasons,
+                tvSeries.SeasonAndEpisode.Episodes,
                 tvSeries.Network,
-                tvSeries.Status);
+                tvSeries.Status.ToString());
         }
     }
 }

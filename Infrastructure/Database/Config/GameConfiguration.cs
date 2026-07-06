@@ -37,13 +37,20 @@ namespace Infrastructure.Database.Config
             builder.Property(g=>g.SupportsCrossPlay)
                 .HasColumnName("SupportsCrossPlay")
                 .IsRequired();
-            builder.OwnsOne(g => g.Platforms, p =>
-            {
-                p.ToJson("Platforms");
-                p.Property(x=>x.Values).IsRequired();
-            });
-            builder.HasIndex("Platforms").HasMethod("gin");
+            builder.Property(g => g.Platforms)
+                .HasConversion(
+                    // Do bazy: Zamieniamy nasz obiekt na zwykłą tablicę string[] (PostgreSQL zapisze to jako text[])
+                    v => v.Values.ToArray(),
 
+                    // Z bazy: Bierzemy tablicę stringów z bazy i tworzymy z niej obiekt GamePlatforms
+                    v => new GamePlatforms(v)
+                )
+                .HasColumnName("Platforms")
+                .IsRequired();
+
+            // Teraz bez problemu nakładasz indeks GIN na tę kolumnę!
+            builder.HasIndex(g => g.Platforms)
+                .HasMethod("gin");
         }
     }
 }

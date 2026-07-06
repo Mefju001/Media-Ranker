@@ -30,7 +30,7 @@ namespace Application.Features.TvSeries.AddRange
             var tvSeries = requests.tvSeries.Select(tv =>
             {
                 var genre = genres[tv.genre.name];
-                return domain.TvSeries.Create(tv.title, tv.description, tv.Language, new ReleaseDate(tv.ReleaseDate), genre.id, tv.Seasons, tv.Episodes, tv.Network, tv.Status);
+                return domain.TvSeries.Create(tv.title, tv.description, tv.Language, new ReleaseDate(tv.ReleaseDate), genre.id, new SeasonDetails(tv.Seasons,tv.Episodes), tv.Network, tv.Status);
             }).ToList();
             await mediaRepository.AddRangeAsync(tvSeries, cancellationToken);
             var genresById = genres.Values.ToDictionary(g => g.id);

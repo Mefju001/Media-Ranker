@@ -74,13 +74,13 @@ namespace Application.Features.Recommendation.GetForUser
                 .OfType<Game>()
                 .Where(g => !profile.FavLikedMediaIds.Contains(g.Id))
                 .Where(g => !profile.DislikedMediaIds.Contains(g.Id) && !profile.IgnoredMediaIds.Contains(g.Id))
-                .Where(g => prefs.GenreIds.Contains(g.GenreId) || prefs.Developers.Contains(g.Developer))
+                .Where(g => prefs.GenreIds.Contains(g.GenreId) || prefs.Developers.Contains(g.Details.Developer))
                 .Select(g => new
                 {
                     Game = g,
                     Score = (prefs.GenreIds.Contains(g.GenreId) ? 3 : 0) +
-                            (prefs.Developers.Contains(g.Developer) ? 5 : 0) +
-                            (prefs.GamesPlatforms.Any(p => g.Platforms.Contains(p)) ? 4 : 0)
+                            (prefs.Developers.Contains(g.Details.Developer) ? 5 : 0) +
+                            (prefs.GamesPlatforms.Any(p => g.Platforms.ToString().Contains(p)) ? 4 : 0)
                 })
                 .OrderByDescending(x => x.Score)
                 .ThenByDescending(x => x.Game.Stats.AverageRating)

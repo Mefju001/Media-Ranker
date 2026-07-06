@@ -1,5 +1,4 @@
 ﻿using Application.Features.Genres.Common;
-using Domain.Enums;
 
 namespace Application.Features.Games.Command
 {
@@ -10,7 +9,11 @@ namespace Application.Features.Games.Command
         GenreRequest Genre,
         DateTime? ReleaseDate,
         string Language,
-        string? Developer,
-        List<string> Platforms
+        string GameStatus,
+        string Developer,
+        string? Engine,
+        int PegiRating,
+        List<string> Platforms,
+        bool SupportsCrossPlay
         );
 }

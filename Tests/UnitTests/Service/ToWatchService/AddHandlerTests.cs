@@ -66,14 +66,14 @@ namespace Tests.Service.ToWatchService
             var genreId = Guid.NewGuid();
             var genre = Genre.Create("Action", genreId);
             appDbContext.Genres.Add(genre);
-            var game = Game.Create("Test Game", "Test Description", new Language("English"), new ReleaseDate(DateTime.UtcNow), genreId, "developer", new List<EPlatform>() { EPlatform.PC }, gameId);
-            var game2 = Game.Create("Test Game", "Test Description", new Language("English"), new ReleaseDate(DateTime.UtcNow), genreId, "developer", new List<EPlatform>() { EPlatform.PC });
+            var game = Game.Create("Test Game", "Test Description", "English", new ReleaseDate(DateTime.UtcNow), genreId, "developer", new List<EPlatform>() { EPlatform.PC }, gameId);
+            var game2 = Game.Create("Test Game", "Test Description", "English", new ReleaseDate(DateTime.UtcNow), genreId, "developer", new List<EPlatform>() { EPlatform.PC });
             appDbContext.Medias.Add(game);
             appDbContext.Medias.Add(game2);
             game2Id = game2.Id;
             var userModel = new UserModel(Guid.NewGuid(), "username", "password", "email");
             userId = userModel.Id;
-            var user = UserDetails.Create(userId, new Fullname("Johnny", "Doe"), new Username("johndoe"), Email.Create("johndoe@example.com"));
+            var user = UserDetails.Create(userId, new Fullname("Johnny", "Doe"), "johndoe", Email.Create("johndoe@example.com"));
             appDbContext.UsersDetails.Add(user);
             appDbContext.Users.Add(userModel);
             user.SetTypeInteractions(gameId, ETypeInteractions.WANT_TO_WATCH);

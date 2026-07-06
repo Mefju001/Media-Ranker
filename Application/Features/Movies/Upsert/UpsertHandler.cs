@@ -41,7 +41,8 @@ namespace Application.Features.Movies.Upsert
                     genre.id,
                     director.id,
                     new Duration(request.Duration),
-                    request.IsCinemaRelease
+                    request.EDistributionType,
+                    request.EMovieStatus
                 );
             }
             else
@@ -53,7 +54,9 @@ namespace Application.Features.Movies.Upsert
                             genre.id,
                             director.id,
                             new Duration(request.Duration),
-                            request.IsCinemaRelease);
+                            request.EDistributionType,
+                            request.EMovieStatus
+                            );
                 movie = await mediaRepository.AddAsync(movie, cancellationToken);
             }
             if (movie is null) throw new InvalidOperationException(nameof(movie));

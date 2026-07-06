@@ -17,8 +17,8 @@ namespace Application.Features.Movies.Common
         List<ReviewResponse>? Reviews,
         MediaStatsResponse MediaStats,
         TimeSpan Duration,
-        bool IsCinemaRelease
-
+        string DistributionType,
+        string status
         ):MediaResponse(id, Title, Description, Genre, ReleaseDate, Language, MediaStats),IResponse;
 
 }

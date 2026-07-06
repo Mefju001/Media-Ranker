@@ -27,7 +27,7 @@ namespace Application.Features.TvSeries.GetByCriteria
             if (!string.IsNullOrWhiteSpace(request.genreName))
             {
                 searchGenresId = genresDictionary
-                    .Where(g => g.Value.Name.Value.Contains(request.genreName))
+                    .Where(g => g.Value.Name.Contains(request.genreName))
                     .Select(g => g.Key)
                     .ToList();
             }

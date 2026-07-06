@@ -5,12 +5,16 @@ using Application.Features.Genres.Common;
 namespace Application.Features.Games.Upsert
 {
     public record UpsertCommand(
-        Guid? id,
+        Guid? Id,
         string Title,
         string Description,
         GenreRequest Genre,
         DateTime? ReleaseDate,
         string Language,
-        string? Developer,
-        List<string> Platforms) : ICommand<GameResponse>,ISendNotificationCommand;
+        string GameStatus,
+        string Developer,
+        string? Engine,
+        int PegiRating,
+        List<string> Platforms,
+        bool SupportsCrossPlay) : ICommand<GameResponse>,ISendNotificationCommand;
 }

@@ -3,7 +3,6 @@ using Application.Features.Genres.GetAll;
 using Application.Features.Liked.Common;
 using Application.Features.Movies.Common;
 using Application.Features.Reviews.Common;
-using Domain.Enums;
 
 namespace Application.Features.TvSeries.Common
 {
@@ -19,6 +18,6 @@ namespace Application.Features.TvSeries.Common
         int Seasons,
         int Episodes,
         string? Network,
-        ETvSeriesStatus Status
+        string Status
         ): MediaResponse(id, Title, Description, Genre, ReleaseDate, Language, MediaStats), IResponse;
 }

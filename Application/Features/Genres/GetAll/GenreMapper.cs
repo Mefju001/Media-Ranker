@@ -8,7 +8,7 @@ namespace Application.Features.Genres.GetAll
         {
             return new GenreResponse(
                 genre.Id,
-                genre.Name.Value);
+                genre.Name);
         }
     }
 }

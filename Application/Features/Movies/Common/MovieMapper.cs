@@ -20,7 +20,8 @@ namespace Application.Features.Movies.Common
                 movieDomain.Reviews?.Select(r => ReviewMapper.ToResponse(r)).ToList() ?? new List<ReviewResponse>(),
                 MediaStatsMapper.ToResponse(movieDomain.Stats) ?? new MediaStatsResponse(0, 0, null),
                 movieDomain.Duration.Value,
-                movieDomain.IsCinemaRelease);
+                movieDomain.DistributionType.ToString(),
+                movieDomain.Status.ToString());
         }
         public static MovieResponse ToMovieResponse(Movie movieDomain, GenreResponse genreResponse, DirectorResponse directorResponse)
         {
@@ -35,7 +36,8 @@ namespace Application.Features.Movies.Common
                 movieDomain.Reviews?.Select(r => ReviewMapper.ToResponse(r)).ToList() ?? new List<ReviewResponse>(),
                 MediaStatsMapper.ToResponse(movieDomain.Stats) ?? new MediaStatsResponse(0, 0, null),
                 movieDomain.Duration.Value,
-                movieDomain.IsCinemaRelease);
+                movieDomain.DistributionType.ToString(),
+                movieDomain.Status.ToString());
         }
 
     }

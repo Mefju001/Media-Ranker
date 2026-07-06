@@ -1,4 +1,5 @@
-﻿using FluentValidation;
+﻿using Domain.Enums;
+using FluentValidation;
 
 namespace Application.Features.Movies.Common
 {
@@ -19,13 +20,18 @@ namespace Application.Features.Movies.Common
                 .NotEmpty().WithMessage("Director should have name.");
             RuleFor(Request => Request.Director.Surname)
                 .NotEmpty().WithMessage("Director should have surname.");
-            RuleFor(Request => Request.ReleaseDate)
-                .NotEmpty()
-                .LessThanOrEqualTo(DateTime.UtcNow)
-                .When(Request => Request.IsCinemaRelease);
-            RuleFor(Request => Request.ReleaseDate)
-                .GreaterThan(DateTime.UtcNow).WithMessage("The release date of the announcement must be a future date.")
-                .When(Request => Request.IsCinemaRelease == false);
+            When(request => request.Status == EMovieStatus.Announced, () =>
+            {
+                RuleFor(request => request.ReleaseDate)
+                    .NotEmpty().WithMessage("Release date is required for announced movies.")
+                    .GreaterThan(DateTime.UtcNow).WithMessage("The release date of the announcement must be a future date.");
+            });
+            When(request => request.Status != EMovieStatus.Announced, () =>
+            {
+                RuleFor(request => request.ReleaseDate)
+                    .NotEmpty().WithMessage("Release date is required.")
+                    .LessThanOrEqualTo(DateTime.UtcNow).WithMessage("Release date cannot be in the future for this status.");
+            });
             RuleFor(Request => Request.Language)
                 .NotEmpty().WithMessage("Language should have text.")
                 .MaximumLength(200).WithMessage("Only 200 characters are allowed.");

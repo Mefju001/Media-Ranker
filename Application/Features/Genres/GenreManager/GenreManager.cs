@@ -16,7 +16,7 @@ namespace Application.Features.Genres.GenreManager
         {
             var distinctNames = names.Where(n => !string.IsNullOrWhiteSpace(n)).Distinct().ToList();
             var existingGenres = await repository.GetByNamesAsync(distinctNames, cancellationToken);
-            var existingNames = existingGenres.Select(g => g.Name.Value).ToHashSet(StringComparer.OrdinalIgnoreCase);
+            var existingNames = existingGenres.Select(g => g.Name).ToHashSet(StringComparer.OrdinalIgnoreCase);
             var nonExistingNames = new List<Genre>();
             foreach (var name in distinctNames)
             {

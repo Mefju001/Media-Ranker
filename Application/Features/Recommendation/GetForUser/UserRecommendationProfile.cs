@@ -15,7 +15,7 @@ namespace Application.Features.Recommendation.GetForUser
         List<Guid> DirectorIds,
         List<string> Developers,
         List<string> TvShowsPlatforms,
-        List<EPlatform> GamesPlatforms
+        List<string> GamesPlatforms
     );
 
     public static class UserRecommendationProfileDto

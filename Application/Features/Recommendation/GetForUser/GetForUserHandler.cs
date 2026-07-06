@@ -59,9 +59,9 @@ namespace Application.Features.Recommendation.GetForUser
             return new UserPreferencesDto(
                 GenreIds: favoriteMedias.Select(m => m.GenreId).Distinct().ToList(),
                 DirectorIds: favoriteMedias.OfType<Movie>().Select(m => m.DirectorId).Distinct().ToList(),
-                Developers: favoriteMedias.OfType<Game>().Select(m => m.Developer).Distinct().ToList(),
+                Developers: favoriteMedias.OfType<Game>().Select(m => m.Details.Developer).Distinct().ToList(),
                 TvShowsPlatforms: favoriteMedias.OfType<Domain.Aggregate.TvSeries>().Select(s => s.Network).Distinct().ToList(),
-                GamesPlatforms: favoriteMedias.OfType<Game>().SelectMany(g => g.Platforms).Distinct().ToList()
+                GamesPlatforms: favoriteMedias.OfType<Game>().SelectMany(g => g.Platforms.Values).Distinct().ToList()
             );
         }
         private async Task<List<MediaResponse>> ColdStart(CancellationToken cancellation)

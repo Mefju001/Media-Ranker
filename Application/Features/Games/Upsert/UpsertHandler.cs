@@ -1,5 +1,4 @@
 ﻿using Application.Common.Interfaces;
-using Application.Features.Common.Notification;
 using Application.Features.Games.Command;
 using Application.Features.Games.Common;
 using Application.Features.Genres.GenreManager;
@@ -26,9 +25,9 @@ namespace Application.Features.Games.Upsert
         {
             var genre = await genreHelperService.GetOrCreateAsync(request.Genre, cancellationToken);
             Game? game = null;
-            if (request.id.HasValue)
+            if (request.Id.HasValue)
             {
-                game = await mediaRepository.GetByIdAsync(request.id.Value, cancellationToken) ?? throw new NotFoundException($"Game {request.id} not found");
+                game = await mediaRepository.GetByIdAsync(request.Id.Value, cancellationToken) ?? throw new NotFoundException($"Game {request.Id} not found");
             }
             if (game != null)
             {
@@ -39,8 +38,11 @@ namespace Application.Features.Games.Upsert
                     request.Language,
                     new ReleaseDate(request.ReleaseDate!.Value),
                     genre.id,
-                    request.Developer!,
-                    EPlatformExtensions.ToEnum(request.Platforms)
+                    new GameDetails(request.Developer, request.Engine),
+                    request.PegiRating,
+                    EPlatformExtensions.ToEnum(request.Platforms),
+                    EGameStatusExtensions.ToEnum(request.GameStatus),
+                    request.SupportsCrossPlay
                     );
             }
             else
@@ -50,11 +52,14 @@ namespace Application.Features.Games.Upsert
                     request.Description,
                     request.Language,
                     new ReleaseDate(request.ReleaseDate!.Value),
-                    genre.id, request.Developer!,
-                    EPlatformExtensions.ToEnum(request.Platforms));
+                    genre.id,
+                    new GameDetails(request.Developer, request.Engine),
+                    request.PegiRating,
+                    EPlatformExtensions.ToEnum(request.Platforms),
+                    EGameStatusExtensions.ToEnum(request.GameStatus),
+                    request.SupportsCrossPlay);
                 game = await mediaRepository.AddAsync(game, cancellationToken);
             }
-            
             return GameMapper.ToGameResponse(game, genre);
         }
     }

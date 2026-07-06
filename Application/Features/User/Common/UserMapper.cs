@@ -9,10 +9,10 @@ namespace Application.Features.User.Common
             if (user is null) return null;
             return new UserDetailsResponse(
                 user.Id,
-                user.Username.Value,
+                user.Username,
                 user.Email.ToString(),
-                user.Fullname.Name,
-                user.Fullname.Surname
+                user.Fullname.FirstName,
+                user.Fullname.LastName
                 );
         }
     }

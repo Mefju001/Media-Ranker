@@ -9,12 +9,11 @@ using MediatR;
 
 namespace Application.Features.Movies.AddRange
 {
-    internal class AddRangeHandler : IRequestHandler<AddRangeCommand, List<MovieResponse>>
+    internal class AddRangeHandler : IRequestHandler<AddRangeCommand, List<Guid>>
     {
         private readonly IGenreManager genreHelperService;
         private readonly IDirectorManager directorHelperService;
         private readonly IMediaRepository<Movie> mediaRepository;
-        //maybe add better response with info about which games were added and which not, and why.
         public AddRangeHandler(IMediaRepository<Movie> mediaRepository, IGenreManager genreHelperService, IDirectorManager directorHelperService)
         {
             this.genreHelperService = genreHelperService;
@@ -22,7 +21,7 @@ namespace Application.Features.Movies.AddRange
             this.mediaRepository = mediaRepository;
             this.directorHelperService = directorHelperService;
         }
-        public async Task<List<MovieResponse>> Handle(AddRangeCommand requests, CancellationToken cancellationToken)
+        public async Task<List<Guid>> Handle(AddRangeCommand requests, CancellationToken cancellationToken)
         {
             if (requests.movies == null || !requests.movies.Any())
                 return [];
@@ -45,15 +44,12 @@ namespace Application.Features.Movies.AddRange
                     genre.id,
                     director.id,
                     new Duration(movieReq.Duration),
-                    movieReq.IsCinemaRelease);
+                    movieReq.DistributionType,
+                    movieReq.Status
+                );
             }).ToList();
             await mediaRepository.AddRangeAsync(movies, cancellationToken);
-            var directorById = dictionaryDirectors.Values.ToDictionary(d => d.id);
-            var genreById = dictionaryGenres.Values.ToDictionary(g => g.id);
-            return movies.Select(m =>
-            {
-                return MovieMapper.ToMovieResponse(m, genreById[m.GenreId], directorById[m.DirectorId]);
-            }).ToList();
+            return movies.Select(m => m.Id).ToList();
         }
     }
 }

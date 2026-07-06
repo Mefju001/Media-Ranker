@@ -18,7 +18,7 @@ namespace Application.Features.Directors.Manager
             .Distinct()
             .ToList();
             var existingDirectors = await directorRepository.FindByNamesAsync(uniquePairs, cancellationToken);
-            var existingPairs = existingDirectors.Select(d => (d.fullname.Name, d.fullname.Surname)).ToHashSet();
+            var existingPairs = existingDirectors.Select(d => (d.fullname.FirstName, d.fullname.LastName)).ToHashSet();
             var newDirectors = new List<Director>();
             foreach (var pair in uniquePairs)
             {

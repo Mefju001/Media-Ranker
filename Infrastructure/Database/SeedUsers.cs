@@ -43,7 +43,7 @@ namespace Infrastructure.Database
                         {
                             await userManager.AddToRoleAsync(admin, "Admin");
                             await userManager.AddToRoleAsync(admin, "User");
-                            var adminDetails = UserDetails.Create(admin.Id, "Admin Admin", "Admin", Email.Create(adminEmail));
+                            var adminDetails = UserDetails.Create(admin.Id, new Fullname("Admin", "Admin"), "Admin", Email.Create(adminEmail));
                             await dbContext.UsersDetails.AddAsync(adminDetails);
                             await dbContext.SaveChangesAsync();
                         }

@@ -53,7 +53,8 @@ namespace Api.Controllers
                 movie.ReleaseDate,
                 movie.Language,
                 movie.Duration,
-                movie.IsCinemaRelease);
+                movie.DistributionType,
+                movie.Status);
             var created = await mediator.Send(command);
             return CreatedAtAction(nameof(GetById), new { id = created.id }, created);
         }
@@ -78,7 +79,8 @@ namespace Api.Controllers
                 movie.ReleaseDate,
                 movie.Language,
                 movie.Duration,
-                movie.IsCinemaRelease);
+                movie.DistributionType,
+                movie.Status);
             var updated = await mediator.Send(command);
             return Ok(updated);
         }

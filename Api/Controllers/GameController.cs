@@ -39,14 +39,20 @@ namespace Api.Controllers
         [HttpPost]
         public async Task<IActionResult> AddGame([FromBody] GameRequest gameRequest)
         {
-            var command = new UpsertCommand(null,
+            var command = new UpsertCommand(
+                null,
                 gameRequest.Title,
                 gameRequest.Description,
                 gameRequest.Genre,
                 gameRequest.ReleaseDate,
                 gameRequest.Language,
+                gameRequest.GameStatus,
                 gameRequest.Developer,
-                gameRequest.Platforms);
+                gameRequest.Engine,
+                gameRequest.PegiRating,
+                gameRequest.Platforms,
+                gameRequest.SupportsCrossPlay
+                );
             var created = await mediator.Send(command);
             return CreatedAtAction(nameof(GetById), new { Id = created.id }, created);
         }
@@ -62,14 +68,19 @@ namespace Api.Controllers
         [HttpPut("{id:guid}")]
         public async Task<IActionResult> UpdateGame([FromRoute] Guid id, [FromBody] GameRequest gameRequest)
         {
-            var command = new UpsertCommand(id,
+            var command = new UpsertCommand(
+                id,
                 gameRequest.Title,
                 gameRequest.Description,
                 gameRequest.Genre,
                 gameRequest.ReleaseDate,
                 gameRequest.Language,
+                gameRequest.GameStatus,
                 gameRequest.Developer,
-                gameRequest.Platforms);
+                gameRequest.Engine,
+                gameRequest.PegiRating,
+                gameRequest.Platforms,
+                gameRequest.SupportsCrossPlay);
             var updated = await mediator.Send(command);
             return Ok(updated);
         }

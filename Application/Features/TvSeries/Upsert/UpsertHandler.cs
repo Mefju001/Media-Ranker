@@ -33,11 +33,10 @@ namespace Application.Features.TvSeries.Upsert
                 tvSeries.Update(
                     request.title,
                     request.description,
-                    new Language(request.Language),
+                    request.Language,
                     new ReleaseDate(request.ReleaseDate),
                     genre.id,
-                    request.Seasons,
-                    request.Episodes,
+                    new SeasonDetails(request.Seasons, request.Episodes),
                     request.Network,
                     request.Status
                     );
@@ -47,11 +46,10 @@ namespace Application.Features.TvSeries.Upsert
                 tvSeries = domain.TvSeries.Create(
                         request.title,
                         request.description,
-                        new Language(request.Language),
+                        request.Language,
                         new ReleaseDate(request.ReleaseDate),
                         genre.id,
-                        request.Seasons,
-                        request.Episodes,
+                        new SeasonDetails(request.Seasons, request.Episodes),
                         request.Network,
                         request.Status);
                 tvSeries = await mediaRepository.AddAsync(tvSeries, cancellationToken);
