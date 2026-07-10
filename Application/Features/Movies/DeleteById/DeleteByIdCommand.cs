@@ -1,6 +1,7 @@
 ﻿using Application.Features.Common.Interfaces;
+using MediatR;
 
 namespace Application.Features.Movies.DeleteById
 {
-    public record DeleteByIdCommand(Guid id) : ICommand<bool>, ISendNotificationCommand;
+    public record DeleteByIdCommand(Guid id) : ICommand<Unit>, ISendNotificationCommand;
 }

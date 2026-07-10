@@ -4,6 +4,7 @@ using Application.Features.Genres.GenreManager;
 using Application.Features.Movies.Common;
 using Domain.Aggregate;
 using Domain.Exceptions;
+using Domain.Extensions;
 using Domain.Value_Object;
 using MediatR;
 
@@ -41,8 +42,8 @@ namespace Application.Features.Movies.Upsert
                     genre.id,
                     director.id,
                     new Duration(request.Duration),
-                    request.EDistributionType,
-                    request.EMovieStatus
+                    EDistributionTypeExtensions.ToDistributionType(request.DistributionType),
+                    EMovieStatusExtensions.ToEnum(request.MovieStatus)
                 );
             }
             else
@@ -54,8 +55,8 @@ namespace Application.Features.Movies.Upsert
                             genre.id,
                             director.id,
                             new Duration(request.Duration),
-                            request.EDistributionType,
-                            request.EMovieStatus
+                            EDistributionTypeExtensions.ToDistributionType(request.DistributionType),
+                            EMovieStatusExtensions.ToEnum(request.MovieStatus)
                             );
                 movie = await mediaRepository.AddAsync(movie, cancellationToken);
             }

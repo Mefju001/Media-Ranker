@@ -2,7 +2,6 @@
 using Application.Features.Directors.Common;
 using Application.Features.Genres.Common;
 using Application.Features.Movies.Common;
-using Domain.Enums;
 
 namespace Application.Features.Movies.Upsert
 {
@@ -15,6 +14,7 @@ namespace Application.Features.Movies.Upsert
         DateTime? ReleaseDate,
         string Language,
         TimeSpan Duration,
-        EDistributionType EDistributionType,
-        EMovieStatus EMovieStatus) : ICommand<MovieResponse>, ISendNotificationCommand;
+        string DistributionType,
+        string MovieStatus
+        ) : ICommand<MovieResponse>, ISendNotificationCommand;
 }

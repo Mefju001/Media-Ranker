@@ -22,7 +22,11 @@ namespace Infrastructure.Service
                 Email = email,
             };
             var result = await userManager.CreateAsync(identityUser, password);
-            if (!result.Succeeded) throw new Exception("User creation failed: " + result.Errors.Select(e => e.Description));
+            if (!result.Succeeded)
+            {
+                var errorDetails = string.Join(", ", result.Errors.Select(e => e.Description));
+                throw new Exception($"User creation failed: {errorDetails}");
+            }
             var defaultRoles = new List<string> { "User" };
             await userManager.AddToRolesAsync(identityUser, defaultRoles);
             return new IdentityUserDto(identityUser.Id, identityUser.UserName, identityUser.Email, defaultRoles);

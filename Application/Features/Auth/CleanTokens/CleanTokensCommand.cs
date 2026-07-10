@@ -3,7 +3,5 @@ using MediatR;
 
 namespace Application.Features.Auth.CleanTokens
 {
-    public record CleanTokensCommand : ICommand<Unit>
-    {
-    }
+    public record CleanTokensCommand : ICommand<Unit>;
 }

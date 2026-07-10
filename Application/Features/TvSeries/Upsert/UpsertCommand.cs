@@ -15,5 +15,5 @@ namespace Application.Features.TvSeries.Upsert
         int Seasons,
         int Episodes,
         string Network,
-        ETvSeriesStatus Status) : ICommand<TvSeriesResponse>, ISendNotificationCommand;
+        string Status) : ICommand<TvSeriesResponse>, ISendNotificationCommand;
 }

@@ -4,6 +4,7 @@ using Application.Features.Genres.GenreManager;
 using Application.Features.Movies.Common;
 using Domain.Aggregate;
 using Domain.Exceptions;
+using Domain.Extensions;
 using Domain.Value_Object;
 using MediatR;
 
@@ -44,8 +45,8 @@ namespace Application.Features.Movies.AddRange
                     genre.id,
                     director.id,
                     new Duration(movieReq.Duration),
-                    movieReq.DistributionType,
-                    movieReq.Status
+                    EDistributionTypeExtensions.ToDistributionType(movieReq.DistributionType),
+                    EMovieStatusExtensions.ToEnum(movieReq.Status)
                 );
             }).ToList();
             await mediaRepository.AddRangeAsync(movies, cancellationToken);

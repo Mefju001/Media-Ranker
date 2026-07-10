@@ -2,6 +2,7 @@
 using Application.Features.Genres.GenreManager;
 using Application.Features.TvSeries.Common;
 using Domain.Exceptions;
+using Domain.Extensions;
 using Domain.Value_Object;
 using MediatR;
 using domain = Domain.Aggregate;
@@ -38,7 +39,7 @@ namespace Application.Features.TvSeries.Upsert
                     genre.id,
                     new SeasonDetails(request.Seasons, request.Episodes),
                     request.Network,
-                    request.Status
+                    ETvSeriesStatusExtensions.ToEnum(request.Status)
                     );
             }
             else
@@ -51,7 +52,8 @@ namespace Application.Features.TvSeries.Upsert
                         genre.id,
                         new SeasonDetails(request.Seasons, request.Episodes),
                         request.Network,
-                        request.Status);
+                        ETvSeriesStatusExtensions.ToEnum(request.Status)
+                        );
                 tvSeries = await mediaRepository.AddAsync(tvSeries, cancellationToken);
             }
             return TvSeriesMapper.ToTvSeriesResponse(tvSeries, genre);

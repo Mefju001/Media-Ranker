@@ -5,7 +5,7 @@ using Microsoft.Extensions.Logging;
 
 namespace Application.Features.Liked.DeleteById
 {
-    internal class DeleteByIdHandler : IRequestHandler<DeleteByIdCommand, bool>
+    internal class DeleteByIdHandler : IRequestHandler<DeleteByIdCommand, Unit>
     {
         private readonly IUserDetailsRepository userDetailsRepository;
         private readonly ILogger<DeleteByIdHandler> logger;
@@ -17,7 +17,7 @@ namespace Application.Features.Liked.DeleteById
             this.logger = logger;
         }
 
-        public async Task<bool> Handle(DeleteByIdCommand request, CancellationToken cancellationToken)
+        public async Task<Unit> Handle(DeleteByIdCommand request, CancellationToken cancellationToken)
         {
             var user = await userDetailsRepository.GetByIdAsync(request.userId, cancellationToken);
             if (user == null)
@@ -26,7 +26,7 @@ namespace Application.Features.Liked.DeleteById
                 throw new NotFoundException("User not found");
             }
             user.RemoveInteraction(request.mediaId);
-            return true;
+            return Unit.Value;
         }
     }
 }
