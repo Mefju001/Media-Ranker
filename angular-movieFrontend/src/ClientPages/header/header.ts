@@ -1,11 +1,12 @@
-import { Component } from '@angular/core';
-import { RouterLink } from "@angular/router";
+import { Component, OnInit } from '@angular/core';
+import { Router, RouterLink } from "@angular/router";
 import { LoginDialog } from '../auth/login-dialog/login-dialog';
 import { MatDialog, MatDialogModule} from '@angular/material/dialog';
 import { MatButtonModule } from '@angular/material/button';
 import { AuthService } from '../../Services/AuthService';
 import { ChangePassword } from '../change-password/change-password';
 import { ChangeDetails } from '../change-details/change-details';
+import { RegisterDialog } from '../auth/register-dialog/register-dialog';
 
 @Component({
   selector: 'app-header',
@@ -16,53 +17,70 @@ import { ChangeDetails } from '../change-details/change-details';
   templateUrl: './header.html',
   styleUrl: './header.css'
 })
-export class Header {
-  isLoggedIn: boolean = false;
-  username: string = '';
+export class Header implements OnInit {
+  isLoggedIn = false;
+  username = '';
+  userRole = false;
+  userService: any;
+
   constructor(
-    private dialog: MatDialog,
-    private authService: AuthService
+    private authService: AuthService, 
+    private router: Router,
+    private dialog: MatDialog
   ) {}
-openChangePassword() {
-  this.dialog.open(ChangePassword, {
-    width: '400px',
-  });
-}
-openChangeDetails() {
-  this.dialog.open(ChangeDetails, {
-    width: '400px',
-  });
-}
-openLoginDialog(): void {
-      this.dialog.open(LoginDialog, {
-          width: '400px',
-          data: { title: 'Witaj, Zaloguj się' } 
-      }).afterClosed().subscribe(credentials => {
-          if (credentials) {
-              this.authService.login(credentials).subscribe({
-                  next: (response) => {
-                      this.isLoggedIn = true;
-                      this.storeLoginState(true);
-                      this.username = credentials.username;
-                      sessionStorage.setItem('username', this.username);
-                      console.log('Login successful:', response);
-                  }
-              ,error: (error) => {
-                      console.error('Login failed:', error);
-                  }
-              });
+
+  ngOnInit() {
+    const token = this.authService.getAccessToken();
+    if (token) {
+      this.isLoggedIn = true;
+      this.username = sessionStorage.getItem('username') || 'Użytkownik';
+      this.userRole = this.authService.getRolesFromToken().includes('Admin');
+    }
   }
-      });
+
+  openLoginDialog(): void {
+    this.dialog.open(LoginDialog, {
+      width: '400px',
+      data: { title: 'Witaj, Zaloguj się' } 
+    }).afterClosed().subscribe(credentials => {
+      if (credentials) {
+        this.authService.login(credentials).subscribe({
+          next: (response) => {
+            this.isLoggedIn = true;
+            this.username = credentials.username;
+            this.userRole = this.authService.getRolesFromToken().includes('Admin');
+            sessionStorage.setItem('username', this.username);
+            sessionStorage.setItem('isLoggedIn', 'true');
+            this.router.navigate(['/movies']);
+          },
+          error: (error) => console.error('Login failed:', error)
+        });
+      }
+    });
   }
+
   logout(): void {
     this.authService.logout();
     this.isLoggedIn = false;
-    this.storeLoginState(false);
     this.username = '';
+    this.userRole = false;
     sessionStorage.removeItem('username');
-    console.log('User logged out');
+    this.router.navigate(['/']);
   }
-  private storeLoginState(isLoggedIn: boolean): void {
-    sessionStorage.setItem('isLoggedIn', isLoggedIn ? 'true' : 'false');
+
+  openChangePassword() { this.dialog.open(ChangePassword, { width: '400px' }); }
+  openChangeDetails() { this.dialog.open(ChangeDetails, { width: '400px' }); }
+  openRegisterDialog() { this.dialog.open(RegisterDialog, { width: '400px', data: { title: 'Proszę uzupełnić dane.' } }); }
+  
+  deleteAccount() {
+    this.userService.deleteAccount().subscribe({
+      next: () => {
+        this.isLoggedIn = false;
+        this.username = '';
+        sessionStorage.removeItem('username');
+        this.router.navigate(['/']);
+      },
+      error: (err:any) => alert('Nie udało się usunąć konta.')
+    });
   }
 }

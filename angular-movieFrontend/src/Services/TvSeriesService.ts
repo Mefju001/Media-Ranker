@@ -3,6 +3,7 @@ import { Injectable } from "@angular/core";
 import { Observable } from "rxjs";
 import { TvSeriesResponse } from "../Data/Response/TvSeriesResponse";
 import { MovieQuery } from "../Data/Request/MovieQuery";
+import { TvSeriesRequest } from "../Data/Request/TvSeriesRequest";
 
 @Injectable({
   providedIn: 'root' 
@@ -25,5 +26,9 @@ export class TvSeriesService {
         }
         });
         return this.http.get<TvSeriesResponse[]>(`${this.apiUrl}`, { params: params });
+    }
+    addTvSeries(tvSeries: TvSeriesRequest): Observable<any>
+    {
+        return this.http.post<any>(`${this.apiUrl}`, tvSeries);
     }
 }

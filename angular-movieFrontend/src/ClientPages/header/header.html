@@ -21,14 +21,19 @@
           Zalogowany jako {{ username }}
         </button>
         <ul class="dropdown-menu">
+          @if(isLoggedIn && userRole === true) {
+            <li><a class="dropdown-item" [routerLink]="['adminDashboard']">Admin-Dashboard</a></li>
+          }
+          
           <li><a class="dropdown-item" (click)="openChangePassword()">zmiana hasła</a></li>
           <li><a class="dropdown-item" (click)="openChangeDetails()">zmiana danych</a></li>
-          <li><a class="dropdown-item" href="#">Usuń konto</a></li>
-          <li><a class="dropdown-item" href="#">wyloguj</a></li>
+          <li><a class="dropdown-item" (click)="deleteAccount()">Usuń konto</a></li>
+          <li><a class="dropdown-item" (click)="logout()">wyloguj</a></li>
         </ul>
       </div>
     } @else if(!isLoggedIn) {
       <button (click)="openLoginDialog()">Zaloguj</button>
+      <button (click)="openRegisterDialog()">Zarejestruj się</button>
     }
   </div>
 </header>

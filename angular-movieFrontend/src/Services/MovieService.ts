@@ -3,6 +3,7 @@ import { Observable } from "rxjs";
 import {MovieResponse} from "../Data/Response/MovieResponse";
 import { Injectable } from "@angular/core";
 import { MovieQuery } from "../Data/Request/MovieQuery";
+import { MovieRequest } from "../Data/Request/MovieRequest";
 @Injectable({
   providedIn: 'root' 
 })
@@ -12,7 +13,8 @@ constructor(private http: HttpClient) {}
 getMovies(): Observable<MovieResponse[]> {
   return this.http.get<MovieResponse[]>(`${this.apiUrl}`);
 }
-getMovieById(id: number): Observable<MovieResponse> {
+getMovieById(id: string): Observable<MovieResponse> {
+  console.log(`Fetching movie with ID: ${id}`);
   return this.http.get<MovieResponse>(`${this.apiUrl}/${id}`);
 }
 getMoviesByFilter(query: MovieQuery): Observable<MovieResponse[]> {
@@ -25,5 +27,8 @@ getMoviesByFilter(query: MovieQuery): Observable<MovieResponse[]> {
     });
   return this.http.get<MovieResponse[]>(`${this.apiUrl}`, { params: params });
 }
-
+addMovie(movie: MovieRequest): Observable<any>
+{
+    return this.http.post<any>(`${this.apiUrl}`, movie);
+}
 }

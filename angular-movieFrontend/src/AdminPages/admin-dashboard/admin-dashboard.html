@@ -1,0 +1,355 @@
+<div class="container-fluid mt-4">
+  <div class="row">
+    
+    <nav class="col-md-3 col-lg-2 d-md-block bg-light sidebar collapse shadow-sm rounded p-3 mb-4">
+      <div class="position-sticky">
+        <h5 class="px-3 mb-3 text-muted">Panel Admina</h5>
+        <ul class="nav flex-column nav-pills">
+          <li class="nav-item mb-2">
+            <a class="nav-link active" href="#statystyki">
+              <i class="bi bi-speedometer2 me-2"></i> Statystyki
+            </a>
+          </li>
+          <li class="nav-item mb-2">
+            <a class="nav-link text-dark" href="#dodaj-nowy">
+              <i class="bi bi-plus-circle me-2"></i> Dodaj multimedia
+            </a>
+          </li>
+          <li class="nav-item mb-2">
+            <a class="nav-link text-dark" href="#zarzadzanie-baza">
+              <i class="bi bi-collection me-2"></i> Zarządzaj zasobami
+            </a>
+          </li>
+        </ul>
+      </div>
+    </nav>
+
+    <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
+      
+      <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-4 border-bottom">
+        <h1 class="h2">Dashboard Multimedialny</h1>
+        <div class="btn-toolbar mb-2 mb-md-0">
+          <button type="button" class="btn btn-sm btn-outline-secondary">
+            <i class="bi bi-download me-1"></i> Eksportuj raport
+          </button>
+        </div>
+      </div>
+
+      <section id="statystyki" class="row mb-5">
+        <div class="col-md-4 mb-3">
+          <div class="card bg-primary text-white shadow">
+            <div class="card-body d-flex justify-content-between align-items-center">
+              <div>
+                <h6 class="card-title text-uppercase mb-1" style="font-size: 0.8rem;">Filmy</h6>
+                <h2 class="display-6 mb-0">142</h2>
+              </div>
+              <i class="bi bi-film fs-1 opacity-50"></i>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-4 mb-3">
+          <div class="card bg-success text-white shadow">
+            <div class="card-body d-flex justify-content-between align-items-center">
+              <div>
+                <h6 class="card-title text-uppercase mb-1" style="font-size: 0.8rem;">Seriale</h6>
+                <h2 class="display-6 mb-0">68</h2>
+              </div>
+              <i class="bi bi-tv fs-1 opacity-50"></i>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-4 mb-3">
+          <div class="card bg-purple text-white shadow" style="background-color: #6f42c1;">
+            <div class="card-body d-flex justify-content-between align-items-center">
+              <div>
+                <h6 class="card-title text-uppercase mb-1" style="font-size: 0.8rem;">Gry wideo</h6>
+                <h2 class="display-6 mb-0">95</h2>
+              </div>
+              <i class="bi bi-controller fs-1 opacity-50"></i>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section id="dodaj-nowy" class="card shadow-sm mb-5">
+  <div class="card-header bg-dark text-white d-flex justify-content-between align-items-center">
+    <h5 class="mb-0"><i class="bi bi-plus-lg me-2"></i>Dodaj do bazy danych</h5>
+    
+    <div class="btn-group btn-group-sm" role="group">
+      <input type="radio" class="btn-check" name="mediaType" id="typeFilm" value="film" checked (change)="onMediaTypeChange('film')">
+      <label class="btn btn-outline-light" for="typeFilm">Film</label>
+      
+      <input type="radio" class="btn-check" name="mediaType" id="typeSerial" value="serial" (change)="onMediaTypeChange('serial')">
+      <label class="btn btn-outline-light" for="typeSerial">Serial</label>
+      
+      <input type="radio" class="btn-check" name="mediaType" id="typeGra" value="gra" (change)="onMediaTypeChange('gra')">
+      <label class="btn btn-outline-light" for="typeGra">Gra</label>
+    </div>
+  </div>
+  
+  <div class="card-body">
+    <form [formGroup]="mediaForm" (ngSubmit)="onSubmit()">
+      
+      <div class="row">
+        <div class="col-md-6 mb-3">
+          <label for="title" class="form-label fw-bold">Tytuł</label>
+          <input type="text" class="form-control" id="title" formControlName="title" placeholder="np. Incepcja / Breaking Bad / Wiedźmin 3" required>
+        </div>
+        <div class="col-md-6 mb-3">
+          <label for="language" class="form-label">Język</label>
+          <input type="text" class="form-control" id="language" formControlName="language" placeholder="np. Polski / Angielski">
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="col-md-4 mb-3" formGroupName="genre">
+          <label for="genreName" class="form-label">Gatunek</label>
+          <input type="text" class="form-control" id="genreName" formControlName="name" placeholder="np. Sci-Fi / Dramat / RPG">
+        </div>
+
+        <div class="col-md-4 mb-3">
+          <label for="releaseDate" class="form-label">Data premiery</label>
+          <input type="datetime-local" class="form-control" id="releaseDate" formControlName="releaseDate">
+        </div>
+
+        <div class="col-md-4 mb-3">
+          <label for="status" class="form-label">Status</label>
+          <input type="text" class="form-control" id="status" [formControlName]="currentType === 'gra' ? 'gameStatus' : 'status'" placeholder="np. Wydany / Zakończony / Wydana">
+        </div>
+      </div>
+
+      <div *ngIf="currentType === 'film'">
+        <div class="row" formGroupName="director">
+          <div class="col-md-3 mb-3">
+            <label for="dirName" class="form-label">Imię reżysera</label>
+            <input type="text" class="form-control" id="dirName" formControlName="name" placeholder="np. Christopher">
+          </div>
+          <div class="col-md-3 mb-3">
+            <label for="dirSurname" class="form-label">Nazwisko reżysera</label>
+            <input type="text" class="form-control" id="dirSurname" formControlName="surname" placeholder="np. Nolan">
+          </div>
+        </div>
+          <div class="col-md-3 mb-3">
+            <label for="duration" class="form-label">Czas trwania</label>
+            <input type="text" class="form-control" id="duration" formControlName="duration" placeholder="np. 148 min">
+          </div>
+          <div class="col-md-3 mb-3">
+            <label for="distributionType" class="form-label">Typ dystrybucji</label>
+            <input type="text" class="form-control" id="distributionType" formControlName="distributionType" placeholder="np. Kino / Streaming">
+          </div>
+        </div>
+
+      <div *ngIf="currentType === 'serial'" class="row">
+        <div class="col-md-4 mb-3">
+          <label for="seasons" class="form-label">Liczba sezonów</label>
+          <input type="number" class="form-control" id="seasons" formControlName="seasons" placeholder="np. 5">
+        </div>
+        <div class="col-md-4 mb-3">
+          <label for="episodes" class="form-label">Liczba odcinków</label>
+          <input type="number" class="form-control" id="episodes" formControlName="episodes" placeholder="np. 62">
+        </div>
+        <div class="col-md-4 mb-3">
+          <label for="network" class="form-label">Stacja telewizyjna / Platforma</label>
+          <input type="text" class="form-control" id="network" formControlName="network" placeholder="np. HBO / Netflix / AMC">
+        </div>
+      </div>
+
+      <div *ngIf="currentType === 'gra'">
+        <div class="row">
+          <div class="col-md-4 mb-3">
+            <label for="developer" class="form-label">Deweloper / Studio</label>
+            <input type="text" class="form-control" id="developer" formControlName="developer" placeholder="np. CD Projekt RED">
+          </div>
+          <div class="col-md-4 mb-3">
+            <label for="engine" class="form-label">Silnik graficzny</label>
+            <input type="text" class="form-control" id="engine" formControlName="engine" placeholder="np. REDengine">
+          </div>
+          <div class="col-md-4 mb-3">
+            <label for="pegiRating" class="form-label">Rating PEGI</label>
+            <select class="form-select" id="pegiRating" formControlName="pegiRating">
+              <option [ngValue]="0">PEGI 3</option>
+              <option [ngValue]="12">PEGI 12</option>
+              <option [ngValue]="16">PEGI 16</option>
+              <option [ngValue]="18">PEGI 18</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label d-block">Platformy</label>
+          <div class="form-check form-check-inline">
+            <input class="form-check-input" type="checkbox" id="pc" value="PC" (change)="onPlatformChange($event)">
+            <label class="form-check-label" for="pc">PC</label>
+          </div>
+          <div class="form-check form-check-inline">
+            <input class="form-check-input" type="checkbox" id="ps5" value="PS5" (change)="onPlatformChange($event)">
+            <label class="form-check-label" for="ps5">PS5</label>
+          </div>
+          <div class="form-check form-check-inline">
+            <input class="form-check-input" type="checkbox" id="xbox" value="Xbox" (change)="onPlatformChange($event)">
+            <label class="form-check-label" for="xbox">Xbox</label>
+          </div>
+        </div>
+
+        <div class="mb-3 form-check form-switch">
+          <input class="form-check-input" type="checkbox" id="supportsCrossPlay" formControlName="supportsCrossPlay">
+          <label class="form-check-label" for="supportsCrossPlay">Wspiera Cross-Play</label>
+        </div>
+      </div>
+
+      <div class="mb-4">
+        <label for="description" class="form-label">Opis / Fabuła</label>
+        <textarea class="form-control" id="description" rows="3" formControlName="description" placeholder="Krótki opis fabuły..."></textarea>
+      </div>
+
+      <button type="submit" class="btn btn-success px-4" [disabled]="mediaForm.invalid">
+        <i class="bi bi-save me-2"></i>Zapisz w bazie danych
+      </button>
+    </form>
+  </div>
+</section>
+
+      <section id="zarzadzanie-baza" class="card shadow-sm mb-4">
+        <div class="card-header bg-white pt-3 pb-0">
+          <div class="d-flex justify-content-between align-items-center mb-3">
+            <h5 class="mb-0 text-dark fw-bold"><i class="bi bi-list-task me-2"></i>Przeglądaj i edytuj zasoby</h5>
+            <div class="input-group w-25">
+              <input type="text" class="form-control form-control-sm" placeholder="Szukaj...">
+              <button class="btn btn-outline-secondary btn-sm" type="button"><i class="bi bi-search"></i></button>
+            </div>
+          </div>
+          
+          <ul class="nav nav-tabs" id="mediaTabs" role="tablist">
+            <li class="nav-item" role="presentation">
+              <button class="nav-link active" id="movies-tab" data-bs-toggle="tab" data-bs-target="#movies" type="button" role="tab"><i class="bi bi-film me-2"></i>Filmy</button>
+            </li>
+            <li class="nav-item" role="presentation">
+              <button class="nav-link" id="series-tab" data-bs-toggle="tab" data-bs-target="#series" type="button" role="tab"><i class="bi bi-tv me-2"></i>Seriale</button>
+            </li>
+            <li class="nav-item" role="presentation">
+              <button class="nav-link" id="games-tab" data-bs-toggle="tab" data-bs-target="#games" type="button" role="tab"><i class="bi bi-controller me-2"></i>Gry</button>
+            </li>
+            <li class="nav-item" role="presentation">
+              <button class="nav-link" id="user-tab" data-bs-toggle="tab" data-bs-target="#user" type="button" role="tab"><i class="bi bi-person me-2"></i>Użytkownicy</button>
+            </li>
+          </ul>
+        </div>
+
+        <div class="card-body p-0 tab-content" id="mediaTabsContent">
+          
+          <div class="tab-pane fade show active table-responsive" id="movies" role="tabpanel">
+            <table class="table table-hover table-striped align-middle mb-0">
+              <thead class="table-light">
+                <tr>
+                  <th scope="col" class="ps-3">ID</th>
+                  <th scope="col">Tytuł</th>
+                  <th scope="col">Reżyser</th>
+                  <th scope="col">Gatunek</th>
+                  <th scope="col">Rok</th>
+                  <th scope="col" class="text-end pe-3">Akcje</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td class="ps-3 fw-bold">1</td>
+                  <td><strong>Incepcja</strong></td>
+                  <td>Christopher Nolan</td>
+                  <td><span class="badge bg-info text-dark">Sci-Fi</span></td>
+                  <td>2010</td>
+                  <td class="text-end pe-3">
+                    <button class="btn btn-sm btn-outline-warning me-1"><i class="bi bi-pencil-square"></i></button>
+                    <button class="btn btn-sm btn-outline-danger"><i class="bi bi-trash"></i></button>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <div class="tab-pane fade table-responsive" id="series" role="tabpanel">
+            <table class="table table-hover table-striped align-middle mb-0">
+              <thead class="table-light">
+                <tr>
+                  <th scope="col" class="ps-3">ID</th>
+                  <th scope="col">Tytuł</th>
+                  <th scope="col">Twórca</th>
+                  <th scope="col">Gatunek</th>
+                  <th scope="col">Sezony</th>
+                  <th scope="col" class="text-end pe-3">Akcje</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td class="ps-3 fw-bold">1</td>
+                  <td><strong>Breaking Bad</strong></td>
+                  <td>Vince Gilligan</td>
+                  <td><span class="badge bg-secondary">Kryminał / Dramat</span></td>
+                  <td>5</td>
+                  <td class="text-end pe-3">
+                    <button class="btn btn-sm btn-outline-warning me-1"><i class="bi bi-pencil-square"></i></button>
+                    <button class="btn btn-sm btn-outline-danger"><i class="bi bi-trash"></i></button>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <div class="tab-pane fade table-responsive" id="games" role="tabpanel">
+            <table class="table table-hover table-striped align-middle mb-0">
+              <thead class="table-light">
+                <tr>
+                  <th scope="col" class="ps-3">ID</th>
+                  <th scope="col">Tytuł</th>
+                  <th scope="col">Studio</th>
+                  <th scope="col">Gatunek</th>
+                  <th scope="col">Platformy</th>
+                  <th scope="col" class="text-end pe-3">Akcje</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td class="ps-3 fw-bold">1</td>
+                  <td><strong>Wiedźmin 3: Dziki Gon</strong></td>
+                  <td>CD Projekt RED</td>
+                  <td><span class="badge bg-dark">RPG</span></td>
+                  <td>PC, PS5, Xbox</td>
+                  <td class="text-end pe-3">
+                    <button class="btn btn-sm btn-outline-warning me-1"><i class="bi bi-pencil-square"></i></button>
+                    <button class="btn btn-sm btn-outline-danger"><i class="bi bi-trash"></i></button>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <div class="tab-pane fade table-responsive" id="user" role="tabpanel">
+            <table class="table table-hover table-striped align-middle mb-0">
+              <thead class="table-light">
+                <tr>
+                  <th scope="col" class="ps-3">ID</th>
+                  <th scope="col">Nazwa użytkownika</th>
+                  <th scope="col">Email</th>
+                  <th scope="col">Rola</th>
+                  <th scope="col" class="text-end pe-3">Akcje</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td class="ps-3 fw-bold">1</td>
+                  <td><strong>JanKowalski</strong></td>
+                  <td>jan.kowalski@example.com</td>
+                  <td><span class="badge bg-warning text-dark">Moderator</span></td>
+                  <td class="text-end pe-3">
+                    <button class="btn btn-sm btn-outline-primary me-1" title="Zmień rolę"><i class="bi bi-shield-lock"></i></button>
+                    <button class="btn btn-sm btn-outline-danger" title="Zablokuj"><i class="bi bi-person-x"></i></button>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+        </div>
+      </section>
+
+    </main>
+  </div>
+</div>

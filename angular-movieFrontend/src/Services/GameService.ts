@@ -3,6 +3,7 @@ import { Observable } from "rxjs";
 import { MovieQuery } from "../Data/Request/MovieQuery";
 import { GameResponse } from "../Data/Response/GameResponse";
 import { Injectable } from "@angular/core";
+import { GameRequest } from "../Data/Request/GameRequest";
 @Injectable({
     providedIn: 'root'
 })
@@ -24,5 +25,9 @@ export class GameService {
         }
         });
     return this.http.get<GameResponse[]>(`${this.apiUrl}`, { params: params });
+    }
+    addGame(game: GameRequest): Observable<any>
+    {
+        return this.http.post<any>(`${this.apiUrl}`, game);
     }
 }
