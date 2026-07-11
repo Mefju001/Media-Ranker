@@ -1,9 +1,11 @@
-using Application.Common.DTO.Request;
-using Application.Features.MovieServices.AddListOfMovies;
-using Application.Features.MovieServices.DeleteById;
-using Application.Features.MovieServices.GetMovieById;
-using Application.Features.MovieServices.GetMoviesByCriteria;
-using Application.Features.MovieServices.MovieUpsert;
+
+using Application.Features.Movies.AddRange;
+using Application.Features.Movies.Common;
+using Application.Features.Movies.DeleteById;
+using Application.Features.Movies.GetByCriteria;
+using Application.Features.Movies.GetMovieById;
+using Application.Features.Movies.Upsert;
+using Azure.Core;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -24,16 +26,16 @@ namespace Api.Controllers
 
         [AllowAnonymous]
         [HttpGet]
-        public async Task<IActionResult> Get([FromQuery] GetMoviesByCriteriaQuery moviesQuery)
+        public async Task<IActionResult> Get([FromQuery] GetByCriteriaQuery moviesQuery)
         {
             var movies = await mediator.Send(moviesQuery);
             return Ok(movies);
         }
         [AllowAnonymous]
-        [HttpGet("{id:int}")]
-        public async Task<IActionResult> GetById([FromRoute] int id)
+        [HttpGet("{id:guid}")]
+        public async Task<IActionResult> GetById([FromRoute] Guid id)
         {
-            var query = new GetMovieByIdQuery(id);
+            var query = new GetByIdQuery(id);
             var result = await mediator.Send(query);
             if (result is null) return NotFound();
             return Ok(result);
@@ -42,7 +44,7 @@ namespace Api.Controllers
         [HttpPost]
         public async Task<IActionResult> AddMovie([FromBody] MovieRequest movie)
         {
-            var command = new UpsertMovieCommand(
+            var command = new UpsertCommand(
                 null,
                 movie.Title,
                 movie.Description,
@@ -51,7 +53,8 @@ namespace Api.Controllers
                 movie.ReleaseDate,
                 movie.Language,
                 movie.Duration,
-                movie.IsCinemaRelease);
+                movie.DistributionType,
+                movie.Status);
             var created = await mediator.Send(command);
             return CreatedAtAction(nameof(GetById), new { id = created.id }, created);
         }
@@ -59,15 +62,15 @@ namespace Api.Controllers
         [HttpPost("Bulk")]
         public async Task<IActionResult> AddMovies([FromBody] List<MovieRequest> movies)
         {
-            var command = new AddListOfMoviesCommand(movies);
+            var command = new AddRangeCommand(movies);
             var created = await mediator.Send(command);
             return Ok(created);
         }
         [Authorize(Roles = "Admin")]
-        [HttpPut("{id:int}")]
-        public async Task<IActionResult> UpdateMovie([FromRoute] int id, [FromBody] MovieRequest movie)
+        [HttpPut("{id:guid}")]
+        public async Task<IActionResult> UpdateMovie([FromRoute] Guid id, [FromBody] MovieRequest movie)
         {
-            var command = new UpsertMovieCommand(
+            var command = new UpsertCommand(
                 id,
                 movie.Title,
                 movie.Description,
@@ -76,13 +79,14 @@ namespace Api.Controllers
                 movie.ReleaseDate,
                 movie.Language,
                 movie.Duration,
-                movie.IsCinemaRelease);
+                movie.DistributionType,
+                movie.Status);
             var updated = await mediator.Send(command);
             return Ok(updated);
         }
         [Authorize(Roles = "Admin")]
-        [HttpDelete("{id:int}")]
-        public async Task<IActionResult> Delete([FromRoute] int id)
+        [HttpDelete("{id:guid}")]
+        public async Task<IActionResult> Delete([FromRoute] Guid id)
         {
             var deleted = await mediator.Send(new DeleteByIdCommand(id));
             return NoContent();

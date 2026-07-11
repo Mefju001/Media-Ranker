@@ -1,0 +1,39 @@
+<header class="header">
+  <div class="logo">
+    <h1 [routerLink]="['']">Media-Ranker</h1>
+  </div>
+  <nav class="main-nav">
+    <ul>
+      <li><a [routerLink]="['movies']">Filmy</a></li>
+      <li><a [routerLink]="['tvSeries']">Seriale</a></li>
+      <li><a [routerLink]="['games']">Gry</a></li>
+      <li><a href="#">Rankingi</a></li>
+      <li><a href="#">Premiery</a></li>
+      <li><a href="#">Newsy</a></li>
+      <li><a href="#">Forum</a></li>
+    </ul>
+  </nav>
+  <div class="user-actions">
+    <input type="text" placeholder="Szukaj filmów..." />
+    @if(isLoggedIn) {
+      <div class="dropdown">
+        <button class="btn btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+          Zalogowany jako {{ username }}
+        </button>
+        <ul class="dropdown-menu">
+          @if(isLoggedIn && userRole === true) {
+            <li><a class="dropdown-item" [routerLink]="['adminDashboard']">Admin-Dashboard</a></li>
+          }
+          
+          <li><a class="dropdown-item" (click)="openChangePassword()">zmiana hasła</a></li>
+          <li><a class="dropdown-item" (click)="openChangeDetails()">zmiana danych</a></li>
+          <li><a class="dropdown-item" (click)="deleteAccount()">Usuń konto</a></li>
+          <li><a class="dropdown-item" (click)="logout()">wyloguj</a></li>
+        </ul>
+      </div>
+    } @else if(!isLoggedIn) {
+      <button (click)="openLoginDialog()">Zaloguj</button>
+      <button (click)="openRegisterDialog()">Zarejestruj się</button>
+    }
+  </div>
+</header>

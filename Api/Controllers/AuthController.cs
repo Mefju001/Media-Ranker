@@ -1,4 +1,4 @@
-﻿using Application.Features.AuthServices.CleanTokens;
+﻿using Application.Features.Auth.CleanTokens;
 using Application.Features.AuthServices.RefreshAccessToken;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;

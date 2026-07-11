@@ -1,13 +1,12 @@
-﻿using Domain.Entity;
+﻿using Domain.Aggregate;
 
-namespace Application.Common.Interfaces
+namespace Domain.Repository
 {
     public interface ITokenRepository
     {
-        Task<Token?> GetByJtiAsync(string jti, CancellationToken cancellationToken);
         Task SaveToken(Token token, CancellationToken cancellationToken);
         Task<int> DeleteTokensFromUserId(Guid userId, string? jti, CancellationToken cancellationToken);
-        Task<List<Token>> GetTokensToCleanUp(CancellationToken cancellationToken);
         Task<int> CleanUpTokensAsync(CancellationToken cancellationToken);
+        Task<Token> GetByJtiAsync(string jti, CancellationToken cancellationToken);
     }
 }

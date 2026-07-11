@@ -1,19 +1,15 @@
 ﻿namespace Domain.Value_Object
 {
-    public class Fullname
+    public record Fullname(string FirstName, string LastName)
     {
-        public string Name { get; init; }
-        public string Surname { get; init; }
+        private Fullname() : this(default!, default!) { }
 
-        public Fullname(string name, string surname)
+        public static Fullname Create(string firstName, string lastName)
         {
-            if (string.IsNullOrWhiteSpace(name)) throw new ArgumentException("Name cannot be empty.");
-            if (string.IsNullOrWhiteSpace(surname)) throw new ArgumentException("Surname cannot be empty.");
+            if (string.IsNullOrWhiteSpace(firstName) || string.IsNullOrWhiteSpace(lastName))
+                throw new ArgumentException("First name and last name cannot be empty.");
 
-            Name = name;
-            Surname = surname;
+            return new Fullname(firstName.Trim(), lastName.Trim());
         }
-
-        public override string ToString() => $"{Name} {Surname}";
     }
 }

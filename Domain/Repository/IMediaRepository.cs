@@ -1,10 +1,6 @@
-﻿using Domain.Entity;
-
-namespace Application.Common.Interfaces
+﻿namespace Application.Common.Interfaces
 {
-    public interface IMediaRepository
+    public interface IMediaRepository<T> : IRepository<T, Guid> where T : Media
     {
-        Task<Media?> GetMediaById(int mediaId, CancellationToken cancellationToken);
-        Task<Dictionary<int, Media>> GetByIds(List<int> mediaIds, CancellationToken cancellationToken);
     }
 }

@@ -1,27 +1,24 @@
+using Api;
 using Api.Controllers;
-using Api.Extensions;
-using Infrastructure.DBModels;
-using Infrastructure.Persistence;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.EntityFrameworkCore;
+using Application;
+using Infrastructure;
+using Infrastructure.Database;
 using System.Text.Json.Serialization;
 
 var MyAllowSpecificOrigins = "_myAllowSpecificOrigins";
 var builder = WebApplication.CreateBuilder(args);
-AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
-builder.Services.AddAppServices(builder.Configuration);
-builder.Services.AddIdentityServices(builder.Configuration);
+builder.Services.AddInfrastructure(builder.Configuration);
+builder.Services.AddApplication(builder.Configuration);
+builder.Services.AddApi(builder.Configuration);
+
+
 builder.Services.AddControllers()
     .AddJsonOptions(options =>
     {
         options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
     });
-builder.Services.AddSwaggerConfiguration(builder.Configuration);
-
 builder.Services.AddSwaggerGen();
 builder.Services.AddEndpointsApiExplorer();
-
 builder.Services.AddCors(options =>
 {
     options.AddPolicy(name: MyAllowSpecificOrigins,
@@ -33,34 +30,12 @@ builder.Services.AddCors(options =>
                   .AllowCredentials();
         });
 });
-builder.Services.AddHttpContextAccessor();
-builder.Services.AddIdentity<UserModel, RoleModel>()
-    .AddEntityFrameworkStores<AppDbContext>()
-    .AddDefaultTokenProviders();
-builder.Services.AddAuthentication(options =>
-{
-    options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-    options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-});
-builder.Services.ConfigureApplicationCookie(options =>
-{
-    options.Events.OnRedirectToLogin = context =>
-    {
-        context.Response.StatusCode = StatusCodes.Status401Unauthorized;
-        return Task.CompletedTask;
-    };
-});
-builder.Services.AddHttpContextAccessor();
-
 
 var app = builder.Build();
 
-using (var scope = app.Services.CreateScope())
-{
-    var dbContext = scope.ServiceProvider.GetRequiredService<AppDbContext>();
-    dbContext.Database.Migrate();
-}
+await SeedUsers.OnStart(app);
 
+app.UseMiddleware<GlobalExceptionHandlerMiddleware>();
 
 if (app.Environment.IsDevelopment())
 {
@@ -72,7 +47,6 @@ app.UseRouting();
 app.UseCors(MyAllowSpecificOrigins);
 app.UseAuthentication();
 app.UseAuthorization();
-app.UseMiddleware<GlobalExceptionHandlerMiddleware>();
 app.MapControllers();
 
 app.Run();

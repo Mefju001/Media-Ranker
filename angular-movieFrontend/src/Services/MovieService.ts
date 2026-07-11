@@ -3,17 +3,19 @@ import { Observable } from "rxjs";
 import {MovieResponse} from "../Data/Response/MovieResponse";
 import { Injectable } from "@angular/core";
 import { MovieQuery } from "../Data/Request/MovieQuery";
+import { MovieRequest } from "../Data/Request/MovieRequest";
 @Injectable({
   providedIn: 'root' 
 })
 export class MovieService {
-private apiUrl = 'http://localhost:5009/Movie';
+private apiUrl = 'http://localhost:5009/api/Movie';
 constructor(private http: HttpClient) {}
 getMovies(): Observable<MovieResponse[]> {
   return this.http.get<MovieResponse[]>(`${this.apiUrl}`);
 }
-getMovieById(id: number): Observable<MovieResponse> {
-  return this.http.get<MovieResponse>(`${this.apiUrl}/id/${id}`);
+getMovieById(id: string): Observable<MovieResponse> {
+  console.log(`Fetching movie with ID: ${id}`);
+  return this.http.get<MovieResponse>(`${this.apiUrl}/${id}`);
 }
 getMoviesByFilter(query: MovieQuery): Observable<MovieResponse[]> {
   let params = new HttpParams();
@@ -23,7 +25,10 @@ getMoviesByFilter(query: MovieQuery): Observable<MovieResponse[]> {
         params = params.set(key, value.toString());
       }
     });
-  return this.http.get<MovieResponse[]>(`${this.apiUrl}/FilterBy`, { params: params });
+  return this.http.get<MovieResponse[]>(`${this.apiUrl}`, { params: params });
 }
-
+addMovie(movie: MovieRequest): Observable<any>
+{
+    return this.http.post<any>(`${this.apiUrl}`, movie);
+}
 }

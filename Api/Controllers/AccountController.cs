@@ -1,8 +1,7 @@
-﻿using Application.Common.DTO.Request;
-using Application.Common.Interfaces;
-using Application.Features.AuthServices.Login;
-using Application.Features.AuthServices.Logout;
-using Application.Features.AuthServices.Signup;
+﻿using Application.Features.Auth.Login;
+using Application.Features.Auth.Logout;
+using Application.Features.Auth.Signup;
+using Application.Features.Common.Interfaces;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -59,14 +58,14 @@ namespace Api.Controllers
         }
         [AllowAnonymous]
         [HttpPost("Register")]
-        public async Task<IActionResult> Register([FromBody] UserRequest userRequest)
+        public async Task<IActionResult> Register([FromBody] SignUpRequest signUpRequest)
         {
             var command = new SignUpCommand(
-                userRequest.username,
-                userRequest.email,
-                userRequest.password,
-                userRequest.name,
-                userRequest.surname);
+                signUpRequest.username,
+                signUpRequest.email,
+                signUpRequest.password,
+                signUpRequest.name,
+                signUpRequest.surname);
             var result = await mediator.Send(command);
             Response.Cookies.Append("refreshToken", result.refreshToken!, new CookieOptions
             {

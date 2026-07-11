@@ -14,8 +14,8 @@ A simple application that has a similar function to Filmweb built using ASP.NET 
 #### 1. Clone the Repository
 
 ```bash
-git clone https://github.com/twoj-login/filmweb-clone.git
-cd filmweb-clone
+git clone https://github.com/Mefju001/Media-Ranker.git
+cd Media-Ranker
 ```
 
 #### 2. Configure Database Connection

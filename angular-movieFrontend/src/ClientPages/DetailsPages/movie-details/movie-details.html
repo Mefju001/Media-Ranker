@@ -1,0 +1,66 @@
+@if (!movie) {
+  <p>Nie znaleziono filmu lub wystąpił błąd.</p>
+} @else {
+  <div class="movie-header">
+    <div class="header-info">
+      <h1>{{ movie.title }}</h1>
+      <p class="rating">Ocena: <span>{{ movie.mediaStats.averageRating | number:'1.1-1' }}</span></p>
+      <p class="genre">Gatunek: {{ movie.genre.name }}</p>
+      <p class="year">Rok Wydania: {{ movie.releaseDate | date:'yyyy' }}</p>
+    </div>
+  </div>
+
+  <section class="description-section">
+    <h2>Opis</h2>
+    <p>{{ movie.description }}</p>
+  </section>
+
+  <section class="director-section">
+    <h2>Reżyser</h2>
+    <p>{{ movie.director.name }} {{ movie.director.surname }}</p>
+  </section>
+
+  <section class="reviews-section">
+    <h2>Recenzje użytkowników</h2>
+    @if (isLoggedIn) {
+      <button class="btn-add-review" (click)="toggleReviewForm()">
+        {{ showReviewForm ? 'Anuluj' : '+ Dodaj recenzję' }}
+      </button>
+    }
+
+    @if (showReviewForm) {
+      <div class="add-review-form">
+        <h3>Twoja opinia</h3>
+        <div class="rating-input">
+          <label>Twoja ocena (1-10):</label>
+          <input type="number" [(ngModel)]="newReview.Rating" min="1" max="10" class="rating-field">
+        </div>
+        <textarea [(ngModel)]="newReview.Comment" placeholder="Napisz co sądzisz o tym filmie..." rows="4"></textarea>
+        <button class="btn-submit" (click)="submitReview()" [disabled]="!newReview.Comment">Wyślij recenzję</button>
+      </div>
+    }
+    @if (movie.reviews && movie.reviews.length > 0) {
+      <div class="reviews-list">
+        @for (review of movie.reviews; track review.id) {
+          <div class="review-card">
+            <div class="review-header">
+              <span class="user-name">{{ review.username }}</span>
+              <span class="review-date">{{ review.createdAt | date:'dd.MM.yyyy' }}</span>
+            </div>
+            <div class="review-rating">
+              @for (star of [1,2,3,4,5,6,7,8,9,10]; track star) {
+                <span class="star" [class.filled]="star <= review.rating">★</span>
+              }
+              <span class="rating-value">{{ review.rating }}/10</span>
+            </div>
+            <p class="review-content">{{ review.comment }}</p>
+          </div>
+        }
+      </div>
+    } @else {
+      <p class="no-reviews">Ten film nie ma jeszcze żadnych recenzji. Bądź pierwszy!</p>
+    }
+  </section>
+
+  <a [routerLink]="['/movies']" class="back-link">← Powrót do listy filmów</a>
+}

@@ -1,0 +1,33 @@
+<div class="register-container">
+  <h2>Stwórz konto</h2>
+  <form [formGroup]="registerForm" (ngSubmit)="onRegister()">
+    
+    <div class="form-group">
+      <label>Nazwa użytkownika</label>
+      <input type="text" formControlName="username" placeholder="np. Mefju001">
+    </div>
+
+    <div class="row">
+      <div class="form-group">
+        <label>Imię</label>
+        <input type="text" formControlName="name">
+      </div>
+      <div class="form-group">
+        <label>Nazwisko</label>
+        <input type="text" formControlName="surname">
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label>Email</label>
+      <input type="email" formControlName="email">
+    </div>
+
+    <div class="form-group">
+      <label>Hasło</label>
+      <input type="password" formControlName="password">
+    </div>
+
+    <button type="submit" [disabled]="registerForm.invalid">Zarejestruj się</button>
+  </form>
+</div>

@@ -1,0 +1,35 @@
+.form-container {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding-top: 10px;
+  min-width: 350px;
+}
+
+mat-form-field {
+  width: 100%;
+}
+
+mat-error {
+  font-size: 12px;
+  margin-top: -10px;
+  margin-bottom: 10px;
+}
+
+mat-dialog-actions {
+  padding: 16px 0;
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+}
+
+h2[mat-dialog-title] {
+  margin: 0;
+  font-family: Roboto, "Helvetica Neue", sans-serif;
+  font-size: 20px;
+  font-weight: 500;
+}
+
+.mat-mdc-dialog-content {
+  max-height: 65vh;
+}

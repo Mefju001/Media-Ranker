@@ -1,4 +1,4 @@
-﻿using Application.Features.GenreServices;
+﻿using Application.Features.Genres.GetAll;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -19,7 +19,7 @@ namespace Api.Controllers
         [HttpGet]
         public async Task<IActionResult> GetGenres()
         {
-            var query = new GetGenresQuery();
+            var query = new GetAllQuery();
             var results = await mediator.Send(query);
             return Ok(results);
         }

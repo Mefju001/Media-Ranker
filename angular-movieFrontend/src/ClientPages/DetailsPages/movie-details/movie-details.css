@@ -1,0 +1,163 @@
+
+.movie-details-page {
+    max-width: 1000px;
+    margin: 40px auto;
+    padding: 20px;
+    background-color: #ffffff;
+    border-radius: 10px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+}
+
+
+.movie-header {
+    display: flex;
+    gap: 30px;
+    margin-bottom: 40px;
+    align-items: flex-start;
+    padding-bottom: 20px;
+    border-bottom: 1px solid #e0e0e0;
+}
+
+.movie-poster {
+    width: 250px;
+    height: auto;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.header-info {
+    flex-grow: 1;
+}
+
+.header-info h1 {
+    margin-top: 0;
+    font-size: 2.5em;
+    color: #333;
+}
+
+.header-info p {
+    margin: 8px 0;
+    font-size: 1.1em;
+}
+
+.rating span {
+    display: inline-block;
+    background-color: #ffc107;
+    color: #333;
+    padding: 5px 10px;
+    border-radius: 5px;
+    font-weight: bold;
+    margin-left: 10px;
+}
+
+.genre, .year {
+    color: #666;
+}
+
+
+.description-section, .director-section {
+    margin-bottom: 30px;
+    padding: 15px 0;
+}
+
+.description-section h2, .director-section h2 {
+    font-size: 1.5em;
+    color: #444;
+    border-left: 4px solid #007bff;
+    padding-left: 10px;
+    margin-bottom: 15px;
+}
+
+.description-section p {
+    line-height: 1.6;
+    color: #555;
+}
+
+
+.back-link {
+    display: inline-block;
+    margin-top: 20px;
+    padding: 10px 15px;
+    background-color: #f0f0f0;
+    color: #007bff;
+    text-decoration: none;
+    border-radius: 5px;
+    transition: background-color 0.2s;
+}
+
+.back-link:hover {
+    background-color: #e0e0e0;
+    color: #0056b3;
+}
+
+.reviews-section {
+  margin-top: 40px;
+  padding-top: 20px;
+  border-top: 1px solid #444;
+}
+
+.reviews-section h2 {
+  color: var(--primary-color);
+  margin-bottom: 20px;
+}
+
+.reviews-list {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.review-card {
+  background-color: #2a2a2a;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 4px 6px rgba(0,0,0,0.2);
+}
+
+.review-header {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 10px;
+  border-bottom: 1px solid #3d3d3d;
+  padding-bottom: 5px;
+}
+
+.user-name {
+  font-weight: bold;
+  color: #fff;
+}
+
+.review-date {
+  font-size: 0.85em;
+  color: #bbb;
+}
+
+.review-rating {
+  margin-bottom: 10px;
+  color: #ffc107;
+}
+
+.star {
+  font-size: 1.2em;
+  color: #444;
+}
+
+.star.filled {
+  color: #ffc107;
+}
+
+.rating-value {
+  margin-left: 10px;
+  color: #fff;
+  font-weight: bold;
+}
+
+.review-content {
+  line-height: 1.5;
+  color: #ddd;
+}
+
+.no-reviews {
+  font-style: italic;
+  color: #888;
+}

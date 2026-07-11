@@ -16,9 +16,7 @@ namespace Api.Extensions
                     In = ParameterLocation.Header,
                     Description = "Wklej JWT z Prefiksem 'Bearer '"
                 };
-
                 options.AddSecurityDefinition("Bearer", securityScheme);
-
                 options.AddSecurityRequirement(new OpenApiSecurityRequirement
                 {
                     {

@@ -1,4 +1,4 @@
-﻿using Application.Common.Interfaces;
+﻿using Application.Features.Common.Interfaces;
 using Microsoft.AspNetCore.Http;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
@@ -24,7 +24,12 @@ namespace Application.Common.UserContext
         {
             get
             {
-                var id = httpContextAccessor.HttpContext?.User?.FindFirstValue(ClaimTypes.NameIdentifier);
+                var user = httpContextAccessor.HttpContext?.User;
+
+                var id = user?.FindFirstValue(ClaimTypes.NameIdentifier)
+                      ?? user?.FindFirstValue("sub")
+                      ?? user?.FindFirstValue("nameid");
+
                 return Guid.TryParse(id, out Guid userId) ? userId : null;
             }
         }
