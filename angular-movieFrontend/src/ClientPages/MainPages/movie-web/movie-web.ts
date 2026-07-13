@@ -1,13 +1,13 @@
 import { ChangeDetectorRef, Component, OnInit} from '@angular/core';
-import { MovieQuery } from '../../Data/Request/MovieQuery';
-import { MovieService } from '../../Services/MovieService';
-import { GenreService } from '../../Services/GenreService';
-import { MovieResponse } from '../../Data/Response/MovieResponse';
-import { GenreResponse } from '../../Data/Response/GenreResponse';
-import { ReviewService } from '../../Services/ReviewService';
+import { MovieQuery } from '../../../Data/Request/MovieQuery';
+import { MovieService } from '../../../Services/MovieService';
 import { RouterLink } from '@angular/router';
 import { FormBuilder, FormGroup, ReactiveFormsModule } from '@angular/forms';
-import { debounceTime, distinctUntilChanged } from 'rxjs';
+import { debounceTime } from 'rxjs';
+import { MovieResponse } from '../../../Data/Response/MovieResponse';
+import { GenreResponse } from '../../../Data/Response/GenreResponse';
+import { GenreService } from '../../../Services/GenreService';
+import { ReviewService } from '../../../Services/ReviewService';
 @Component({
   selector: 'app-movie-web',
   standalone: true,

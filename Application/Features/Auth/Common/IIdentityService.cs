@@ -3,6 +3,7 @@ namespace Application.Features.Auth.Common
 {
     public interface IIdentityService
     {
+        Task<List<Guid>> GetUserExcludeAdmin();
         Task<IdentityUserDto> CreateUserWithDefaultRole(string username, string password, string email);
         Task<bool> IsAnyUserWhoHaveEmailAndId(string email, string username, CancellationToken cancellationToken);
         Task<IdentityUserDto?> AuthenticateAsync(string username, string password);

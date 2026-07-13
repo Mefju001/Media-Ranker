@@ -1,0 +1,16 @@
+import { HttpClient } from "@angular/common/http";
+import { Injectable } from "@angular/core";
+import { Observable } from "rxjs";
+@Injectable({
+    providedIn: 'root'
+})
+export class AdminService {
+  private apiUrl = 'http://localhost:5009/api/Admin';
+  constructor(private http: HttpClient) {}
+  getAllNumbers(): Observable<{ numberOfMovies: number; numberOfTvSeries: number; numberOfGames: number }> {
+    return this.http.get<{numberOfGames: number ; numberOfMovies: number; numberOfTvSeries: number}>(`${this.apiUrl}`);
+  }
+  getAllUsers(): Observable<any[]> {
+    return this.http.get<any[]>(`${this.apiUrl}/Users`);
+  }
+}

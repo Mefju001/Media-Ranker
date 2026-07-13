@@ -63,7 +63,7 @@ namespace Tests.Service.UserDetailsService
             using var scope = _serviceProvider.CreateScope();
             var context = _serviceProvider.GetRequiredService<AppDbContext>();
             var userModel = new UserModel(userId, "username", "password", "email");
-            var user = UserDetails.Create(userId, new Fullname("Johnny", "Doe"), new Username("johndoe"), Email.Create("johndoe@example.com"));
+            var user = UserDetails.Create(userId, new Fullname("Johnny", "Doe"), "johndoe", Email.Create("johndoe@example.com"));
             context.Users.Add(userModel);
             context.UsersDetails.Add(user);
             await context.SaveChangesAsync();
@@ -94,8 +94,8 @@ namespace Tests.Service.UserDetailsService
             using var scope2 = _serviceProvider.CreateScope();
             var context = _serviceProvider.GetRequiredService<AppDbContext>();
             var updatedUser = await context.UsersDetails.FindAsync(userId);
-            Assert.AreEqual("Jane", updatedUser.Fullname.Name);
-            Assert.AreEqual("Smith", updatedUser.Fullname.Surname);
+            Assert.AreEqual("Jane", updatedUser.Fullname.FirstName);
+            Assert.AreEqual("Smith", updatedUser.Fullname.LastName);
         }
         [TestMethod]
         public async Task Handle_WithEmptyRequest_ShouldThrowArgumentException()
@@ -103,7 +103,7 @@ namespace Tests.Service.UserDetailsService
             using var scope = _serviceProvider.CreateScope();
             var mediator = _serviceProvider.GetRequiredService<IMediator>();
             var command = new ChangeDetailsCommand(userId, "", "");
-            await Assert.ThrowsExactlyAsync<ArgumentException>(async () => await mediator.Send(command, CancellationToken.None));
+            await Assert.ThrowsExactlyAsync<DomainException>(async () => await mediator.Send(command, CancellationToken.None));
         }
     }
 }

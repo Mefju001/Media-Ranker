@@ -14,10 +14,10 @@ export class TvSeriesService {
     getTvSeries(): Observable<TvSeriesResponse[]> {
         return this.http.get<TvSeriesResponse[]>(`${this.apiUrl}`);
     }
-    getMovieById(id: number): Observable<TvSeriesResponse> {
+    getTvSeriesById(id: string): Observable<TvSeriesResponse> {
         return this.http.get<TvSeriesResponse>(`${this.apiUrl}/${id}`);
     }
-    getMoviesByFilter(query: MovieQuery): Observable<TvSeriesResponse[]> {
+    getTvSeriesByFilter(query: MovieQuery): Observable<TvSeriesResponse[]> {
         let params = new HttpParams();
         Object.keys(query).forEach(key => {
         const value = query[key as keyof MovieQuery];

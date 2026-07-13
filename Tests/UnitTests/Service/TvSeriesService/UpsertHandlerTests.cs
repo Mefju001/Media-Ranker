@@ -73,7 +73,7 @@ namespace Tests.Service.TvSeriesService
             context.Genres.Add(genre);
             var genre2 = Genre.Create("Adventure", Guid.NewGuid());
             context.Genres.Add(genre2);
-            var tvSeries = TvSeries.Create("Title", "desc", new Language("Lang"), new ReleaseDate(DateTime.UtcNow), genre.Id, 2, 20, "Netflix", EStatus.Continuing);
+            var tvSeries = TvSeries.Create("Title", "desc", "Lang", new ReleaseDate(DateTime.UtcNow), genre.Id, new SeasonDetails(2,30), "Netflix", ETvSeriesStatus.Ongoing);
             context.Medias.Add(tvSeries);
             tvSeriesId = tvSeries.Id;
             context.SaveChanges();
@@ -91,7 +91,7 @@ namespace Tests.Service.TvSeriesService
                 2,
                 20,
                 "Netflix",
-                EStatus.Continuing
+                "Ongoing"
                 );
 
             using var scope = _serviceProvider.CreateScope();
@@ -117,7 +117,7 @@ namespace Tests.Service.TvSeriesService
                             2,
                             20,
                             "Netflix",
-                            EStatus.Continuing
+                            "Ongoing"
                             );
             using var scope = _serviceProvider.CreateScope();
             var mediator = _serviceProvider.GetRequiredService<IMediator>();
@@ -143,16 +143,16 @@ namespace Tests.Service.TvSeriesService
                 2,
                 20,
                 "Netflix",
-                EStatus.Continuing
+                "Ongoing"
                 );
             using var scope = _serviceProvider.CreateScope();
             var mediator = _serviceProvider.GetRequiredService<IMediator>();
             var result = await mediator.Send(command, CancellationToken.None);
             using var scope2 = _serviceProvider.CreateScope();
             var context = _serviceProvider.GetRequiredService<AppDbContext>();
-            var genreInDb = await context.Genres.FirstOrDefaultAsync(g => g.Name.Value == "New Genre");
+            var genreInDb = await context.Genres.FirstOrDefaultAsync(g => g.Name == "New Genre");
             Assert.IsNotNull(genreInDb);
-            Assert.AreEqual("New Genre", genreInDb.Name.Value);
+            Assert.AreEqual("New Genre", genreInDb.Name);
         }
         [TestMethod]
         public async Task Handle_GenreRequestIsEmpty_ShouldThrowArgumentException()
@@ -167,7 +167,7 @@ namespace Tests.Service.TvSeriesService
                             2,
                             20,
                             "Netflix",
-                            EStatus.Continuing
+                            "Ongoing"
                             );
             using var scope = _serviceProvider.CreateScope();
             var mediator = _serviceProvider.GetRequiredService<IMediator>();
@@ -186,7 +186,7 @@ namespace Tests.Service.TvSeriesService
                             2,
                             20,
                             "Netflix",
-                            EStatus.Continuing
+                            "Ongoing"
                             );
             using var scope = _serviceProvider.CreateScope();
             var mediator = _serviceProvider.GetRequiredService<IMediator>();
@@ -205,7 +205,7 @@ namespace Tests.Service.TvSeriesService
                             2,
                             20,
                             "Netflix",
-                            EStatus.Continuing
+                            "Ongoing"
                             );
             using var scope = _serviceProvider.CreateScope();
             var mediator = _serviceProvider.GetRequiredService<IMediator>();
@@ -215,7 +215,7 @@ namespace Tests.Service.TvSeriesService
             var tvSeriesInDb = await context.Medias.FirstOrDefaultAsync(g => g.Id == tvSeriesId);
             var genreInDb = await context.Genres.FirstOrDefaultAsync(g => g.Id == tvSeriesInDb.GenreId);
             Assert.IsNotNull(tvSeriesInDb);
-            Assert.AreEqual("Adventure", genreInDb.Name.Value);
+            Assert.AreEqual("Adventure", genreInDb.Name);
         }
     }
 }

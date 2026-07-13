@@ -7,6 +7,7 @@ using Application.Features.Genres.Common;
 using Application.Features.Genres.GenreManager;
 using Domain.Aggregate;
 using Domain.Enums;
+using Domain.Exceptions;
 using Domain.Repository;
 using FluentValidation;
 using Infrastructure.Database;
@@ -65,13 +66,18 @@ namespace Tests.Service.GameService
             var listOfGames = new List<GameRequest>
             {
                 new GameRequest
-                ("Game 1",
-                "Description 1",
-                new GenreRequest("Genre 1"),
-                DateTime.UtcNow,
-                "English",
-                "Developer 1",
-                new List<String> { "PC" }
+                (
+                    "Game 1",
+                    "Description 1",
+                    new GenreRequest("Genre 1"),
+                    DateTime.UtcNow,
+                    "English",
+                    "Released",
+                    "Developer 1",
+                    "Engine",
+                    3,
+                    new List<String> { "PC" },
+                    true
                 ),
                 new GameRequest
                 (
@@ -80,8 +86,12 @@ namespace Tests.Service.GameService
                     new GenreRequest("Genre 2"),
                     DateTime.UtcNow,
                     "English",
-                    "Developer 2",
-                    new List<String> { "PC" }
+                    "Released",
+                    "Developer 1",
+                    "Engine",
+                    3,
+                    new List<String> { "PC" },
+                    true
                 )
             };
             using (var scope = _serviceProvider.CreateScope())
@@ -93,7 +103,7 @@ namespace Tests.Service.GameService
             using (var scope2 = _serviceProvider.CreateScope())
             {
                 var context = scope2.ServiceProvider.GetRequiredService<AppDbContext>();
-                var gamesInDb = await context.Medias.ToListAsync();
+                var gamesInDb = await context.Medias.OfType<Game>().ToListAsync();
                 Assert.IsNotNull(gamesInDb);
                 Assert.IsTrue(gamesInDb.Any(g => g.Title == "Game 1"));
                 Assert.IsTrue(gamesInDb.Any(g => g.Title == "Game 2"));
@@ -102,7 +112,7 @@ namespace Tests.Service.GameService
         [TestMethod]
         public async Task Handle_AddEmptyList_ShouldReturnEmptyList()
         {
-            List<GameResponse> result;
+            List<Guid> result;
             using (var scope = _serviceProvider.CreateScope())
             {
                 var mediator = _serviceProvider.GetRequiredService<IMediator>();
@@ -115,7 +125,7 @@ namespace Tests.Service.GameService
         [TestMethod]
         public async Task Handle_AddGameWithExistingGenre_ShouldCreateGameWithExistingGenre()
         {
-            List<GameResponse> result;
+            List<Guid> result;
             using(var scope = _serviceProvider.CreateScope())
             {
                 var context = scope.ServiceProvider.GetRequiredService<AppDbContext>();
@@ -131,8 +141,12 @@ namespace Tests.Service.GameService
                 new GenreRequest("Existing Genre"),
                 DateTime.UtcNow,
                 "English",
+                "Released",
                 "Developer 1",
-                new List<String> { "PC" }
+                "Engine",
+                3,
+                new List<String> { "PC" },
+                true
                 )
             };
             using(var scope2 = _serviceProvider.CreateScope())
@@ -144,10 +158,10 @@ namespace Tests.Service.GameService
             using (var assertScope = _serviceProvider.CreateScope())
             {
                 var context = assertScope.ServiceProvider.GetRequiredService<AppDbContext>();
-                var existingGenre = await context.Genres.FirstOrDefaultAsync(g => g.Name.Value == "Existing Genre");
+                var existingGenre = await context.Genres.FirstOrDefaultAsync(g => g.Name == "Existing Genre");
                 Assert.IsNotNull(result);
                 Assert.HasCount(1, result);
-                var gameInDb = await context.Medias.FirstOrDefaultAsync(g => g.Title == "Game 1");
+                var gameInDb = await context.Medias.OfType<Game>().FirstOrDefaultAsync(g => g.Title == "Game 1");
                 Assert.IsNotNull(gameInDb);
                 Assert.AreEqual(existingGenre.Id, gameInDb.GenreId);
             }
@@ -163,8 +177,12 @@ namespace Tests.Service.GameService
                 new GenreRequest("Genre 1"),
                 DateTime.UtcNow,
                 "English",
+                "Released",
                 "Developer 1",
-                new List<String> { "PC" }
+                "Engine",
+                3,
+                new List<String> { "PC" },
+                true
                 ),
                 new GameRequest
                 (
@@ -173,21 +191,25 @@ namespace Tests.Service.GameService
                     new GenreRequest("Genre 2"),
                     DateTime.UtcNow,
                     "English",
-                    "Developer 2",
-                    new List<String> { "XboxOne" }
+                    "Released",
+                    "Developer 1",
+                    "Engine",
+                    3,
+                    new List<String> { "XboxOne" },
+                    true
                 )
             };
             using (var scope = _serviceProvider.CreateScope())
             {
                 var mediator = _serviceProvider.GetRequiredService<IMediator>();
                 var command = new AddRangeCommand(listOfGames);
-                await Assert.ThrowsAsync<ArgumentException>(async () =>
+                await Assert.ThrowsAsync<DomainException>(async () =>
                     await mediator.Send(command, CancellationToken.None));
             }
             using (var scope2 = _serviceProvider.CreateScope())
             {
                 var context = scope2.ServiceProvider.GetRequiredService<AppDbContext>();
-                var count = await context.Medias.CountAsync();
+                var count = await context.Medias.OfType<Game>().CountAsync();
                 Assert.AreEqual(0, count);
             }
 
@@ -198,8 +220,33 @@ namespace Tests.Service.GameService
         {
             var listOfGames = new List<GameRequest>
             {
-                new GameRequest("Game 1", "Desc", new GenreRequest("New Genre"), DateTime.UtcNow, "EN", "Dev", new List<String>{"PC"}),
-                new GameRequest("Game 2", "Desc", new GenreRequest("New Genre"), DateTime.UtcNow, "EN", "Dev", new List<String>{"PC"})
+                new GameRequest
+                ("Game 1",
+                "Description 1",
+                new GenreRequest("New Genre"),
+                DateTime.UtcNow,
+                "English",
+                "Released",
+                "Developer 1",
+                "Engine",
+                3,
+                new List<String> { "PC" },
+                true
+                ),
+                new GameRequest
+                (
+                    "Game 2",
+                    "Description 2",
+                    new GenreRequest("New Genre"),
+                    DateTime.UtcNow,
+                    "English",
+                    "Released",
+                    "Developer 1",
+                    "Engine",
+                    3,
+                    new List<String> { "XboxOne" },
+                    true
+                )
             };
             using (var scope = _serviceProvider.CreateScope())
             {
@@ -210,7 +257,7 @@ namespace Tests.Service.GameService
             using ( var scope2 = _serviceProvider.CreateScope())
             {
                 var context = scope2.ServiceProvider.GetRequiredService<AppDbContext>();
-                var genresInDb = await context.Genres.Where(g => g.Name.Value == "New Genre").ToListAsync();
+                var genresInDb = await context.Genres.Where(g => g.Name == "New Genre").ToListAsync();
                 Assert.HasCount(1, genresInDb, "Gatunek o tej samej nazwie nie powinien zostać zduplikowany w bazie.");
             }
         }

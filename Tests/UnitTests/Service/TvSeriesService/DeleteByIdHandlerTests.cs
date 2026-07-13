@@ -64,12 +64,12 @@ namespace Tests.Service.TvSeriesService
             var directorId = Guid.NewGuid();
             var genre = Genre.Create("Genre1", genreId);
             appDbContext.Genres.Add(genre);
-            var movieInDb = TvSeries.Create("Title 1","desc", new Language("Lang"),new ReleaseDate(DateTime.UtcNow),genre.Id,2,30,"Netflix",EStatus.Unknown,id);
+            var movieInDb = TvSeries.Create("Title 1","desc", "Lang", new ReleaseDate(DateTime.UtcNow),genre.Id, new SeasonDetails(2,30),"Netflix",ETvSeriesStatus.Canceled,id);
             appDbContext.Medias.Add(movieInDb);
             await appDbContext.SaveChangesAsync();
         }
         [TestMethod]
-        public async Task Handle_DeleteMovieById_ShouldDeleteMovieFromDb()
+        public async Task Handle_DeleteTvSeriesById_ShouldDeleteTvSeriesFromDb()
         {
             using var scope = _serviceProvider.CreateScope();
             var mediator = _serviceProvider.GetRequiredService<IMediator>();
@@ -77,7 +77,7 @@ namespace Tests.Service.TvSeriesService
             using var scope2 = _serviceProvider.CreateScope();
             var appDbContext = _serviceProvider.GetRequiredService<AppDbContext>();
             var tvSeriesInDb = await appDbContext.Medias.FindAsync(id);
-            Assert.IsNull(tvSeriesInDb, "Film powinien zostać usunięty z bazy danych.");
+            Assert.IsNull(tvSeriesInDb, "TvSeries powinien zostać usunięty z bazy danych.");
         }
         [TestMethod]
         public async Task Handle_DeleteById_ShouldThrowNotFoundException()

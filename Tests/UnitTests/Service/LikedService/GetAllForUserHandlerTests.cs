@@ -73,15 +73,15 @@ namespace Tests.Service.LikedMediaService
 
             var user = new UserModel(Guid.NewGuid(), "username", "password", "email");
             userId = user.Id;
-            var userDetails = UserDetails.Create(userId, new Fullname("Name", "Surname"), new Username("username"), Email.Create("email@example.com"));
+            var userDetails = UserDetails.Create(userId, new Fullname("Name", "Surname"), "username", Email.Create("email@example.com"));
 
             db.Users.Add(user);
             db.UsersDetails.Add(userDetails);
 
             var genre = Genre.Create("Name");
-            var gameA = Game.Create("Title A", "Desc", new Language("Eng"), new ReleaseDate(DateTime.UtcNow.AddDays(-1)), genre.Id, "Dev", new List<EPlatform> { EPlatform.PC });
+            var gameA = Game.Create("Title A", "Desc", "Eng", new ReleaseDate(DateTime.UtcNow.AddDays(-1)), genre.Id, new GameDetails("Dev","Engine"), 3, new List<EPlatform> { EPlatform.PC }, EGameStatus.Announced, true);
             mediaId1 = gameA.Id;
-            var gameB = Game.Create("Title B", "Desc", new Language("Eng"), new ReleaseDate(DateTime.UtcNow.AddDays(-1)), genre.Id, "Dev", new List<EPlatform> { EPlatform.PC });
+            var gameB = Game.Create("Title B", "Desc", "Eng", new ReleaseDate(DateTime.UtcNow.AddDays(-1)), genre.Id, new GameDetails("Dev","Engine"), 3, new List<EPlatform> { EPlatform.PC }, EGameStatus.Announced, true);
             mediaId2 = gameB.Id;
 
             userDetails.SetInteraction(gameA.Id, ETypeInteractions.COMPLETED, ERatingVote.Liked);
@@ -116,7 +116,7 @@ namespace Tests.Service.LikedMediaService
                 var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
                 var user = new UserModel(testUserId, "username", "password", "email");
                 db.Users.Add(user);
-                var newUserDetails = UserDetails.Create(testUserId, new Fullname("Jane", "Smith"), new Username("janesmith"), Email.Create("janesmith@example.com"));
+                var newUserDetails = UserDetails.Create(testUserId, new Fullname("Jane", "Smith"), "janesmith", Email.Create("janesmith@example.com"));
                 db.UsersDetails.Add(newUserDetails);
                 await db.Context.SaveChangesAsync();
             }

@@ -65,7 +65,7 @@ namespace Tests.Service.GameService
             var genreId = Guid.NewGuid();
             var genre = Genre.Create("Action", genreId);
             context.Genres.Add(genre);
-            var game = Game.Create("Test Game", "Test Description", new Language("English"), new ReleaseDate(DateTime.UtcNow), genreId, "developer", new List<EPlatform>() { EPlatform.PC}, gameId);
+            var game = Game.Create("Test Game", "Test Description", "English", new ReleaseDate(DateTime.UtcNow), genreId, new GameDetails("Developer A", "Engine A"), 3, new List<EPlatform>() { EPlatform.PC }, EGameStatus.Announced, true, gameId);
             context.Medias.Add(game);
             await context.SaveChangesAsync();
         }

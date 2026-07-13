@@ -63,16 +63,16 @@ namespace Tests.Service.TvSeriesService
             appDbContext.Genres.Add(genre);
             var genre2 = Genre.Create("Adventure", Guid.NewGuid());
             appDbContext.Genres.Add(genre2);
-            var tvSeries = TvSeries.Create("Title 1","desc",new Language("Lang"), new ReleaseDate(DateTime.UtcNow.AddDays(-10)), genre.Id, 2, 20, "Netflix", EStatus.Upcoming);
+            var tvSeries = TvSeries.Create("Title 1","desc","Lang", new ReleaseDate(DateTime.UtcNow.AddDays(-10)), genre.Id, new SeasonDetails(2,30),"Netflix",ETvSeriesStatus.Canceled);
             appDbContext.Medias.Add(tvSeries);
-            var tvSeries2 = TvSeries.Create("Title 2", "desc", new Language("Lang"), new ReleaseDate(DateTime.UtcNow.AddDays(-15)), genre2.Id, 2, 20, "Netflix", EStatus.Upcoming);
+            var tvSeries2 = TvSeries.Create("Title 2", "desc", "Lang", new ReleaseDate(DateTime.UtcNow.AddDays(-15)), genre2.Id, new SeasonDetails(2,30),"Netflix",ETvSeriesStatus.Canceled);
             appDbContext.Medias.Add(tvSeries2);
             appDbContext.SaveChanges();
         }
 
 
         [TestMethod]
-        public async Task GetGamesByCriteria_WhenFilterByTitle_ShouldReturnMatch()
+        public async Task GetTvSeriesByCriteria_WhenFilterByTitle_ShouldReturnMatch()
         {
             using var scope = _serviceProvider.CreateScope();
             var mediator = _serviceProvider.GetRequiredService<IMediator>();
@@ -86,7 +86,7 @@ namespace Tests.Service.TvSeriesService
         }
 
         [TestMethod]
-        public async Task GetGamesByCriteria_WhenSortByDate_ShouldReturnOrdered()
+        public async Task GetTvSeriesByCriteria_WhenSortByDate_ShouldReturnOrdered()
         {
             using var scope = _serviceProvider.CreateScope();
             var mediator = _serviceProvider.GetRequiredService<IMediator>();
@@ -101,7 +101,7 @@ namespace Tests.Service.TvSeriesService
             Assert.AreEqual("Title 2", result[1].Title);
         }
         [TestMethod]
-        public async Task GetAllGamesAndDefaultSortShouldBeTitle()
+        public async Task GetAllTvSeriesAndDefaultSortShouldBeTitle()
         {
             using var scope = _serviceProvider.CreateScope();
             var mediator = _serviceProvider.GetRequiredService<IMediator>();

@@ -409,9 +409,9 @@ namespace Infrastructure.Migrations
                         .HasColumnType("integer")
                         .HasColumnName("PegiRating");
 
-                    b.Property<string[]>("Platforms")
+                    b.Property<string>("Platforms")
                         .IsRequired()
-                        .HasColumnType("text[]")
+                        .HasColumnType("text")
                         .HasColumnName("Platforms");
 
                     b.Property<string>("Status")
@@ -423,10 +423,6 @@ namespace Infrastructure.Migrations
                     b.Property<bool>("SupportsCrossPlay")
                         .HasColumnType("boolean")
                         .HasColumnName("SupportsCrossPlay");
-
-                    b.HasIndex("Platforms");
-
-                    NpgsqlIndexBuilderExtensions.HasMethod(b.HasIndex("Platforms"), "gin");
 
                     b.HasDiscriminator().HasValue("Game");
                 });

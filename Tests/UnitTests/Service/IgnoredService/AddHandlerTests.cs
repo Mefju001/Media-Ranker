@@ -65,13 +65,13 @@ namespace Tests.Service.IgnoredService
 
             var user = new UserModel(Guid.NewGuid(), "username", "password", "email");
             UserId = user.Id;
-            var userDetails = UserDetails.Create(UserId, new Fullname("Name", "Surname"), new Username("username"), Email.Create("email@example.com"));
+            var userDetails = UserDetails.Create(UserId, new Fullname("Name", "Surname"), "username", Email.Create("email@example.com"));
 
             db.Users.Add(user);
             db.UsersDetails.Add(userDetails);
 
             var genre = Genre.Create("Name");
-            var game = Game.Create("Title", "Desc", new Language("Eng"), new ReleaseDate(DateTime.UtcNow.AddDays(-1)), genre.Id, "Dev", new List<EPlatform> { EPlatform.PC });
+            var game = Game.Create("Title", "Desc", "Eng", new ReleaseDate(DateTime.UtcNow.AddDays(-1)), genre.Id, new GameDetails("Dev","Engine"), 3, new List<EPlatform> { EPlatform.PC }, EGameStatus.Announced, true);
             GameId = game.Id;
 
             db.Genres.Add(genre);

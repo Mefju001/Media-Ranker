@@ -4,6 +4,7 @@ using Application.Features.Common.Interfaces;
 using Application.Features.Common.Notification;
 using Application.Features.Movies.DeleteById;
 using Domain.Aggregate;
+using Domain.Enums;
 using Domain.Exceptions;
 using Domain.Repository;
 using Domain.Value_Object;
@@ -72,7 +73,7 @@ namespace Tests.Service.MovieService
             db.Genres.Add(genre);
             var director = Director.Create("Director1", "Director1", directorId);
             db.Directors.Add(director);
-            var movieInDb = Movie.Create("Test Movie", "Description", new Language("English"), new ReleaseDate(DateTime.UtcNow), genreId, directorId, new Duration(TimeSpan.FromMinutes(120)), true,id);
+            var movieInDb = Movie.Create("Test Movie", "Description", "English", new ReleaseDate(DateTime.UtcNow), genreId, directorId, new Duration(TimeSpan.FromMinutes(120)), EDistributionType.Streaming, EMovieStatus.InProduction, id);
             db.Medias.Add(movieInDb);
             await db.SaveChangesAsync();
         }
@@ -97,7 +98,7 @@ namespace Tests.Service.MovieService
             var nonExistentMovieId = Guid.NewGuid();
             using (var scope = _serviceProvider.CreateScope())
             {
-                var handler = scope.ServiceProvider.GetRequiredService<IRequestHandler<DeleteByIdCommand, bool>>();
+                var handler = scope.ServiceProvider.GetRequiredService<IRequestHandler<DeleteByIdCommand, Unit>>();
                 await Assert.ThrowsExactlyAsync<NotFoundException>(async () =>
                 {
                     await handler.Handle(new DeleteByIdCommand(nonExistentMovieId), CancellationToken.None);

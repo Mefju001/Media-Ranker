@@ -40,13 +40,9 @@ namespace Domain.Specification
             if (!string.IsNullOrWhiteSpace(SortByField) && sortColumns.TryGetValue(SortByField, out var sortExpression))
             {
                 if (IsDescending) ApplyOrderByDescending(sortExpression);
-                else if (sortExpression is null)
-                {
-                    sortExpression = m => m.Title;
-                    ApplyOrderBy(sortExpression);
-                }
                 else ApplyOrderBy(sortExpression);
             }
+            else { ApplyOrderBy(m => m.Title); }
         }
     }
 }

@@ -62,13 +62,13 @@ filterForm: FormGroup;
     });
   }
   loadTvSeriesByFilter(query: MovieQuery): void {
-    this.tvSeriesService.getMoviesByFilter(query).subscribe({
+    this.tvSeriesService.getTvSeriesByFilter(query).subscribe({
         next: (data) => {
-          console.log('Załadowano filmy z filtrami:', data);
+          console.log('Załadowano seriale z filtrami:', data);
             this.TvSeries = data;
         },
         error: (err) => {
-            console.error('Błąd ładowania filmów:', err);
+            console.error('Błąd ładowania seriali:', err);
             this.TvSeries = [];
         }
     });

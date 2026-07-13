@@ -9,6 +9,7 @@ using Application.Features.Genres.GenreManager;
 using Application.Features.Movies.AddRange;
 using Application.Features.Movies.Common;
 using Domain.Aggregate;
+using Domain.Exceptions;
 using Domain.Repository;
 using FluentValidation;
 using Infrastructure.Database;
@@ -73,14 +74,16 @@ namespace Tests.Service.MovieService
             var listOfMovies = new List<MovieRequest>
             {
                 new MovieRequest
-                ("Movie 1",
-                "Description 1",
-                new GenreRequest("Genre 1"),
-                new DirectorRequest("Director 1", "Director 1"),
-                DateTime.UtcNow,
-                "English",
-                TimeSpan.FromHours(2),
-                true
+                (
+                    "Movie 1",
+                    "Description 1",
+                    new GenreRequest("Genre 1"),
+                    new DirectorRequest("Director 1", "Director 1"),
+                    DateTime.UtcNow,
+                    "English",
+                    TimeSpan.FromHours(2),
+                    "Cinema",
+                    "Released"
                 ),
                 new MovieRequest
                 (
@@ -91,10 +94,11 @@ namespace Tests.Service.MovieService
                     DateTime.UtcNow,
                     "English",
                     TimeSpan.FromHours(2),
-                    true
+                    "Cinema",
+                    "Released"
                 )
             };
-            List<MovieResponse> result;
+            List<Guid> result;
             using (var scope = _serviceProvider.CreateScope())
             {
                 var mediator = scope.ServiceProvider.GetRequiredService<IMediator>();
@@ -115,7 +119,7 @@ namespace Tests.Service.MovieService
         [TestMethod]
         public async Task Handle_AddEmptyList_ShouldReturnEmptyList()
         {
-            List<MovieResponse> result;
+            List<Guid> result;
             using (var actScope = _serviceProvider.CreateScope())
             {
                 var mediator = actScope.ServiceProvider.GetRequiredService<IMediator>();
@@ -155,11 +159,12 @@ namespace Tests.Service.MovieService
                     DateTime.UtcNow,
                     "English",
                     TimeSpan.FromHours(2),
-                    true
+                    "Cinema",
+                    "Released"
                 )
             };
             var command = new AddRangeCommand(listOfMovies);
-            List<MovieResponse> result;
+            List<Guid> result;
             using (var actScope = _serviceProvider.CreateScope())
             {
                 var mediator = actScope.ServiceProvider.GetRequiredService<IMediator>();
@@ -189,7 +194,8 @@ namespace Tests.Service.MovieService
                 DateTime.UtcNow,
                 "English",
                 TimeSpan.FromHours(2),
-                true
+                "Cinema",
+                "Released"
                 ),
                 new MovieRequest
                 (
@@ -200,14 +206,15 @@ namespace Tests.Service.MovieService
                     DateTime.UtcNow,
                     "English",
                     TimeSpan.FromHours(2),
-                    true
+                    "Cinema",
+                    "Released"
                 )
             };
             using(var actScope = _serviceProvider.CreateScope())
             {
                 var mediator = actScope.ServiceProvider.GetRequiredService<IMediator>();
                 var command = new AddRangeCommand(listOfMovies);
-                await Assert.ThrowsAsync<ArgumentException>(async () =>
+                await Assert.ThrowsAsync<DomainException>(async () =>
                     await mediator.Send(command));
             }
             using (var assertScope = _serviceProvider.CreateScope())
@@ -231,7 +238,8 @@ namespace Tests.Service.MovieService
                 DateTime.UtcNow,
                 "English",
                 TimeSpan.FromHours(2),
-                true
+                "Cinema",
+                "Released"
                 ),
                 new MovieRequest
                 (
@@ -242,7 +250,8 @@ namespace Tests.Service.MovieService
                     DateTime.UtcNow,
                     "English",
                     TimeSpan.FromHours(2),
-                    true
+                    "Cinema",
+                    "Released"
                 )
             };
             using (var actScope = _serviceProvider.CreateScope())
@@ -254,7 +263,7 @@ namespace Tests.Service.MovieService
             using (var assertScope = _serviceProvider.CreateScope())
             {
                 var context = assertScope.ServiceProvider.GetRequiredService<AppDbContext>();
-                var genresInDb = await context.Genres.Where(g => g.Name.Value == "Genre 1").ToListAsync();
+                var genresInDb = await context.Genres.Where(g => g.Name == "Genre 1").ToListAsync();
                 Assert.HasCount(1, genresInDb, "Gatunek o tej samej nazwie nie powinien zostać zduplikowany w bazie.");
             }
         }

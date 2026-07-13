@@ -13,7 +13,7 @@ export class GameService {
     getGames(): Observable<GameResponse[]> {
     return this.http.get<GameResponse[]>(`${this.apiUrl}`);
     }
-    getGameById(id: number): Observable<GameResponse> {
+    getGameById(id: string): Observable<GameResponse> {
     return this.http.get<GameResponse>(`${this.apiUrl}/${id}`);
     }
     getGamesByFilter(query: MovieQuery): Observable<GameResponse[]> {

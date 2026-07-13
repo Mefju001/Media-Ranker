@@ -39,18 +39,10 @@ namespace Infrastructure.Database.Config
                 .IsRequired();
             builder.Property(g => g.Platforms)
                 .HasConversion(
-                    // Do bazy: Zamieniamy nasz obiekt na zwykłą tablicę string[] (PostgreSQL zapisze to jako text[])
-                    v => v.Values.ToArray(),
-
-                    // Z bazy: Bierzemy tablicę stringów z bazy i tworzymy z niej obiekt GamePlatforms
-                    v => new GamePlatforms(v)
-                )
+                    v => string.Join(',', v.Values),
+                    v => new GamePlatforms(v.Split(',', StringSplitOptions.RemoveEmptyEntries)))
                 .HasColumnName("Platforms")
                 .IsRequired();
-
-            // Teraz bez problemu nakładasz indeks GIN na tę kolumnę!
-            builder.HasIndex(g => g.Platforms)
-                .HasMethod("gin");
         }
     }
 }

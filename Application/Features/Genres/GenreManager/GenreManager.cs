@@ -31,6 +31,7 @@ namespace Application.Features.Genres.GenreManager
         }
         public async Task<GenreResponse> GetOrCreateAsync(GenreRequest genreRequest, CancellationToken cancellationToken)
         {
+            if(string.IsNullOrWhiteSpace(genreRequest.name)) throw new ArgumentException("Genre name cannot be null or whitespace.", nameof(genreRequest.name));
             var Genre = await repository.FirstOrDefaultForNameAsync(genreRequest.name, cancellationToken);
             if (Genre is not null) return GenreMapper.ToResponse(Genre);
             Genre = Genre.Create(genreRequest.name);

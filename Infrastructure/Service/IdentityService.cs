@@ -13,6 +13,12 @@ namespace Infrastructure.Service
         {
             this.userManager = userManager;
         }
+        public async Task<List<Guid>> GetUserExcludeAdmin()
+        {
+            var adminUsers = await userManager.GetUsersInRoleAsync("Admin");
+
+            return adminUsers.Select(u=>u.Id).ToList();
+        }
         public async Task<IdentityUserDto> CreateUserWithDefaultRole(string username, string password, string email)
         {
             var identityUser = new UserModel

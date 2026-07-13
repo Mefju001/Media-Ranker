@@ -12,6 +12,16 @@
           </li>
           <li class="nav-item mb-2">
             <a class="nav-link text-dark" href="#dodaj-nowy">
+              <i class="bi bi-plus-circle me-2"></i> lista mediów edycja i usuwanie
+            </a>
+          </li>
+          <li class="nav-item mb-2">
+            <a class="nav-link text-dark" href="#dodaj-nowy">
+              <i class="bi bi-plus-circle me-2"></i> lista użytkowników edycja i usuwanie
+            </a>
+          </li>
+          <li class="nav-item mb-2">
+            <a class="nav-link text-dark" href="#dodaj-nowy">
               <i class="bi bi-plus-circle me-2"></i> Dodaj multimedia
             </a>
           </li>
@@ -41,7 +51,7 @@
             <div class="card-body d-flex justify-content-between align-items-center">
               <div>
                 <h6 class="card-title text-uppercase mb-1" style="font-size: 0.8rem;">Filmy</h6>
-                <h2 class="display-6 mb-0">142</h2>
+                <h2 class="display-6 mb-0">{{ moviesCount }}</h2>
               </div>
               <i class="bi bi-film fs-1 opacity-50"></i>
             </div>
@@ -52,7 +62,7 @@
             <div class="card-body d-flex justify-content-between align-items-center">
               <div>
                 <h6 class="card-title text-uppercase mb-1" style="font-size: 0.8rem;">Seriale</h6>
-                <h2 class="display-6 mb-0">68</h2>
+                <h2 class="display-6 mb-0">{{ tvSeriesCount }}</h2>
               </div>
               <i class="bi bi-tv fs-1 opacity-50"></i>
             </div>
@@ -63,7 +73,7 @@
             <div class="card-body d-flex justify-content-between align-items-center">
               <div>
                 <h6 class="card-title text-uppercase mb-1" style="font-size: 0.8rem;">Gry wideo</h6>
-                <h2 class="display-6 mb-0">95</h2>
+                <h2 class="display-6 mb-0">{{ gamesCount }}</h2>
               </div>
               <i class="bi bi-controller fs-1 opacity-50"></i>
             </div>
@@ -114,7 +124,11 @@
 
         <div class="col-md-4 mb-3">
           <label for="status" class="form-label">Status</label>
-          <input type="text" class="form-control" id="status" [formControlName]="currentType === 'gra' ? 'gameStatus' : 'status'" placeholder="np. Wydany / Zakończony / Wydana">
+          <select id="status" class="form-control" formControlName="status">
+            <option *ngFor="let status of statusOptions[currentType]" [value]="status.value">
+              {{ status.label }}
+            </option>
+          </select>
         </div>
       </div>
 
@@ -135,7 +149,11 @@
           </div>
           <div class="col-md-3 mb-3">
             <label for="distributionType" class="form-label">Typ dystrybucji</label>
-            <input type="text" class="form-control" id="distributionType" formControlName="distributionType" placeholder="np. Kino / Streaming">
+            <select id="distributionType" class="form-control" formControlName="distributionType">
+              <option *ngFor="let dist of distributionTypeOptions" [value]="dist.value">
+                {{ dist.label }}
+              </option>
+            </select>
           </div>
         </div>
 
@@ -177,18 +195,22 @@
 
         <div class="mb-3">
           <label class="form-label d-block">Platformy</label>
-          <div class="form-check form-check-inline">
-            <input class="form-check-input" type="checkbox" id="pc" value="PC" (change)="onPlatformChange($event)">
-            <label class="form-check-label" for="pc">PC</label>
+          <div class="row">
+        <div class="col-md-4 col-sm-6 mb-2" *ngFor="let platform of platformOptions">
+          <div class="form-check">
+            <input 
+              type="checkbox" 
+              [id]="platform.value" 
+              [value]="platform.value" 
+              class="form-check-input" 
+              (change)="onPlatformChange($event)"
+            >
+            <label [for]="platform.value" class="form-check-label">
+              {{ platform.label }}
+            </label>
           </div>
-          <div class="form-check form-check-inline">
-            <input class="form-check-input" type="checkbox" id="ps5" value="PS5" (change)="onPlatformChange($event)">
-            <label class="form-check-label" for="ps5">PS5</label>
-          </div>
-          <div class="form-check form-check-inline">
-            <input class="form-check-input" type="checkbox" id="xbox" value="Xbox" (change)="onPlatformChange($event)">
-            <label class="form-check-label" for="xbox">Xbox</label>
-          </div>
+        </div>
+      </div>
         </div>
 
         <div class="mb-3 form-check form-switch">
@@ -250,17 +272,19 @@
                 </tr>
               </thead>
               <tbody>
+                @for(movie of movies; track movie.id) {
                 <tr>
-                  <td class="ps-3 fw-bold">1</td>
-                  <td><strong>Incepcja</strong></td>
-                  <td>Christopher Nolan</td>
-                  <td><span class="badge bg-info text-dark">Sci-Fi</span></td>
-                  <td>2010</td>
+                  <td class="ps-3 fw-bold">{{ movie.id }}</td>
+                  <td><strong>{{ movie.title }}</strong></td>
+                  <td>{{ movie.director.name }} {{ movie.director.surname }}</td>
+                  <td><span class="badge bg-info text-dark">{{ movie.genre.name }}</span></td>
+                  <td>{{ movie.releaseDate | date:'yyyy' }}</td>
                   <td class="text-end pe-3">
                     <button class="btn btn-sm btn-outline-warning me-1"><i class="bi bi-pencil-square"></i></button>
                     <button class="btn btn-sm btn-outline-danger"><i class="bi bi-trash"></i></button>
                   </td>
                 </tr>
+              }
               </tbody>
             </table>
           </div>
@@ -278,17 +302,19 @@
                 </tr>
               </thead>
               <tbody>
+                @for(tvSeries of tvSeries; track tvSeries.id) {
                 <tr>
-                  <td class="ps-3 fw-bold">1</td>
-                  <td><strong>Breaking Bad</strong></td>
-                  <td>Vince Gilligan</td>
-                  <td><span class="badge bg-secondary">Kryminał / Dramat</span></td>
-                  <td>5</td>
+                  <td class="ps-3 fw-bold">{{ tvSeries.id }}</td>
+                  <td><strong>{{ tvSeries.title }}</strong></td>
+                  <td>{{ tvSeries.genre.name}}</td>
+                  <td><span class="badge bg-secondary">{{ tvSeries.genre.name }}</span></td>
+                  <td>{{ tvSeries.seasons }}</td>
                   <td class="text-end pe-3">
                     <button class="btn btn-sm btn-outline-warning me-1"><i class="bi bi-pencil-square"></i></button>
                     <button class="btn btn-sm btn-outline-danger"><i class="bi bi-trash"></i></button>
                   </td>
                 </tr>
+              }
               </tbody>
             </table>
           </div>
@@ -306,17 +332,19 @@
                 </tr>
               </thead>
               <tbody>
+                @for(game of games; track game.id) {
                 <tr>
-                  <td class="ps-3 fw-bold">1</td>
-                  <td><strong>Wiedźmin 3: Dziki Gon</strong></td>
-                  <td>CD Projekt RED</td>
-                  <td><span class="badge bg-dark">RPG</span></td>
-                  <td>PC, PS5, Xbox</td>
+                  <td class="ps-3 fw-bold">{{ game.id }}</td>
+                  <td><strong>{{ game.title }}</strong></td>
+                  <td>{{ game.developer }}</td>
+                  <td><span class="badge bg-dark">{{ game.genre.name }}</span></td>
+                  <td>{{ game.platform }}</td>
                   <td class="text-end pe-3">
                     <button class="btn btn-sm btn-outline-warning me-1"><i class="bi bi-pencil-square"></i></button>
                     <button class="btn btn-sm btn-outline-danger"><i class="bi bi-trash"></i></button>
                   </td>
                 </tr>
+              }
               </tbody>
             </table>
           </div>
@@ -333,16 +361,18 @@
                 </tr>
               </thead>
               <tbody>
+                @for(user of users; track user.id) {
                 <tr>
-                  <td class="ps-3 fw-bold">1</td>
-                  <td><strong>JanKowalski</strong></td>
-                  <td>jan.kowalski@example.com</td>
+                  <td class="ps-3 fw-bold">{{ user.id }}</td>
+                  <td><strong>{{ user.username }}</strong></td>
+                  <td>{{ user.email }}</td>
                   <td><span class="badge bg-warning text-dark">Moderator</span></td>
                   <td class="text-end pe-3">
                     <button class="btn btn-sm btn-outline-primary me-1" title="Zmień rolę"><i class="bi bi-shield-lock"></i></button>
                     <button class="btn btn-sm btn-outline-danger" title="Zablokuj"><i class="bi bi-person-x"></i></button>
                   </td>
                 </tr>
+              }
               </tbody>
             </table>
           </div>

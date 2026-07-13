@@ -8,6 +8,7 @@ using Application.Features.TvSeries.AddRange;
 using Application.Features.TvSeries.Common;
 using Domain.Aggregate;
 using Domain.Enums;
+using Domain.Exceptions;
 using Domain.Repository;
 using FluentValidation;
 using Infrastructure.Database;
@@ -77,7 +78,7 @@ namespace Tests.Service.TvSeriesService
                     3,
                     20,
                     "Netflix",
-                    EStatus.Continuing
+                    "Ongoing"
                 ),
                 new TvSeriesRequest
                 (
@@ -89,7 +90,7 @@ namespace Tests.Service.TvSeriesService
                     3,
                     20,
                     "Netflix",
-                    EStatus.EndedOrRemoved
+                    "Ongoing"
                 )
             };
             using var scope = _serviceProvider.CreateScope();
@@ -135,7 +136,7 @@ namespace Tests.Service.TvSeriesService
                     3,
                     20,
                     "Netflix",
-                    EStatus.Continuing
+                    "Ongoing"
                 )
             };
             using var scope2 = _serviceProvider.CreateScope();
@@ -164,7 +165,7 @@ namespace Tests.Service.TvSeriesService
                     3,
                     20,
                     "Netflix",
-                    EStatus.Continuing
+                    "Ongoing"
                 ),
                 new TvSeriesRequest
                 (
@@ -176,13 +177,13 @@ namespace Tests.Service.TvSeriesService
                     3,
                     20,
                     "Netflix",
-                    EStatus.EndedOrRemoved
+                    "Ongoing"
                 )
             };
             using var scope = _serviceProvider.CreateScope();
             var mediator = _serviceProvider.GetRequiredService<IMediator>();
             var command = new AddRangeCommand(listOfTvSeries);
-            await Assert.ThrowsAsync<ArgumentException>(async () =>
+            await Assert.ThrowsAsync<DomainException>(async () =>
                 await mediator.Send(command, CancellationToken.None));
             using var scope2 = _serviceProvider.CreateScope();
             var context = _serviceProvider.GetRequiredService<AppDbContext>();
@@ -205,7 +206,7 @@ namespace Tests.Service.TvSeriesService
                     3,
                     20,
                     "Netflix",
-                    EStatus.Continuing
+                    "Ongoing"
                 ),
                 new TvSeriesRequest
                 (
@@ -217,7 +218,7 @@ namespace Tests.Service.TvSeriesService
                     3,
                     20,
                     "Netflix",
-                    EStatus.EndedOrRemoved
+                    "Ongoing"
                 )
             };
             using var scope = _serviceProvider.CreateScope();
@@ -228,7 +229,7 @@ namespace Tests.Service.TvSeriesService
             using var scope2 = _serviceProvider.CreateScope();
             var context = _serviceProvider.GetRequiredService<AppDbContext>();
 
-            var genresInDb = await context.Genres.Where(g => g.Name.Value == "Name 1").ToListAsync();
+            var genresInDb = await context.Genres.Where(g => g.Name == "Name 1").ToListAsync();
             Assert.AreEqual(1, genresInDb.Count, "Gatunek o tej samej nazwie nie powinien zostać zduplikowany w bazie.");
         }
 

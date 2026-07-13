@@ -6,6 +6,7 @@ using Application.Features.Genres.Common;
 using Application.Features.Genres.GenreManager;
 using Application.Features.Movies.Upsert;
 using Domain.Aggregate;
+using Domain.Enums;
 using Domain.Exceptions;
 using Domain.Value_Object;
 using Infrastructure.Database;
@@ -51,7 +52,7 @@ namespace Tests.Service.MovieService
             context.Genres.Add(genre2);
             var director = Director.Create("Name", "Surname", Guid.NewGuid());
             context.Directors.Add(director);
-            var movie = Movie.Create("Title A", "Description", new Language("English"), new ReleaseDate(DateTime.UtcNow.AddDays(-10)), genre.Id, director.Id, new Duration(TimeSpan.FromMinutes(120)), true);
+            var movie = Movie.Create("Title A", "Description", "English", new ReleaseDate(DateTime.UtcNow.AddDays(-10)), genre.Id, director.Id, new Duration(TimeSpan.FromMinutes(120)), EDistributionType.Cinema, EMovieStatus.InProduction);
             context.Medias.Add(movie);
             MovieId = movie.Id;
             context.SaveChanges();
@@ -68,7 +69,8 @@ namespace Tests.Service.MovieService
                 DateTime.UtcNow,
                 "EN",
                 TimeSpan.FromMinutes(120),
-                false
+                "Cinema",
+                "InProduction"
                 );
 
 
@@ -92,7 +94,8 @@ namespace Tests.Service.MovieService
                             DateTime.UtcNow,
                             "EN",
                             TimeSpan.FromMinutes(120),
-                            false
+                            "Cinema",
+                            "InProduction"
                             );
             var result = await handler.Handle(command, CancellationToken.None);
             //because pipeline in real app will save changes after handler execution
@@ -114,14 +117,15 @@ namespace Tests.Service.MovieService
                 DateTime.UtcNow,
                 "EN",
                 TimeSpan.FromMinutes(120),
-                false
+                "Cinema",
+                "InProduction"
                 );
             var result = await handler.Handle(command, CancellationToken.None);
             //because pipeline in real app will save changes after handler execution
             await context.SaveChangesAsync();
-            var genreInDb = await context.Genres.FirstOrDefaultAsync(g => g.Name.Value == "New Genre");
+            var genreInDb = await context.Genres.FirstOrDefaultAsync(g => g.Name == "New Genre");
             Assert.IsNotNull(genreInDb);
-            Assert.AreEqual("New Genre", genreInDb.Name.Value);
+            Assert.AreEqual("New Genre", genreInDb.Name);
         }
         [TestMethod]
         public async Task Handle_GenreRequestIsEmpty_ShouldThrowArgumentException()
@@ -135,7 +139,8 @@ namespace Tests.Service.MovieService
                             DateTime.UtcNow,
                             "EN",
                             TimeSpan.FromMinutes(120),
-                            false
+                            "Cinema",
+                            "InProduction"
                             );
             await Assert.ThrowsAsync<ArgumentException>(async () => await handler.Handle(command, CancellationToken.None));
         }
@@ -151,7 +156,8 @@ namespace Tests.Service.MovieService
                             DateTime.UtcNow,
                             "EN",
                             TimeSpan.FromMinutes(120),
-                            false
+                            "Cinema",
+                            "InProduction"
                             );
             await Assert.ThrowsAsync<NotFoundException>(async () => await handler.Handle(command, CancellationToken.None));
         }
@@ -167,7 +173,8 @@ namespace Tests.Service.MovieService
                             DateTime.UtcNow,
                             "EN",
                             TimeSpan.FromMinutes(120),
-                            false
+                            "Cinema",
+                            "InProduction"
                             );
             var result = await handler.Handle(command, CancellationToken.None);
             //because pipeline in real app will save changes after handler execution
@@ -175,7 +182,7 @@ namespace Tests.Service.MovieService
             var movieInDb = await context.Medias.FirstOrDefaultAsync(g => g.Id == MovieId);
             var genreInDb = await context.Genres.FirstOrDefaultAsync(g => g.Id == movieInDb.GenreId);
             Assert.IsNotNull(movieInDb);
-            Assert.AreEqual("Action", genreInDb.Name.Value);
+            Assert.AreEqual("Action", genreInDb.Name);
         }
     }
 }

@@ -63,7 +63,6 @@ dotnet ef database update
 
 ## Future Development
 *  Frontend (Angular)
-*  Recommendations
 *  docker
 
 ---

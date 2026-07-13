@@ -19,7 +19,7 @@ namespace Application.Features.User.ChangeDetails
             if (request.userId == Guid.Empty )
                 throw new ArgumentException("you should fill the user ID");
             var user = await userDetailsRepository.GetByIdAsync(request.userId, cancellationToken) ?? throw new UserNotFoundException("Not found user");
-            user.UpdateProfile(new Fullname(request.name, request.surname));
+            user.UpdateProfile(Fullname.Create(request.name, request.surname));
             return Unit.Value;
         }
     }

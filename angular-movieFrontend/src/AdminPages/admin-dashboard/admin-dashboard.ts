@@ -3,7 +3,11 @@ import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, FormArray, Validators, ReactiveFormsModule } from '@angular/forms';
 import { MovieService } from '../../Services/MovieService';
 import { TvSeriesService } from '../../Services/TvSeriesService';
+import { AdminService } from '../../Services/AdminService';
 import { GameService } from '../../Services/GameService';
+import { MovieResponse } from '../../Data/Response/MovieResponse';
+import { TvSeriesResponse } from '../../Data/Response/TvSeriesResponse';
+import { GameResponse } from '../../Data/Response/GameResponse';
 
 @Component({
   selector: 'app-admin-dashboard',
@@ -12,19 +16,70 @@ import { GameService } from '../../Services/GameService';
   templateUrl: './admin-dashboard.html',
   styleUrl: './admin-dashboard.css',
 })
+
 export class AdminDashboard implements OnInit {
+  moviesCount: number = 0;
+  tvSeriesCount: number = 0;
+  gamesCount: number = 0;
+  movies: MovieResponse[] = [];
+  tvSeries: TvSeriesResponse[] = [];
+  games: GameResponse[] = [];
   mediaForm!: FormGroup;
   currentType: 'film' | 'serial' | 'gra' = 'film';
-
+  statusOptions: Record<'film' | 'serial' | 'gra', { value: string; label: string }[]> = {
+      film: [
+        { value: 'Announced', label: 'Zapowiedziany' },
+        { value: 'InProduction', label: 'W produkcji' },
+        { value: 'Released', label: 'Wydany' },
+        { value: 'Cancelled', label: 'Anulowany' }
+      ],
+      gra: [
+        { value: 'Announced', label: 'Zapowiedziana' },
+        { value: 'EarlyAccess', label: 'Wczesny dostęp' },
+        { value: 'Released', label: 'Wydana' },
+        { value: 'Delayed', label: 'Opóźniona' },
+        { value: 'Cancelled', label: 'Anulowana' }
+      ],
+      serial: [
+        { value: 'Announced', label: 'Zapowiedziany' },
+        { value: 'Ongoing', label: 'W trakcie emisji' },
+        { value: 'Ended', label: 'Zakończony' },
+        { value: 'Canceled', label: 'Anulowany' }
+      ]
+    };
+  platformOptions = [
+    { value: 'PC', label: 'PC' },
+    { value: 'PlayStation5', label: 'PlayStation 5' },
+    { value: 'PlayStation4', label: 'PlayStation 4' },
+    { value: 'XboxSeries', label: 'Xbox Series X/S' },
+    { value: 'XboxOne', label: 'Xbox One' },
+    { value: 'NintendoSwitch', label: 'Nintendo Switch' },
+    { value: 'Mobile', label: 'Urządzenia mobilne' },
+    { value: 'SteamDeck', label: 'Steam Deck' },
+    { value: 'VR', label: 'Virtual Reality' },
+    { value: 'WebBrowser', label: 'Przeglądarka WWW' }
+  ];
+  distributionTypeOptions = [
+    { value: 'Cinema', label: 'Kino' },
+    { value: 'Streaming', label: 'Streaming / VOD' },
+    { value: 'DirectToVideo', label: 'Wydanie bezpośrednie (DVD/Blu-ray)' }
+  ];
+  users: any[] = [];
   constructor(
     private fb: FormBuilder, 
     private movieService: MovieService, 
-    private tvSeriesService: TvSeriesService, 
-    private gameService: GameService
+    private tvSeriesService: TvSeriesService,
+    private gameService: GameService, 
+    private adminService: AdminService
   ) {}
 
   ngOnInit(): void {
     this.initForm();
+    this.getAllNumbers();
+    this.loadMovies();
+    this.loadGames();
+    this.loadTvSeries();
+    this.getAllUsers();
   }
 
   initForm(): void {
@@ -42,7 +97,7 @@ export class AdminDashboard implements OnInit {
         surname: ['']
       }),
       duration: [''],
-      distributionType: [''],
+      distributionType: ['Cinema'],
       status: [''],
 
       seasons: [0],
@@ -102,7 +157,7 @@ export class AdminDashboard implements OnInit {
           genre: raw.genre,
           director: raw.director,
           duration: formattedDuration,
-          distributionType: raw.distributionType || "Kino",
+          distributionType: raw.distributionType || "Cinema",
           status: raw.status || "Wydany"
       };
 
@@ -157,5 +212,39 @@ export class AdminDashboard implements OnInit {
         error: (error) => console.error('Błąd podczas dodawania serialu:', error.error || error)
       });
     }
+  }
+  loadMovies(): void {
+    this.movieService.getMovies().subscribe((data) => {
+      console.log('Pobrano filmy:', data);
+      this.movies = data;
+    });
+  }
+  loadTvSeries(): void {
+    this.tvSeriesService.getTvSeries().subscribe((data) => {
+      this.tvSeries = data;
+    });
+  }
+  loadGames(): void {
+    this.gameService.getGames().subscribe((data) => {
+      this.games = data;
+    });
+  }
+  getAllUsers(): void {
+    this.adminService.getAllUsers().subscribe({
+      next: (users) => {
+        this.users = users;
+      },
+      error: (error) => console.error('Błąd podczas pobierania użytkowników:', error)
+    });
+  }
+  getAllNumbers(): void {
+    this.adminService.getAllNumbers().subscribe({
+      next: (numbers) => {
+        this.moviesCount = numbers.numberOfMovies;
+        this.tvSeriesCount = numbers.numberOfTvSeries;
+        this.gamesCount = numbers.numberOfGames;
+      },
+      error: (error) => console.error('Błąd podczas pobierania liczby elementów:', error)
+    });
   }
 }

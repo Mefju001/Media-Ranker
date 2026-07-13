@@ -14,9 +14,8 @@ export interface TvSeriesResponse {
     
     genre: GenreResponse;
     
-    releaseDate: string; // Data jest stringiem
+    releaseDate: string;
     language: string;
-    
-    // Tablica recenzji
+
     reviews: ReviewResponse[];
 }

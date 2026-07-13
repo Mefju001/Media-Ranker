@@ -4,6 +4,7 @@ using Application.Features.Common.Interfaces;
 using Application.Features.Movies.Common;
 using Application.Features.Movies.GetByCriteria;
 using Domain.Aggregate;
+using Domain.Enums;
 using Domain.Value_Object;
 using FluentValidation;
 using Infrastructure.Database;
@@ -71,9 +72,9 @@ namespace Tests.Service.MovieService
                 db.Directors.Add(director);
                 var director2 = Director.Create("Director2", "Director2", Guid.NewGuid());
                 db.Directors.Add(director2);
-                var movie = Movie.Create("Title A", "Description", new Language("English"), new ReleaseDate(DateTime.UtcNow.AddDays(-10)), genre.Id, director.Id, new Duration(TimeSpan.FromMinutes(120)), true);
+                var movie = Movie.Create("Title A", "Description", "English", new ReleaseDate(DateTime.UtcNow.AddDays(-10)), genre.Id, director.Id, new Duration(TimeSpan.FromMinutes(120)), EDistributionType.Cinema, EMovieStatus.Announced);
                 db.Medias.Add(movie);
-                var movie2 = Movie.Create("Title B", "Description", new Language("English"), new ReleaseDate(DateTime.UtcNow.AddDays(-15)), genre2.Id, director2.Id, new Duration(TimeSpan.FromMinutes(120)), true);
+                var movie2 = Movie.Create("Title B", "Description", "English", new ReleaseDate(DateTime.UtcNow.AddDays(-15)), genre2.Id, director2.Id, new Duration(TimeSpan.FromMinutes(120)), EDistributionType.Cinema, EMovieStatus.Announced);
                 db.Medias.Add(movie2);
                 db.SaveChanges();
             }
@@ -82,7 +83,7 @@ namespace Tests.Service.MovieService
 
 
         [TestMethod]
-        public async Task GetGamesByCriteria_WhenFilterByTitle_ShouldReturnMatch()
+        public async Task GetMoviesByCriteria_WhenFilterByTitle_ShouldReturnMatch()
         {
             List<MovieResponse> result;
             using (var scope = _serviceProvider.CreateScope())
@@ -97,7 +98,7 @@ namespace Tests.Service.MovieService
         }
 
         [TestMethod]
-        public async Task GetGamesByCriteria_WhenSortByDate_ShouldReturnOrdered()
+        public async Task GetMoviesByCriteria_WhenSortByDate_ShouldReturnOrdered()
         {
             List<MovieResponse> result;
             using (var scope = _serviceProvider.CreateScope())
@@ -111,7 +112,7 @@ namespace Tests.Service.MovieService
             Assert.AreEqual("Title B", result[1].Title);
         }
         [TestMethod]
-        public async Task GetAllGamesAndDefaultSortShouldBeTitle()
+        public async Task GetAllMoviesAndDefaultSortShouldBeTitle()
         {
             List<MovieResponse> result;
             using (var scope = _serviceProvider.CreateScope())

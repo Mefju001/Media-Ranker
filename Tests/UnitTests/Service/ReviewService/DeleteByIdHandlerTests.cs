@@ -65,14 +65,14 @@ namespace Tests.Service.ReviewService
             var appDbContext = scope.ServiceProvider.GetRequiredService<AppDbContext>();
             var userModel = new UserModel(Guid.NewGuid(),"username", "password","email@example.com");
             appDbContext.Users.Add(userModel);
-            var user = UserDetails.Create(userModel.Id, new Fullname("testuser", "testuser"), new Username("testuser"), Email.Create("testuser@example.com"));
+            var user = UserDetails.Create(userModel.Id, new Fullname("testuser", "testuser"), "testuser", Email.Create("testuser@example.com"));
             appDbContext.UsersDetails.Add(user);
             secondUserId = userModel.Id;
             var genre2 = Genre.Create("Adventure", Guid.NewGuid());
             appDbContext.Genres.Add(genre2);
-            var game = Game.Create("Game A", "Description A", new Language("English"), new ReleaseDate(DateTime.UtcNow.AddDays(-5)), genre2.Id, "Developer A", new List<EPlatform>() { EPlatform.PlayStation5 });
+            var game = Game.Create("Game A", "Description A", "English", new ReleaseDate(DateTime.UtcNow.AddDays(-5)), genre2.Id, new GameDetails("Developer A", "Engine A"), 3, new List<EPlatform>() { EPlatform.PlayStation5 }, EGameStatus.Announced, true);
             mediaId = game.Id;
-            game.AddReview(secondUserId, new Rating(4), "Good game!", new Username("testuser2"));
+            game.AddReview(secondUserId, new Rating(4), "Good game!", "testuser2");
             reviewId = game.Reviews.First(r => r.UserId == secondUserId).Id;
             appDbContext.Medias.Add(game);
             await appDbContext.SaveChangesAsync();

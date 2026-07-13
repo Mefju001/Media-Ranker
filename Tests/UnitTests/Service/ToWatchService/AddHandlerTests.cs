@@ -66,8 +66,8 @@ namespace Tests.Service.ToWatchService
             var genreId = Guid.NewGuid();
             var genre = Genre.Create("Action", genreId);
             appDbContext.Genres.Add(genre);
-            var game = Game.Create("Test Game", "Test Description", "English", new ReleaseDate(DateTime.UtcNow), genreId, "developer", new List<EPlatform>() { EPlatform.PC }, gameId);
-            var game2 = Game.Create("Test Game", "Test Description", "English", new ReleaseDate(DateTime.UtcNow), genreId, "developer", new List<EPlatform>() { EPlatform.PC });
+            var game = Game.Create("Test Game", "Test Description", "English", new ReleaseDate(DateTime.UtcNow), genreId, new GameDetails("developer","Engine"), 3, new List<EPlatform>() { EPlatform.PC }, EGameStatus.Announced, true, gameId);
+            var game2 = Game.Create("Test Game", "Test Description", "English", new ReleaseDate(DateTime.UtcNow), genreId, new GameDetails("developer","Engine"), 3, new List<EPlatform>() { EPlatform.PC }, EGameStatus.Announced, false, game2Id);
             appDbContext.Medias.Add(game);
             appDbContext.Medias.Add(game2);
             game2Id = game2.Id;

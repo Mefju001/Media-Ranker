@@ -73,13 +73,13 @@ namespace Tests.Service.LikedMediaService
 
             var user = new UserModel(Guid.NewGuid(), "username", "password", "email");
             userId = user.Id;
-            var userDetails = UserDetails.Create(userId, new Fullname("Name", "Surname"), new Username("username"), Email.Create("email@example.com"));
+            var userDetails = UserDetails.Create(userId, new Fullname("Name", "Surname"), "username", Email.Create("email@example.com"));
             
             db.Users.Add(user);
             db.UsersDetails.Add(userDetails);
             
             var genre = Genre.Create("Name");
-            var game = Game.Create("Title", "Desc", new Language("Eng"), new ReleaseDate(DateTime.UtcNow.AddDays(-1)), genre.Id, "Dev", new List<EPlatform> { EPlatform.PC });
+            var game = Game.Create("Title", "Desc", "Eng", new ReleaseDate(DateTime.UtcNow.AddDays(-1)), genre.Id, new GameDetails("Dev","Engine"), 3, new List<EPlatform> { EPlatform.PC }, EGameStatus.Announced, true);
             mediaId = game.Id;
             userDetails.SetInteraction(mediaId,ETypeInteractions.COMPLETED, ERatingVote.Liked );
             db.Genres.Add(genre);
@@ -90,7 +90,7 @@ namespace Tests.Service.LikedMediaService
         [TestMethod]
         public async Task Handle_DeleteLikedMedia_ShouldDelete()
         {
-            bool result;
+            Unit result;
             using (var scope = _serviceProvider.CreateScope())
             {
                 var mediator = scope.ServiceProvider.GetRequiredService<IMediator>();
@@ -100,7 +100,7 @@ namespace Tests.Service.LikedMediaService
             using (var assertScope = _serviceProvider.CreateScope())
             {
                 var db = assertScope.ServiceProvider.GetRequiredService<AppDbContext>();
-                Assert.IsTrue(result);
+                Assert.IsNotNull(result);
                 var user = await db.UsersDetails
                     .Include(u => u.UserInteractions)
                     .FirstOrDefaultAsync(u => u.Id == userId);

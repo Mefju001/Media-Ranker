@@ -8,7 +8,7 @@ namespace Domain.Aggregate;
 public class Game : Media, MediaInfo
 {
     public EGameStatus Status { get; private set; }  = EGameStatus.Announced;
-    public GameDetails Details { get; private set; } = default!;
+    public GameDetails? Details { get; private set; } = default!;
     public PegiRating PegiRating {  get; private set; } = PegiRating.Pegi3;
     public GamePlatforms Platforms { get; private set; } = default!;
     public bool SupportsCrossPlay { get; private set; } = false;
