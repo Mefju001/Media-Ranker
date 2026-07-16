@@ -8,6 +8,7 @@ import { MovieRequest } from "../Data/Request/MovieRequest";
   providedIn: 'root' 
 })
 export class MovieService {
+
 private apiUrl = 'http://localhost:5009/api/Movie';
 constructor(private http: HttpClient) {}
 getMovies(): Observable<MovieResponse[]> {
@@ -30,5 +31,11 @@ getMoviesByFilter(query: MovieQuery): Observable<MovieResponse[]> {
 addMovie(movie: MovieRequest): Observable<any>
 {
     return this.http.post<any>(`${this.apiUrl}`, movie);
+}
+deleteMovie(id: string): Observable<any> {
+    return this.http.delete<any>(`${this.apiUrl}/${id}`);
+}
+updateMovie(movieId: string, updateCommand: any) {
+  return this.http.put(`${this.apiUrl}/${movieId}`, updateCommand);
 }
 }

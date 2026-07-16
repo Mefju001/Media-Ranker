@@ -3,14 +3,17 @@ import { MediaStatsResponse } from "./MediaStatsResponse";
 import { ReviewResponse } from "./ReviewResponse";
 
 export interface GameResponse {
-  developer: string;
-  platform: string;
-  id: number;
+  id: string;
   title: string;
   description: string;
   genre: GenreResponse;
   releaseDate: string; 
   language: string;
+  reviews: ReviewResponse[] | null;
   mediaStats: MediaStatsResponse;
-  reviews: ReviewResponse[];
+  developer: string;
+  engine: string | null;
+  pegiRating: number;
+  supportsCrossPlay: boolean;
+  platforms: string[];
 }

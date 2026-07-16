@@ -1,11 +1,10 @@
-/* src/app/footer/footer.component.css */
 
 .footer {
   background-color: var(--footer-bg);
   color: #ccc;
   text-align: center;
   padding: 20px;
-  margin-top: 20px; /* Odstęp od poprzedniej sekcji */
+  margin-top: 20px;
   border-radius: 10px;
   box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.3);
 }
@@ -23,5 +22,5 @@
 
 .footer-links a:hover {
   text-decoration: underline;
-  color: #ffc107; /* Zmiana koloru na żółty przy najechaniu */
+  color: #ffc107;
 }

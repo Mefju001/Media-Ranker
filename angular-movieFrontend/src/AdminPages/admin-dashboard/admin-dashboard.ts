@@ -8,11 +8,12 @@ import { GameService } from '../../Services/GameService';
 import { MovieResponse } from '../../Data/Response/MovieResponse';
 import { TvSeriesResponse } from '../../Data/Response/TvSeriesResponse';
 import { GameResponse } from '../../Data/Response/GameResponse';
+import { RouterModule } from '@angular/router';
 
 @Component({
   selector: 'app-admin-dashboard',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule],
+  imports: [CommonModule, ReactiveFormsModule, RouterModule],
   templateUrl: './admin-dashboard.html',
   styleUrl: './admin-dashboard.css',
 })
@@ -246,5 +247,14 @@ export class AdminDashboard implements OnInit {
       },
       error: (error) => console.error('Błąd podczas pobierania liczby elementów:', error)
     });
+  }
+  deleteMovie(id: string): void{
+    this.movieService.deleteMovie(id).subscribe({})
+  }
+  deleteTvSeries(id: string): void{
+    this.tvSeriesService.deleteSeries(id).subscribe({})
+  }
+  deleteGame(id: string): void{
+    this.gameService.deleteGame(id).subscribe({})
   }
 }

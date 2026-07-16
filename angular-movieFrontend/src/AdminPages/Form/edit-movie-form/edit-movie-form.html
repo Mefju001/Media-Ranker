@@ -1,0 +1,99 @@
+@if (isLoading) {
+  <div class="loading-spinner">Ładowanie danych formularza...</div>
+} @else {
+  <div class="edit-container">
+    <div class="edit-header">
+      <h1>Edytuj film: {{ editForm.get('title')?.value }}</h1>
+    </div>
+
+    <form [formGroup]="editForm" (ngSubmit)="onSubmit()" class="edit-form">
+      
+      <div class="form-group">
+        <label for="title">Tytuł filmu</label>
+        <input id="title" type="text" formControlName="title" class="form-control" [class.is-invalid]="editForm.get('title')?.touched && editForm.get('title')?.invalid">
+        @if (editForm.get('title')?.touched && editForm.get('title')?.errors?.['required']) {
+          <div class="error-text">Tytuł jest wymagany.</div>
+        }
+      </div>
+
+      <div class="form-group">
+        <label for="description">Opis</label>
+        <textarea id="description" formControlName="description" rows="5" class="form-control" [class.is-invalid]="editForm.get('description')?.touched && editForm.get('description')?.invalid"></textarea>
+        @if (editForm.get('description')?.touched && editForm.get('description')?.errors?.['required']) {
+          <div class="error-text">Opis jest wymagany.</div>
+        }
+      </div>
+
+      <div class="form-row">
+        <div class="form-group col">
+          <label for="genreId">Gatunek</label>
+          <select id="genreId" formControlName="genreId" class="form-control" [class.is-invalid]="editForm.get('genreId')?.touched && editForm.get('genreId')?.invalid">
+            <option value="">Wybierz gatunek</option>
+            @for (genre of genres; track genre.id) {
+              <option [value]="genre.id">{{ genre.name }}</option>
+            }
+          </select>
+        </div>
+
+        <div class="form-group col">
+          <label for="directorId">Reżyser</label>
+          <select id="directorId" formControlName="directorId" class="form-control" [class.is-invalid]="editForm.get('directorId')?.touched && editForm.get('directorId')?.invalid">
+            <option value="">Wybierz reżysera</option>
+            @for (director of directors; track director.id) {
+              <option [value]="director.id">{{ director.name }} {{ director.surname }}</option>
+            }
+          </select>
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group col">
+          <label for="releaseDate">Data premiery</label>
+          <input id="releaseDate" type="date" formControlName="releaseDate" class="form-control">
+        </div>
+
+        <div class="form-group col">
+          <label for="duration">Czas trwania (godz:min:sek)</label>
+          <input id="duration" type="text" placeholder="Np. 02:30:00" formControlName="duration" class="form-control" [class.is-invalid]="editForm.get('duration')?.touched && editForm.get('duration')?.invalid">
+          @if (editForm.get('duration')?.touched && editForm.get('duration')?.errors?.['pattern']) {
+            <div class="error-text">Wymagany format to GG:MM:SS (np. 02:15:00).</div>
+          }
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group col">
+          <label for="distributionType">Typ dystrybucji</label>
+          <select id="distributionType" formControlName="distributionType" class="form-control">
+            <option value="">Wybierz dystrybucję</option>
+            <option value="Theatrical">Kino (Theatrical)</option>
+            <option value="Streaming">Streaming</option>
+            <option value="DirectToVideo">Wydanie bezpośrednie (Direct to Video)</option>
+          </select>
+        </div>
+
+        <div class="form-group col">
+          <label for="status">Status</label>
+          <select id="status" formControlName="status" class="form-control">
+            <option value="InDevelopment">W produkcji (In Development)</option>
+            <option value="PostProduction">Postprodukcja (Post-Production)</option>
+            <option value="Released">Wydany (Released)</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="language">Język oryginalny</label>
+        <input id="language" type="text" formControlName="language" class="form-control">
+      </div>
+
+      <div class="form-actions">
+        <a [routerLink]="['/adminDashboard']" class="btn-cancel">Anuluj</a>
+        <button type="submit" class="btn-save" [disabled]="editForm.invalid || isSubmitting">
+          {{ isSubmitting ? 'Zapisywanie...' : 'Zapisz zmiany' }}
+        </button>
+      </div>
+
+    </form>
+  </div>
+}

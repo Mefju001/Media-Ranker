@@ -8,6 +8,9 @@ import { TvSeriesWeb } from '../ClientPages/MainPages/tv-series-web/tv-series-we
 import { AdminDashboard } from '../AdminPages/admin-dashboard/admin-dashboard';
 import { adminGuard } from '../ClientPages/auth/guard/admin.guard';
 import { TvSeriesDetails } from '../ClientPages/DetailsPages/tv-series-details/tv-series-details';
+import { EditMovieForm } from '../AdminPages/Form/edit-movie-form/edit-movie-form';
+import { EditGameForm } from '../AdminPages/Form/edit-game-form/edit-game-form';
+import { EditTvSeriesForm } from '../AdminPages/Form/edit-tv-series-form/edit-tv-series-form';
 export const routes: Routes = [
     {path: '',component: MainWeb},
     {path: 'movies', component: MovieWeb},
@@ -17,4 +20,7 @@ export const routes: Routes = [
     {path: 'game/:id', component: GamesDetails},
     {path: 'tvSeries/:id', component: TvSeriesDetails},
     {path: 'adminDashboard', component: AdminDashboard, canActivate: [adminGuard]},
+    {path: 'editMovie/:id', component: EditMovieForm, canActivate: [adminGuard]},
+    {path: 'editGame/:id', component: EditGameForm, canActivate: [adminGuard]},
+    {path: 'editTvSeries/:id', component: EditTvSeriesForm, canActivate: [adminGuard]},
 ];

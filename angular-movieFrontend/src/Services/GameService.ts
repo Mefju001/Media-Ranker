@@ -30,4 +30,10 @@ export class GameService {
     {
         return this.http.post<any>(`${this.apiUrl}`, game);
     }
+    updateGame(gameId: string, updateCommand: any) {
+      return this.http.put<any>(`${this.apiUrl}/${gameId}`, updateCommand);
+    }
+    deleteGame(gameId: string): Observable<any> {
+      return this.http.delete<any>(`${this.apiUrl}/${gameId}`);
+    }
 }

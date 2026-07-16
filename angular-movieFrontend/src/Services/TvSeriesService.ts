@@ -31,4 +31,10 @@ export class TvSeriesService {
     {
         return this.http.post<any>(`${this.apiUrl}`, tvSeries);
     }
+    updateSeries(seriesId: string, updateCommand: any) {
+        return this.http.put(`${this.apiUrl}/${seriesId}`, updateCommand);
+    }
+    deleteSeries(seriesId: string): Observable<any> {
+        return this.http.delete<any>(`${this.apiUrl}/${seriesId}`);
+    }
 }
