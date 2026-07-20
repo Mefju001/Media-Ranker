@@ -257,4 +257,14 @@ export class AdminDashboard implements OnInit {
   deleteGame(id: string): void{
     this.gameService.deleteGame(id).subscribe({})
   }
+  deleteUser(id: string): void{
+    console.log(`Próba usunięcia użytkownika o ID: ${id}`);
+    this.adminService.deleteUser(id).subscribe({
+      next: () => {
+        console.log(`Użytkownik o ID ${id} został usunięty.`);
+        this.getAllUsers();
+      },
+      error: (error) => console.error('Błąd podczas usuwania użytkownika:', error)
+    });
+  }
 }

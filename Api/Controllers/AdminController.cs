@@ -1,4 +1,5 @@
-﻿using Application.Features.AdminPanel.GetAll;
+﻿using Application.Features.AdminPanel.DeleteById;
+using Application.Features.AdminPanel.GetAll;
 using Application.Features.User.GetUserExcludeAdmin;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
@@ -29,6 +30,13 @@ namespace Api.Controllers
         {
             var results = await mediator.Send(new GetUserExcludeAdminQuery());
             return Ok(results);
+        }
+        [Authorize]
+        [HttpDelete("User/{id:guid}")]
+        public async Task<IActionResult> DeleteById([FromRoute] Guid id)
+        {
+            var result = await mediator.Send(new DeleteByIdCommand(id));
+            return Ok(result);
         }
     }
 }

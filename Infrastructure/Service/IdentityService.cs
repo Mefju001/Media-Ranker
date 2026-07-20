@@ -13,7 +13,7 @@ namespace Infrastructure.Service
         {
             this.userManager = userManager;
         }
-        public async Task<List<Guid>> GetUserExcludeAdmin()
+        public async Task<List<Guid>> GetAdminsIds()
         {
             var adminUsers = await userManager.GetUsersInRoleAsync("Admin");
 

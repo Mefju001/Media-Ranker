@@ -18,7 +18,7 @@ namespace Application.Features.User.GetUserExcludeAdmin
 
         public async Task<List<UserDetailsResponse>> Handle(GetUserExcludeAdminQuery request, CancellationToken cancellationToken)
         {
-            var ids = await identityService.GetUserExcludeAdmin();
+            var ids = await identityService.GetAdminsIds();
             var users = await appDbContext.UsersDetails
                     .Where(u => !ids.Contains(u.Id))
                     .ToListAsync(cancellationToken);
