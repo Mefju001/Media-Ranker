@@ -69,6 +69,13 @@ namespace Infrastructure.Service
             var result = await userManager.ChangePasswordAsync(user, currentPassword, newPassword);
             if (!result.Succeeded) throw new InvalidOperationException("Password change failed");
         }
+        public async Task ChangePasswordAdmin(Guid userId, string password)
+        {
+            var user = await userManager.FindByIdAsync(userId.ToString());
+            if (user == null) throw new NotFoundException("User not found");
+            var result = await userManager.AddPasswordAsync(user, password);
+            if (!result.Succeeded) throw new InvalidOperationException("Password change failed");
+        }
         public async Task DeleteUser(Guid id)
         {
             var userModel = await userManager.FindByIdAsync(id.ToString());

@@ -1,4 +1,6 @@
-﻿using Application.Features.AdminPanel.DeleteById;
+﻿using Application.Features.AdminPanel.ChangeDetails;
+using Application.Features.AdminPanel.ChangePassword;
+using Application.Features.AdminPanel.DeleteById;
 using Application.Features.AdminPanel.GetAll;
 using Application.Features.User.GetUserExcludeAdmin;
 using MediatR;
@@ -38,5 +40,18 @@ namespace Api.Controllers
             var result = await mediator.Send(new DeleteByIdCommand(id));
             return Ok(result);
         }
-    }
+        [Authorize]
+        [HttpPut("User/ChangeDetails")]
+        public async Task<IActionResult> ChangeDetails([FromBody] ChangeDetailsCommand command)
+        {
+            await mediator.Send(command);
+            return Ok();
+        }
+        [Authorize]
+        [HttpPut("User/ChangePassword")]
+        public async Task<IActionResult> ChangePassword([FromBody] ChangePasswordCommand command)
+        {
+            await mediator.Send(command);
+            return Ok();
+        }
 }

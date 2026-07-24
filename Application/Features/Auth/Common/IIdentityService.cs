@@ -9,6 +9,7 @@ namespace Application.Features.Auth.Common
         Task<IdentityUserDto?> AuthenticateAsync(string username, string password);
         Task<IdentityUserDto> GetUserById(Guid userId, CancellationToken cancellationToken);
         Task ChangePassword(Guid userId, string currentPassword, string newPassword);
+        Task ChangePasswordAdmin(Guid userId, string password);
         Task DeleteUser(Guid id);
     }
 }
