@@ -368,8 +368,8 @@
                   <td>{{ user.email }}</td>
                   <td><span class="badge bg-warning text-dark">Moderator</span></td>
                   <td class="text-end pe-3">
-                    <button class="btn btn-sm btn-outline-primary me-1" title="Zmień hasło"><i class="bi bi-shield-lock"></i></button>
-                    <button class="btn btn-sm btn-outline-primary me-1" title="Zmień dane"><i class="bi bi-shield-lock"></i></button>
+                    <button class="btn btn-sm btn-outline-primary me-1" [routerLink]="['/change-password', user.id]" title="Zmień hasło"><i class="bi bi-shield-lock"></i></button>
+                    <button class="btn btn-sm btn-outline-primary me-1" [routerLink]="['/edit-user', user.id]" title="Zmień dane"><i class="bi bi-shield-lock"></i></button>
                     <button class="btn btn-sm btn-outline-danger" (click)="deleteUser(user.id)" title="Usuń konto"><i class="bi bi-person-x"></i></button>
                   </td>
                 </tr>

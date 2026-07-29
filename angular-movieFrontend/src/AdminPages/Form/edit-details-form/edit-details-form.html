@@ -1,0 +1,43 @@
+<div class="page-container">
+  <mat-card appearance="outlined">
+    <mat-card-header>
+      <mat-card-title>Edytuj dane profilu</mat-card-title>
+    </mat-card-header>
+
+    <mat-card-content>
+      <form [formGroup]="detailsForm" (ngSubmit)="onSubmit()" id="profileForm">
+        <div class="form-container">
+          <mat-form-field appearance="outline">
+            <mat-label>Imię</mat-label>
+            <input matInput formControlName="name">
+          </mat-form-field>
+
+          <mat-form-field appearance="outline">
+            <mat-label>Nazwisko</mat-label>
+            <input matInput formControlName="surname">
+          </mat-form-field>
+
+          <mat-form-field appearance="outline">
+            <mat-label>Email</mat-label>
+            <input matInput type="email" formControlName="email">
+            @if (detailsForm.get('email')?.hasError('email')) {
+              <mat-error>Wprowadź poprawny adres email</mat-error>
+            }
+          </mat-form-field>
+        </div>
+      </form>
+    </mat-card-content>
+
+    <mat-card-actions align="end">
+      <button mat-button type="button" (click)="onCancel()">Anuluj</button>
+      <button 
+        mat-raised-button 
+        color="primary" 
+        type="submit" 
+        form="profileForm" 
+        [disabled]="detailsForm.invalid">
+        Zapisz zmiany
+      </button>
+    </mat-card-actions>
+  </mat-card>
+</div>

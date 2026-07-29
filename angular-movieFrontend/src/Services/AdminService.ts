@@ -16,4 +16,10 @@ export class AdminService {
   deleteUser(id: string): Observable<void> {
     return this.http.delete<void>(`${this.apiUrl}/User/${id}`);
   }
+  editUser(id: string, userData: any): Observable<void> {
+    return this.http.put<void>(`${this.apiUrl}/users/${id}`, userData);
+  }
+  editPassword(id: string, passwordData: any): Observable<void> {
+    return this.http.put<void>(`${this.apiUrl}/users/${id}/Password`, passwordData);
+  }
 }

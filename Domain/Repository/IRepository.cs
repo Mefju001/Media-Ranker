@@ -10,7 +10,6 @@ namespace Application.Common.Interfaces
         Task<T> AddAsync(T entity, CancellationToken ct);
         Task AddRangeAsync(IEnumerable<T> entities, CancellationToken ct);
         IQueryable<T> GetAsQueryable();
-        void Update(T entity);
         void Remove(T entity);
     }
 }

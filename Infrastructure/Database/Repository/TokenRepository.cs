@@ -6,21 +6,17 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Infrastructure.Database.Repository
 {
-    public class TokenRepository : ITokenRepository
+    public class TokenRepository(IAppDbContext appDbContext) : ITokenRepository
     {
-        private readonly IAppDbContext appDbContext;
-        public TokenRepository(IAppDbContext appDbContext)
-        {
-            this.appDbContext = appDbContext;
-        }
+        private readonly DbSet<Token> dbSet = appDbContext.Set<Token>();
         public async Task<int> CleanUpTokensAsync(CancellationToken cancellationToken)
         {
-            return await appDbContext.Tokens.Where(x => x.IsRevoked == true || x.ExpiryDate < DateTime.UtcNow).ExecuteDeleteAsync(cancellationToken);
+            return await dbSet.Where(x => x.IsRevoked == true || x.ExpiryDate < DateTime.UtcNow).ExecuteDeleteAsync(cancellationToken);
         }
 
         public async Task<int> DeleteTokensFromUserId(Guid userId, string? jti, CancellationToken cancellationToken)
         {
-            var query = appDbContext.Tokens
+            var query = dbSet
                 .Where(t => t.UserId == userId);
             if (!string.IsNullOrEmpty(jti))
             {
@@ -31,12 +27,12 @@ namespace Infrastructure.Database.Repository
         public async Task SaveToken(Token token, CancellationToken cancellationToken)
         {
             if (token == null) throw new ArgumentNullException();
-            await appDbContext.Tokens.AddAsync(token);
+            await dbSet.AddAsync(token);
         }
 
         public async Task<Token> GetByJtiAsync(string jti, CancellationToken cancellationToken)
         {
-            var result = await appDbContext.Tokens.FirstOrDefaultAsync(t => t.Id == jti && !t.IsRevoked && t.ExpiryDate >= DateTime.UtcNow, cancellationToken);
+            var result = await dbSet.FirstOrDefaultAsync(t => t.Id == jti && !t.IsRevoked && t.ExpiryDate >= DateTime.UtcNow, cancellationToken);
             return result;
         }
     }

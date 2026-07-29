@@ -30,11 +30,11 @@ namespace Api.Controllers
             return userId.Value;
         }
         [Authorize(Roles = "Admin")]
-        [HttpGet("{id:int}")]
+        [HttpGet("{id:Guid}")]
         public async Task<IActionResult> GetUserById([FromRoute] Guid id)
         {
             var query = new GetByIdQuery(id);
-            return Ok(mediator.Send(query));
+            return Ok(await mediator.Send(query));
         }
         [Authorize(Roles = "Admin")]
         [HttpGet("{name}")]

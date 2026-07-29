@@ -12,7 +12,7 @@ namespace Api.Controllers
     [Authorize(Roles = "Admin")]
     [ApiController]
     [Route("api/[controller]")]
-    public class AdminController:ControllerBase
+    public class AdminController : ControllerBase
     {
         private readonly IMediator mediator;
         public AdminController(IMediator mediator)
@@ -27,31 +27,32 @@ namespace Api.Controllers
             return Ok(results);
         }
         [Authorize]
-        [HttpGet("Users")]
+        [HttpGet("users")]
         public async Task<IActionResult> getUsers()
         {
             var results = await mediator.Send(new GetUserExcludeAdminQuery());
             return Ok(results);
         }
         [Authorize]
-        [HttpDelete("User/{id:guid}")]
+        [HttpDelete("users/{id:guid}")]
         public async Task<IActionResult> DeleteById([FromRoute] Guid id)
         {
             var result = await mediator.Send(new DeleteByIdCommand(id));
             return Ok(result);
         }
         [Authorize]
-        [HttpPut("User/ChangeDetails")]
-        public async Task<IActionResult> ChangeDetails([FromBody] ChangeDetailsCommand command)
+        [HttpPut("users/{id}")]
+        public async Task<IActionResult> ChangeDetails([FromRoute] Guid id, [FromBody] ChangeDetailsRequest request)
         {
-            await mediator.Send(command);
+            await mediator.Send(new ChangeDetailsCommand(id,request.name,request.surname));
             return Ok();
         }
         [Authorize]
-        [HttpPut("User/ChangePassword")]
+        [HttpPut("users/{id}/password")]
         public async Task<IActionResult> ChangePassword([FromBody] ChangePasswordCommand command)
         {
             await mediator.Send(command);
             return Ok();
         }
+    }
 }
