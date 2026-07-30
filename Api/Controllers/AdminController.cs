@@ -1,6 +1,6 @@
 ﻿using Application.Features.AdminPanel.ChangeDetails;
-using Application.Features.AdminPanel.ChangePassword;
 using Application.Features.AdminPanel.DeleteById;
+using Application.Features.AdminPanel.GeneratePassword;
 using Application.Features.AdminPanel.GetAll;
 using Application.Features.User.GetUserExcludeAdmin;
 using MediatR;
@@ -48,10 +48,10 @@ namespace Api.Controllers
             return Ok();
         }
         [Authorize]
-        [HttpPut("users/{id}/password")]
-        public async Task<IActionResult> ChangePassword([FromBody] ChangePasswordCommand command)
+        [HttpPut("users/{id}/generate-password")]
+        public async Task<IActionResult> GeneratePassword([FromRoute] Guid id)
         {
-            await mediator.Send(command);
+            await mediator.Send(new GeneratePasswordCommand(id));
             return Ok();
         }
     }

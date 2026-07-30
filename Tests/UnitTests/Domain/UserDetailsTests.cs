@@ -2,6 +2,7 @@
 using Domain.Enums;
 using Domain.Exceptions;
 using Domain.Value_Object;
+using Infrastructure.Database.DBModels;
 
 namespace Tests.Domain
 {

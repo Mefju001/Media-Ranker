@@ -23,7 +23,6 @@ namespace Infrastructure.Service
         {
             var identityUser = new UserModel
             {
-                Id = Guid.NewGuid(),
                 UserName = username,
                 Email = email,
             };
@@ -88,6 +87,10 @@ namespace Infrastructure.Service
             {
                 throw new InvalidOperationException("Failed to delete user.");
             }
+        }
+        public async Task<bool> UserExistWithThisId(Guid id, CancellationToken cancellationToken)
+        {
+            return await userManager.Users.AnyAsync(u => u.Id == id, cancellationToken);
         }
     }
 }

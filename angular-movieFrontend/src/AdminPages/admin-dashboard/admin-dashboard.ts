@@ -267,4 +267,14 @@ export class AdminDashboard implements OnInit {
       error: (error) => console.error('Błąd podczas usuwania użytkownika:', error)
     });
   }
+  generatePassword(userId: string): void {
+    console.log(`Próba wygenerowania nowego hasła dla użytkownika o ID: ${userId}`);
+    this.adminService.generatePassword(userId).subscribe({
+      next: () => {
+        console.log(`Nowe hasło dla użytkownika o ID ${userId} zostało wygenerowane.`);
+        alert('Nowe hasło zostało wygenerowane i wysłane na adres e-mail użytkownika.');
+      },
+      error: (error) => console.error('Błąd podczas generowania nowego hasła:', error)
+    });
+  }
 }

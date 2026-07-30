@@ -3,6 +3,7 @@ namespace Application.Features.Auth.Common
 {
     public interface IIdentityService
     {
+        Task<bool> UserExistWithThisId(Guid id, CancellationToken cancellationToken);
         Task<List<Guid>> GetAdminsIds();
         Task<IdentityUserDto> CreateUserWithDefaultRole(string username, string password, string email);
         Task<bool> IsAnyUserWhoHaveEmailAndId(string email, string username, CancellationToken cancellationToken);

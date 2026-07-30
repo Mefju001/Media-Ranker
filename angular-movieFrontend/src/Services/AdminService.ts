@@ -19,7 +19,7 @@ export class AdminService {
   editUser(id: string, userData: any): Observable<void> {
     return this.http.put<void>(`${this.apiUrl}/users/${id}`, userData);
   }
-  editPassword(id: string, passwordData: any): Observable<void> {
-    return this.http.put<void>(`${this.apiUrl}/users/${id}/Password`, passwordData);
+  generatePassword(id: string): Observable<void> {
+    return this.http.put<void>(`${this.apiUrl}/users/${id}/generate-password`, {});
   }
 }
