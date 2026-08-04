@@ -7,6 +7,8 @@ using Application.Features.Games.GetByCriteria;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Application.Features.Genres.GetAllForMedias;
+using Domain.Aggregate;
 
 namespace Api.Controllers
 {
@@ -22,22 +24,30 @@ namespace Api.Controllers
         }
         [AllowAnonymous]
         [HttpGet]
-        public async Task<IActionResult> Get([FromQuery] GetByCriteriaQuery gameQuery)
+        public async Task<IActionResult> Get([FromQuery] GetByCriteriaQuery gameQuery, CancellationToken cancellationToken)
         {
-            var games = await mediator.Send(gameQuery);
+            var games = await mediator.Send(gameQuery, cancellationToken);
+            return Ok(games);
+        }
+        [AllowAnonymous]
+        [HttpGet("Genres")]
+        public async Task<IActionResult> GetGenres(CancellationToken cancellationToken)
+        {
+            var query = new GetUsedForMediaQuery<Game>();
+            var games = await mediator.Send(query, cancellationToken);
             return Ok(games);
         }
         [AllowAnonymous]
         [HttpGet("{id:guid}")]
-        public async Task<IActionResult> GetById([FromRoute] Guid id)
+        public async Task<IActionResult> GetById([FromRoute] Guid id, CancellationToken cancellationToken)
         {
             var query = new GetByIdQuery(id);
-            var games = await mediator.Send(query);
+            var games = await mediator.Send(query, cancellationToken);
             return Ok(games);
         }
         [Authorize(Roles = "Admin")]
         [HttpPost]
-        public async Task<IActionResult> AddGame([FromBody] GameRequest gameRequest)
+        public async Task<IActionResult> AddGame([FromBody] GameRequest gameRequest, CancellationToken cancellationToken)
         {
             var command = new UpsertCommand(
                 null,
@@ -53,20 +63,20 @@ namespace Api.Controllers
                 gameRequest.Platforms,
                 gameRequest.SupportsCrossPlay
                 );
-            var created = await mediator.Send(command);
+            var created = await mediator.Send(command, cancellationToken);
             return CreatedAtAction(nameof(GetById), new { Id = created.id }, created);
         }
         [Authorize(Roles = "Admin")]
         [HttpPost("Bulk")]
-        public async Task<IActionResult> AddListOfGames([FromBody] List<GameRequest> gameRequests)
+        public async Task<IActionResult> AddListOfGames([FromBody] List<GameRequest> gameRequests, CancellationToken cancellationToken)
         {
             var command = new AddRangeCommand(gameRequests);
-            var createdGames = await mediator.Send(command);
+            var createdGames = await mediator.Send(command, cancellationToken);
             return StatusCode(StatusCodes.Status201Created, createdGames);
         }
         [Authorize(Roles = "Admin")]
         [HttpPut("{id:guid}")]
-        public async Task<IActionResult> UpdateGame([FromRoute] Guid id, [FromBody] GameRequest gameRequest)
+        public async Task<IActionResult> UpdateGame([FromRoute] Guid id, [FromBody] GameRequest gameRequest, CancellationToken cancellationToken)
         {
             var command = new UpsertCommand(
                 id,
@@ -81,15 +91,15 @@ namespace Api.Controllers
                 gameRequest.PegiRating,
                 gameRequest.Platforms,
                 gameRequest.SupportsCrossPlay);
-            var updated = await mediator.Send(command);
+            var updated = await mediator.Send(command, cancellationToken);
             return Ok(updated);
         }
         [Authorize(Roles = "Admin")]
         [HttpDelete("{id:guid}")]
-        public async Task<IActionResult> Delete([FromRoute] Guid id)
+        public async Task<IActionResult> Delete([FromRoute] Guid id, CancellationToken cancellationToken)
         {
             var command = new DeleteByIdCommand(id);
-            await mediator.Send(command);
+            await mediator.Send(command, cancellationToken);
             return NoContent();
         }
     }

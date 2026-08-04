@@ -76,7 +76,7 @@ export class MovieWeb implements OnInit {
   }
 
 loadGenres(): void {
-  this.genreService.getGenres().subscribe((data) => {
+  this.movieService.GetGenres().subscribe((data) => {
     this.genres = data;
   });
 }

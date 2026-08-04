@@ -76,7 +76,7 @@ ngOnInit(): void {
   }
 
 loadGenres(): void {
-  this.genreService.getGenres().subscribe((data) => {
+  this.gameService.GetGenres().subscribe((data) => {
     this.genres = data;
   });
 }

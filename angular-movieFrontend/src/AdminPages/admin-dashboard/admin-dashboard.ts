@@ -161,9 +161,6 @@ export class AdminDashboard implements OnInit {
           distributionType: raw.distributionType || "Cinema",
           status: raw.status || "Wydany"
       };
-
-      console.log('Wysyłam FILM do .NET API (po konwersji):', moviePayload);
-
       this.movieService.addMovie(moviePayload).subscribe({
         next: (response) => console.log('Film dodany pomyślnie:', response),
         error: (error) => console.error('Błąd podczas dodawania filmu:', error.error || error)
@@ -185,8 +182,6 @@ export class AdminDashboard implements OnInit {
         gameStatus: raw.gameStatus || "Wydana"
       };
 
-      console.log('Wysyłam GRĘ do .NET API:', gamePayload);
-
       this.gameService.addGame(gamePayload).subscribe({
         next: (response) => console.log('Gra dodana pomyślnie:', response),
         error: (error) => console.error('Błąd podczas dodawania gry:', error.error || error)
@@ -205,9 +200,6 @@ export class AdminDashboard implements OnInit {
         network: raw.network,
         status: raw.status || "Wydany"
       };
-
-      console.log('Wysyłam SERIAL do .NET API:', tvSeriesPayload);
-
       this.tvSeriesService.addTvSeries(tvSeriesPayload).subscribe({
         next: (response) => console.log('Serial dodany pomyślnie:', response),
         error: (error) => console.error('Błąd podczas dodawania serialu:', error.error || error)
@@ -216,7 +208,6 @@ export class AdminDashboard implements OnInit {
   }
   loadMovies(): void {
     this.movieService.getMovies().subscribe((data) => {
-      console.log('Pobrano filmy:', data);
       this.movies = data;
     });
   }

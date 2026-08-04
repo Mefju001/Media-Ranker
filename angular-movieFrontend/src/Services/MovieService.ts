@@ -18,6 +18,9 @@ getMovieById(id: string): Observable<MovieResponse> {
   console.log(`Fetching movie with ID: ${id}`);
   return this.http.get<MovieResponse>(`${this.apiUrl}/${id}`);
 }
+GetGenres(): Observable<any> {
+  return this.http.get<any>(`${this.apiUrl}/Genres`);
+}
 getMoviesByFilter(query: MovieQuery): Observable<MovieResponse[]> {
   let params = new HttpParams();
   Object.keys(query).forEach(key => {

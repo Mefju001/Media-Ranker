@@ -75,7 +75,7 @@ filterForm: FormGroup;
   }
 
 loadGenres(): void {
-  this.genreService.getGenres().subscribe((data) => {
+  this.tvSeriesService.GetGenres().subscribe((data) => {
     this.genres = data;
   });
 }

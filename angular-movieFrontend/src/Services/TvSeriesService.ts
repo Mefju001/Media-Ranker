@@ -14,6 +14,9 @@ export class TvSeriesService {
     getTvSeries(): Observable<TvSeriesResponse[]> {
         return this.http.get<TvSeriesResponse[]>(`${this.apiUrl}`);
     }
+    GetGenres(): Observable<any> {
+    return this.http.get<any>(`${this.apiUrl}/Genres`);
+    }
     getTvSeriesById(id: string): Observable<TvSeriesResponse> {
         return this.http.get<TvSeriesResponse>(`${this.apiUrl}/${id}`);
     }
