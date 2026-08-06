@@ -3,9 +3,7 @@ import { FormBuilder, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { debounceTime } from 'rxjs';
 import { MovieQuery } from '../../../Data/Request/MovieQuery';
 import { GenreResponse } from '../../../Data/Response/GenreResponse';
-import { MovieResponse } from '../../../Data/Response/MovieResponse';
 import { GenreService } from '../../../Services/GenreService';
-import { MovieService } from '../../../Services/MovieService';
 import { ReviewService } from '../../../Services/ReviewService';
 import { RouterLink } from '@angular/router';
 import { GameService } from '../../../Services/GameService';
@@ -22,6 +20,7 @@ export class GameWeb implements OnInit {
   games: GameResponse[] = [];
   genres: GenreResponse[] = [];
   reviewsTitle: String[] = [];
+  platforms: String[] = [];
   sortFields = [
     { name: 'Tytuł (A-Z)', value: 'Title|false' }, 
     { name: 'Ocena (najniższa)', value: 'average|false' }, 
@@ -34,6 +33,8 @@ export class GameWeb implements OnInit {
   this.filterForm = this.fb.group({
       TitleSearch: [null],
       MinRating: [null],
+      Platform: [null],
+      Developer: [null],
       ReleaseYear: [null],
       genreName: [null],
       DirectorName: [null],
@@ -48,10 +49,11 @@ ngOnInit(): void {
         debounceTime(300)
       )
       .subscribe((query: MovieQuery) => {
-        this.loadMoviesByFilter(query);
+        this.loadGamesByFilter(query);
       });
     this.loadGames();
     this.loadGenres();
+    this.loadPlatforms();
     this.GetTheLastestReviews();
   }
 
@@ -62,19 +64,24 @@ ngOnInit(): void {
       this.cdr.detectChanges();
     });
   }
-  loadMoviesByFilter(query: MovieQuery): void {
+  loadGamesByFilter(query: MovieQuery): void {
     this.gameService.getGamesByFilter(query).subscribe({
         next: (data) => {
-          console.log('Załadowano filmy z filtrami:', data);
+          console.log('Załadowano gry z filtrami:', data);
             this.games = data;
         },
         error: (err) => {
-            console.error('Błąd ładowania filmów:', err);
+            console.error('Błąd ładowania gier:', err);
             this.games = [];
         }
     });
   }
-
+loadPlatforms(): void {
+  this.gameService.GetPlatforms().subscribe((data) => {
+    console.log('Załadowano platformy:', data);
+    this.platforms = data;
+  });
+}
 loadGenres(): void {
   this.gameService.GetGenres().subscribe((data) => {
     this.genres = data;

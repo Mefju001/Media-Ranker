@@ -32,10 +32,18 @@ namespace Application.Features.Movies.GetByCriteria
                     .ToList();
             }
             List<Guid>? searchDirectorIds = null;
-            if(request.DirectorName is not null)
+            if(!string.IsNullOrWhiteSpace(request.DirectorName) || !string.IsNullOrWhiteSpace(request.DirectorSurname))
             {
-                searchDirectorIds = directorDictionary.Values
-                    .Where(d => d.fullname.FirstName.Contains(request.DirectorName)||d.fullname.LastName.Contains(request.DirectorName))
+                var queryDirectors = directorDictionary.Values.AsEnumerable();
+                if(!string.IsNullOrWhiteSpace(request.DirectorName))
+                {
+                    queryDirectors = queryDirectors.Where(d => d.fullname.FirstName.Contains(request.DirectorName));
+                }
+                if(!string.IsNullOrWhiteSpace(request.DirectorSurname))
+                {
+                    queryDirectors = queryDirectors.Where(d => d.fullname.LastName.Contains(request.DirectorSurname));
+                }
+                searchDirectorIds = queryDirectors
                     .Select(d => d.Id)
                     .ToList();
             }

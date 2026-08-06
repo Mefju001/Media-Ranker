@@ -15,7 +15,19 @@
       
       <label for="releaseYear">Rok Wydania:</label>
       <input id="releaseYear" type="number" formControlName="ReleaseYear" min="1900">
+      
+      <div class="form-row">
+        <div class="form-group">
+          <label for="DirectorName">Imię Reżysera:</label>
+          <input id="DirectorName" type="text" formControlName="DirectorName">
+        </div>
 
+        <div class="form-group">
+          <label for="DirectorSurname">Nazwisko Reżysera:</label>
+          <input id="DirectorSurname" type="text" formControlName="DirectorSurname">
+        </div>
+      </div>
+      
       <label for="genreName">Gatunek:</label>
       <select id="genreName" formControlName="genreName">
           <option [value]="''">-- Wszystkie gatunki --</option>

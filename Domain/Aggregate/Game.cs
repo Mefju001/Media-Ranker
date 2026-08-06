@@ -24,7 +24,7 @@ public class Game : Media, MediaInfo
             Id = id ?? Guid.NewGuid()
         };
         game.SetBaseDetails(title, desc, lang, date, genre);
-        game.Platforms = game.DeterminePlayablePlatforms(platforms);
+        game.Platforms = GamePlatforms.FromPlatforms(platforms);
         game.Details = gameDetails ?? throw new DomainException(nameof(gameDetails));
         game.PegiRating = PegiRating.FromValue(pegiRating);
         game.Status = status;
@@ -44,25 +44,9 @@ public class Game : Media, MediaInfo
         Status = status;
         SupportsCrossPlay = supportsCrossPlay;
 
-        Platforms = DeterminePlayablePlatforms(platforms);
+        Platforms = GamePlatforms.FromPlatforms(platforms);
 
         SetBaseDetails(title, desc, lang, date, genre);
     }
 
-    private GamePlatforms DeterminePlayablePlatforms(List<EPlatform> platforms)
-    {
-        if (platforms == null || !platforms.Any())
-            throw new DomainException("Game must have at least one platform.");
-
-        var all = new HashSet<EPlatform>();
-        foreach (var p in platforms)
-        {
-            all.Add(p);
-
-            if (p == EPlatform.PlayStation4) all.Add(EPlatform.PlayStation5);
-            if (p == EPlatform.XboxOne) all.Add(EPlatform.XboxSeries);
-        }
-
-        return new GamePlatforms(all.ToList());
-    }
 }

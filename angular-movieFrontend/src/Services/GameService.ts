@@ -13,6 +13,9 @@ export class GameService {
     getGames(): Observable<GameResponse[]> {
     return this.http.get<GameResponse[]>(`${this.apiUrl}`);
     }
+    GetPlatforms(): Observable<any> {
+    return this.http.get<any>(`${this.apiUrl}/Platforms`);
+    }
     GetGenres(): Observable<any> {
     return this.http.get<any>(`${this.apiUrl}/Genres`);
     }

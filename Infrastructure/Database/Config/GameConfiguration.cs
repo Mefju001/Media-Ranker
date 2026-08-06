@@ -40,7 +40,7 @@ namespace Infrastructure.Database.Config
             builder.Property(g => g.Platforms)
                 .HasConversion(
                     v => string.Join(',', v.Values),
-                    v => new GamePlatforms(v.Split(',', StringSplitOptions.RemoveEmptyEntries)))
+                    v => GamePlatforms.FromStrings(v.Split(',', StringSplitOptions.RemoveEmptyEntries)))
                 .HasColumnName("Platforms")
                 .IsRequired();
         }

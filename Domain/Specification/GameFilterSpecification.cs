@@ -1,4 +1,5 @@
 ﻿using Domain.Aggregate;
+using Microsoft.EntityFrameworkCore;
 using System.Linq.Expressions;
 
 namespace Domain.Specification
@@ -35,12 +36,21 @@ namespace Domain.Specification
             {
                 AddCriteria(m => m.Stats!.AverageRating >= MinRating);
             }
+            if(!string.IsNullOrWhiteSpace(developer))
+            {
+                AddCriteria(g => g.Details.Developer.Contains(developer));
+            }
+            if (!string.IsNullOrWhiteSpace(platform))
+            {
+                var searchPlatform = "%" + platform + "%";
+                AddCriteria(g => EF.Functions.Like((string)(object)g.Platforms,searchPlatform));
+            }
             if (ReleaseYear.HasValue)
             {
                 var year = ReleaseYear.Value;
                 var startOfYear = new DateTime(year, 1, 1);
                 var endOfYear = new DateTime(year, 12, 31, 23, 59, 59);
-                AddCriteria(m => m.ReleaseDate >= startOfYear && m.ReleaseDate <= endOfYear);
+                AddCriteria(m => m.ReleaseDate.Value >= startOfYear && m.ReleaseDate.Value <= endOfYear);
             }
             if (!string.IsNullOrWhiteSpace(SortByField) && sortColumns.TryGetValue(SortByField, out var sortExpression))
             {

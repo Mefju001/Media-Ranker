@@ -16,6 +16,16 @@
       <label for="releaseYear">Rok Wydania:</label>
       <input id="releaseYear" type="number" formControlName="ReleaseYear" min="1900">
 
+      <label for="developer">Developer:</label>
+      <input id="developer" type="text" formControlName="Developer">
+
+      <label for="platform">Platforma:</label>
+            <select id="platform" formControlName="Platform">
+                <option [value]="''">-- Wszystkie platformy --</option>
+                @for (platform of platforms; track platform) {
+                    <option [value]="platform">{{ platform }}</option>
+                }
+            </select>
       <label for="genreName">Gatunek:</label>
       <select id="genreName" formControlName="genreName">
           <option [value]="''">-- Wszystkie gatunki --</option>

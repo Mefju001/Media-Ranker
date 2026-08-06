@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Application.Features.Genres.GetAllForMedias;
 using Domain.Aggregate;
+using Application.Features.Games.GetPlatforms;
 
 namespace Api.Controllers
 {
@@ -34,6 +35,14 @@ namespace Api.Controllers
         public async Task<IActionResult> GetGenres(CancellationToken cancellationToken)
         {
             var query = new GetUsedForMediaQuery<Game>();
+            var games = await mediator.Send(query, cancellationToken);
+            return Ok(games);
+        }
+        [AllowAnonymous]
+        [HttpGet("Platforms")]
+        public async Task<IActionResult> GetPlatforms(CancellationToken cancellationToken)
+        {
+            var query = new GetPlatformsQuery();
             var games = await mediator.Send(query, cancellationToken);
             return Ok(games);
         }
