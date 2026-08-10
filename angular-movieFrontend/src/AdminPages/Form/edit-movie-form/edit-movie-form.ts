@@ -15,7 +15,7 @@ export class EditMovieForm {
 editForm!: FormGroup;
   movieId!: string;
   genres: any[] = [];
-  directors: any[] = []; // Tablica na reżyserów
+  directors: any[] = [];
   isLoading = true;
   isSubmitting = false;
 

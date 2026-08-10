@@ -1,12 +1,10 @@
-import { ChangeDetectorRef, Component, OnInit} from '@angular/core';
-import { MovieQuery } from '../../../Data/Request/MovieQuery';
+import { Component, inject, OnInit} from '@angular/core';
+import { MovieQuery } from './MovieQuery';
 import { MovieService } from '../../../Services/MovieService';
 import { RouterLink } from '@angular/router';
-import { FormBuilder, FormGroup, ReactiveFormsModule } from '@angular/forms';
-import { debounceTime } from 'rxjs';
+import { FormBuilder, ReactiveFormsModule } from '@angular/forms';
 import { MovieResponse } from '../../../Data/Response/MovieResponse';
 import { GenreResponse } from '../../../Data/Response/GenreResponse';
-import { GenreService } from '../../../Services/GenreService';
 import { ReviewService } from '../../../Services/ReviewService';
 @Component({
   selector: 'app-movie-web',
@@ -16,57 +14,65 @@ import { ReviewService } from '../../../Services/ReviewService';
   styleUrl: './movie-web.css'
 })
 export class MovieWeb implements OnInit {
-  filterForm: FormGroup;
-  movies: MovieResponse[];
-  genres: GenreResponse[] = [];
-  reviewsTitle: String[] = [];
-  sortFields = [
-    { name: 'Tytuł (A-Z)', value: 'Title|false' }, 
-    { name: 'Ocena (najniższa)', value: 'Rating|false' }, 
-    { name: 'Rok Wydania (najstarsze)', value: 'Date|false' },
-    { name: 'Tytuł (Z-A)', value: 'Title|true' },
-    { name: 'Ocena (najwyższa)', value: 'Rating|true' },
-    { name: 'Rok Wydania (najnowsze)', value: 'Date|true' },
-    ];
-  constructor(private fb: FormBuilder,private cdr: ChangeDetectorRef,private movieService: MovieService,private genreService: GenreService,private reviewService: ReviewService) {
-  this.filterForm = this.fb.group({
+  private readonly fb = inject(FormBuilder);
+  private readonly movieService = inject(MovieService);
+  private readonly reviewService = inject(ReviewService);
+  filterForm = this.fb.group({
       TitleSearch: [null],
       MinRating: [null],
       ReleaseYear: [null],
       genreName: [null],
       DirectorName: [null],
       DirectorSurname: [null],
-      SortByField: [null],
-      IsDescending: [false]
+      SortByField: [null as { sortBy: string; isDescending: boolean } | null]
     });
-    this.movies = [];
-  }
-  ngOnInit(): void {
-    this.filterForm.valueChanges
-      .pipe(
-        debounceTime(300)
-      )
-      .subscribe((query: MovieQuery) => {
-        this.loadMoviesByFilter(query);
-      });
+  movies: MovieResponse[] = [];
+  genres: GenreResponse[] = [];
+  reviewsTitle: string[] = [];
+  sortFields = [
+    { name: 'Tytuł (A-Z)', sortBy: 'Title' , isDescending: false }, 
+    { name: 'Ocena (najniższa)', sortBy: 'Rating', isDescending: false }, 
+    { name: 'Rok Wydania (najstarsze)', sortBy: 'Date', isDescending: false },
+    { name: 'Tytuł (Z-A)', sortBy: 'Title', isDescending: true },
+    { name: 'Ocena (najwyższa)', sortBy: 'Rating', isDescending: true },
+    { name: 'Rok Wydania (najnowsze)', sortBy: 'Date', isDescending: true },
+    ];
+ngOnInit(): void {
     this.loadMovies();
     this.loadGenres();
     this.GetTheLastestReviews();
   }
+onFilter(): void {
+    const rawValue = this.filterForm.getRawValue();
+    const selectedSortField = rawValue.SortByField;
+    const movieQuery: MovieQuery = {
+      TitleSearch: rawValue.TitleSearch,
+      MinRating: rawValue.MinRating,
+      ReleaseYear: rawValue.ReleaseYear,
+      genreName: rawValue.genreName,
+      DirectorName: rawValue.DirectorName,
+      DirectorSurname: rawValue.DirectorSurname,
 
-  loadMovies(): void {
+      SortByField: selectedSortField ? selectedSortField.sortBy : null,
+      IsDescending: selectedSortField ? selectedSortField.isDescending : false
+    };
+    this.loadMoviesByFilter(movieQuery);
+  }
+onReset(): void {
+    this.filterForm.reset();
+    this.loadMovies();
+  }
+loadMovies(): void {
     this.movieService.getMovies().subscribe((data) => {
       this.movies = data;
     });
   }
-
-  loadMoviesByFilter(query: MovieQuery): void {
+loadMoviesByFilter(query: MovieQuery): void {
     this.movieService.getMoviesByFilter(query).subscribe({
         next: (data) => {
           console.log('Załadowano filmy z filtrami:', data);
             this.movies = data;
             console.log('Filmy po zastosowaniu filtrów:', this.movies);
-            this.cdr.detectChanges();
         },
         error: (err) => {
             console.error('Błąd ładowania filmów:', err);
@@ -74,13 +80,12 @@ export class MovieWeb implements OnInit {
         }
     });
   }
-
 loadGenres(): void {
   this.movieService.GetGenres().subscribe((data) => {
     this.genres = data;
   });
 }
-  GetTheLastestReviews(): void {
+GetTheLastestReviews(): void {
     this.reviewService.getTheLastestReviews().subscribe((data) => {
       this.reviewsTitle = data;
     });

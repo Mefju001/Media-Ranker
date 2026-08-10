@@ -1,6 +1,6 @@
 import { HttpClient, HttpParams } from "@angular/common/http";
 import { Observable } from "rxjs";
-import { MovieQuery } from "../Data/Request/MovieQuery";
+import { MovieQuery } from "../ClientPages/MainPages/movie-web/MovieQuery";
 import { GameResponse } from "../Data/Response/GameResponse";
 import { Injectable } from "@angular/core";
 import { GameRequest } from "../Data/Request/GameRequest";

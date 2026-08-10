@@ -37,8 +37,6 @@ namespace Application.Features.TvSeries.GetByCriteria
                 request.MinRating,
                 request.ReleaseYear,
                 searchGenresId,
-                request.seasons,
-                request.episodes,
                 request.network,
                 request.status,
                 request.SortByField,

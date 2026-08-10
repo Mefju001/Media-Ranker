@@ -9,8 +9,8 @@ import { ReviewRequest } from "../Data/Request/ReviewRequest";
 export class ReviewService {
     private apiUrl = 'http://localhost:5009/api/Review';
     constructor(private http: HttpClient) {}
-    getTheLastestReviews(): Observable<String[]> {
-        return this.http.get<String[]>(`${this.apiUrl}/TheLatest`);
+    getTheLastestReviews(): Observable<string[]> {
+        return this.http.get<string[]>(`${this.apiUrl}/TheLatest`);
         }
     addReview(movieId:number, result:ReviewRequest):Observable<any>{
         const payload = {

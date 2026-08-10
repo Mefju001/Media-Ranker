@@ -2,7 +2,7 @@
   <aside class="sidebar">
  <div class="movie-page-container">
 
-    <form [formGroup]="filterForm" class="filter-form">
+    <form [formGroup]="filterForm" class="filter-form"(ngSubmit)="onFilter()">
 
     <div class="filter-group">
       <h3>🔍 Filtry Wyszukiwania</h3>
@@ -15,12 +15,19 @@
       
       <label for="releaseYear">Rok Wydania:</label>
       <input id="releaseYear" type="number" formControlName="ReleaseYear" min="1900">
-
+      
+      <label for="status">Status:</label>
+      <select id="status" formControlName="status">
+          <option [ngValue]="null">-- Wszystkie statusy --</option>
+          <option *ngFor="let status of statusOptions.tvSeries" [ngValue]="status.value">
+              {{ status.label }}
+          </option>
+      </select>
       <label for="genreName">Gatunek:</label>
       <select id="genreName" formControlName="genreName">
-          <option [value]="''">-- Wszystkie gatunki --</option>
+          <option [ngValue]="null">-- Wszystkie gatunki --</option>
           @for (genre of genres; track genre.id) {
-              <option [value]="genre.name">{{ genre.name }}</option>
+              <option [ngValue]="genre.name">{{ genre.name }}</option>
           }
       </select>
     </div>
@@ -30,24 +37,25 @@
       <h3>↕️ Sortowanie</h3>
       <label for="sortByField">Sortuj wg:</label>
       <select id="sortByField" formControlName="SortByField">
-        @for (field of sortFields; track field.value) {
-          <option [value]="field.value">{{ field.name }}</option>
+        <option [ngValue]="null">-- Wszystkie sortowania --</option>
+        @for (field of sortFields; track field.name) {
+          <option [ngValue]="field">{{ field.name }}</option>
         }
       </select>
+      <button type="submit" class="filter-btn">Filtruj</button>
       <button 
       type="button" 
-      (click)="filterForm.reset({SortByField: null, IsDescending: false})" 
+      (click)="onReset()" 
       class="reset-btn">
       Resetuj sortowanie
     </button>
     </div>
-
     </form>
     <hr>
     </div>
   </aside>
   <section class="film-listings">
-    <h2>Popularne Filmy</h2>
+    <h2>Popularne seriale</h2>
     @for(tvSeries of TvSeries; track tvSeries.id) {
       <div class="film-card">
         <div class="movie-details">

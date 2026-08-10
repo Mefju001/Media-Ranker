@@ -1,70 +1,83 @@
-import { ChangeDetectorRef, Component } from '@angular/core';
-import { FormBuilder, FormGroup, ReactiveFormsModule } from '@angular/forms';
-import { debounceTime } from 'rxjs';
-import { MovieQuery } from '../../../Data/Request/MovieQuery';
+import { Component, inject } from '@angular/core';
+import { FormBuilder, ReactiveFormsModule } from '@angular/forms';
+import { MovieQuery } from '../movie-web/MovieQuery';
 import { GenreResponse } from '../../../Data/Response/GenreResponse';
-import { MovieResponse } from '../../../Data/Response/MovieResponse';
-import { GenreService } from '../../../Services/GenreService';
-import { MovieService } from '../../../Services/MovieService';
 import { ReviewService } from '../../../Services/ReviewService';
 import { RouterLink } from '@angular/router';
 import { TvSeriesResponse } from '../../../Data/Response/TvSeriesResponse';
 import { TvSeriesService } from '../../../Services/TvSeriesService';
+import { CommonModule } from '@angular/common';
+import { TvSeriesQuery } from '../tv-series-web/TvSeriesQuery';
 
 @Component({
   selector: 'app-tv-series-web',
-  imports: [RouterLink,ReactiveFormsModule],
+  imports: [RouterLink,ReactiveFormsModule,CommonModule],
   templateUrl: './tv-series-web.html',
   styleUrl: './tv-series-web.css',
 })
 export class TvSeriesWeb {
-filterForm: FormGroup;
-  TvSeries: TvSeriesResponse[] = [];
-  genres: GenreResponse[] = [];
-  reviewsTitle: String[] = [];
-  sortFields = [
-    { name: 'Tytuł (A-Z)', value: 'Title|false' }, 
-    { name: 'Ocena (najniższa)', value: 'average|false' }, 
-    { name: 'Rok Wydania (najstarsze)', value: 'releaseDate|false' },
-    { name: 'Tytuł (Z-A)', value: 'Title|true' },
-    { name: 'Ocena (najwyższa)', value: 'average|true' },
-    { name: 'Rok Wydania (najnowsze)', value: 'releaseDate|true' },
-    ];
-  constructor(private fb: FormBuilder,private cdr: ChangeDetectorRef,private tvSeriesService: TvSeriesService,private genreService: GenreService,private reviewService: ReviewService) {
-  this.filterForm = this.fb.group({
+  private readonly fb = inject(FormBuilder);
+  private readonly tvSeriesService = inject(TvSeriesService);
+  private readonly reviewService = inject(ReviewService);
+  readonly filterForm = this.fb.group({
       TitleSearch: [null],
       MinRating: [null],
       ReleaseYear: [null],
       genreName: [null],
-      DirectorName: [null],
-      DirectorSurname: [null],
-      SortByField: [null],
-      IsDescending: [false]
+      status: [null],
+      SortByField: [null as { sortBy: string; isDescending: boolean } | null]
     });
-  }
+  TvSeries: TvSeriesResponse[] = [];
+  genres: GenreResponse[] = [];
+  reviewsTitle: string[] = [];
+  sortFields = [
+    { name: 'Tytuł (A-Z)', sortBy: 'Title', isDescending: false }, 
+    { name: 'Ocena (najniższa)', sortBy: 'average', isDescending: false }, 
+    { name: 'Rok Wydania (najstarsze)', sortBy: 'releaseDate', isDescending: false },
+    { name: 'Tytuł (Z-A)', sortBy: 'Title', isDescending: true },
+    { name: 'Ocena (najwyższa)', sortBy: 'average', isDescending: true },
+    { name: 'Rok Wydania (najnowsze)', sortBy: 'releaseDate', isDescending: true },
+    ];
+    statusOptions = {
+      tvSeries: [
+        { value: 'Announced', label: 'Zapowiedziany' },
+        { value: 'Ongoing', label: 'W trakcie emisji' },
+        { value: 'Ended', label: 'Zakończony' },
+        { value: 'Canceled', label: 'Anulowany' }
+      ]
+    };
   ngOnInit(): void {
-    this.filterForm.valueChanges
-      .pipe(
-        debounceTime(300)
-      )
-      .subscribe((query: MovieQuery) => {
-        this.loadTvSeriesByFilter(query);
-      });
     this.loadTvSeries();
     this.loadGenres();
     this.GetTheLastestReviews();
   }
+  onFilter(): void {
+    const rawValue = this.filterForm.getRawValue();
+    const selectedSortField = rawValue.SortByField;
+    const tvSeriesQuery: TvSeriesQuery = {
+      TitleSearch: rawValue.TitleSearch,
+      MinRating: rawValue.MinRating,
+      ReleaseYear: rawValue.ReleaseYear,
+      genreName: rawValue.genreName,
+      status: rawValue.status,
 
+      SortByField: selectedSortField ? selectedSortField.sortBy : null,
+      IsDescending: selectedSortField ? selectedSortField.isDescending : false,
+    };
+    this.loadTvSeriesByFilter(tvSeriesQuery);
+  }
+  onReset(): void {
+    this.filterForm.reset();
+    this.loadTvSeries();
+  }
   loadTvSeries(): void {
     this.tvSeriesService.getTvSeries().subscribe((data) => {
       this.TvSeries = data;
-      this.cdr.detectChanges();
     });
   }
-  loadTvSeriesByFilter(query: MovieQuery): void {
+  loadTvSeriesByFilter(query: TvSeriesQuery): void {
     this.tvSeriesService.getTvSeriesByFilter(query).subscribe({
         next: (data) => {
-          console.log('Załadowano seriale z filtrami:', data);
             this.TvSeries = data;
         },
         error: (err) => {
@@ -73,12 +86,11 @@ filterForm: FormGroup;
         }
     });
   }
-
-loadGenres(): void {
-  this.tvSeriesService.GetGenres().subscribe((data) => {
-    this.genres = data;
-  });
-}
+  loadGenres(): void {
+    this.tvSeriesService.GetGenres().subscribe((data) => {
+      this.genres = data;
+    });
+  }
   GetTheLastestReviews(): void {
     this.reviewService.getTheLastestReviews().subscribe((data) => {
       this.reviewsTitle = data;

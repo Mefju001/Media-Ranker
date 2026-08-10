@@ -2,7 +2,7 @@ import { HttpClient, HttpParams } from "@angular/common/http";
 import { Observable } from "rxjs";
 import {MovieResponse} from "../Data/Response/MovieResponse";
 import { Injectable } from "@angular/core";
-import { MovieQuery } from "../Data/Request/MovieQuery";
+import { MovieQuery } from "../ClientPages/MainPages/movie-web/MovieQuery";
 import { MovieRequest } from "../Data/Request/MovieRequest";
 @Injectable({
   providedIn: 'root' 

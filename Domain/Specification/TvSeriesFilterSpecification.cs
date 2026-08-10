@@ -13,10 +13,15 @@ namespace Domain.Specification
                 ["Rating"] = m => m.Stats.AverageRating,
                 ["Date"] = m => m.ReleaseDate!.Value,
             };
-        public TvSeriesFilterSpecification(string? TitleSearch,
-        double? MinRating, int? ReleaseYear, List<Guid>? genreIds,
-        int? seasons, int? episodes, string? network, ETvSeriesStatus? status,
-        string? SortByField, bool IsDescending)
+        public TvSeriesFilterSpecification(
+        string? TitleSearch,
+        double? MinRating,
+        int? ReleaseYear,
+        List<Guid>? genreIds,
+        string? network,
+        ETvSeriesStatus? status,
+        string? SortByField,
+        bool IsDescending)
         {
             if (!string.IsNullOrWhiteSpace(TitleSearch))
             {
@@ -30,12 +35,20 @@ namespace Domain.Specification
             {
                 AddCriteria(m => m.Stats!.AverageRating >= MinRating);
             }
+            if(!string.IsNullOrWhiteSpace(network))
+            {
+                AddCriteria(m => m.Network.Contains(network));
+            }
+            if(status is not null)
+            {
+                AddCriteria(m => m.Status == status);
+            }
             if (ReleaseYear.HasValue)
             {
                 var year = ReleaseYear.Value;
                 var startOfYear = new DateTime(year, 1, 1);
                 var endOfYear = new DateTime(year, 12, 31, 23, 59, 59);
-                AddCriteria(m => m.ReleaseDate >= startOfYear && m.ReleaseDate <= endOfYear);
+                AddCriteria(m => m.ReleaseDate.Value >= startOfYear && m.ReleaseDate.Value <= endOfYear);
             }
             if (!string.IsNullOrWhiteSpace(SortByField) && sortColumns.TryGetValue(SortByField, out var sortExpression))
             {

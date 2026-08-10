@@ -1,7 +1,7 @@
 import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { debounceTime } from 'rxjs';
-import { MovieQuery } from '../../../Data/Request/MovieQuery';
+import { MovieQuery } from '../movie-web/MovieQuery';
 import { GenreResponse } from '../../../Data/Response/GenreResponse';
 import { GenreService } from '../../../Services/GenreService';
 import { ReviewService } from '../../../Services/ReviewService';

@@ -2,8 +2,8 @@ import { HttpClient, HttpParams } from "@angular/common/http";
 import { Injectable } from "@angular/core";
 import { Observable } from "rxjs";
 import { TvSeriesResponse } from "../Data/Response/TvSeriesResponse";
-import { MovieQuery } from "../Data/Request/MovieQuery";
 import { TvSeriesRequest } from "../Data/Request/TvSeriesRequest";
+import { TvSeriesQuery } from "../ClientPages/MainPages/tv-series-web/TvSeriesQuery";
 
 @Injectable({
   providedIn: 'root' 
@@ -20,10 +20,10 @@ export class TvSeriesService {
     getTvSeriesById(id: string): Observable<TvSeriesResponse> {
         return this.http.get<TvSeriesResponse>(`${this.apiUrl}/${id}`);
     }
-    getTvSeriesByFilter(query: MovieQuery): Observable<TvSeriesResponse[]> {
+    getTvSeriesByFilter(query: TvSeriesQuery): Observable<TvSeriesResponse[]> {
         let params = new HttpParams();
         Object.keys(query).forEach(key => {
-        const value = query[key as keyof MovieQuery];
+        const value = query[key as keyof TvSeriesQuery];
         if (value !== null && value !== undefined && value !== '') {
             params = params.set(key, value.toString());
         }
