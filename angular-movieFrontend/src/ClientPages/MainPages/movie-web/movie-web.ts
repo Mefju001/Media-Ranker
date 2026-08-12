@@ -17,7 +17,7 @@ export class MovieWeb implements OnInit {
   private readonly fb = inject(FormBuilder);
   private readonly movieService = inject(MovieService);
   private readonly reviewService = inject(ReviewService);
-  filterForm = this.fb.group({
+  readonly filterForm = this.fb.group({
       TitleSearch: [null],
       MinRating: [null],
       ReleaseYear: [null],
@@ -70,9 +70,7 @@ loadMovies(): void {
 loadMoviesByFilter(query: MovieQuery): void {
     this.movieService.getMoviesByFilter(query).subscribe({
         next: (data) => {
-          console.log('Załadowano filmy z filtrami:', data);
             this.movies = data;
-            console.log('Filmy po zastosowaniu filtrów:', this.movies);
         },
         error: (err) => {
             console.error('Błąd ładowania filmów:', err);

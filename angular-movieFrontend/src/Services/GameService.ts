@@ -4,6 +4,7 @@ import { MovieQuery } from "../ClientPages/MainPages/movie-web/MovieQuery";
 import { GameResponse } from "../Data/Response/GameResponse";
 import { Injectable } from "@angular/core";
 import { GameRequest } from "../Data/Request/GameRequest";
+import { GameQuery } from "../ClientPages/MainPages/game-web/GameQuery";
 @Injectable({
     providedIn: 'root'
 })
@@ -22,10 +23,10 @@ export class GameService {
     getGameById(id: string): Observable<GameResponse> {
     return this.http.get<GameResponse>(`${this.apiUrl}/${id}`);
     }
-    getGamesByFilter(query: MovieQuery): Observable<GameResponse[]> {
+    getGamesByFilter(query: GameQuery): Observable<GameResponse[]> {
     let params = new HttpParams();
     Object.keys(query).forEach(key => {
-        const value = query[key as keyof MovieQuery];
+        const value = query[key as keyof GameQuery];
         if (value !== null && value !== undefined && value !== '') {
             params = params.set(key, value.toString());
         }

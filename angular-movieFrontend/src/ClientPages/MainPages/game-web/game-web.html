@@ -2,7 +2,7 @@
   <aside class="sidebar">
  <div class="movie-page-container">
 
-    <form [formGroup]="filterForm" class="filter-form">
+    <form [formGroup]="filterForm" class="filter-form" (ngSubmit)="onFilter()">
 
     <div class="filter-group">
       <h3>🔍 Filtry Wyszukiwania</h3>
@@ -21,16 +21,16 @@
 
       <label for="platform">Platforma:</label>
             <select id="platform" formControlName="Platform">
-                <option [value]="''">-- Wszystkie platformy --</option>
+                <option [ngValue]="null">-- Wszystkie platformy --</option>
                 @for (platform of platforms; track platform) {
-                    <option [value]="platform">{{ platform }}</option>
+                    <option [ngValue]="platform">{{ platform }}</option>
                 }
             </select>
       <label for="genreName">Gatunek:</label>
       <select id="genreName" formControlName="genreName">
-          <option [value]="''">-- Wszystkie gatunki --</option>
+          <option [ngValue]="null">-- Wszystkie gatunki --</option>
           @for (genre of genres; track genre.id) {
-              <option [value]="genre.name">{{ genre.name }}</option>
+              <option [ngValue]="genre.name">{{ genre.name }}</option>
           }
       </select>
     </div>
@@ -40,13 +40,16 @@
       <h3>↕️ Sortowanie</h3>
       <label for="sortByField">Sortuj wg:</label>
       <select id="sortByField" formControlName="SortByField">
-        @for (field of sortFields; track field.value) {
-          <option [value]="field.value">{{ field.name }}</option>
+      <option [ngValue]="null">-- Wszystkie gatunki --</option>
+        @for (field of sortFields; track field.name) {
+          <option [ngValue]="field">{{ field.name }}</option>
         }
       </select>
+      <button type="submit" class="filter-btn">Filtruj</button>
+
       <button 
       type="button" 
-      (click)="filterForm.reset({SortByField: null, IsDescending: false})" 
+      (click)="onReset()" 
       class="reset-btn">
       Resetuj sortowanie
     </button>
