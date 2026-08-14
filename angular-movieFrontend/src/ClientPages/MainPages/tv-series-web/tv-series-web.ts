@@ -1,6 +1,5 @@
 import { Component, inject } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule } from '@angular/forms';
-import { MovieQuery } from '../movie-web/MovieQuery';
 import { GenreResponse } from '../../../Data/Response/GenreResponse';
 import { ReviewService } from '../../../Services/ReviewService';
 import { RouterLink } from '@angular/router';
