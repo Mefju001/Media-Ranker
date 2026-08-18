@@ -20,7 +20,7 @@ namespace Application.Features.PremieresAndAnnouncements.GetReleases
             {
                 throw new ArgumentException("Scope and mediaType must be provided.");
             }
-            IQueryable<Media> releaseItemResponses = appDbContext.Set<Media>();
+            IQueryable<Media> releaseItemResponses = appDbContext.Set<Media>().AsQueryable().AsNoTracking();
             if(request.mediaType is "movie")
             {
                 releaseItemResponses = releaseItemResponses.OfType<Movie>();

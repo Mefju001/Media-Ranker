@@ -6,10 +6,10 @@ namespace Api.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
-    public class PremieresAndAnnouncementsController: ControllerBase
+    public class ReleasesController : ControllerBase
     {
         private readonly IMediator mediator;
-        public PremieresAndAnnouncementsController(IMediator mediator)
+        public ReleasesController(IMediator mediator)
         {
             this.mediator = mediator;
         }

@@ -1,0 +1,69 @@
+<div class="rankings-container">
+  
+  <header class="rankings-header">
+    <h1>🏆 Ranking Top 10</h1>
+    <p>Odkryj najwyżej oceniane dzieła wybrane przez naszą społeczność.</p>
+  </header>
+
+  <div class="chips-group">
+    @for (type of selectedTypes; track type.value) {
+      <button 
+        class="chip-btn" 
+        [class.selected]="selectedType === type.value"
+        (click)="onTypeChange(type.value)">
+        {{ type.value === 'movie' ? '🎬 Filmy' : type.value === 'tv' ? '📺 Seriale' : type.value === 'game' ? '🎮 Gry' : '🌐 Wszystkie' }}
+      </button>
+    }
+  </div>
+
+  <section class="rankings-list">
+    @for (item of items; track item.id; let i = $index) {
+      <article 
+        class="ranking-card" 
+        [class.podium]="i < 3" 
+        [attr.data-rank]="i + 1">
+        
+        <div class="rank-badge" [class.gold]="i === 0" [class.silver]="i === 1" [class.bronze]="i === 2">
+          #{{ i + 1 }}
+        </div>
+
+        <div class="card-main-info">
+          
+          <div class="card-badge-container">
+            <span class="media-type-badge" [attr.data-type]="item.type">
+              {{ item.type === 'movie' ? 'Film' : item.type === 'tv' ? 'Serial' : item.type === 'game' ? 'Gra' : 'Inne' }}
+            </span>
+            @if (item.genre) {
+            <span class="genre-badge">
+                {{ item.genre.name }}
+            </span>
+            }
+          </div>
+
+          <h3 class="card-title">{{ item.title }}</h3>
+          <p class="card-description">{{ item.description }}</p>
+        </div>
+
+        <div class="card-stats">
+          <div class="rating-box">
+            <span class="star-icon">⭐</span>
+            <span class="rating-value">{{ item.stats.averageRating | number:'1.1-1' }}</span>
+          </div>
+          <span class="review-count">{{ item.stats.reviewCount }} ocen</span>
+        </div>
+
+        <div class="card-footer">
+          <a [routerLink]="changeRoute(item.type, item.id)" class="details-link">
+            Zobacz szczegóły
+          </a>
+        </div>
+
+      </article>
+    } @empty {
+      <div class="empty-state">
+        <p>Brak pozycji w rankingu dla wybranych kryteriów.</p>
+      </div>
+    }
+  </section>
+
+</div>
