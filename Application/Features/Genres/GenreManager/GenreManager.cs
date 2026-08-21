@@ -1,7 +1,7 @@
-﻿using Application.Common.Interfaces;
-using Application.Features.Genres.Common;
+﻿using Application.Features.Genres.Common;
 using Application.Features.Genres.GetAll;
 using Domain.Aggregate;
+using Domain.Repository;
 
 namespace Application.Features.Genres.GenreManager
 {

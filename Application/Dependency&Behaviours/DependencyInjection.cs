@@ -2,8 +2,7 @@
 using Application.Dependency_Behaviours.Behaviours;
 using Application.Features.Genres.GenreManager;
 using Application.Features.Genres.GetAll;
-using Application.Features.Genres.GetAllForMedias;
-using Application.Features.Genres.GetAllForMovies;
+using Application.Features.Genres.GetAllForChooseMedias;
 using Domain.Aggregate;
 using FluentValidation;
 using MediatR;

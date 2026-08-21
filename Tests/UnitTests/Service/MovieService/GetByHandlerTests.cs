@@ -1,10 +1,10 @@
 ﻿using Application.Behaviours;
-using Application.Common.Interfaces;
 using Application.Features.Common.Interfaces;
-using Application.Features.Movies.Common;
-using Application.Features.Movies.GetByCriteria;
+using Application.Features.Medias.Movies.Common;
+using Application.Features.Medias.Movies.GetByCriteria;
 using Domain.Aggregate;
 using Domain.Enums;
+using Domain.Repository;
 using Domain.Value_Object;
 using FluentValidation;
 using Infrastructure.Database;

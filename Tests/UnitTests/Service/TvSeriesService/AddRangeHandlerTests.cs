@@ -1,11 +1,10 @@
 ﻿using Application.Behaviours;
-using Application.Common.Interfaces;
 using Application.Features.Common.Interfaces;
 using Application.Features.Common.Notification;
 using Application.Features.Genres.Common;
 using Application.Features.Genres.GenreManager;
-using Application.Features.TvSeries.AddRange;
-using Application.Features.TvSeries.Common;
+using Application.Features.Medias.TvSeries.AddRange;
+using Application.Features.Medias.TvSeries.Common;
 using Domain.Aggregate;
 using Domain.Enums;
 using Domain.Exceptions;

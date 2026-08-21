@@ -1,5 +1,4 @@
-﻿using Domain.Base;
-using Domain.Interfaces;
+﻿using Domain.Interfaces;
 using Domain.Value_Object;
 
 namespace Domain.Entity;

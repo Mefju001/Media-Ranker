@@ -1,13 +1,12 @@
 ﻿using Application.Behaviours;
-using Application.Common.Interfaces;
 using Application.Features.Common.Interfaces;
 using Application.Features.Common.Notification;
 using Application.Features.Directors.Common;
 using Application.Features.Directors.Manager;
 using Application.Features.Genres.Common;
 using Application.Features.Genres.GenreManager;
-using Application.Features.Movies.AddRange;
-using Application.Features.Movies.Common;
+using Application.Features.Medias.Movies.AddRange;
+using Application.Features.Medias.Movies.Common;
 using Domain.Aggregate;
 using Domain.Exceptions;
 using Domain.Repository;

@@ -1,5 +1,5 @@
-﻿using Domain.Base;
-using Domain.Exceptions;
+﻿using Domain.Exceptions;
+using Domain.Interfaces;
 
 namespace Domain.Aggregate;
 

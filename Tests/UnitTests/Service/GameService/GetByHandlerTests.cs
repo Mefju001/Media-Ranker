@@ -1,8 +1,7 @@
 ﻿using Application.Behaviours;
-using Application.Common.Interfaces;
 using Application.Features.Common.Interfaces;
-using Application.Features.Games.Command;
-using Application.Features.Games.GetByCriteria;
+using Application.Features.Medias.Games.Common;
+using Application.Features.Medias.Games.GetByCriteria;
 using Domain.Aggregate;
 using Domain.Enums;
 using Domain.Repository;

@@ -1,5 +1,4 @@
 ﻿using Application.Behaviours;
-using Application.Common.Interfaces;
 using Application.Features.Common.Interfaces;
 using Application.Features.ToWatch.Add;
 using Domain.Aggregate;

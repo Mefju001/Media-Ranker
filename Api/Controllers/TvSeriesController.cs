@@ -1,10 +1,10 @@
-﻿using Application.Features.Genres.GetAllForMedias;
-using Application.Features.TvSeries.AddRange;
-using Application.Features.TvSeries.Common;
-using Application.Features.TvSeries.DeleteById;
-using Application.Features.TvSeries.GetByCriteria;
-using Application.Features.TvSeries.GetById;
-using Application.Features.TvSeries.Upsert;
+﻿using Application.Features.Genres.GetAllForChooseMedias;
+using Application.Features.Medias.TvSeries.AddRange;
+using Application.Features.Medias.TvSeries.Common;
+using Application.Features.Medias.TvSeries.DeleteById;
+using Application.Features.Medias.TvSeries.GetByCriteria;
+using Application.Features.Medias.TvSeries.GetById;
+using Application.Features.Medias.TvSeries.Upsert;
 using Domain.Aggregate;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;

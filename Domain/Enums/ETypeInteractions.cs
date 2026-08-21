@@ -2,6 +2,6 @@
 {
     public enum ETypeInteractions
     {
-        WANT_TO_WATCH, WATCHING, COMPLETED, IGNORED
+        Planned, InProgress, Completed, Ignored
     }
 }

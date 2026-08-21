@@ -1,7 +1,7 @@
 ﻿using Application.Behaviours;
 using Application.Common.Interfaces;
 using Application.Features.Common.Interfaces;
-using Application.Features.Reviews.GetTheLastestTitle;
+using Application.Features.UserInteractions.Reviews.GetTheLastestTitle;
 using Domain.Aggregate;
 using Domain.Enums;
 using Domain.Repository;

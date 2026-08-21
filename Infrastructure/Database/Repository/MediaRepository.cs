@@ -1,5 +1,5 @@
-﻿using Application.Common.Interfaces;
-using Application.Features.Common.Interfaces;
+﻿using Application.Features.Common.Interfaces;
+using Domain.Repository;
 using Microsoft.EntityFrameworkCore;
 
 namespace Infrastructure.Database.Repository

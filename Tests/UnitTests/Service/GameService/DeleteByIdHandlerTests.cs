@@ -1,8 +1,7 @@
 ﻿using Application.Behaviours;
-using Application.Common.Interfaces;
 using Application.Features.Common.Interfaces;
 using Application.Features.Common.Notification;
-using Application.Features.Games.DeleteById;
+using Application.Features.Medias.Games.DeleteById;
 using Domain.Aggregate;
 using Domain.Enums;
 using Domain.Exceptions;

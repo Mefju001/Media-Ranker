@@ -1,7 +1,6 @@
 ﻿using Application.Behaviours;
-using Application.Common.Interfaces;
 using Application.Features.Common.Interfaces;
-using Application.Features.Reviews.Upsert;
+using Application.Features.UserInteractions.Reviews.Upsert;
 using Domain.Aggregate;
 using Domain.Enums;
 using Domain.Exceptions;

@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Http;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 
-namespace Application.Common.UserContext
+namespace Infrastructure.UserContext
 {
     public class CurrentUserContext : ICurrentUserContext
     {

@@ -1,5 +1,4 @@
-﻿using Domain.Entity;
-using Domain.Enums;
+﻿using Domain.Enums;
 
 namespace Application.Features.Recommendation.GetForUser
 {
@@ -20,13 +19,13 @@ namespace Application.Features.Recommendation.GetForUser
 
     public static class UserRecommendationProfileDto
     {
-        public static UserProfileDto Create(List<UserInteractions> interactions)
+        public static UserProfileDto Create(List<Domain.Entity.UserInteractions> interactions)
         {
             return new UserProfileDto(
                 FavLikedMediaIds: interactions.Where(ui => ui.RatingVote == ERatingVote.Liked).Select(ui => ui.MediaId).ToList(),
-                WantToWatchMediaIds: interactions.Where(ui => ui.TypeInteractions == ETypeInteractions.WANT_TO_WATCH).Select(ui => ui.MediaId).ToList(),
+                WantToWatchMediaIds: interactions.Where(ui => ui.TypeInteractions == ETypeInteractions.Planned).Select(ui => ui.MediaId).ToList(),
                 DislikedMediaIds: interactions.Where(ui => ui.RatingVote == ERatingVote.Disliked).Select(ui => ui.MediaId).ToList(),
-                IgnoredMediaIds: interactions.Where(ui => ui.TypeInteractions == ETypeInteractions.IGNORED).Select(ui => ui.MediaId).ToList()
+                IgnoredMediaIds: interactions.Where(ui => ui.TypeInteractions == ETypeInteractions.Ignored).Select(ui => ui.MediaId).ToList()
             );
         }
     }

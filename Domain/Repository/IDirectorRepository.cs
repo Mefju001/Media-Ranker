@@ -1,6 +1,6 @@
 ﻿using Domain.Aggregate;
 
-namespace Application.Common.Interfaces
+namespace Domain.Repository
 {
     public interface IDirectorRepository : IRepository<Director, Guid>
     {

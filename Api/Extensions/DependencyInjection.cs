@@ -1,7 +1,6 @@
-﻿using Api.Extensions;
-using Application.Features.Auth.Common;
+﻿using Application.Features.Auth.Common;
 
-namespace Api
+namespace Api.Extensions
 {
     internal static class DependencyInjection
     {

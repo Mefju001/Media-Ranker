@@ -1,9 +1,9 @@
 ﻿using Application.Features.Common.Interfaces;
-using Application.Features.Reviews.DeleteById;
-using Application.Features.Reviews.GetAll;
-using Application.Features.Reviews.GetById;
-using Application.Features.Reviews.GetTheLastestTitle;
-using Application.Features.Reviews.Upsert;
+using Application.Features.UserInteractions.Reviews.DeleteById;
+using Application.Features.UserInteractions.Reviews.GetAll;
+using Application.Features.UserInteractions.Reviews.GetById;
+using Application.Features.UserInteractions.Reviews.GetTheLastestTitle;
+using Application.Features.UserInteractions.Reviews.Upsert;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;

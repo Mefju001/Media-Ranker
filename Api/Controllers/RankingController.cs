@@ -1,4 +1,4 @@
-﻿using Application.Features.Rankings.Get;
+﻿using Application.Features.UserInteractions.Rankings.Get;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 

@@ -1,5 +1,5 @@
 ﻿using Application.Features.Common.Interfaces;
-using Application.Features.Liked.Common;
+using Application.Features.Common.Models;
 
 namespace Application.Features.Recommendation.GetForUser
 {

@@ -1,4 +1,4 @@
-﻿using Domain.Base;
+﻿using Domain.Interfaces;
 using Domain.Value_Object;
 
 namespace Domain.Aggregate;

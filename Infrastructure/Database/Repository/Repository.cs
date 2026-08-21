@@ -1,6 +1,6 @@
-﻿using Application.Common.Interfaces;
-using Application.Features.Common.Interfaces;
-using Domain.Base;
+﻿using Application.Features.Common.Interfaces;
+using Domain.Interfaces;
+using Domain.Repository;
 using Microsoft.EntityFrameworkCore;
 
 

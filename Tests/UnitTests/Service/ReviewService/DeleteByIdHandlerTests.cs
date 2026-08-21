@@ -1,7 +1,6 @@
 ﻿using Application.Behaviours;
-using Application.Common.Interfaces;
 using Application.Features.Common.Interfaces;
-using Application.Features.Reviews.DeleteById;
+using Application.Features.UserInteractions.Reviews.DeleteById;
 using Domain.Aggregate;
 using Domain.Enums;
 using Domain.Exceptions;

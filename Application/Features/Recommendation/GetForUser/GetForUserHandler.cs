@@ -1,5 +1,6 @@
 ﻿using Application.Features.Common.Interfaces;
-using Application.Features.Liked.Common;
+using Application.Features.Common.Mapping;
+using Application.Features.Common.Models;
 using Domain.Aggregate;
 using MediatR;
 using Microsoft.EntityFrameworkCore;

@@ -1,11 +1,10 @@
-
-using Application.Features.Genres.GetAllForMedias;
-using Application.Features.Movies.AddRange;
-using Application.Features.Movies.Common;
-using Application.Features.Movies.DeleteById;
-using Application.Features.Movies.GetByCriteria;
-using Application.Features.Movies.GetMovieById;
-using Application.Features.Movies.Upsert;
+using Application.Features.Genres.GetAllForChooseMedias;
+using Application.Features.Medias.Movies.AddRange;
+using Application.Features.Medias.Movies.Common;
+using Application.Features.Medias.Movies.DeleteById;
+using Application.Features.Medias.Movies.GetByCriteria;
+using Application.Features.Medias.Movies.GetById;
+using Application.Features.Medias.Movies.Upsert;
 using Domain.Aggregate;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;

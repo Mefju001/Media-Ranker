@@ -1,6 +1,6 @@
-﻿using Domain.Base;
+﻿using Domain.Interfaces;
 
-namespace Application.Common.Interfaces
+namespace Domain.Repository
 {
     public interface IRepository<T, TId> where T : AggregateRoot<TId>
     {

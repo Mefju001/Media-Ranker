@@ -1,7 +1,6 @@
 ﻿using Application.Behaviours;
-using Application.Common.Interfaces;
 using Application.Features.Common.Interfaces;
-using Application.Features.TvSeries.DeleteById;
+using Application.Features.Medias.TvSeries.DeleteById;
 using Domain.Aggregate;
 using Domain.Enums;
 using Domain.Exceptions;

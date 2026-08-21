@@ -1,5 +1,4 @@
 ﻿using Application.Behaviours;
-using Application.Common.Interfaces;
 using Application.Features.Common.Interfaces;
 using Application.Features.Liked.Add;
 using Domain.Aggregate;
@@ -18,7 +17,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 
 
-namespace Tests.Service.LikedMediaService
+namespace Tests.Service.LikedService
 {
     [TestClass]
     public class AddHandlerTests

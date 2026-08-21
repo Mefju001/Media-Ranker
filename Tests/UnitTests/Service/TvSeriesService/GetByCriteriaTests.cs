@@ -1,7 +1,6 @@
 ﻿using Application.Behaviours;
-using Application.Common.Interfaces;
 using Application.Features.Common.Interfaces;
-using Application.Features.TvSeries.GetByCriteria;
+using Application.Features.Medias.TvSeries.GetByCriteria;
 using Domain.Aggregate;
 using Domain.Enums;
 using Domain.Repository;

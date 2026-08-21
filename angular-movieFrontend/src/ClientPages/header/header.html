@@ -9,12 +9,11 @@
       <li><a [routerLink]="['games']">Gry</a></li>
       <li><a [routerLink]="['rankings']">Rankingi</a></li>
       <li><a [routerLink]="['premieres']">Premiery</a></li>
-      <li><a [routerLink]="['news']">Newsy</a></li>
       <li><a [routerLink]="['forum']">Forum</a></li>
     </ul>
   </nav>
   <div class="user-actions">
-    <input type="text" placeholder="Szukaj filmów..." />
+    
     @if(isLoggedIn) {
       <div class="dropdown">
         <button class="btn btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
@@ -23,12 +22,17 @@
         <ul class="dropdown-menu">
           @if(isLoggedIn && userRole === true) {
             <li><a class="dropdown-item" [routerLink]="['adminDashboard']">Admin-Dashboard</a></li>
+            <li><hr class="dropdown-divider"></li>
           }
-          
-          <li><a class="dropdown-item" (click)="openChangePassword()">zmiana hasła</a></li>
-          <li><a class="dropdown-item" (click)="openChangeDetails()">zmiana danych</a></li>
+          <li><a class="dropdown-item" [routerLink]="['yourList']">Twoje listy</a></li>
+
+
+          <li><hr class="dropdown-divider"></li>
+          <li><a class="dropdown-item" (click)="openChangePassword()">Zmiana hasła</a></li>
+          <li><a class="dropdown-item" (click)="openChangeDetails()">Zmiana danych</a></li>
           <li><a class="dropdown-item" (click)="deleteAccount()">Usuń konto</a></li>
-          <li><a class="dropdown-item" (click)="logout()">wyloguj</a></li>
+          <li><hr class="dropdown-divider"></li>
+          <li><a class="dropdown-item" (click)="logout()">Wyloguj</a></li>
         </ul>
       </div>
     } @else if(!isLoggedIn) {

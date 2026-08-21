@@ -1,10 +1,9 @@
 ﻿using Application.Behaviours;
-using Application.Common.Interfaces;
 using Application.Features.Common.Interfaces;
 using Application.Features.Games.GetByCriteria;
-using Application.Features.Games.Upsert;
 using Application.Features.Genres.Common;
 using Application.Features.Genres.GenreManager;
+using Application.Features.Medias.Games.Upsert;
 using Domain.Aggregate;
 using Domain.Enums;
 using Domain.Exceptions;

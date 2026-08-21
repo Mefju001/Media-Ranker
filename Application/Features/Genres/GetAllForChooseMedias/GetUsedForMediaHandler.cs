@@ -1,11 +1,10 @@
 ﻿using Application.Features.Common.Interfaces;
 using Application.Features.Genres.GetAll;
-using Application.Features.Genres.GetAllForMedias;
 using Domain.Aggregate;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 
-namespace Application.Features.Genres.GetAllForMovies
+namespace Application.Features.Genres.GetAllForChooseMedias
 {
     internal class GetUsedForMediaHandler<TMedia>: IRequestHandler<GetUsedForMediaQuery<TMedia>, List<GenreResponse>> where TMedia: Media
     {

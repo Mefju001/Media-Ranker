@@ -1,4 +1,4 @@
-﻿using Application.Features.PremieresAndAnnouncements.GetReleases;
+﻿using Application.Features.Medias.PremieresAndAnnouncements.GetReleases;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 

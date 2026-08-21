@@ -1,15 +1,15 @@
-﻿using Application.Features.Games.Command;
-using Application.Features.Games.AddRange;
-using Application.Features.Games.DeleteById;
-using Application.Features.Games.Upsert;
-using Application.Features.Games.GetById;
-using Application.Features.Games.GetByCriteria;
+﻿using Application.Features.Genres.GetAllForChooseMedias;
+using Application.Features.Medias.Games.AddRange;
+using Application.Features.Medias.Games.Common;
+using Application.Features.Medias.Games.DeleteById;
+using Application.Features.Medias.Games.GetByCriteria;
+using Application.Features.Medias.Games.GetById;
+using Application.Features.Medias.Games.GetPlatforms;
+using Application.Features.Medias.Games.Upsert;
+using Domain.Aggregate;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Application.Features.Genres.GetAllForMedias;
-using Domain.Aggregate;
-using Application.Features.Games.GetPlatforms;
 
 namespace Api.Controllers
 {

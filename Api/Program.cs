@@ -1,5 +1,5 @@
-using Api;
 using Api.Controllers;
+using Api.Extensions;
 using Application;
 using Infrastructure;
 using Infrastructure.Database;

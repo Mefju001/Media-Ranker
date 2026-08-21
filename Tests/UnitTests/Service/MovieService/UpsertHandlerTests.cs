@@ -1,13 +1,13 @@
-﻿using Application.Common.Interfaces;
-using Application.Features.Common.Notification;
+﻿using Application.Features.Common.Notification;
 using Application.Features.Directors.Common;
 using Application.Features.Directors.Manager;
 using Application.Features.Genres.Common;
 using Application.Features.Genres.GenreManager;
-using Application.Features.Movies.Upsert;
+using Application.Features.Medias.Movies.Upsert;
 using Domain.Aggregate;
 using Domain.Enums;
 using Domain.Exceptions;
+using Domain.Repository;
 using Domain.Value_Object;
 using Infrastructure.Database;
 using Infrastructure.Database.Repository;
