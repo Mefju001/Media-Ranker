@@ -1,4 +1,5 @@
 ﻿using Application.Features.Genres.Common;
+using Domain.Enums;
 
 namespace Application.Features.Medias.Games.Common
 {
@@ -9,11 +10,11 @@ namespace Application.Features.Medias.Games.Common
         GenreRequest Genre,
         DateTime? ReleaseDate,
         string Language,
-        string GameStatus,
+        EGameStatus GameStatus,
         string Developer,
         string? Engine,
         int PegiRating,
-        List<string> Platforms,
+        List<EPlatform> Platforms,
         bool SupportsCrossPlay
         );
 }

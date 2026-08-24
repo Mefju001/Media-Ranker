@@ -1,7 +1,6 @@
 ﻿using Application.Features.Genres.GenreManager;
 using Domain.Aggregate;
 using Domain.Exceptions;
-using Domain.Extensions;
 using Domain.Repository;
 using Domain.Value_Object;
 using MediatR;
@@ -36,8 +35,8 @@ namespace Application.Features.Medias.Games.AddRange
                         genre.id,
                         new GameDetails(gameReq.Developer, gameReq.Engine),
                         gameReq.PegiRating,
-                        EPlatformExtensions.ToEnum(gameReq.Platforms),
-                        EGameStatusExtensions.ToEnum(gameReq.GameStatus),
+                        gameReq.Platforms,
+                        gameReq.GameStatus,
                         gameReq.SupportsCrossPlay);
             }).ToList();
             await mediaRepository.AddRangeAsync(games, cancellationToken);

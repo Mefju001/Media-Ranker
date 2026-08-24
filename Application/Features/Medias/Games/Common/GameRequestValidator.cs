@@ -29,12 +29,11 @@ namespace Application.Features.Medias.Games.Common
             RuleFor(Request => Request.Language)
                     .NotEmpty().WithMessage("Language name should have text.")
                     .MaximumLength(250).WithMessage("Only 250 characters are allowed.");
-            RuleFor(Request => Request.Platforms)
-                .NotEmpty()
-                .ForEach(platformRule => platformRule
-                    .IsInEnum().WithMessage("The value entered is incorrect.")
-                    .NotEqual("PC")
-                    .WithMessage("You must enter the correct value, not the default value."));
+            RuleFor(request => request.Platforms)
+                .NotEmpty();
+
+            RuleForEach(request => request.Platforms)
+                .IsInEnum().WithMessage("The value entered is incorrect.");
             RuleFor(Request => Request.Developer)
                 .NotEmpty()
                 .MaximumLength(250).WithMessage("Only 250 characters are allowed.");

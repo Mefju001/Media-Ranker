@@ -1,6 +1,5 @@
 ﻿using Application.Features.Genres.GenreManager;
 using Domain.Exceptions;
-using Domain.Extensions;
 using Domain.Repository;
 using Domain.Value_Object;
 using MediatR;
@@ -29,7 +28,7 @@ namespace Application.Features.Medias.TvSeries.AddRange
             var tvSeries = requests.tvSeries.Select(tv =>
             {
                 var genre = genres[tv.genre.name];
-                return domain.TvSeries.Create(tv.title, tv.description, tv.Language, new ReleaseDate(tv.ReleaseDate), genre.id, new SeasonDetails(tv.Seasons,tv.Episodes), tv.Network, ETvSeriesStatusExtensions.ToEnum(tv.Status));
+                return domain.TvSeries.Create(tv.title, tv.description, tv.Language, new ReleaseDate(tv.ReleaseDate), genre.id, new SeasonDetails(tv.Seasons,tv.Episodes), tv.Network, tv.Status);
             }).ToList();
             await mediaRepository.AddRangeAsync(tvSeries, cancellationToken);
             var genresById = genres.Values.ToDictionary(g => g.id);

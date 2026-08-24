@@ -12,7 +12,7 @@ namespace Application.Features.Medias.TvSeries.Common
         int Seasons,
         int Episodes,
         string Network,
-        string Status
+        ETvSeriesStatus Status
         )
     {
     }

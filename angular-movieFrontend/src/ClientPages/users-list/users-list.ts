@@ -1,9 +1,10 @@
 import { Component, inject, OnInit } from '@angular/core';
 import { UserInteractionService } from '../../Services/UserInteractionsService';
+import { RouterLink } from '@angular/router';
 
 @Component({
   selector: 'app-users-list',
-  imports: [],
+  imports: [RouterLink],
   templateUrl: './users-list.html',
   styleUrl: './users-list.css',
 })
@@ -30,5 +31,16 @@ export class UsersList implements OnInit {
   loadData(): void {
     this.userInteractionService.Get(this.selectedType, this.selectedVote)
       .subscribe(data => this.items = data);
+  }
+  changeRoute(type:string, id:string): string {
+    if (type === 'movie') {
+      return `/movie/${id}`;
+    } else if (type === 'tv') {
+      return `/tvSeries/${id}`;
+    } else if (type === 'game') {
+      return `/game/${id}`;
+    } else {
+      return '';
+    }
   }
 }

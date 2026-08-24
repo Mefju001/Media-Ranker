@@ -2,7 +2,6 @@
 using Application.Features.Medias.Games.Common;
 using Domain.Aggregate;
 using Domain.Exceptions;
-using Domain.Extensions;
 using Domain.Repository;
 using Domain.Value_Object;
 using MediatR;
@@ -39,8 +38,8 @@ namespace Application.Features.Medias.Games.Upsert
                     genre.id,
                     new GameDetails(request.Developer, request.Engine),
                     request.PegiRating,
-                    EPlatformExtensions.ToEnum(request.Platforms),
-                    EGameStatusExtensions.ToEnum(request.GameStatus),
+                    request.Platforms,
+                    request.GameStatus,
                     request.SupportsCrossPlay
                     );
             }
@@ -54,8 +53,8 @@ namespace Application.Features.Medias.Games.Upsert
                     genre.id,
                     new GameDetails(request.Developer, request.Engine),
                     request.PegiRating,
-                    EPlatformExtensions.ToEnum(request.Platforms),
-                    EGameStatusExtensions.ToEnum(request.GameStatus),
+                    request.Platforms,
+                    request.GameStatus,
                     request.SupportsCrossPlay);
                 game = await mediaRepository.AddAsync(game, cancellationToken);
             }

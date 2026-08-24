@@ -1,7 +1,7 @@
 ﻿using Application.Features.Common.Interfaces;
 using Application.Features.Common.Models;
 using Application.Features.Directors.Common;
-using Application.Features.Genres.GetAll;
+using Application.Features.Genres.GetGenres;
 using Application.Features.UserInteractions.Reviews.Common;
 
 namespace Application.Features.Medias.Movies.Common

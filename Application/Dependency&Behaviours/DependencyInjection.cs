@@ -1,11 +1,7 @@
 ﻿using Application.Behaviours;
 using Application.Dependency_Behaviours.Behaviours;
 using Application.Features.Genres.GenreManager;
-using Application.Features.Genres.GetAll;
-using Application.Features.Genres.GetAllForChooseMedias;
-using Domain.Aggregate;
 using FluentValidation;
-using MediatR;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using System.Reflection;
@@ -29,15 +25,6 @@ namespace Application
             services.AddValidatorsFromAssembly(typeof(DependencyInjection).Assembly);
             services.AddMemoryCache();
             services.RegisterAllTypes(typeof(IGenreManager).Assembly);
-            services.AddTransient<
-                        IRequestHandler<GetUsedForMediaQuery<Game>, List<GenreResponse>>,
-                        GetUsedForMediaHandler<Game>>();
-            services.AddTransient<
-                        IRequestHandler<GetUsedForMediaQuery<Movie>, List<GenreResponse>>,
-                        GetUsedForMediaHandler<Movie>>();
-            services.AddTransient<
-                        IRequestHandler<GetUsedForMediaQuery<TvSeries>, List<GenreResponse>>,
-                        GetUsedForMediaHandler<TvSeries>>();
             return services;
         }
     }

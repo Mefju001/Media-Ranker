@@ -1,6 +1,7 @@
 ﻿using Application.Features.Common.Interfaces;
 using Application.Features.Genres.Common;
 using Application.Features.Medias.Games.Common;
+using Domain.Enums;
 
 namespace Application.Features.Medias.Games.Upsert
 {
@@ -11,10 +12,10 @@ namespace Application.Features.Medias.Games.Upsert
         GenreRequest Genre,
         DateTime? ReleaseDate,
         string Language,
-        string GameStatus,
+        EGameStatus GameStatus,
         string Developer,
         string? Engine,
         int PegiRating,
-        List<string> Platforms,
+        List<EPlatform> Platforms,
         bool SupportsCrossPlay) : ICommand<GameResponse>,ISendNotificationCommand;
 }

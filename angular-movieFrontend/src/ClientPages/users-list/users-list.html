@@ -75,8 +75,8 @@
           <p class="description">{{ item.description }}</p>
         </div>
 
-        <a class="btn btn-primary" >
-          Więcej...[routerLink]="['/movie', item.id]"
+        <a class="btn btn-primary" [routerLink]="changeRoute(item.type, item.id)">
+          Więcej...
         </a>
       </div>
     </div>

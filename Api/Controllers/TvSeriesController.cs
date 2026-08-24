@@ -1,11 +1,10 @@
-﻿using Application.Features.Genres.GetAllForChooseMedias;
+﻿using Application.Features.Genres.GetGenres;
 using Application.Features.Medias.TvSeries.AddRange;
 using Application.Features.Medias.TvSeries.Common;
 using Application.Features.Medias.TvSeries.DeleteById;
 using Application.Features.Medias.TvSeries.GetByCriteria;
 using Application.Features.Medias.TvSeries.GetById;
 using Application.Features.Medias.TvSeries.Upsert;
-using Domain.Aggregate;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -34,7 +33,7 @@ namespace Api.Controllers
         [HttpGet("Genres")]
         public async Task<IActionResult> GetGenres(CancellationToken cancellationToken)
         {
-            var query = new GetUsedForMediaQuery<TvSeries>();
+            var query = new GetGenresQuery(EMediaType.TvSeries);
             var result = await mediator.Send(query, cancellationToken);
             return Ok(result);
         }
@@ -48,7 +47,7 @@ namespace Api.Controllers
         }
         [Authorize(Roles = "Admin")]
         [HttpPost]
-        public async Task<IActionResult> AddTvSeries(TvSeriesRequest tvSeriesRequest, CancellationToken cancellationToken)
+        public async Task<IActionResult> AddTvSeries([FromBody] TvSeriesRequest tvSeriesRequest, CancellationToken cancellationToken)
         {
             var command = new UpsertCommand(null,
                 tvSeriesRequest.title,
@@ -65,7 +64,7 @@ namespace Api.Controllers
         }
         [Authorize(Roles = "Admin")]
         [HttpPost("Bulk")]
-        public async Task<IActionResult> AddListOfSeries(List<TvSeriesRequest> tvSeriesRequests, CancellationToken cancellationToken)
+        public async Task<IActionResult> AddListOfSeries([FromBody] List<TvSeriesRequest> tvSeriesRequests, CancellationToken cancellationToken)
         {
             var command = new AddRangeCommand(tvSeriesRequests);
             var created = await mediator.Send(command, cancellationToken);
@@ -73,7 +72,7 @@ namespace Api.Controllers
         }
         [Authorize(Roles = "Admin")]
         [HttpPut("{id:guid}")]
-        public async Task<IActionResult> UpdateTvSeries([FromRoute] Guid id, TvSeriesRequest tvSeriesRequest, CancellationToken cancellationToken)
+        public async Task<IActionResult> UpdateTvSeries([FromRoute] Guid id, [FromBody] TvSeriesRequest tvSeriesRequest, CancellationToken cancellationToken)
         {
             var command = new UpsertCommand(id,
                 tvSeriesRequest.title,

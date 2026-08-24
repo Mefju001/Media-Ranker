@@ -15,6 +15,7 @@ import { EditDetailsForm } from '../AdminPages/Form/edit-details-form/edit-detai
 import { Premieres } from '../ClientPages/premieres/premieres';
 import { Rankings } from '../ClientPages/rankings/rankings';
 import { UsersList } from '../ClientPages/users-list/users-list';
+import { userGuard } from '../ClientPages/auth/guard/user.guard';
 export const routes: Routes = [
     {path: '',component: MainWeb},
     {path: 'movies', component: MovieWeb},
@@ -25,7 +26,7 @@ export const routes: Routes = [
     {path: 'tvSeries/:id', component: TvSeriesDetails},
     {path: 'premieres', component: Premieres},
     {path: 'rankings', component: Rankings},
-    {path: 'yourList', component: UsersList},
+    {path: 'yourList', component: UsersList, canActivate: [userGuard]},
     {path: 'adminDashboard', component: AdminDashboard, canActivate: [adminGuard]},
     {path: 'editMovie/:id', component: EditMovieForm, canActivate: [adminGuard]},
     {path: 'editGame/:id', component: EditGameForm, canActivate: [adminGuard]},

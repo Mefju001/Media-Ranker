@@ -1,5 +1,5 @@
 ﻿using Application.Features.Common.Interfaces;
-using Application.Features.Genres.GetAll;
+using Application.Features.Genres.GetGenres;
 using Application.Features.Medias.Movies.Common;
 using Domain.Aggregate;
 using MediatR;

@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Application.Features.User.ChangePassword;
 using Application.Features.User.ChangeDetails;
+using Application.Features.User.GetMyDetails;
 
 namespace Api.Controllers
 {
@@ -49,8 +50,21 @@ namespace Api.Controllers
             return Ok(result);
         }
         [Authorize(Roles = "Admin,User")]
+        [HttpGet()]
+        public async Task<IActionResult> GetMyDetails()
+        {
+            var currentId = getUserId();
+            var query = new GetMyDetailsQuery(currentId.Value);
+            var result = await mediator.Send(query);
+            if (result == null)
+            {
+                return NotFound();
+            }
+            return Ok(result);
+        }
+        [Authorize(Roles = "Admin,User")]
         [HttpPatch("Change/Password")]
-        public async Task<IActionResult> ChangePassword(ChangePasswordRequest changePasswordRequest)
+        public async Task<IActionResult> ChangePassword([FromBody] ChangePasswordRequest changePasswordRequest)
         {
             var userId = getUserId();
             if (userId == null)

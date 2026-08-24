@@ -1,5 +1,6 @@
 ﻿using Application.Features.Genres.Common;
 using Application.Features.Genres.GetAll;
+using Application.Features.Genres.GetGenres;
 using Domain.Aggregate;
 using Domain.Repository;
 

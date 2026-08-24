@@ -14,7 +14,7 @@ namespace Api.Controllers
             this.mediator = mediator;
         }
         [HttpGet]
-        public async Task<IActionResult> GetReleases(string scope, string mediaType)
+        public async Task<IActionResult> GetReleases([FromQuery] string scope, [FromQuery] string mediaType)
         {
             var recommendationQuery = new GetReleasesQuery(scope, mediaType);
             var recommedations = await mediator.Send(recommendationQuery);

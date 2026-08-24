@@ -20,13 +20,13 @@ namespace Application.Features.Medias.Movies.Common
                 .NotEmpty().WithMessage("Director should have name.");
             RuleFor(Request => Request.Director.Surname)
                 .NotEmpty().WithMessage("Director should have surname.");
-            When(request => Enum.TryParse<EMovieStatus>(request.Status, out var status) && status == EMovieStatus.Announced, () =>
+            When(request => request.Status is EMovieStatus.Announced, () =>
             {
                 RuleFor(request => request.ReleaseDate)
                     .NotEmpty().WithMessage("Release date is required for announced movies.")
                     .GreaterThan(DateTime.UtcNow).WithMessage("The release date of the announcement must be a future date.");
             });
-            When(request => Enum.TryParse<EMovieStatus>(request.Status, out var status) && status != EMovieStatus.Announced, () =>
+            When(request => request.Status != EMovieStatus.Announced, () =>
             {
                 RuleFor(request => request.ReleaseDate)
                     .NotEmpty().WithMessage("Release date is required.")

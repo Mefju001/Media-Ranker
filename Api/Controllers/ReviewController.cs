@@ -54,7 +54,7 @@ namespace Api.Controllers
         }
         [Authorize(Roles = "User")]
         [HttpPut("{id:guid}")]
-        public async Task<IActionResult> UpdateReview([FromRoute] Guid id, [FromQuery] ReviewRequest reviewRequest)
+        public async Task<IActionResult> UpdateReview([FromRoute] Guid id, [FromBody] ReviewRequest reviewRequest)
         {
             var userId = GetCurrentUserId();
             var command = new UpsertCommand
@@ -78,7 +78,7 @@ namespace Api.Controllers
         }
         [Authorize(Roles = "User")]
         [HttpGet("{id:guid}")]
-        public async Task<IActionResult> GetById(Guid id)
+        public async Task<IActionResult> GetById([FromRoute] Guid id)
         {
             var query = new GetByIdQuery(id);
             return Ok(await mediator.Send(query));

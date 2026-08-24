@@ -1,5 +1,6 @@
 using Application.Features.Directors.Common;
 using Application.Features.Genres.Common;
+using Domain.Enums;
 
 namespace Application.Features.Medias.Movies.Common
 {
@@ -11,8 +12,8 @@ namespace Application.Features.Medias.Movies.Common
         DateTime ReleaseDate,
         string Language,
         TimeSpan Duration,
-        string DistributionType,
-        string Status
+        EDistributionType DistributionType,
+        EMovieStatus Status
         );
 
 }

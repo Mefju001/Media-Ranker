@@ -1,6 +1,6 @@
 ﻿using Application.Features.Common.Interfaces;
 using Application.Features.Common.Models;
-using Application.Features.Genres.GetAll;
+using Application.Features.Genres.GetGenres;
 using Application.Features.Medias.Movies.Common;
 using Application.Features.UserInteractions.Reviews.Common;
 

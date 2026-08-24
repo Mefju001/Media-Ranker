@@ -1,4 +1,4 @@
-﻿using Application.Features.Genres.GetAll;
+﻿using Application.Features.Genres.GetGenres;
 using Application.Features.Medias.Movies.Common;
 
 namespace Application.Features.Medias.PremieresAndAnnouncements.GetReleases

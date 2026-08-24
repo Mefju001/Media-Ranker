@@ -1,4 +1,4 @@
-import { Component, Inject } from '@angular/core';
+import { Component, Inject, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { MatDialogModule, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
@@ -13,7 +13,7 @@ import { UserDetailsRequest } from '../../Data/Request/UserDetailsRequest';
 imports: [CommonModule, ReactiveFormsModule, MatFormFieldModule, MatInputModule, MatButtonModule, MatDialogModule],  templateUrl: './change-details.html',
   styleUrl: './change-details.css',
 })
-export class ChangeDetails {
+export class ChangeDetails implements OnInit {
 detailsForm: FormGroup;
 
   constructor(
@@ -26,6 +26,18 @@ detailsForm: FormGroup;
       name: [data?.name || '', Validators.required],
       surname: [data?.surname || '', Validators.required],
       email: [data?.email || '', [Validators.required, Validators.email]]
+    });
+  }
+  ngOnInit(): void {
+    this.userService.getMyDetails().subscribe({
+      next: (userDetails) => {
+        this.detailsForm.patchValue({
+          name: userDetails.name,
+          surname: userDetails.surname,
+          email: userDetails.email
+        });
+      },
+      error: (err) => alert('Błąd podczas pobierania danych użytkownika: ' + (err?.error?.message || 'Nieznany błąd'))
     });
   }
 

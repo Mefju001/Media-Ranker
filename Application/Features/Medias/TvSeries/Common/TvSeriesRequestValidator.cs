@@ -16,14 +16,14 @@ namespace Application.Features.Medias.TvSeries.Common
             RuleFor(Request => Request.genre.name)
                     .NotEmpty().WithMessage("Genre name should have text.")
                     .MaximumLength(200).WithMessage("Only 200 characters are allowed.");
-            When(request => Enum.Parse<ETvSeriesStatus>(request.Status) is ETvSeriesStatus.Ended or ETvSeriesStatus.Ongoing, () =>
+            When(request => request.Status is ETvSeriesStatus.Ended or ETvSeriesStatus.Ongoing, () =>
             {
                 RuleFor(request => request.ReleaseDate)
                     .NotEmpty()
                     .LessThanOrEqualTo(DateTime.UtcNow);
             });
 
-            When(request => Enum.Parse<ETvSeriesStatus>(request.Status) == ETvSeriesStatus.Announced, () =>
+            When(request => request.Status == ETvSeriesStatus.Announced, () =>
             {
                 RuleFor(request => request.ReleaseDate)
                     .NotEmpty()

@@ -1,4 +1,4 @@
-﻿using Application.Features.Genres.GetAllForChooseMedias;
+﻿using Application.Features.Genres.GetGenres;
 using Application.Features.Medias.Games.AddRange;
 using Application.Features.Medias.Games.Common;
 using Application.Features.Medias.Games.DeleteById;
@@ -6,7 +6,6 @@ using Application.Features.Medias.Games.GetByCriteria;
 using Application.Features.Medias.Games.GetById;
 using Application.Features.Medias.Games.GetPlatforms;
 using Application.Features.Medias.Games.Upsert;
-using Domain.Aggregate;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -34,7 +33,7 @@ namespace Api.Controllers
         [HttpGet("Genres")]
         public async Task<IActionResult> GetGenres(CancellationToken cancellationToken)
         {
-            var query = new GetUsedForMediaQuery<Game>();
+            var query = new GetGenresQuery(EMediaType.Game);
             var games = await mediator.Send(query, cancellationToken);
             return Ok(games);
         }

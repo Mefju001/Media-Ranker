@@ -1,5 +1,5 @@
 ﻿using Application.Features.Common.Interfaces;
-using Application.Features.Genres.GetAll;
+using Application.Features.Genres.GetGenres;
 using Application.Features.Medias.Movies.Common;
 using Domain.Aggregate;
 using MediatR;
@@ -28,7 +28,7 @@ namespace Application.Features.UserInteractions.Rankings.Get
             }
             else if(request.type is "tv")
             {
-                query = query.OfType<Domain.Aggregate.TvSeries>();
+                query = query.OfType<TvSeries>();
             }
             else if(request.type is "game")
             {
@@ -42,7 +42,7 @@ namespace Application.Features.UserInteractions.Rankings.Get
                 x.Media.Title,
                 x.Media.Description,
                 x.Media.ReleaseDate.Value,
-                x.Media is Movie ? "movie" : x.Media is Domain.Aggregate.TvSeries ? "tv" : x.Media is Game ? "game":"unknown",
+                x.Media is Movie ? "movie" : x.Media is TvSeries ? "tv" : x.Media is Game ? "game":"unknown",
                 new GenreResponse(x.Genre.Id, x.Genre.Name),
                 new MediaStatsResponse(x.Media.Stats.AverageRating, x.Media.Stats.ReviewCount, x.Media.Stats.LastCalculated)
             )).ToListAsync(cancellationToken);

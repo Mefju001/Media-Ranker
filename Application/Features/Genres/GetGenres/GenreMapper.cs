@@ -1,4 +1,5 @@
-﻿using Domain.Aggregate;
+﻿using Application.Features.Genres.GetGenres;
+using Domain.Aggregate;
 
 namespace Application.Features.Genres.GetAll
 {
