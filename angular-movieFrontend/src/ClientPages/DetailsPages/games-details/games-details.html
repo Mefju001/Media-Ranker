@@ -1,4 +1,6 @@
-@if (!game) {
+@if (isLoading()) {
+  <p class="loading">Ładowanie danych gry...</p>
+} @else if (!game) {
   <p class="error-message">Nie znaleziono gry lub wystąpił błąd.</p>
 } @else {
   <div class="movie-header">
@@ -9,7 +11,7 @@
       <p class="year">Rok Wydania: {{ game.releaseDate | date:'yyyy' }}</p>
     </div>
   </div>
-
+  <section class="Details">
   <section class="description-section">
     <h2>Opis</h2>
     <p>{{ game.description }}</p>
@@ -43,17 +45,16 @@
       }
     </div>
   </section>
-
   <section class="reviews-section">
     <h2>Recenzje użytkowników</h2>
     
-    @if (isLoggedIn) {
+    @if (isLoggedIn()) {
       <button class="btn-add-review" (click)="toggleReviewForm()">
-        {{ showReviewForm ? 'Anuluj' : '+ Dodaj recenzję' }}
+        {{ showReviewForm() ? 'Anuluj' : 'Dodaj recenzję' }}
       </button>
     }
 
-    @if (showReviewForm) {
+    @if (showReviewForm()) {
       <div class="add-review-form">
         <h3>Twoja opinia</h3>
         <div class="rating-input">
@@ -74,7 +75,7 @@
               <span class="review-date">{{ review.createdAt | date:'dd.MM.yyyy' }}</span>
             </div>
             <div class="review-rating">
-              @for (star of [1,2,3,4,5,6,7,8,9,10]; track star) {
+              @for (star of stars; track star) {
                 <span class="star" [class.filled]="star <= review.rating">★</span>
               }
               <span class="rating-value">{{ review.rating }}/10</span>
@@ -87,6 +88,8 @@
       <p class="no-reviews">Ta gra nie ma jeszcze żadnych recenzji. Bądź pierwszy!</p>
     }
   </section>
+</section>
+  
 
   <a [routerLink]="['/games']" class="back-link">← Powrót do listy gier</a>
 }

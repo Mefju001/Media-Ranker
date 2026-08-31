@@ -12,9 +12,9 @@ export class ReviewService {
     getTheLastestReviews(): Observable<string[]> {
         return this.http.get<string[]>(`${this.apiUrl}/TheLatest`);
         }
-    addReview(movieId:number, result:ReviewRequest):Observable<any>{
+    addReview(mediaId:string, result:ReviewRequest):Observable<any>{
         const payload = {
-            movieId:movieId,
+            movieId:mediaId,
             rating:result.Rating,
             comment:result.Comment
         }

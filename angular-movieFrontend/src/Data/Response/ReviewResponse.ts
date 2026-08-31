@@ -3,4 +3,5 @@ export interface ReviewResponse {
   username: string;
   rating: number;
   comment: string;
+  createdAt: string;
 }
