@@ -10,8 +10,8 @@ namespace Application.Features.Medias.Movies.Common
         Guid id,
         string Title,
         string Description,
-        GenreResponse Genre,
-        DirectorResponse Director,
+        GenreResponse GenreResponse,
+        DirectorResponse DirectorResponse,
         DateTime ReleaseDate,
         string? Language,
         List<ReviewResponse>? Reviews,
@@ -19,6 +19,6 @@ namespace Application.Features.Medias.Movies.Common
         TimeSpan Duration,
         string DistributionType,
         string status
-        ):MediaResponse(id, Title, Description, Genre, ReleaseDate, Language, MediaStats),IResponse;
+        ):MediaResponse(id, Title, Description, GenreResponse, ReleaseDate, Language, MediaStats),IResponse;
 
 }

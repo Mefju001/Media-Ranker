@@ -1,15 +1,17 @@
-@if (!movie) {
-  <p>Nie znaleziono filmu lub wystąpił błąd.</p>
+@if (isLoading()) {
+  <div class="loading-spinner">Ładowanie danych filmu...</div>
+} @else if (!movie) {
+  <p class="error-message">Nie znaleziono filmu lub wystąpił błąd.</p>
 } @else {
   <div class="movie-header">
     <div class="header-info">
       <h1>{{ movie.title }}</h1>
       <p class="rating">Ocena: <span>{{ movie.mediaStats.averageRating | number:'1.1-1' }}</span></p>
-      <p class="genre">Gatunek: {{ movie.genre.name }}</p>
+      <p class="genre">Gatunek: {{ movie.genreResponse.name }}</p>
       <p class="year">Rok Wydania: {{ movie.releaseDate | date:'yyyy' }}</p>
     </div>
   </div>
-
+  <section class="Details">
   <section class="description-section">
     <h2>Opis</h2>
     <p>{{ movie.description }}</p>
@@ -17,18 +19,40 @@
 
   <section class="director-section">
     <h2>Reżyser</h2>
-    <p>{{ movie.director.name }} {{ movie.director.surname }}</p>
+    <p>{{ movie.directorResponse.name }} {{ movie.directorResponse.surname }}</p>
+  </section>
+
+  <section class="duration-section">
+  <h2>Czas trwania</h2>
+  <p>{{ movie.duration }}</p>
+  </section>
+
+  <section class="distributionType-section">
+    <h2>Dystrybucja</h2>
+    <p>{{ movie.distributionType }}</p>
+  </section>
+
+  @if (movie.language) {
+    <section class="language-section">
+      <h2>Język</h2>
+      <p>{{ movie.language }}</p>
+    </section>
+  }
+
+  <section class="status-section">
+    <h2>Status</h2>
+    <p>{{ movie.status }}</p>
   </section>
 
   <section class="reviews-section">
     <h2>Recenzje użytkowników</h2>
-    @if (isLoggedIn) {
+    @if (isLoggedIn()) {
       <button class="btn-add-review" (click)="toggleReviewForm()">
-        {{ showReviewForm ? 'Anuluj' : '+ Dodaj recenzję' }}
+        {{ showReviewForm() ? 'Anuluj' : '+ Dodaj recenzję' }}
       </button>
     }
 
-    @if (showReviewForm) {
+    @if (showReviewForm() ) {
       <div class="add-review-form">
         <h3>Twoja opinia</h3>
         <div class="rating-input">
@@ -48,7 +72,7 @@
               <span class="review-date">{{ review.createdAt | date:'dd.MM.yyyy' }}</span>
             </div>
             <div class="review-rating">
-              @for (star of [1,2,3,4,5,6,7,8,9,10]; track star) {
+              @for (star of stars; track star) {
                 <span class="star" [class.filled]="star <= review.rating">★</span>
               }
               <span class="rating-value">{{ review.rating }}/10</span>
@@ -61,6 +85,6 @@
       <p class="no-reviews">Ten film nie ma jeszcze żadnych recenzji. Bądź pierwszy!</p>
     }
   </section>
-
+</section>
   <a [routerLink]="['/movies']" class="back-link">← Powrót do listy filmów</a>
 }

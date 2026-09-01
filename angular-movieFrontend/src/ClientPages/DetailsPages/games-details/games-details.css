@@ -1,4 +1,4 @@
-.movie-header {
+.game-header {
   background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
   color: #ffffff;
   padding: 40px 24px;
@@ -71,6 +71,7 @@ section p {
   flex-direction: column;
   padding: 24px;
   grid-column: 1 / -1;
+  align-items: flex-start;
 }
 .Details{
   display: grid;

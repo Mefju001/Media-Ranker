@@ -5,7 +5,7 @@
     <div class="header-info">
       <h1>{{ tvSeries.title }}</h1>
       <p class="rating">Ocena: <span>{{ tvSeries.mediaStats.averageRating | number:'1.1-1' }}</span></p>
-      <p class="genre">Gatunek: {{ tvSeries.genre.name }}</p>
+      <p class="genre">Gatunek: {{ tvSeries.genreResponse.name }}</p>
       <p class="year">Rok Wydania: {{ tvSeries.releaseDate | date:'yyyy' }}</p>
     </div>
   </div>

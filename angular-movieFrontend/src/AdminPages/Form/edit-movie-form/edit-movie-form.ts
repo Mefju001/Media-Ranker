@@ -60,8 +60,8 @@ editForm!: FormGroup;
         this.editForm.patchValue({
           title: movie.title,
           description: movie.description,
-          genreId: movie.genre?.id || movie.genre.id || '',
-          directorId: movie.director?.id || movie.director.id || '',
+          genreId: movie.genreResponse?.id || movie.genreResponse.id || '',
+          directorId: movie.directorResponse?.id || movie.directorResponse.id || '',
           releaseDate: formattedDate,
           language: movie.language,
           duration: movie.duration,

@@ -6,7 +6,7 @@ export interface GameResponse {
   id: string;
   title: string;
   description: string;
-  genre: GenreResponse;
+  genreResponse: GenreResponse;
   releaseDate: string; 
   language: string;
   reviews: ReviewResponse[] | null;

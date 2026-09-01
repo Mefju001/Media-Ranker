@@ -10,7 +10,7 @@ namespace Application.Features.Medias.Games.Common
         Guid id,
         string Title,
         string Description,
-        GenreResponse Genre,
+        GenreResponse GenreResponse,
         DateTime ReleaseDate,
         string Language,
         List<ReviewResponse>? Reviews,
@@ -20,5 +20,5 @@ namespace Application.Features.Medias.Games.Common
         int PegiRating,
         bool SupportsCrossPlay,
         List<string> Platforms
-        ) : MediaResponse(id, Title, Description, Genre, ReleaseDate, Language, MediaStats), IResponse;
+        ) : MediaResponse(id, Title, Description, GenreResponse, ReleaseDate, Language, MediaStats), IResponse;
 }

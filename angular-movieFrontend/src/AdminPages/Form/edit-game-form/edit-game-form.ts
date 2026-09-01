@@ -64,7 +64,7 @@ export class EditGameForm implements OnInit{
         this.editForm.patchValue({
           title: game.title,
           description: game.description,
-          genreId: game.genre?.id || '',
+          genreId: game.genreResponse?.id || '',
           releaseDate: formattedDate,
           language: game.language,
           developer: game.developer,

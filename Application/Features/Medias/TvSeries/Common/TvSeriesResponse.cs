@@ -10,7 +10,7 @@ namespace Application.Features.Medias.TvSeries.Common
         Guid id,
         string Title,
         string Description,
-        GenreResponse Genre,
+        GenreResponse GenreResponse,
         DateTime ReleaseDate,
         string? Language,
         List<ReviewResponse>? Reviews,
@@ -19,5 +19,5 @@ namespace Application.Features.Medias.TvSeries.Common
         int Episodes,
         string? Network,
         string Status
-        ): MediaResponse(id, Title, Description, Genre, ReleaseDate, Language, MediaStats), IResponse;
+        ): MediaResponse(id, Title, Description, GenreResponse, ReleaseDate, Language, MediaStats), IResponse;
 }

@@ -61,7 +61,7 @@ export class EditTvSeriesForm {
         this.editForm.patchValue({
           title: series.title,
           description: series.description,
-          genreId: series.GenreResponse?.id || series.genre?.id || '',
+          genreId: series.GenreResponse?.id || series.genreResponse?.id || '',
           releaseDate: formattedDate,
           language: series.language,
           seasons: series.seasons,

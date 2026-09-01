@@ -7,8 +7,8 @@ export interface MovieResponse{
   id: string;
   title: string;
   description: string;
-  genre: GenreResponse;
-  director: DirectorResponse;
+  genreResponse: GenreResponse;
+  directorResponse: DirectorResponse;
   releaseDate: string;
   language: string | null;
   reviews: ReviewResponse[] | null;

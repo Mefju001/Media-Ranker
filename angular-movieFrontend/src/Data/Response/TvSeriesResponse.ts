@@ -13,7 +13,7 @@ export interface TvSeriesResponse {
     title: string;
     description: string;
     
-    genre: GenreResponse;
+    genreResponse: GenreResponse;
     
     releaseDate: string;
     language: string;
