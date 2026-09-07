@@ -1,17 +1,19 @@
 import { HttpClient } from "@angular/common/http";
 import { Injectable } from "@angular/core";
 import { Observable } from "rxjs";
+import { UserResponse } from "../Data/Response/UserResponse";
+import { MediaNumbersResponse } from "../Data/Response/MediaNumbersResponse";
 @Injectable({
     providedIn: 'root'
 })
 export class AdminService {
   private apiUrl = 'http://localhost:5009/api/Admin';
   constructor(private http: HttpClient) {}
-  getAllNumbers(): Observable<{ numberOfMovies: number; numberOfTvSeries: number; numberOfGames: number }> {
-    return this.http.get<{numberOfGames: number ; numberOfMovies: number; numberOfTvSeries: number}>(`${this.apiUrl}`);
+  getAllNumbers(): Observable<MediaNumbersResponse> {
+    return this.http.get<MediaNumbersResponse>(`${this.apiUrl}`);
   }
-  getAllUsers(): Observable<any[]> {
-    return this.http.get<any[]>(`${this.apiUrl}/Users`);
+  getAllUsers(): Observable<UserResponse[]> {
+    return this.http.get<UserResponse[]>(`${this.apiUrl}/Users`);
   }
   deleteUser(id: string): Observable<void> {
     return this.http.delete<void>(`${this.apiUrl}/User/${id}`);

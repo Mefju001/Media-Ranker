@@ -6,7 +6,7 @@ export const userGuard: CanActivateFn = (route, state) => {
   const authService = inject(AuthService);
   const router = inject(Router);
 
-  if (authService.getRolesFromToken().includes('User')) {
+  if (authService.userRoles().includes('User')) {
     return true;
   }
   router.navigate(['/movies']);

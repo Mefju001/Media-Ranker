@@ -33,8 +33,8 @@ export class Header implements OnInit {
     const token = this.authService.getAccessToken();
     if (token) {
       this.isLoggedIn = true;
-      this.username = sessionStorage.getItem('username') || 'Użytkownik';
-      this.userRole = this.authService.getRolesFromToken().includes('Admin');
+      this.username = this.authService.currentUsername() || 'Użytkownik';
+      this.userRole = this.authService.userRoles().includes('Admin');
     }
   }
 
@@ -47,10 +47,8 @@ export class Header implements OnInit {
         this.authService.login(credentials).subscribe({
           next: (response) => {
             this.isLoggedIn = true;
-            this.username = credentials.username;
-            this.userRole = this.authService.getRolesFromToken().includes('Admin');
-            sessionStorage.setItem('username', this.username);
-            sessionStorage.setItem('isLoggedIn', 'true');
+            this.username = this.authService.currentUsername() || 'Użytkownik';
+            this.userRole = this.authService.userRoles().includes('Admin');
             this.router.navigate(['/movies']);
           },
           error: (error) => console.error('Login failed:', error)
@@ -64,7 +62,6 @@ export class Header implements OnInit {
     this.isLoggedIn = false;
     this.username = '';
     this.userRole = false;
-    sessionStorage.removeItem('username');
     this.router.navigate(['/']);
   }
 
@@ -77,7 +74,6 @@ export class Header implements OnInit {
       next: () => {
         this.isLoggedIn = false;
         this.username = '';
-        sessionStorage.removeItem('username');
         this.router.navigate(['/']);
       },
       error: (err:any) => alert('Nie udało się usunąć konta.')

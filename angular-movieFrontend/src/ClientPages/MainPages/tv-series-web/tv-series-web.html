@@ -70,12 +70,10 @@
             </p>
           </div>
 
-          <button>
-            <a [routerLink]="['/tvSeries', tvSeries.id]">Więcej...</a>
-          </button>
+          <button class="more-info-btn" [routerLink]="['/tvSeries', tvSeries.id]">Więcej...</button>
         </div>
       </div>
     }
-    @empty { <p>Ładowanie filmów lub brak danych...</p> }
+    @empty { <p>Ładowanie seriali lub brak danych...</p> }
   </section>
 </main>

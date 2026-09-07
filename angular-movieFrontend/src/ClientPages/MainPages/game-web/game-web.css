@@ -1,3 +1,17 @@
+.more-info-btn {
+  background-color: var(--primary-color);
+  color: var(--light-text);
+  border: none;
+  padding: 8px 15px;
+  border-radius: 5px;
+  cursor: pointer;
+  margin-top: 10px;
+  transition: background-color 0.3s ease;
+  font-size: 0.9em;
+}
+.more-info-btn:hover {
+  background-color: #820202;
+}
 
 .main-content {
   display: flex;

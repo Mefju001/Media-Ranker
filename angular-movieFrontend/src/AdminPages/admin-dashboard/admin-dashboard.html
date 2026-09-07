@@ -276,8 +276,8 @@
                 <tr>
                   <td class="ps-3 fw-bold">{{ movie.id }}</td>
                   <td><strong>{{ movie.title }}</strong></td>
-                  <td>{{ movie.director.name }} {{ movie.director.surname }}</td>
-                  <td><span class="badge bg-info text-dark">{{ movie.genre.name }}</span></td>
+                  <td>{{ movie.directorResponse.name }} {{ movie.directorResponse.surname }}</td>
+                  <td><span class="badge bg-info text-dark">{{ movie.genreResponse.name }}</span></td>
                   <td>{{ movie.releaseDate | date:'yyyy' }}</td>
                   <td class="text-end pe-3">
                     <button class="btn btn-sm btn-outline-warning me-1" title="edytuj" [routerLink]="['/editMovie', movie.id]"><i class="bi bi-pencil-square"></i></button>
@@ -306,8 +306,8 @@
                 <tr>
                   <td class="ps-3 fw-bold">{{ tvSeries.id }}</td>
                   <td><strong>{{ tvSeries.title }}</strong></td>
-                  <td>{{ tvSeries.genre.name}}</td>
-                  <td><span class="badge bg-secondary">{{ tvSeries.genre.name }}</span></td>
+                  <td>{{ tvSeries.genreResponse.name}}</td>
+                  <td><span class="badge bg-secondary">{{ tvSeries.genreResponse.name }}</span></td>
                   <td>{{ tvSeries.seasons }}</td>
                   <td class="text-end pe-3">
                     <button class="btn btn-sm btn-outline-warning me-1" title="edytuj" [routerLink]="['/editTvSeries', tvSeries.id]"><i class="bi bi-pencil-square"></i></button>
@@ -337,7 +337,7 @@
                   <td class="ps-3 fw-bold">{{ game.id }}</td>
                   <td><strong>{{ game.title }}</strong></td>
                   <td>{{ game.developer }}</td>
-                  <td><span class="badge bg-dark">{{ game.genre.name }}</span></td>
+                  <td><span class="badge bg-dark">{{ game.genreResponse.name }}</span></td>
                   <td>{{ game.platforms }}</td>
                   <td class="text-end pe-3">
                     <button class="btn btn-sm btn-outline-warning me-1" title="edytuj" [routerLink]="['/editGame', game.id]"><i class="bi bi-pencil-square"></i></button>

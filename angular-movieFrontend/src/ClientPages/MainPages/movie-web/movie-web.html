@@ -42,7 +42,7 @@
       <h3>↕️ Sortowanie</h3>
       <label for="sortByField">Sortuj wg:</label>
       <select id="sortByField" formControlName="SortByField">
-      <option [ngValue]="null">-- Wszystkie gatunki --</option>
+      <option [ngValue]="null">-- Wszystkie sortowania --</option>
         @for (field of sortFields; track field.name) {
           <option [ngValue]="field">{{ field.name }}</option>
         }
@@ -76,9 +76,7 @@
             </p>
           </div>
 
-          <button>
-            <a [routerLink]="['/movie', movie.id]">Więcej...</a>
-          </button>
+          <button class="more-info-btn" [routerLink]="['/movie', movie.id]">Więcej...</button>
         </div>
       </div>
     }

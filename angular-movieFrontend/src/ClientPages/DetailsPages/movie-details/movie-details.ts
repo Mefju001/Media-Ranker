@@ -4,11 +4,10 @@ import { ActivatedRoute, RouterLink } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { MovieService } from '../../../Services/MovieService';
 import { ReviewService } from '../../../Services/ReviewService';
-import { PLATFORM_ID } from '@angular/core';
-import { isPlatformBrowser } from '@angular/common';
 import { MovieResponse } from '../../../Data/Response/MovieResponse';
 import { ReviewRequest } from '../../../Data/Request/ReviewRequest';
 import { catchError, of, Subscription, switchMap } from 'rxjs';
+import { AuthService } from '../../../Services/AuthService';
 @Component({
   standalone: true,
   selector: 'app-movie-details',
@@ -21,24 +20,20 @@ export class MovieDetails implements OnInit, OnDestroy {
   private route = inject(ActivatedRoute);
   private movieService = inject(MovieService);
   private reviewService = inject(ReviewService);
-  private platformId = inject(PLATFORM_ID)
+  private authService = inject(AuthService);
   private routeSub?: Subscription;  
 
   movie: MovieResponse|null = null;
  
   isLoading = signal(true);
   showReviewForm = signal(false);
-  isLoggedIn = signal(false);
+  readonly isLoggedIn = this.authService.isLoggedIn;
   newReview:ReviewRequest = {
   Rating: 10,
   Comment: ''
   };
 
   ngOnInit(): void{
-     if (isPlatformBrowser(this.platformId)) {
-      const state = sessionStorage.getItem("isLoggedIn");
-      this.isLoggedIn.set(state === "true");
-    }
      this.routeSub = this.route.paramMap.pipe(
       switchMap(params => {
       const idString = params.get('id');
@@ -63,7 +58,7 @@ export class MovieDetails implements OnInit, OnDestroy {
     });
   }
   toggleReviewForm() {
-  this.showReviewForm.set(!this.showReviewForm);
+    this.showReviewForm.set(!this.showReviewForm);
   }
   ngOnDestroy(): void {
     this.routeSub?.unsubscribe();
@@ -76,7 +71,7 @@ export class MovieDetails implements OnInit, OnDestroy {
     }
     this.reviewService.addReview(this.movie!.id, this.newReview).subscribe({
       next: (savedReview) => {
-        this.movie!.reviews = [savedReview, ...(this.movie!.reviews || [])];
+        this.movie!.reviews = [savedReview, ...(this.movie!.reviews ?? [])];
         this.showReviewForm.set(false);
         this.newReview = { Rating: 10, Comment: '' };
       },
