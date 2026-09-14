@@ -26,9 +26,9 @@ namespace Api.Controllers
         }
         [Authorize(Roles = "User")]
         [HttpGet]
-        public async Task<IActionResult> Get()
+        public async Task<IActionResult> Get([FromQuery] EMediaRecommendationType recommendationType)
         {
-            var recommendationQuery = new GetForUserQuery(GetCurrentUserId());
+            var recommendationQuery = new GetForUserQuery(GetCurrentUserId(), recommendationType);
             var recommedations = await mediator.Send(recommendationQuery);
             return Ok(recommedations);
         }

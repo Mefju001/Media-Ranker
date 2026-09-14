@@ -24,6 +24,9 @@
             <li><a class="dropdown-item" [routerLink]="['adminDashboard']">Admin-Dashboard</a></li>
             <li><hr class="dropdown-divider"></li>
           }
+          @if (isLoggedIn) {
+            <li><a class="dropdown-item" [routerLink]="['userRecommendations']">Twoje rekomendacje</a></li>
+          }
           <li><a class="dropdown-item" [routerLink]="['yourList']">Twoje listy</a></li>
 
 
