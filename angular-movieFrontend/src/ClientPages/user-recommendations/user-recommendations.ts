@@ -24,10 +24,16 @@ export class UserRecommendations implements OnInit   {
     this.refreshRecommendations();
     console.log(`Category set to: ${category}`);
   }
-  changeRoute(type:string, id:string): string {
+  changeRoute(rawType:any, id:string): string {
+    if(!rawType|| !id) {
+      console.error('Item type or ID is undefined or null');
+      return '';
+    }
+    const type = String(rawType).toLowerCase();
     if (type === 'movie') {
+      console.log(`Navigating to movie with ID: ${id}`);
       return `/movie/${id}`;
-    } else if (type === 'tv') {
+    } else if (type === 'tvSeries') {
       return `/tvSeries/${id}`;
     } else if (type === 'game') {
       return `/game/${id}`;
@@ -42,7 +48,9 @@ export class UserRecommendations implements OnInit   {
   private fetchRecommendations() {
     this.recommendationService.getRecommendations(this.selectedType()).subscribe({
       next:(data) => {
+        console.log('Fetched recommendations:', this.selectedType());
         this.recommendations.set(data);
+        console.log('Recommendations updated:', this.recommendations());
         this.isLoading.set(false);
       },
       error:(error) => {

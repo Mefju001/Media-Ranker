@@ -12,15 +12,15 @@
     } @else {
       @for (item of recommendations(); track item.id) {
         <div class="media-card">
-          <div class="card-image">
-            <img [src]="item.imageUrl" [alt]="item.title" />
-            <span class="rating-badge">⭐ {{ item.averageRating }}</span>
-          </div>
           <div class="card-body">
             <h4>{{ item.title }}</h4>
             <span class="genre-tag">{{ item.genreName }}</span>
-            <a [routerLink]="changeRoute(item.type, item.id)" class="more-info-btn">Więcej...</a>
+            <div class="card-image">
+              <span class="rating-badge"> średnia ocen: {{ item.averageRating }}</span>
+            </div>
+            <button [routerLink]="changeRoute(item.$type, item.id)" class="more-info-btn">Więcej...</button>
           </div>
+
         </div>
       } @empty {
         <p class="empty-state">Brak rekomendacji dla wybranej kategorii.</p>

@@ -8,8 +8,8 @@ export class RecommendationService {
     private apiUrl = 'http://localhost:5009/api/Recommendation';
     constructor(private http: HttpClient) {}
     getRecommendations(selectedType: string): Observable<any[]> {
-        const params = new HttpParams();
-        params.set("recommendationType", selectedType);
+        let params = new HttpParams();
+        params = params.set("recommendationType", selectedType);
         return this.http.get<any[]>(`${this.apiUrl}`, { params });
     }
 }
