@@ -37,6 +37,7 @@ export class MovieWeb implements OnInit {
     { name: 'Ocena (najwyższa)', sortBy: 'Rating', isDescending: true },
     { name: 'Rok Wydania (najnowsze)', sortBy: 'Date', isDescending: true },
     ];
+
 ngOnInit(): void {
     this.loadMovies();
     this.loadGenres();
@@ -88,4 +89,8 @@ GetTheLastestReviews(): void {
       this.reviewsTitle = data;
     });
   }
+toggleFavorite(movie: MovieResponse): void {
+    //const favorites = this.getFavorites();
+    //const index = favorites.indexOf(movie.id);
+}
 }

@@ -8,6 +8,9 @@ import { MovieResponse } from '../../../Data/Response/MovieResponse';
 import { ReviewRequest } from '../../../Data/Request/ReviewRequest';
 import { catchError, of, Subscription, switchMap } from 'rxjs';
 import { AuthService } from '../../../Services/AuthService';
+import { ETypeInteractions } from '../Data/ETypeInteractions';
+import { ERatingVote } from '../Data/ERatingVote';
+import { UserInteractionService } from '../../../Services/UserInteractionsService';
 @Component({
   standalone: true,
   selector: 'app-movie-details',
@@ -16,15 +19,20 @@ import { AuthService } from '../../../Services/AuthService';
   styleUrl: './movie-details.css',
 })
 export class MovieDetails implements OnInit, OnDestroy {
+[x: string]: any;
   readonly stars = [1,2,3,4,5,6,7,8,9,10];
+  readonly ETypeInteractions = ETypeInteractions;
+  readonly ERatingVote = ERatingVote;
   private route = inject(ActivatedRoute);
   private movieService = inject(MovieService);
   private reviewService = inject(ReviewService);
   private authService = inject(AuthService);
+  private userInteractionService = inject(UserInteractionService);
   private routeSub?: Subscription;  
 
   movie: MovieResponse|null = null;
- 
+  currentStatus = signal<ETypeInteractions | null>(null);
+  currentVote = signal<ERatingVote | null>(null);
   isLoading = signal(true);
   showReviewForm = signal(false);
   readonly isLoggedIn = this.authService.isLoggedIn;
@@ -76,6 +84,32 @@ export class MovieDetails implements OnInit, OnDestroy {
         this.newReview = { Rating: 10, Comment: '' };
       },
       error: (err) => alert('Błąd podczas dodawania recenzji.')
+    });
+  }
+
+  toggleVote(vote: ERatingVote): void {
+    const newVote = this.currentVote() === vote ? null : vote;
+    this.currentVote.set(newVote);
+    
+    this.addUserInteraction(this.movie!.id, null, newVote);
+  }
+
+  onStatusChange(event: Event): void {
+    const select = event.target as HTMLSelectElement;
+    const newStatus = select.value === 'null' ? null : (select.value as ETypeInteractions);
+    this.currentStatus.set(newStatus);
+
+    this.addUserInteraction(this.movie!.id, newStatus, null);
+  }
+  addUserInteraction(mediaId: string, typeInteractions?: ETypeInteractions|null, ratingVote?: ERatingVote|null): void 
+  {
+    this.userInteractionService.addUserInteraction(mediaId, typeInteractions, ratingVote).subscribe({
+      next: (response) => {
+        console.log('Interakcja użytkownika dodana:', response);
+      },
+      error: (error) => {
+        console.error('Błąd podczas dodawania interakcji użytkownika:', error);
+      }
     });
   }
 }

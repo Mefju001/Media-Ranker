@@ -16,6 +16,7 @@ export class UsersList implements OnInit {
 
   ngOnInit(): void {
     this.loadData();
+    console.log(this.items);
   }
 
   onTypeChange(type: string | null): void {
@@ -32,10 +33,16 @@ export class UsersList implements OnInit {
     this.userInteractionService.Get(this.selectedType, this.selectedVote)
       .subscribe(data => this.items = data);
   }
-  changeRoute(type:string, id:string): string {
+changeRoute(rawType:any, id:string): string {
+    if(!rawType|| !id) {
+      console.error('Item type or ID is undefined or null');
+      return '';
+    }
+    const type = String(rawType).toLowerCase();
     if (type === 'movie') {
+      console.log(`Navigating to movie with ID: ${id}`);
       return `/movie/${id}`;
-    } else if (type === 'tv') {
+    } else if (type === 'tvSeries') {
       return `/tvSeries/${id}`;
     } else if (type === 'game') {
       return `/game/${id}`;
