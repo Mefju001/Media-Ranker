@@ -7,7 +7,7 @@ import { ERatingVote } from "../ClientPages/DetailsPages/Data/ERatingVote";
   providedIn: 'root'
 })
 export class UserInteractionService {
-    private apiUrl = 'http://localhost:5009/api/UserInteractions';
+  private apiUrl = 'http://localhost:5009/api/UserInteractions';
   constructor(private http: HttpClient) {}
   Get(typeInteractions?: string| null, ratingVote?: string| null): Observable<any[]> {
     let params = new HttpParams();

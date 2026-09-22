@@ -32,6 +32,7 @@ export class UsersList implements OnInit {
   loadData(): void {
     this.userInteractionService.Get(this.selectedType, this.selectedVote)
       .subscribe(data => this.items = data);
+      console.log(this.items);
   }
 changeRoute(rawType:any, id:string): string {
     if(!rawType|| !id) {

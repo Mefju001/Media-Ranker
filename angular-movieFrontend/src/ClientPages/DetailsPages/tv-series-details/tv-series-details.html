@@ -9,6 +9,35 @@
       <p class="rating">Ocena: <span>{{ tvSeries.mediaStats.averageRating | number:'1.1-1' }}</span></p>
       <p class="genre">Gatunek: {{ tvSeries.genreResponse.name }}</p>
       <p class="year">Rok Wydania: {{ tvSeries.releaseDate | date:'yyyy' }}</p>
+      <div class="rating-buttons">
+        <button 
+          class="vote-btn" 
+          [class.active]="currentVote() === ERatingVote.Liked"
+          (click)="toggleVote(ERatingVote.Liked)">
+          <span>👍</span>
+        </button>
+
+        <button 
+          class="vote-btn" 
+          [class.active]="currentVote() === ERatingVote.Disliked"
+          (click)="toggleVote(ERatingVote.Disliked)">
+          <span>👎</span>
+        </button>
+      </div>
+
+      <div class="interaction-status">
+        <label for="status-select">Stan: </label>
+        <select 
+          id="status-select"
+          [value]="currentStatus()"
+          (change)="onStatusChange($event)">
+          <option [value]="null">-- Brak statusu --</option>
+          <option [value]="ETypeInteractions.Planned">Planowane</option>
+          <option [value]="ETypeInteractions.InProgress">W trakcie</option>
+          <option [value]="ETypeInteractions.Completed">Ukończone</option>
+          <option [value]="ETypeInteractions.Ignored">Ignorowane</option>
+        </select>
+      </div>
     </div>
   </div>
 <section class="Details">

@@ -1,8 +1,6 @@
 ﻿using Application.Features.Common.Interfaces;
 using Application.Features.UserInteractions.Statuses.Common;
 using Domain.Aggregate;
-using Domain.Entity;
-using Domain.Enums;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 

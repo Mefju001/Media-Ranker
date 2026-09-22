@@ -8,6 +8,9 @@ import { TvSeriesResponse } from '../../../Data/Response/TvSeriesResponse';
 import { ReviewRequest } from '../../../Data/Request/ReviewRequest';
 import { catchError, of, Subscription, switchMap } from 'rxjs';
 import { AuthService } from '../../../Services/AuthService';
+import { ERatingVote } from '../Data/ERatingVote';
+import { ETypeInteractions } from '../Data/ETypeInteractions';
+import { UserInteractionService } from '../../../Services/UserInteractionsService';
 
 @Component({
   selector: 'app-tv-series-details',
@@ -22,17 +25,21 @@ export class TvSeriesDetails implements OnInit, OnDestroy {
     Rating: 10,
     Comment: ''
   };
-
+  readonly ETypeInteractions = ETypeInteractions;
+  readonly ERatingVote = ERatingVote;
   readonly stars = [1,2,3,4,5,6,7,8,9,10];
   private route = inject(ActivatedRoute);
   private tvSeriesService = inject(TvSeriesService);
   private reviewService = inject(ReviewService);
   private authService = inject(AuthService);
+  private userInteractionService = inject(UserInteractionService);
   private routeSub?: Subscription;  
 
   
   isLoading = signal(true);
   showReviewForm = signal(false);
+  currentStatus = signal<ETypeInteractions | null>(null);
+  currentVote = signal<ERatingVote | null>(null);
   readonly isLoggedIn = this.authService.isLoggedIn;
 
   ngOnInit(): void{
@@ -79,6 +86,31 @@ submitReview() {
         this.newReview = { Rating: 10, Comment: '' };
       },
       error: (err) => alert('Błąd podczas dodawania recenzji.')
+    });
+  }
+    toggleVote(vote: ERatingVote): void {
+    const newVote = this.currentVote() === vote ? null : vote;
+    this.currentVote.set(newVote);
+    
+    this.addUserInteraction(this.tvSeries!.id, null, newVote);
+  }
+
+  onStatusChange(event: Event): void {
+    const select = event.target as HTMLSelectElement;
+    const newStatus = select.value === 'null' ? null : (select.value as ETypeInteractions);
+    this.currentStatus.set(newStatus);
+
+    this.addUserInteraction(this.tvSeries!.id, newStatus, null);
+  }
+  addUserInteraction(mediaId: string, typeInteractions?: ETypeInteractions|null, ratingVote?: ERatingVote|null): void 
+  {
+    this.userInteractionService.addUserInteraction(mediaId, typeInteractions, ratingVote).subscribe({
+      next: (response) => {
+        console.log('Interakcja użytkownika dodana:', response);
+      },
+      error: (error) => {
+        console.error('Błąd podczas dodawania interakcji użytkownika:', error);
+      }
     });
   }
 }

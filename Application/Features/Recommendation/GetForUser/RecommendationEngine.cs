@@ -35,18 +35,20 @@ namespace Application.Features.Recommendation.GetForUser
         }
         private async Task<List<Movie>> GetMoviesAsync(UserProfileDto profile, UserPreferencesDto prefs, int limit, CancellationToken cancellation)
         {
+            var hasGenres = prefs.GenreIds.Any() == true;
+            var hasDirectors = prefs.DirectorIds.Any() == true;
             return await appDbContext.Medias
                 .AsNoTracking()
                 .AsSplitQuery()
                 .OfType<Movie>()
                 .Where(m => !profile.FavLikedMediaIds.Contains(m.Id))
                 .Where(m => !profile.DislikedMediaIds.Contains(m.Id) && !profile.IgnoredMediaIds.Contains(m.Id))
-                .Where(m => prefs.GenreIds.Contains(m.GenreId) || prefs.DirectorIds.Contains(m.DirectorId))
+                //.Where(m => prefs.GenreIds.Contains(m.GenreId) || prefs.DirectorIds.Contains(m.DirectorId))
                 .Select(m => new
                 {
                     Movie = m,
-                    Score = (prefs.GenreIds.Contains(m.GenreId) ? 3 : 0) +
-                            (prefs.DirectorIds.Contains(m.DirectorId) ? 5 : 0)
+                    Score = (hasGenres&&prefs.GenreIds.Contains(m.GenreId) ? 3 : 0) +
+                            (hasDirectors&&prefs.DirectorIds.Contains(m.DirectorId) ? 5 : 0)
                 })
                 .OrderByDescending(x => x.Score)
                 .ThenByDescending(x => x.Movie.Stats.AverageRating)
@@ -57,18 +59,21 @@ namespace Application.Features.Recommendation.GetForUser
 
         private async Task<List<TvSeries>> GetTvShowsAsync(UserProfileDto profile, UserPreferencesDto prefs, int limit, CancellationToken cancellation)
         {
+            var hasGenres = prefs.GenreIds.Any() == true;
+            var hasPlatforms = prefs.TvShowsPlatforms?.Any() == true;
+
             return await appDbContext.Medias
                 .AsNoTracking()
                 .AsSplitQuery()
                 .OfType<TvSeries>()
                 .Where(s => !profile.FavLikedMediaIds.Contains(s.Id))
                 .Where(s => !profile.DislikedMediaIds.Contains(s.Id) && !profile.IgnoredMediaIds.Contains(s.Id))
-                .Where(s => prefs.GenreIds.Contains(s.GenreId) || prefs.TvShowsPlatforms.Contains(s.Network))
+                //.Where(s => prefs.GenreIds.Contains(s.GenreId) || prefs.TvShowsPlatforms.Contains(s.Network))
                 .Select(s => new
                 {
                     TvShow = s,
-                    Score = (prefs.GenreIds.Contains(s.GenreId) ? 3 : 0) +
-                            (prefs.TvShowsPlatforms.Contains(s.Network) ? 4 : 0)
+                    Score = (hasGenres && prefs.GenreIds.Contains(s.GenreId) ? 3 : 0) +
+                            (hasPlatforms && prefs.TvShowsPlatforms.Contains(s.Network) ? 4 : 0)
                 })
                 .OrderByDescending(x => x.Score)
                 .ThenByDescending(x => x.TvShow.Stats.AverageRating)
@@ -79,22 +84,25 @@ namespace Application.Features.Recommendation.GetForUser
 
         private async Task<List<Game>> GetGamesAsync(UserProfileDto profile, UserPreferencesDto prefs, int limit, CancellationToken cancellation)
         {
+            var hasGenres = prefs.GenreIds.Any() == true;
+            var hasDevelopers = prefs.Developers.Any() == true;
+            var hasPlatforms = prefs.GamesPlatforms.Any() == true;
             var candidates = await appDbContext.Medias
                 .AsNoTracking()
                 .AsSplitQuery()
                 .OfType<Game>()
                 .Where(g => !profile.FavLikedMediaIds.Contains(g.Id))
                 .Where(g => !profile.DislikedMediaIds.Contains(g.Id) && !profile.IgnoredMediaIds.Contains(g.Id))
-                .Where(g => prefs.GenreIds.Contains(g.GenreId) || prefs.Developers.Contains(g.Details.Developer))
+                //.Where(g => prefs.GenreIds.Contains(g.GenreId) || prefs.Developers.Contains(g.Details.Developer))
                 .ToListAsync(cancellation);
 
             return candidates
                 .Select(g => new
                 {
                     Game = g,
-                    Score = (prefs.GenreIds.Contains(g.GenreId) ? 3 : 0) +
-                            (prefs.Developers.Contains(g.Details.Developer) ? 5 : 0) +
-                            (g.Platforms.Values.Intersect(prefs.GamesPlatforms).Any() ? 4 : 0)
+                    Score = (hasGenres && prefs.GenreIds.Contains(g.GenreId) ? 3 : 0) +
+                            (hasDevelopers && prefs.Developers.Contains(g.Details.Developer) ? 5 : 0) +
+                            (hasPlatforms && g.Platforms.Values.Intersect(prefs.GamesPlatforms).Any() ? 4 : 0)
                 })
                 .OrderByDescending(x => x.Score)
                 .ThenByDescending(x => x.Game.Stats.AverageRating)

@@ -63,19 +63,19 @@
   </div>
 
   <!-- Lista filmów -->
-  @for(item of items; track item.id) {
+  @for(item of items; track item.mediaResponse.id) {
     <div class="film-card mb-3 p-3 border rounded">
       <div class="movie-details">
         <div class="film-info">
-          <h3>{{ item.title }}</h3>
+          <h3>{{ item.mediaResponse.title }}</h3>
           <p>
-            <span class="badge bg-warning text-dark me-2">⭐ {{ item.mediaStats?.averageRating ?? 'Brak ocen' }}</span>
-            <span class="badge bg-info text-dark">{{ item.genre?.name }}</span>
+            <span class="badge bg-warning text-dark me-2">⭐ {{ item.mediaResponse.mediaStats?.averageRating ?? 'Brak ocen' }}</span>
+            <span class="badge bg-info text-dark">{{ item.mediaResponse.genre?.name }}</span>
           </p>
-          <p class="description">{{ item.description }}</p>
+          <p class="description">{{ item.mediaResponse.description }}</p>
         </div>
 
-        <a class="btn btn-primary" [routerLink]="changeRoute(item.$type, item.id)">
+        <a class="btn btn-primary" [routerLink]="changeRoute(item.mediaResponse.$type, item.mediaResponse.id)">
           Więcej...
         </a>
       </div>
