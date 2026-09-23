@@ -3,6 +3,7 @@ import { Injectable } from "@angular/core";
 import { Observable } from "rxjs";
 import { UserResponse } from "../Data/Response/UserResponse";
 import { MediaNumbersResponse } from "../Data/Response/MediaNumbersResponse";
+import { UserDataRequest } from "../Data/Request/UserDataRequest";
 @Injectable({
     providedIn: 'root'
 })
@@ -18,7 +19,7 @@ export class AdminService {
   deleteUser(id: string): Observable<void> {
     return this.http.delete<void>(`${this.apiUrl}/User/${id}`);
   }
-  editUser(id: string, userData: any): Observable<void> {
+  editUser(id: string, userData: UserDataRequest): Observable<void> {
     return this.http.put<void>(`${this.apiUrl}/users/${id}`, userData);
   }
   generatePassword(id: string): Observable<void> {

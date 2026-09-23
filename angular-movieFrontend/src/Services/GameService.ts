@@ -5,6 +5,7 @@ import { GameResponse } from "../Data/Response/GameResponse";
 import { Injectable } from "@angular/core";
 import { GameRequest } from "../Data/Request/GameRequest";
 import { GameQuery } from "../ClientPages/MainPages/game-web/GameQuery";
+import { GenreResponse } from "../Data/Response/GenreResponse";
 @Injectable({
     providedIn: 'root'
 })
@@ -14,11 +15,11 @@ export class GameService {
     getGames(): Observable<GameResponse[]> {
     return this.http.get<GameResponse[]>(`${this.apiUrl}`);
     }
-    GetPlatforms(): Observable<any> {
-    return this.http.get<any>(`${this.apiUrl}/Platforms`);
+    GetPlatforms(): Observable<string[]> {
+    return this.http.get<string[]>(`${this.apiUrl}/Platforms`);
     }
-    GetGenres(): Observable<any> {
-    return this.http.get<any>(`${this.apiUrl}/Genres`);
+    GetGenres(): Observable<GenreResponse[]> {
+    return this.http.get<GenreResponse[]>(`${this.apiUrl}/Genres`);
     }
     getGameById(id: string): Observable<GameResponse> {
     return this.http.get<GameResponse>(`${this.apiUrl}/${id}`);
@@ -33,14 +34,14 @@ export class GameService {
         });
     return this.http.get<GameResponse[]>(`${this.apiUrl}`, { params: params });
     }
-    addGame(game: GameRequest): Observable<any>
+    addGame(game: GameRequest): Observable<GameResponse>
     {
-        return this.http.post<any>(`${this.apiUrl}`, game);
+        return this.http.post<GameResponse>(`${this.apiUrl}`, game);
     }
-    updateGame(gameId: string, updateCommand: any) {
-      return this.http.put<any>(`${this.apiUrl}/${gameId}`, updateCommand);
+    updateGame(gameId: string, updateCommand: GameRequest): Observable<GameResponse> {
+      return this.http.put<GameResponse>(`${this.apiUrl}/${gameId}`, updateCommand);
     }
-    deleteGame(gameId: string): Observable<any> {
-      return this.http.delete<any>(`${this.apiUrl}/${gameId}`);
+    deleteGame(gameId: string): Observable<void> {
+      return this.http.delete<void>(`${this.apiUrl}/${gameId}`);
     }
 }

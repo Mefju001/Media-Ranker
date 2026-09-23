@@ -2,13 +2,14 @@ import { HttpClient, HttpParams } from "@angular/common/http";
 import { Injectable } from "@angular/core";
 import { Observable } from "rxjs";
 import { PremieresDto } from "../ClientPages/premieres/PremieresDto";
+import { ReleaseItemResponse } from "../Data/Response/ReleaseItemResponse";
 @Injectable({
     providedIn: 'root'
 })
 export class PremieresService {
   private apiUrl = 'http://localhost:5009/api/PremieresAndAnnouncements';
   constructor(private http: HttpClient) {}
-  getPremieres(premieresDto: PremieresDto): Observable<any[]> {
+  getPremieres(premieresDto: PremieresDto): Observable<ReleaseItemResponse[]> {
     var params = new HttpParams();
     if (premieresDto.scope) {
       params = params.set('scope', premieresDto.scope);
@@ -16,6 +17,6 @@ export class PremieresService {
     if (premieresDto.type&& premieresDto.type !== 'all') {
         params = params.set('mediaType', premieresDto.type);   
     }
-    return this.http.get<any[]>(`${this.apiUrl}`, { params });
+    return this.http.get<ReleaseItemResponse[]>(`${this.apiUrl}`, { params });
   }
 }

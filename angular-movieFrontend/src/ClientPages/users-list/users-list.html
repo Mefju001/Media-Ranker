@@ -1,7 +1,6 @@
 <section class="film-listings container my-4">
   <h2>Twoje Listy</h2>
 
-  <!-- Przełącznik kategorii statusu (Planned, InProgress itp.) -->
   <div class="d-flex gap-2 mb-3">
     <button 
       class="btn" 
@@ -62,7 +61,6 @@
     <label class="btn btn-outline-danger" for="voteDisliked"> Niepolubione</label>
   </div>
 
-  <!-- Lista filmów -->
   @for(item of items; track item.mediaResponse.id) {
     <div class="film-card mb-3 p-3 border rounded">
       <div class="movie-details">

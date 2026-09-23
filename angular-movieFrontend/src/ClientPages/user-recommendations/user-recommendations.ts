@@ -22,7 +22,6 @@ export class UserRecommendations implements OnInit   {
   setCategory(category: RecommendationType) {
     this.selectedType.set(category);
     this.refreshRecommendations();
-    console.log(`Category set to: ${category}`);
   }
   changeRoute(rawType:any, id:string): string {
     if(!rawType|| !id) {
@@ -31,7 +30,6 @@ export class UserRecommendations implements OnInit   {
     }
     const type = String(rawType).toLowerCase();
     if (type === 'movie') {
-      console.log(`Navigating to movie with ID: ${id}`);
       return `/movie/${id}`;
     } else if (type === 'tvSeries') {
       return `/tvSeries/${id}`;
@@ -48,9 +46,7 @@ export class UserRecommendations implements OnInit   {
   private fetchRecommendations() {
     this.recommendationService.getRecommendations(this.selectedType()).subscribe({
       next:(data) => {
-        console.log('Fetched recommendations:', this.selectedType());
         this.recommendations.set(data);
-        console.log('Recommendations updated:', this.recommendations());
         this.isLoading.set(false);
       },
       error:(error) => {
