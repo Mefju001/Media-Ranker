@@ -1,4 +1,4 @@
-import { Component, inject, OnInit} from '@angular/core';
+import { Component, inject, OnInit, signal} from '@angular/core';
 import { MovieQuery } from './MovieQuery';
 import { MovieService } from '../../../Services/MovieService';
 import { RouterLink } from '@angular/router';
@@ -26,9 +26,9 @@ export class MovieWeb implements OnInit {
       DirectorSurname: [null],
       SortByField: [null as { sortBy: string; isDescending: boolean } | null]
     });
-  movies: MovieResponse[] = [];
-  genres: GenreResponse[] = [];
-  reviewsTitle: string[] = [];
+  movies = signal<MovieResponse[]>([]);
+  genres = signal<GenreResponse[]>([]);
+  reviewsTitle = signal<string[]>([]);
   sortFields = [
     { name: 'Tytuł (A-Z)', sortBy: 'Title' , isDescending: false }, 
     { name: 'Ocena (najniższa)', sortBy: 'Rating', isDescending: false }, 
@@ -65,32 +65,28 @@ onReset(): void {
   }
 loadMovies(): void {
     this.movieService.getMovies().subscribe((data) => {
-      this.movies = data;
+      this.movies.set(data);
     });
   }
 loadMoviesByFilter(query: MovieQuery): void {
     this.movieService.getMoviesByFilter(query).subscribe({
         next: (data) => {
-            this.movies = data;
+            this.movies.set(data);
         },
         error: (err) => {
             console.error('Błąd ładowania filmów:', err);
-            this.movies = [];
+            this.movies.set([]);
         }
     });
   }
 loadGenres(): void {
   this.movieService.GetGenres().subscribe((data) => {
-    this.genres = data;
+    this.genres.set(data);
   });
 }
 GetTheLastestReviews(): void {
     this.reviewService.getTheLastestReviews().subscribe((data) => {
-      this.reviewsTitle = data;
+      this.reviewsTitle.set(data);
     });
   }
-toggleFavorite(movie: MovieResponse): void {
-    //const favorites = this.getFavorites();
-    //const index = favorites.indexOf(movie.id);
-}
 }

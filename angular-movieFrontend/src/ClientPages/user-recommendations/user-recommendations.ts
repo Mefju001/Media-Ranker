@@ -1,6 +1,7 @@
 import { Component, inject, OnInit, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { RecommendationService } from '../../Services/RecommendationService';
+import { MediaResponse } from '../../Data/Response/MediaResponse';
 
 export type RecommendationType = 'All' | 'Movie' | 'TvShow' | 'Game';
 
@@ -12,7 +13,7 @@ export type RecommendationType = 'All' | 'Movie' | 'TvShow' | 'Game';
 })
 export class UserRecommendations implements OnInit   {
   private readonly recommendationService = inject(RecommendationService);
-  recommendations = signal<any[]>([]);
+  recommendations = signal<MediaResponse[]>([]);
   selectedType = signal<RecommendationType>('All');
   isLoading = signal<boolean>(true);
   ngOnInit(): void {

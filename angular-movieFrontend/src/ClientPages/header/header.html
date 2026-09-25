@@ -14,17 +14,17 @@
   </nav>
   <div class="user-actions">
     
-    @if(isLoggedIn) {
+    @if(isLoggedIn()) {
       <div class="dropdown">
         <button class="btn btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-          Zalogowany jako {{ username }}
+          Zalogowany jako {{ username() }}
         </button>
         <ul class="dropdown-menu">
-          @if(isLoggedIn && userRole === true) {
+          @if(isLoggedIn() && userRole()) {
             <li><a class="dropdown-item" [routerLink]="['adminDashboard']">Admin-Dashboard</a></li>
             <li><hr class="dropdown-divider"></li>
           }
-          @if (isLoggedIn) {
+          @if (isLoggedIn()) {
             <li><a class="dropdown-item" [routerLink]="['userRecommendations']">Twoje rekomendacje</a></li>
           }
           <li><a class="dropdown-item" [routerLink]="['yourList']">Twoje listy</a></li>
@@ -38,7 +38,7 @@
           <li><a class="dropdown-item" (click)="logout()">Wyloguj</a></li>
         </ul>
       </div>
-    } @else if(!isLoggedIn) {
+    } @else if(!isLoggedIn()) {
       <button (click)="openLoginDialog()">Zaloguj</button>
       <button (click)="openRegisterDialog()">Zarejestruj się</button>
     }

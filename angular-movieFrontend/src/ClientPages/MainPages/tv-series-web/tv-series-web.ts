@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule } from '@angular/forms';
 import { GenreResponse } from '../../../Data/Response/GenreResponse';
 import { ReviewService } from '../../../Services/ReviewService';
@@ -26,9 +26,9 @@ export class TvSeriesWeb {
       status: [null],
       SortByField: [null as { sortBy: string; isDescending: boolean } | null]
     });
-  TvSeries: TvSeriesResponse[] = [];
-  genres: GenreResponse[] = [];
-  reviewsTitle: string[] = [];
+  TvSeries = signal<TvSeriesResponse[]>([]);
+  genres = signal<GenreResponse[]>([]);
+  reviewsTitle = signal<string[]>([]);
   sortFields = [
     { name: 'Tytuł (A-Z)', sortBy: 'Title', isDescending: false }, 
     { name: 'Ocena (najniższa)', sortBy: 'average', isDescending: false }, 
@@ -71,28 +71,28 @@ export class TvSeriesWeb {
   }
   loadTvSeries(): void {
     this.tvSeriesService.getTvSeries().subscribe((data) => {
-      this.TvSeries = data;
+      this.TvSeries.set(data);
     });
   }
   loadTvSeriesByFilter(query: TvSeriesQuery): void {
     this.tvSeriesService.getTvSeriesByFilter(query).subscribe({
         next: (data) => {
-            this.TvSeries = data;
+            this.TvSeries.set(data);
         },
         error: (err) => {
             console.error('Błąd ładowania seriali:', err);
-            this.TvSeries = [];
+            this.TvSeries.set([]);
         }
     });
   }
   loadGenres(): void {
     this.tvSeriesService.GetGenres().subscribe((data) => {
-      this.genres = data;
+      this.genres.set(data);
     });
   }
   GetTheLastestReviews(): void {
     this.reviewService.getTheLastestReviews().subscribe((data) => {
-      this.reviewsTitle = data;
+      this.reviewsTitle.set(data);
     });
   }
 }

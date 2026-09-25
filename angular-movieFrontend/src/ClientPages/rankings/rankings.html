@@ -9,7 +9,7 @@
     @for (type of selectedTypes; track type.value) {
       <button 
         class="chip-btn" 
-        [class.selected]="selectedType === type.value"
+        [class.selected]="selectedType() === type.value"
         (click)="onTypeChange(type.value)">
         {{ type.value === 'movie' ? '🎬 Filmy' : type.value === 'tv' ? '📺 Seriale' : type.value === 'game' ? '🎮 Gry' : '🌐 Wszystkie' }}
       </button>
@@ -17,7 +17,7 @@
   </div>
 
   <section class="rankings-list">
-    @for (item of items; track item.id; let i = $index) {
+    @for (item of items(); track item.Id; let i = $index) {
       <article 
         class="ranking-card" 
         [class.podium]="i < 3" 
@@ -33,27 +33,27 @@
             <span class="media-type-badge" [attr.data-type]="item.type">
               {{ item.type === 'movie' ? 'Film' : item.type === 'tv' ? 'Serial' : item.type === 'game' ? 'Gra' : 'Inne' }}
             </span>
-            @if (item.genre) {
+            @if (item.Genre) {
             <span class="genre-badge">
-                {{ item.genre.name }}
+                {{ item.Genre.name }}
             </span>
             }
           </div>
 
-          <h3 class="card-title">{{ item.title }}</h3>
-          <p class="card-description">{{ item.description }}</p>
+          <h3 class="card-title">{{ item.Title }}</h3>
+          <p class="card-description">{{ item.Description }}</p>
         </div>
 
         <div class="card-stats">
           <div class="rating-box">
             <span class="star-icon">⭐</span>
-            <span class="rating-value">{{ item.stats.averageRating | number:'1.1-1' }}</span>
+            <span class="rating-value">{{ item.MediaStatsResponse.averageRating | number:'1.1-1' }}</span>
           </div>
-          <span class="review-count">{{ item.stats.reviewCount }} ocen</span>
+          <span class="review-count">{{ item.MediaStatsResponse.reviewCount }} ocen</span>
         </div>
 
         <div class="card-footer">
-          <a [routerLink]="changeRoute(item.type, item.id)" class="details-link">
+          <a [routerLink]="changeRoute(item.type, item.Id)" class="details-link">
             Zobacz szczegóły
           </a>
         </div>

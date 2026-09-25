@@ -19,4 +19,5 @@ export interface TvSeriesResponse {
     language: string;
 
     reviews: ReviewResponse[];
+    $type?: 'tvseries';
 }

@@ -11,22 +11,22 @@
     </button>
     <button 
       class="btn" 
-      [class.btn-primary]="selectedType === 'Planned'" 
-      [class.btn-outline-primary]="selectedType !== 'Planned'"
+      [class.btn-primary]="selectedType() === 'Planned'" 
+      [class.btn-outline-primary]="selectedType() !== 'Planned'"
       (click)="onTypeChange('Planned')">
       Planowane
     </button>
     <button 
       class="btn" 
-      [class.btn-primary]="selectedType === 'InProgress'" 
-      [class.btn-outline-primary]="selectedType !== 'InProgress'"
+      [class.btn-primary]="selectedType() === 'InProgress'" 
+      [class.btn-outline-primary]="selectedType() !== 'InProgress'"
       (click)="onTypeChange('InProgress')">
       W trakcie
     </button>
     <button 
       class="btn" 
-      [class.btn-primary]="selectedType === 'Completed'" 
-      [class.btn-outline-primary]="selectedType !== 'Completed'"
+      [class.btn-primary]="selectedType() === 'Completed'" 
+      [class.btn-outline-primary]="selectedType() !== 'Completed'"
       (click)="onTypeChange('Completed')">
       Obejrzane
     </button>
@@ -47,7 +47,7 @@
       class="btn-check" 
       name="voteFilter" 
       id="voteLiked" 
-      [checked]="selectedVote === 'Liked'"
+      [checked]="selectedVote() === 'Liked'"
       (change)="onVoteChange('Liked')">
     <label class="btn btn-outline-success" for="voteLiked"> Polubione</label>
 
@@ -56,24 +56,24 @@
       class="btn-check" 
       name="voteFilter" 
       id="voteDisliked" 
-      [checked]="selectedVote === 'Disliked'"
+      [checked]="selectedVote() === 'Disliked'"
       (change)="onVoteChange('Disliked')">
     <label class="btn btn-outline-danger" for="voteDisliked"> Niepolubione</label>
   </div>
 
-  @for(item of items; track item.mediaResponse.id) {
+  @for(item of items(); track item.MediaResponse.id) {
     <div class="film-card mb-3 p-3 border rounded">
       <div class="movie-details">
         <div class="film-info">
-          <h3>{{ item.mediaResponse.title }}</h3>
+          <h3>{{ item.MediaResponse.title }}</h3>
           <p>
-            <span class="badge bg-warning text-dark me-2">⭐ {{ item.mediaResponse.mediaStats?.averageRating ?? 'Brak ocen' }}</span>
-            <span class="badge bg-info text-dark">{{ item.mediaResponse.genre?.name }}</span>
+            <span class="badge bg-warning text-dark me-2">⭐ {{ item.MediaResponse.mediaStats.averageRating}}</span>
+            <span class="badge bg-info text-dark">{{ item.MediaResponse.genreResponse }}</span>
           </p>
-          <p class="description">{{ item.mediaResponse.description }}</p>
+          <p class="description">{{ item.MediaResponse.description }}</p>
         </div>
 
-        <a class="btn btn-primary" [routerLink]="changeRoute(item.mediaResponse.$type, item.mediaResponse.id)">
+        <a class="btn btn-primary" [routerLink]="changeRoute(item.MediaResponse.$type, item.MediaResponse.id)">
           Więcej...
         </a>
       </div>

@@ -14,9 +14,9 @@
         <div class="media-card">
           <div class="card-body">
             <h4>{{ item.title }}</h4>
-            <span class="genre-tag">{{ item.genreName }}</span>
+            <span class="genre-tag">{{ item.genreResponse }}</span>
             <div class="card-image">
-              <span class="rating-badge"> średnia ocen: {{ item.averageRating }}</span>
+              <span class="rating-badge"> średnia ocen: {{ item.mediaStats.averageRating }}</span>
             </div>
             <button [routerLink]="changeRoute(item.$type, item.id)" class="more-info-btn">Więcej...</button>
           </div>

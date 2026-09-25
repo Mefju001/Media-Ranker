@@ -22,14 +22,14 @@
       <label for="platform">Platforma:</label>
             <select id="platform" formControlName="Platform">
                 <option [ngValue]="null">-- Wszystkie platformy --</option>
-                @for (platform of platforms; track platform) {
+                @for (platform of platforms(); track platform) {
                     <option [ngValue]="platform">{{ platform }}</option>
                 }
             </select>
       <label for="genreName">Gatunek:</label>
       <select id="genreName" formControlName="genreName">
           <option [ngValue]="null">-- Wszystkie gatunki --</option>
-          @for (genre of genres; track genre.id) {
+          @for (genre of genres(); track genre.id) {
               <option [ngValue]="genre.name">{{ genre.name }}</option>
           }
       </select>
@@ -61,7 +61,7 @@
   </aside>
   <section class="film-listings">
     <h2>Popularne Gry</h2>
-    @for(game of games; track game.id) {
+    @for(game of games(); track game.id) {
       <div class="film-card">
         <div class="movie-details">
           <div class="film-info">

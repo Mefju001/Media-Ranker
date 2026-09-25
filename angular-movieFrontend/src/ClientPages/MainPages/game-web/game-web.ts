@@ -1,4 +1,4 @@
-import { Component, inject, OnInit } from '@angular/core';
+import { Component, inject, OnInit, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule } from '@angular/forms';
 import { GenreResponse } from '../../../Data/Response/GenreResponse';
 import { ReviewService } from '../../../Services/ReviewService';
@@ -24,13 +24,12 @@ export class GameWeb implements OnInit {
       Developer: [null],
       ReleaseYear: [null],
       genreName: [null],
-      
       SortByField: [null as { sortBy: string; isDescending: boolean } | null]
     });
-  games: GameResponse[] = [];
-  genres: GenreResponse[] = [];
-  reviewsTitle: string[] = [];
-  platforms: string[] = [];
+  games= signal<GameResponse[]>([]);
+  genres= signal<GenreResponse[]>([]);
+  reviewsTitle = signal<string[]>([]);
+  platforms= signal<string[]>([]);
   sortFields = [
     { name: 'Tytuł (A-Z)', sortBy: 'Title', isDescending: false }, 
     { name: 'Ocena (najniższa)', sortBy: 'average', isDescending: false }, 
@@ -68,34 +67,34 @@ onReset(): void {
   }
 loadGames(): void {
     this.gameService.getGames().subscribe((data) => {
-      this.games = data;
+      this.games.set(data);
       console.log('Załadowano gry:', data);
     });
   }
 loadGamesByFilter(query: GameQuery): void {
     this.gameService.getGamesByFilter(query).subscribe({
         next: (data) => {
-            this.games = data;
+            this.games.set(data);
         },
         error: (err) => {
             console.error('Błąd ładowania gier:', err);
-            this.games = [];
+            this.games.set([]);
         }
     });
   }
 loadPlatforms(): void {
   this.gameService.GetPlatforms().subscribe((data) => {
-    this.platforms = data;
+    this.platforms.set(data);
   });
 }
 loadGenres(): void {
   this.gameService.GetGenres().subscribe((data) => {
-    this.genres = data;
+    this.genres.set(data);
   });
 }
 GetTheLastestReviews(): void {
     this.reviewService.getTheLastestReviews().subscribe((data) => {
-      this.reviewsTitle = data;
+      this.reviewsTitle.set(data);
     });
   }
 }

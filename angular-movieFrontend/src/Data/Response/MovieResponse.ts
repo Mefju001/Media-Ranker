@@ -16,4 +16,5 @@ export interface MovieResponse{
   duration: string;
   distributionType: string;
   status: string;
+  $type?:'movie';
 }

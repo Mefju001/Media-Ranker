@@ -1,7 +1,8 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, signal } from '@angular/core';
 import { RankingsService } from '../../Services/RankingsService';
 import { RouterLink } from '@angular/router';
 import { DecimalPipe } from '@angular/common';
+import { RankingsResponse } from '../../Data/Response/RankingsResponse';
 
 @Component({
   selector: 'app-rankings',
@@ -17,27 +18,28 @@ export class Rankings {
     { value: 'game' },
     { value: 'all' }
   ];
-  selectedType: 'movie' | 'tv' | 'game'|'all' = 'all';
-  items: any[] = [];
+  selectedType = signal<'movie' | 'tv' | 'game'|'all'>('all');
+  items=signal<RankingsResponse[]>([]);
 
   onTypeChange(type: 'movie' | 'tv' | 'game' | 'all'): void {
-    this.selectedType = type;
+    this.selectedType.set(type);
     this.getItems();
   }
   getItems(): void {
-    this.rankingsService.getRankings({ type: this.selectedType }).subscribe
+    this.rankingsService.getRankings({ type: this.selectedType() }).subscribe
     (data => {
-      this.items = data;
+      this.items.set(data);
     });
   }
   changeRoute(type:string, id:string): string {
-    if (type === 'movie') {
+    switch (type) {
+    case 'movie':
       return `/movie/${id}`;
-    } else if (type === 'tv') {
+    case 'tv':
       return `/tvSeries/${id}`;
-    } else if (type === 'game') {
+    case 'game':
       return `/game/${id}`;
-    } else {
+    default:
       return '';
     }
   }

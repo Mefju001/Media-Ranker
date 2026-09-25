@@ -31,7 +31,7 @@
       <label for="genreName">Gatunek:</label>
       <select id="genreName" formControlName="genreName">
           <option [ngValue]="null">-- Wszystkie gatunki --</option>
-          @for (genre of genres; track genre.id) {
+          @for (genre of genres(); track genre.id) {
               <option [ngValue]="genre.name">{{ genre.name }}</option>
           }
       </select>
@@ -62,7 +62,7 @@
   </aside>
   <section class="film-listings">
     <h2>Popularne Filmy</h2>
-    @for(movie of movies; track movie.id) {
+    @for(movie of movies(); track movie.id) {
       <div class="film-card">
         <div class="movie-details">
           <div class="film-info">

@@ -16,4 +16,5 @@ export interface GameResponse {
   pegiRating: number;
   supportsCrossPlay: boolean;
   platforms: string[];
+  $type?:'game';
 }

@@ -30,14 +30,14 @@ export class TvSeriesService {
         });
         return this.http.get<TvSeriesResponse[]>(`${this.apiUrl}`, { params: params });
     }
-    addTvSeries(tvSeries: TvSeriesRequest): Observable<any>
+    addTvSeries(tvSeries: TvSeriesRequest): Observable<TvSeriesResponse>
     {
-        return this.http.post<any>(`${this.apiUrl}`, tvSeries);
+        return this.http.post<TvSeriesResponse>(`${this.apiUrl}`, tvSeries);
     }
-    updateSeries(seriesId: string, updateCommand: any) {
-        return this.http.put(`${this.apiUrl}/${seriesId}`, updateCommand);
+    updateSeries(seriesId: string, updateCommand: TvSeriesRequest): Observable<TvSeriesResponse> {
+        return this.http.put<TvSeriesResponse>(`${this.apiUrl}/${seriesId}`, updateCommand);
     }
-    deleteSeries(seriesId: string): Observable<any> {
-        return this.http.delete<any>(`${this.apiUrl}/${seriesId}`);
+    deleteSeries(seriesId: string): Observable<void> {
+        return this.http.delete<void>(`${this.apiUrl}/${seriesId}`);
     }
 }
