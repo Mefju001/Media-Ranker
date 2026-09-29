@@ -10,7 +10,7 @@ export interface GameResponse {
   releaseDate: string; 
   language: string;
   reviews: ReviewResponse[] | null;
-  mediaStats: MediaStatsResponse;
+  mediaStatsResponse: MediaStatsResponse;
   developer: string;
   engine: string | null;
   pegiRating: number;

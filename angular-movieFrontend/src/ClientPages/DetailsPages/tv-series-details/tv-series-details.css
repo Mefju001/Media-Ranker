@@ -273,3 +273,96 @@ section p {
  color: #059669;
  border: 1px solid #a7f3d0;
 }
+.rating-buttons,
+.interaction-status {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 1rem;
+}
+.vote-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  border: 1px solid #343a40;
+  background-color: #212529;
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  outline: none;
+}
+.vote-btn span {
+  font-size: 1.25rem;
+  line-height: 1;
+  filter: grayscale(40%);
+  transition: transform 0.2s ease, filter 0.2s ease;
+}
+.vote-btn:hover {
+  background-color: #2c3036;
+  border-color: #495057;
+  transform: translateY(-2px);
+}
+
+.vote-btn:hover span {
+  filter: grayscale(0%);
+  transform: scale(1.15);
+}
+.vote-btn.active {
+  background-color: rgba(13, 110, 253, 0.15);
+  border-color: #0d6efd;
+  box-shadow: 0 0 12px rgba(13, 110, 253, 0.3);
+}
+
+.vote-btn.active span {
+  filter: grayscale(0%);
+  transform: scale(1.1);
+}
+.vote-btn:active {
+  transform: translateY(0) scale(0.95);
+}
+.interaction-status {
+  font-family: inherit;
+}
+
+.interaction-status label {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #adb5bd;
+}
+
+.interaction-status select {
+  padding: 0.5rem 1rem;
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: #f8f9fa;
+  background-color: #212529;
+  border: 1px solid #343a40;
+  border-radius: 8px;
+  cursor: pointer;
+  outline: none;
+  transition: all 0.2s ease-in-out;
+  appearance: none;
+  background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23adb5bd' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+  background-repeat: no-repeat;
+  background-position: right 0.75rem center;
+  background-size: 1rem;
+  padding-right: 2.5rem;
+}
+
+.interaction-status select:hover {
+  border-color: #495057;
+  background-color: #2c3036;
+}
+
+.interaction-status select:focus {
+  border-color: #0d6efd;
+  box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
+}
+
+.interaction-status select option {
+  background-color: #212529;
+  color: #f8f9fa;
+  padding: 0.5rem;
+}

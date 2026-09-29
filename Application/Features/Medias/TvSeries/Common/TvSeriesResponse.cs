@@ -14,10 +14,10 @@ namespace Application.Features.Medias.TvSeries.Common
         DateTime ReleaseDate,
         string? Language,
         List<ReviewResponse>? Reviews,
-        MediaStatsResponse MediaStats,
+        MediaStatsResponse MediaStatsResponse,
         int Seasons,
         int Episodes,
         string? Network,
         string Status
-        ): MediaResponse(id, Title, Description, GenreResponse, ReleaseDate, Language, MediaStats), IResponse;
+        ): MediaResponse(id, Title, Description, GenreResponse, ReleaseDate, Language, MediaStatsResponse), IResponse;
 }

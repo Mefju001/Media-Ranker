@@ -14,11 +14,11 @@ namespace Application.Features.Medias.Games.Common
         DateTime ReleaseDate,
         string Language,
         List<ReviewResponse>? Reviews,
-        MediaStatsResponse MediaStats,
+        MediaStatsResponse MediaStatsResponse,
         string Developer,
         string? Engine,
         int PegiRating,
         bool SupportsCrossPlay,
         List<string> Platforms
-        ) : MediaResponse(id, Title, Description, GenreResponse, ReleaseDate, Language, MediaStats), IResponse;
+        ) : MediaResponse(id, Title, Description, GenreResponse, ReleaseDate, Language, MediaStatsResponse), IResponse;
 }

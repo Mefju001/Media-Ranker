@@ -2,30 +2,32 @@ import { HttpClient } from "@angular/common/http";
 import { LoginRequest } from "../Data/Request/LoginRequest";
 import { finalize, Observable, tap } from "rxjs";
 import { LoginResponse } from "../Data/Response/LoginResponse";
-import { computed, Injectable, signal } from "@angular/core";
+import { computed, inject, Injectable, signal } from "@angular/core";
 import { Router } from "@angular/router";
 import { UserRegisterRequest } from "../Data/Request/UserRegisterRequest";
 import { jwtDecode } from 'jwt-decode';
+import { JwtPayload } from "../Data/Request/JwtPayload";
+
 @Injectable({
     providedIn: 'root'
 })
 export class AuthService {
     private apiUrl = 'http://localhost:5009/api/Account';
     private refreshTokenUrl = 'http://localhost:5009/api/Auth/RefreshToken';
-
-    public accessToken: string | null = null;
+    private http = inject(HttpClient);
+    private router = inject(Router);
+    private readonly accessToken = signal<string | null>(null);
 
     readonly currentUsername = signal<string | null>(null);
     readonly userRoles = signal<string[]>([]);
-    readonly isLoggedIn = computed(() => !!this.accessToken && !!this.currentUsername());
+    
+    readonly isLoggedIn = computed(() => !!this.accessToken() && !!this.currentUsername());
 
-    constructor(private http: HttpClient, private router: Router) {}
     getAccessToken(): string | null {
-        return this.accessToken;
+        return this.accessToken();
     }
     setAccessToken(token: string | null): void {
-        this.accessToken = token;
-
+        this.accessToken.set(token);
         if (token) {
         this.decodeAndStoreTokenDetails(token);
         } else {
@@ -46,7 +48,7 @@ export class AuthService {
         })
     );
     }
-    register(data:UserRegisterRequest):Observable<any>{
+    register(data:UserRegisterRequest):Observable<{message: string, token: string}>{
         return this.http.post<{message: string, token: string}>(`${this.apiUrl}/Register`, data,{withCredentials:true}).pipe(tap(response=>{
             this.setAccessToken(response.token)
         }));
@@ -58,7 +60,7 @@ export class AuthService {
     }
     private decodeAndStoreTokenDetails(token: string): void {
     try {
-      const decoded: any = jwtDecode(token);
+      const decoded: JwtPayload = jwtDecode(token);
 
       const username = decoded['http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name'] 
                     || decoded.name 
@@ -71,7 +73,9 @@ export class AuthService {
       this.currentUsername.set(username ?? null);
       this.userRoles.set(Array.isArray(roles) ? roles : [roles]);
     } catch {
-      this.setAccessToken(null);
+        this.accessToken.set(null);
+        this.currentUsername.set(null);
+        this.userRoles.set([]);
     }
   }
 }

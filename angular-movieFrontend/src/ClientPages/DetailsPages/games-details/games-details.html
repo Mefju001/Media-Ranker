@@ -6,7 +6,7 @@
   <div class="game-header">
     <div class="header-info">
       <h1>{{ game.title }}</h1>
-      <p class="rating">Ocena: <span>{{ game.mediaStats.averageRating | number:'1.1-1' }}</span></p>
+      <p class="rating">Ocena: <span>{{ game.mediaStatsResponse.averageRating | number:'1.1-1' }}</span></p>
       <p class="genre">Gatunek: {{ game.genreResponse.name }}</p>
       <p class="year">Rok Wydania: {{ game.releaseDate | date:'yyyy' }}</p>
       <div class="rating-buttons">

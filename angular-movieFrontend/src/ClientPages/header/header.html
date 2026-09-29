@@ -20,7 +20,7 @@
           Zalogowany jako {{ username() }}
         </button>
         <ul class="dropdown-menu">
-          @if(isLoggedIn() && userRole()) {
+          @if(isLoggedIn() && isAdmin()) {
             <li><a class="dropdown-item" [routerLink]="['adminDashboard']">Admin-Dashboard</a></li>
             <li><hr class="dropdown-divider"></li>
           }

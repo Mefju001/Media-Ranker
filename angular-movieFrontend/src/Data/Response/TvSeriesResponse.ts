@@ -3,8 +3,7 @@ import { MediaStatsResponse } from "./MediaStatsResponse";
 import { ReviewResponse } from "./ReviewResponse";
 
 export interface TvSeriesResponse {
-    GenreResponse: any;
-    mediaStats: MediaStatsResponse;
+    mediaStatsResponse: MediaStatsResponse;
     seasons: number;
     episodes: number;
     network: string;

@@ -15,10 +15,10 @@ namespace Application.Features.Medias.Movies.Common
         DateTime ReleaseDate,
         string? Language,
         List<ReviewResponse>? Reviews,
-        MediaStatsResponse MediaStats,
+        MediaStatsResponse MediaStatsResponse,
         TimeSpan Duration,
         string DistributionType,
         string status
-        ):MediaResponse(id, Title, Description, GenreResponse, ReleaseDate, Language, MediaStats),IResponse;
+        ):MediaResponse(id, Title, Description, GenreResponse, ReleaseDate, Language, MediaStatsResponse),IResponse;
 
 }

@@ -19,7 +19,6 @@ import { UserInteractionService } from '../../../Services/UserInteractionsServic
   styleUrl: './movie-details.css',
 })
 export class MovieDetails implements OnInit, OnDestroy {
-[x: string]: any;
   readonly stars = [1,2,3,4,5,6,7,8,9,10];
   readonly ETypeInteractions = ETypeInteractions;
   readonly ERatingVote = ERatingVote;

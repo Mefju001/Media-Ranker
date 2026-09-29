@@ -1,0 +1,65 @@
+.film-listings {
+max-width: 900px;
+}
+
+.film-card {
+background-color: #ffffff;
+transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.film-card:hover {
+transform: translateY(-2px);
+box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+
+.movie-details {
+display: flex;
+justify-content: space-between;
+align-items: center;
+gap: 1.5rem;
+}
+
+.film-info {
+flex: 1;
+}
+
+.film-info h3 {
+margin-bottom: 0.5rem;
+font-size: 1.25rem;
+font-weight: 600;
+color: #212529;
+}
+
+.film-info p {
+margin-bottom: 0.5rem;
+}
+
+.film-info .description {
+color: #6c757d;
+font-size: 0.95rem;
+margin-bottom: 0;
+display: -webkit-box;
+-webkit-box-orient: vertical;
+overflow: hidden;
+}
+
+.movie-details .btn-primary {
+align-self: center;
+white-space: nowrap;
+}
+
+@media (max-width: 576px) {
+.movie-details {
+flex-direction: column;
+align-items: flex-start;
+}
+
+.movie-details .btn-primary {
+width: 100%;
+margin-top: 0.5rem;
+}
+
+.film-listings .d-flex {
+flex-wrap: wrap;
+}
+}

@@ -6,7 +6,7 @@
   <div class="movie-header">
     <div class="header-info">
       <h1>{{ movie.title }}</h1>
-      <p class="rating">Ocena: <span>{{ movie.mediaStats.averageRating | number:'1.1-1' }}</span></p>
+      <p class="rating">Ocena: <span>{{ movie.mediaStatsResponse.averageRating | number:'1.1-1' }}</span></p>
       <p class="genre">Gatunek: {{ movie.genreResponse.name }}</p>
       <p class="year">Rok Wydania: {{ movie.releaseDate | date:'yyyy' }}</p>
       <div class="rating-buttons">

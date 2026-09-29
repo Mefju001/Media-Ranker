@@ -12,7 +12,7 @@ export interface MovieResponse{
   releaseDate: string;
   language: string | null;
   reviews: ReviewResponse[] | null;
-  mediaStats: MediaStatsResponse;
+  mediaStatsResponse: MediaStatsResponse;
   duration: string;
   distributionType: string;
   status: string;

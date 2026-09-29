@@ -4,6 +4,6 @@ import { UserDetailsResponse } from "./UserDetailsResponse";
 export interface UserInteractionsResponse {
     id: string;
     user:UserDetailsResponse;
-    MediaResponse: MediaResponse;
-    LikedDate: Date;
+    mediaResponse: MediaResponse;
+    likedDate: Date;
 }
