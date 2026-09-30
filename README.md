@@ -6,7 +6,7 @@ The project is built with **ASP.NET Core 8 Web API** leveraging **CQRS (MediatR)
 
 ---
 
-## 🚀 Quick Start (Docker)
+## Quick Start (Docker)
 
 The easiest and recommended way to run the entire application (Database, API, and Frontend) is using Docker Compose:
 
@@ -34,7 +34,7 @@ Once running, access the services at:
 
 ---
 
-## 🛠️ Tech Stack
+## Tech Stack
 
 * **Backend:** ASP.NET Core 8 Web API, Entity Framework Core 8, MediatR (CQRS), FluentValidation, JWT Authentication
 * **Frontend:** Angular 17+, Nginx
@@ -44,7 +44,7 @@ Once running, access the services at:
 
 ---
 
-## ✨ Features & Architecture
+## Features & Architecture
 
 * **Authentication & Authorization:** Secure user registration and login using JWT tokens.
 * **Media Catalog:** Browse, dynamically sort, and filter games, movies, and TV series with custom predicates.
@@ -54,7 +54,7 @@ Once running, access the services at:
 
 ---
 
-## 💻 Local Development Setup
+## Local Development Setup
 
 To run and debug the project without Docker:
 
@@ -91,7 +91,7 @@ ng serve
 
 ---
 
-## 🧪 Testing
+## Testing
 
 The repository includes a suite of MSTest integration and unit tests. Run them using:
 
@@ -99,6 +99,6 @@ dotnet test
 
 ---
 
-## 🔮 Future Development
+## Future Development
 
 * Enhanced user profiles with generated statistics (e.g., total watch/play time).
