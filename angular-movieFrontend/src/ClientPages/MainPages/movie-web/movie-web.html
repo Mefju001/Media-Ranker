@@ -1,0 +1,85 @@
+<main class="main-content">
+  <aside class="sidebar">
+ <div class="movie-page-container">
+
+    <form [formGroup]="filterForm" class="filter-form" (ngSubmit)="onFilter()">
+
+    <div class="filter-group">
+      <h3>🔍 Filtry Wyszukiwania</h3>
+
+      <label for="titleSearch">Szukaj po tytule:</label>
+      <input id="titleSearch" type="text" formControlName="TitleSearch">
+      
+      <label for="minRating">Min. ocena (0-10):</label>
+      <input id="minRating" type="number" formControlName="MinRating" min="0" max="10">
+      
+      <label for="releaseYear">Rok Wydania:</label>
+      <input id="releaseYear" type="number" formControlName="ReleaseYear" min="1900">
+      
+      <div class="form-row">
+        <div class="form-group">
+          <label for="DirectorName">Imię Reżysera:</label>
+          <input id="DirectorName" type="text" formControlName="DirectorName">
+        </div>
+
+        <div class="form-group">
+          <label for="DirectorSurname">Nazwisko Reżysera:</label>
+          <input id="DirectorSurname" type="text" formControlName="DirectorSurname">
+        </div>
+      </div>
+      
+      <label for="genreName">Gatunek:</label>
+      <select id="genreName" formControlName="genreName">
+          <option [ngValue]="null">-- Wszystkie gatunki --</option>
+          @for (genre of genres(); track genre.id) {
+              <option [ngValue]="genre.name">{{ genre.name }}</option>
+          }
+      </select>
+    </div>
+    <hr>
+
+    <div class="sort-group">
+      <h3>↕️ Sortowanie</h3>
+      <label for="sortByField">Sortuj wg:</label>
+      <select id="sortByField" formControlName="SortByField">
+      <option [ngValue]="null">-- Wszystkie sortowania --</option>
+        @for (field of sortFields; track field.name) {
+          <option [ngValue]="field">{{ field.name }}</option>
+        }
+      </select>
+      <button type="submit" class="filter-btn">Filtruj</button>
+      <button 
+      type="button" 
+      (click)="onReset()" 
+      class="reset-btn">
+      Resetuj sortowanie
+    </button>
+    </div>
+
+    </form>
+    <hr>
+    </div>
+  </aside>
+  <section class="film-listings">
+    <h2>Popularne Filmy</h2>
+    @for(movie of movies(); track movie.id) {
+      <div class="film-card">
+        <div class="movie-details">
+          <div class="film-info">
+            <h3>{{ movie.title }}</h3>
+            <p>
+              <span class="rating">{{ movie.mediaStatsResponse.averageRating }}</span>
+              <span class="genre">{{ movie.genreResponse.name }}</span>
+            </p>
+            <p class="description">
+              {{ movie.description }}
+            </p>
+          </div>
+
+          <button class="more-info-btn" [routerLink]="['/movie', movie.id]">Więcej...</button>
+        </div>
+      </div>
+    }
+    @empty { <p>Ładowanie filmów lub brak danych...</p> }
+  </section>
+</main>

@@ -11,7 +11,7 @@ namespace Tests.Domain
     {
         public void Create_WithValidData_ShouldInitializeCorrectly()
         {
-            var tvSeries = TvSeries.Create("Title", "Description", new Language("English"), new ReleaseDate(DateTime.UtcNow), Guid.NewGuid(), 2,30,"HBO",EStatus.EndedOrRemoved);
+            var tvSeries = TvSeries.Create("Title", "Description", "English", new ReleaseDate(DateTime.UtcNow), Guid.NewGuid(), new SeasonDetails(2,30),"HBO",ETvSeriesStatus.Announced);
             Assert.IsNotNull(tvSeries);
             Assert.AreEqual("Title", tvSeries.Title);
             Assert.IsNotNull(tvSeries.Id);
@@ -21,19 +21,19 @@ namespace Tests.Domain
         [TestMethod]
         public void UpdateRating_ShouldRecalculateAverage_WhenNewReviewIsAdded()
         {
-            var tvSeries = TvSeries.Create("Title", "Description", new Language("English"), new ReleaseDate(DateTime.UtcNow), Guid.NewGuid(), 2,30,"HBO",EStatus.EndedOrRemoved);
-            tvSeries.AddReview(Guid.NewGuid(), new Rating(4), "Good series!", new Username("Username"));
+            var tvSeries = TvSeries.Create("Title", "Description", "English", new ReleaseDate(DateTime.UtcNow), Guid.NewGuid(), new SeasonDetails(2,30),"HBO",ETvSeriesStatus.Announced);
+            tvSeries.AddReview(Guid.NewGuid(), new Rating(4), "Good series!", "Username");
             Assert.AreEqual(4.0, tvSeries.Stats.AverageRating);
-            tvSeries.AddReview(Guid.NewGuid(), new Rating(10), "Not bad", new Username("AnotherUser"));
+            tvSeries.AddReview(Guid.NewGuid(), new Rating(10), "Not bad", "AnotherUser");
             tvSeries.DeleteReview(tvSeries.Reviews.First().Id);
             Assert.AreEqual(10.0, tvSeries.Stats.AverageRating);
         }
         [TestMethod]
         public void UpdateRating_ShouldRecalculateAverage_WhenNewReviewIsDeleted()
         {
-            var tvSeries = TvSeries.Create("Title", "Description", new Language("English"), new ReleaseDate(DateTime.UtcNow), Guid.NewGuid(), 2,30,"HBO",EStatus.EndedOrRemoved);
-            tvSeries.AddReview(Guid.NewGuid(), new Rating(4), "Good series!", new Username("Username"));
-            tvSeries.AddReview(Guid.NewGuid(), new Rating(10), "Not bad", new Username("AnotherUser"));
+            var tvSeries = TvSeries.Create("Title", "Description", "English", new ReleaseDate(DateTime.UtcNow), Guid.NewGuid(), new SeasonDetails(2,30),"HBO",ETvSeriesStatus.Announced);
+            tvSeries.AddReview(Guid.NewGuid(), new Rating(4), "Good series!", "Username");
+            tvSeries.AddReview(Guid.NewGuid(), new Rating(10), "Not bad", "AnotherUser");
             Assert.AreEqual(7.0, tvSeries.Stats.AverageRating, 0.1);
             tvSeries.DeleteReview(tvSeries.Reviews.First().Id);
             Assert.AreEqual(10.0, tvSeries.Stats.AverageRating, 0.1);
@@ -41,9 +41,9 @@ namespace Tests.Domain
         [TestMethod]
         public void UpdateRating_ShouldRecalculateAverage_WhenAllReviewIsDeleted()
         {
-            var tvSeries = TvSeries.Create("Title", "Description", new Language("English"), new ReleaseDate(DateTime.UtcNow), Guid.NewGuid(), 2,30,"HBO",EStatus.EndedOrRemoved);
-            tvSeries.AddReview(Guid.NewGuid(), new Rating(4), "Good series!", new Username("Username"));
-            tvSeries.AddReview(Guid.NewGuid(), new Rating(10), "Not bad", new Username("AnotherUser"));
+            var tvSeries = TvSeries.Create("Title", "Description", "English", new ReleaseDate(DateTime.UtcNow), Guid.NewGuid(), new SeasonDetails(2,30),"HBO",ETvSeriesStatus.Announced);
+            tvSeries.AddReview(Guid.NewGuid(), new Rating(4), "Good series!", "Username");
+            tvSeries.AddReview(Guid.NewGuid(), new Rating(10), "Not bad", "AnotherUser");
             Assert.AreEqual(7.0, tvSeries.Stats.AverageRating, 0.1);
             tvSeries.DeleteReview(tvSeries.Reviews.First().Id);
             Assert.AreEqual(10.0, tvSeries.Stats.AverageRating, 0.1);
@@ -53,12 +53,12 @@ namespace Tests.Domain
         [TestMethod]
         public void AddReview_ShouldThrow_WhenUserTriesToReviewTwice()
         {
-            var tvSeries = TvSeries.Create("Title", "Desc", new Language("PL"), new ReleaseDate(DateTime.UtcNow), Guid.NewGuid(), 2,30,"HBO",EStatus.EndedOrRemoved);
+            var tvSeries = TvSeries.Create("Title", "Desc", "PL", new ReleaseDate(DateTime.UtcNow), Guid.NewGuid(), new SeasonDetails(2,30),"HBO",ETvSeriesStatus.Announced);
             var userId = Guid.NewGuid();
-            tvSeries.AddReview(userId, new Rating(5), "First!", new Username("Player1"));
+            tvSeries.AddReview(userId, new Rating(5), "First!", "Player1");
 
             Assert.Throws<DomainException>(() =>
-                tvSeries.AddReview(userId, new Rating(1), "Second!", new Username("Player1")));
+                tvSeries.AddReview(userId, new Rating(1), "Second!", "Player1"));
         }
     }
 }

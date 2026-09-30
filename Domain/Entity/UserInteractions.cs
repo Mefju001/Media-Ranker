@@ -1,6 +1,5 @@
-﻿using Domain.Base;
-using Domain.Enums;
-using Domain.Exceptions;
+﻿using Domain.Enums;
+using Domain.Interfaces;
 
 namespace Domain.Entity
 {

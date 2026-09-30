@@ -1,5 +1,5 @@
 ﻿using Application.Features.Genres.Common;
-using Application.Features.Genres.GetAll;
+using Application.Features.Genres.GetGenres;
 
 namespace Application.Features.Genres.GenreManager
 {

@@ -11,82 +11,104 @@ namespace Application.Features.Recommendation.GetForUser
         {
             this.appDbContext = appDbContext;
         }
-        public async Task<List<Media>> GetMediasAsync(UserProfileDto profile, UserPreferencesDto prefs, CancellationToken cancellation)
+        public async Task<List<Media>> GetMediasAsync(UserProfileDto profile, EMediaRecommendationType eMediaRecommendationType, UserPreferencesDto prefs, CancellationToken cancellation)
         {
-            var movies = await GetMoviesAsync(profile, prefs, cancellation);
-            var tvShows = await GetTvShowsAsync(profile, prefs, cancellation);
-            var games = await GetGamesAsync(profile, prefs, cancellation);
+            return eMediaRecommendationType switch
+            {
+                EMediaRecommendationType.All => await GetMixedRecommendationsAsync(profile, prefs, cancellation),
+                EMediaRecommendationType.Movie => (await GetMoviesAsync(profile, prefs, limit: 10, cancellation)).Cast<Media>().ToList(),
+                EMediaRecommendationType.Game => (await GetGamesAsync(profile, prefs, limit: 10, cancellation)).Cast<Media>().ToList(),
+                EMediaRecommendationType.TvShow => (await GetTvShowsAsync(profile, prefs, limit: 10, cancellation)).Cast<Media>().ToList(),
+                _ => throw new NotImplementedException(),
+            };
+        }
+        private async Task<List<Media>> GetMixedRecommendationsAsync(UserProfileDto profile, UserPreferencesDto prefs, CancellationToken cancellation)
+        {
+            var movies = await GetMoviesAsync(profile, prefs, limit:3, cancellation);
+            var tvShows = await GetTvShowsAsync(profile, prefs, limit: 3, cancellation);
+            var games = await GetGamesAsync(profile, prefs, limit: 3, cancellation);
 
             return movies.Cast<Media>()
                 .Concat(tvShows)
                 .Concat(games)
                 .ToList();
         }
-        private async Task<List<Movie>> GetMoviesAsync(UserProfileDto profile, UserPreferencesDto prefs, CancellationToken cancellation)
+        private async Task<List<Movie>> GetMoviesAsync(UserProfileDto profile, UserPreferencesDto prefs, int limit, CancellationToken cancellation)
         {
+            var hasGenres = prefs.GenreIds.Any() == true;
+            var hasDirectors = prefs.DirectorIds.Any() == true;
             return await appDbContext.Medias
                 .AsNoTracking()
                 .AsSplitQuery()
                 .OfType<Movie>()
                 .Where(m => !profile.FavLikedMediaIds.Contains(m.Id))
                 .Where(m => !profile.DislikedMediaIds.Contains(m.Id) && !profile.IgnoredMediaIds.Contains(m.Id))
-                .Where(m => prefs.GenreIds.Contains(m.GenreId) || prefs.DirectorIds.Contains(m.DirectorId))
+                //.Where(m => prefs.GenreIds.Contains(m.GenreId) || prefs.DirectorIds.Contains(m.DirectorId))
                 .Select(m => new
                 {
                     Movie = m,
-                    Score = (prefs.GenreIds.Contains(m.GenreId) ? 3 : 0) +
-                            (prefs.DirectorIds.Contains(m.DirectorId) ? 5 : 0)
+                    Score = (hasGenres&&prefs.GenreIds.Contains(m.GenreId) ? 3 : 0) +
+                            (hasDirectors&&prefs.DirectorIds.Contains(m.DirectorId) ? 5 : 0)
                 })
                 .OrderByDescending(x => x.Score)
                 .ThenByDescending(x => x.Movie.Stats.AverageRating)
-                .Take(3)
+                .Take(limit)
                 .Select(x => x.Movie)
                 .ToListAsync(cancellation);
         }
 
-        private async Task<List<Domain.Aggregate.TvSeries>> GetTvShowsAsync(UserProfileDto profile, UserPreferencesDto prefs, CancellationToken cancellation)
+        private async Task<List<TvSeries>> GetTvShowsAsync(UserProfileDto profile, UserPreferencesDto prefs, int limit, CancellationToken cancellation)
         {
+            var hasGenres = prefs.GenreIds.Any() == true;
+            var hasPlatforms = prefs.TvShowsPlatforms?.Any() == true;
+
             return await appDbContext.Medias
                 .AsNoTracking()
                 .AsSplitQuery()
-                .OfType<Domain.Aggregate.TvSeries>()
+                .OfType<TvSeries>()
                 .Where(s => !profile.FavLikedMediaIds.Contains(s.Id))
                 .Where(s => !profile.DislikedMediaIds.Contains(s.Id) && !profile.IgnoredMediaIds.Contains(s.Id))
-                .Where(s => prefs.GenreIds.Contains(s.GenreId) || prefs.TvShowsPlatforms.Contains(s.Network))
+                //.Where(s => prefs.GenreIds.Contains(s.GenreId) || prefs.TvShowsPlatforms.Contains(s.Network))
                 .Select(s => new
                 {
                     TvShow = s,
-                    Score = (prefs.GenreIds.Contains(s.GenreId) ? 3 : 0) +
-                            (prefs.TvShowsPlatforms.Contains(s.Network) ? 4 : 0)
+                    Score = (hasGenres && prefs.GenreIds.Contains(s.GenreId) ? 3 : 0) +
+                            (hasPlatforms && prefs.TvShowsPlatforms.Contains(s.Network) ? 4 : 0)
                 })
                 .OrderByDescending(x => x.Score)
                 .ThenByDescending(x => x.TvShow.Stats.AverageRating)
-                .Take(3)
+                .Take(limit)
                 .Select(x => x.TvShow)
                 .ToListAsync(cancellation);
         }
 
-        private async Task<List<Game>> GetGamesAsync(UserProfileDto profile, UserPreferencesDto prefs, CancellationToken cancellation)
+        private async Task<List<Game>> GetGamesAsync(UserProfileDto profile, UserPreferencesDto prefs, int limit, CancellationToken cancellation)
         {
-            return await appDbContext.Medias
+            var hasGenres = prefs.GenreIds.Any() == true;
+            var hasDevelopers = prefs.Developers.Any() == true;
+            var hasPlatforms = prefs.GamesPlatforms.Any() == true;
+            var candidates = await appDbContext.Medias
                 .AsNoTracking()
                 .AsSplitQuery()
                 .OfType<Game>()
                 .Where(g => !profile.FavLikedMediaIds.Contains(g.Id))
                 .Where(g => !profile.DislikedMediaIds.Contains(g.Id) && !profile.IgnoredMediaIds.Contains(g.Id))
-                .Where(g => prefs.GenreIds.Contains(g.GenreId) || prefs.Developers.Contains(g.Details.Developer))
+                //.Where(g => prefs.GenreIds.Contains(g.GenreId) || prefs.Developers.Contains(g.Details.Developer))
+                .ToListAsync(cancellation);
+
+            return candidates
                 .Select(g => new
                 {
                     Game = g,
-                    Score = (prefs.GenreIds.Contains(g.GenreId) ? 3 : 0) +
-                            (prefs.Developers.Contains(g.Details.Developer) ? 5 : 0) +
-                            (prefs.GamesPlatforms.Any(p => g.Platforms.ToString().Contains(p)) ? 4 : 0)
+                    Score = (hasGenres && prefs.GenreIds.Contains(g.GenreId) ? 3 : 0) +
+                            (hasDevelopers && prefs.Developers.Contains(g.Details.Developer) ? 5 : 0) +
+                            (hasPlatforms && g.Platforms.Values.Intersect(prefs.GamesPlatforms).Any() ? 4 : 0)
                 })
                 .OrderByDescending(x => x.Score)
                 .ThenByDescending(x => x.Game.Stats.AverageRating)
-                .Take(3)
+                .Take(limit)
                 .Select(x => x.Game)
-                .ToListAsync(cancellation);
+                .ToList();
         }
     }
 }

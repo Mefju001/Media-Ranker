@@ -1,10 +1,8 @@
 ﻿using Application.Behaviours;
-using Application.Common.Interfaces;
 using Application.Features.Common.Interfaces;
-using Application.Features.Games.GetByCriteria;
-using Application.Features.Games.Upsert;
 using Application.Features.Genres.Common;
 using Application.Features.Genres.GenreManager;
+using Application.Features.Medias.Games.Upsert;
 using Domain.Aggregate;
 using Domain.Enums;
 using Domain.Exceptions;
@@ -71,7 +69,7 @@ namespace Tests.Service.GameService
             context.Genres.Add(genre);
             var genre2 = Genre.Create("Adventure", Guid.NewGuid());
             context.Genres.Add(genre2);
-            var game = Game.Create("Game A", "Description A", new Language("English"), new ReleaseDate(DateTime.UtcNow.AddDays(-5)), genre2.Id, "Developer A", new List<EPlatform>() { EPlatform.PlayStation5 });
+            var game = Game.Create("Game A", "Description A", "English", new ReleaseDate(DateTime.UtcNow.AddDays(-5)), genre2.Id, new GameDetails("Developer A","Engine"), 3, new List<EPlatform>() { EPlatform.PlayStation5 }, EGameStatus.Announced, true);
             context.Medias.Add(game);
             GameId = game.Id;
             context.SaveChanges();
@@ -86,8 +84,12 @@ namespace Tests.Service.GameService
                 new GenreRequest("Action"),
                 DateTime.UtcNow,
                 "EN",
+                EGameStatus.Announced,
                 "Dev",
-                new List<String> { "PC" }
+                "Engine",
+                3,
+                new List<EPlatform> { EPlatform.PC },
+                true
                 );
             using var scope = _serviceProvider.CreateScope();
             var mediator = scope.ServiceProvider.GetRequiredService<IMediator>();
@@ -109,8 +111,12 @@ namespace Tests.Service.GameService
                             new GenreRequest("Action"),
                             DateTime.UtcNow,
                             "EN",
+                            EGameStatus.Announced,
                             "Dev",
-                            new List<String> { "PC" }
+                            "Engine",
+                            3,
+                            new List<EPlatform> { EPlatform.PC },
+                            true
                             );
             using var scope = _serviceProvider.CreateScope();
             var mediator = scope.ServiceProvider.GetRequiredService<IMediator>();
@@ -132,17 +138,21 @@ namespace Tests.Service.GameService
                 new GenreRequest("New Genre"),
                 DateTime.UtcNow,
                 "EN",
+                EGameStatus.Announced,
                 "Dev",
-                new List<String> { "PC" }
+                "Engine",
+                3,
+                new List<EPlatform> { EPlatform.PC },
+                true
                 );
             using var scope = _serviceProvider.CreateScope();
             var mediator = scope.ServiceProvider.GetRequiredService<IMediator>();
             var result = await mediator.Send(command, CancellationToken.None);
             using var scope2 = _serviceProvider.CreateScope();
             var context = scope2.ServiceProvider.GetRequiredService<AppDbContext>();
-            var genreInDb = await context.Genres.FirstOrDefaultAsync(g => g.Name.Value == "New Genre");
+            var genreInDb = await context.Genres.FirstOrDefaultAsync(g => g.Name == "New Genre");
             Assert.IsNotNull(genreInDb);
-            Assert.AreEqual("New Genre", genreInDb.Name.Value);
+            Assert.AreEqual("New Genre", genreInDb.Name);
         }
         [TestMethod]
         public async Task Handle_GenreRequestIsEmpty_ShouldThrowArgumentException()
@@ -154,8 +164,12 @@ namespace Tests.Service.GameService
                             new GenreRequest(string.Empty),
                             DateTime.UtcNow,
                             "EN",
+                            EGameStatus.Announced,
                             "Dev",
-                            new List<String> { "PC" }
+                            "Engine",
+                            3,
+                            new List<EPlatform> { EPlatform.PC },
+                            true
                             );
             using var scope = _serviceProvider.CreateScope();
             var mediator = scope.ServiceProvider.GetRequiredService<IMediator>();
@@ -171,8 +185,12 @@ namespace Tests.Service.GameService
                             new GenreRequest("Action"),
                             DateTime.UtcNow,
                             "EN",
+                            EGameStatus.Announced,
                             "Dev",
-                            new List<String> { "PC" }
+                            "Engine",
+                            3,
+                            new List<EPlatform> { EPlatform.PC },
+                            true
                             );
             using var scope = _serviceProvider.CreateScope();
             var mediator = scope.ServiceProvider.GetRequiredService<IMediator>();
@@ -188,8 +206,12 @@ namespace Tests.Service.GameService
                             new GenreRequest("Action"),
                             DateTime.UtcNow,
                             "EN",
-                            "Developer A",
-                            new List<String>() { "PlayStation5" }
+                            EGameStatus.Announced,
+                            "Dev",
+                            "Engine",
+                            3,
+                            new List<EPlatform>() { EPlatform.PlayStation5 },
+                            true
                             );
             using var scope = _serviceProvider.CreateScope();
             var mediator = scope.ServiceProvider.GetRequiredService<IMediator>();
@@ -199,7 +221,7 @@ namespace Tests.Service.GameService
             var gameInDb = await context.Medias.FirstOrDefaultAsync(g => g.Id == GameId);
             var genreInDb = await context.Genres.FirstOrDefaultAsync(g => g.Id == gameInDb.GenreId);
             Assert.IsNotNull(gameInDb);
-            Assert.AreEqual("Action", genreInDb.Name.Value);
+            Assert.AreEqual("Action", genreInDb.Name);
         }
     }
 }

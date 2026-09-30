@@ -13,11 +13,16 @@ namespace Infrastructure.Service
         {
             this.userManager = userManager;
         }
+        public async Task<List<Guid>> GetAdminsIds()
+        {
+            var adminUsers = await userManager.GetUsersInRoleAsync("Admin");
+
+            return adminUsers.Select(u=>u.Id).ToList();
+        }
         public async Task<IdentityUserDto> CreateUserWithDefaultRole(string username, string password, string email)
         {
             var identityUser = new UserModel
             {
-                Id = Guid.NewGuid(),
                 UserName = username,
                 Email = email,
             };
@@ -63,6 +68,13 @@ namespace Infrastructure.Service
             var result = await userManager.ChangePasswordAsync(user, currentPassword, newPassword);
             if (!result.Succeeded) throw new InvalidOperationException("Password change failed");
         }
+        public async Task ChangePasswordAdmin(Guid userId, string password)
+        {
+            var user = await userManager.FindByIdAsync(userId.ToString());
+            if (user == null) throw new NotFoundException("User not found");
+            var result = await userManager.AddPasswordAsync(user, password);
+            if (!result.Succeeded) throw new InvalidOperationException("Password change failed");
+        }
         public async Task DeleteUser(Guid id)
         {
             var userModel = await userManager.FindByIdAsync(id.ToString());
@@ -75,6 +87,10 @@ namespace Infrastructure.Service
             {
                 throw new InvalidOperationException("Failed to delete user.");
             }
+        }
+        public async Task<bool> UserExistWithThisId(Guid id, CancellationToken cancellationToken)
+        {
+            return await userManager.Users.AnyAsync(u => u.Id == id, cancellationToken);
         }
     }
 }

@@ -2,7 +2,7 @@
   <aside class="sidebar">
  <div class="movie-page-container">
 
-    <form [formGroup]="filterForm" class="filter-form">
+    <form [formGroup]="filterForm" class="filter-form" (ngSubmit)="onFilter()">
 
     <div class="filter-group">
       <h3>🔍 Filtry Wyszukiwania</h3>
@@ -16,11 +16,21 @@
       <label for="releaseYear">Rok Wydania:</label>
       <input id="releaseYear" type="number" formControlName="ReleaseYear" min="1900">
 
+      <label for="developer">Developer:</label>
+      <input id="developer" type="text" formControlName="Developer">
+
+      <label for="platform">Platforma:</label>
+            <select id="platform" formControlName="Platform">
+                <option [ngValue]="null">-- Wszystkie platformy --</option>
+                @for (platform of platforms(); track platform) {
+                    <option [ngValue]="platform">{{ platform }}</option>
+                }
+            </select>
       <label for="genreName">Gatunek:</label>
       <select id="genreName" formControlName="genreName">
-          <option [value]="''">-- Wszystkie gatunki --</option>
-          @for (genre of genres; track genre.id) {
-              <option [value]="genre.name">{{ genre.name }}</option>
+          <option [ngValue]="null">-- Wszystkie gatunki --</option>
+          @for (genre of genres(); track genre.id) {
+              <option [ngValue]="genre.name">{{ genre.name }}</option>
           }
       </select>
     </div>
@@ -30,13 +40,16 @@
       <h3>↕️ Sortowanie</h3>
       <label for="sortByField">Sortuj wg:</label>
       <select id="sortByField" formControlName="SortByField">
-        @for (field of sortFields; track field.value) {
-          <option [value]="field.value">{{ field.name }}</option>
+      <option [ngValue]="null">-- Wszystkie gatunki --</option>
+        @for (field of sortFields; track field.name) {
+          <option [ngValue]="field">{{ field.name }}</option>
         }
       </select>
+      <button type="submit" class="filter-btn">Filtruj</button>
+
       <button 
       type="button" 
-      (click)="filterForm.reset({SortByField: null, IsDescending: false})" 
+      (click)="onReset()" 
       class="reset-btn">
       Resetuj sortowanie
     </button>
@@ -48,23 +61,21 @@
   </aside>
   <section class="film-listings">
     <h2>Popularne Gry</h2>
-    @for(game of games; track game.id) {
+    @for(game of games(); track game.id) {
       <div class="film-card">
         <div class="movie-details">
           <div class="film-info">
             <h3>{{ game.title }}</h3>
             <p>
-              <span class="rating">{{ game.mediaStats.averageRating }}</span>
-              <span class="genre">{{ game.genre.name }}</span>
+              <span class="rating">{{ game.mediaStatsResponse.averageRating }}</span>
+              <span class="genre">{{ game.genreResponse.name }}</span>
             </p>
             <p class="description">
               {{ game.description }}
             </p>
           </div>
 
-          <button>
-            <a [routerLink]="['/movie', game.id]">Więcej...</a>
-          </button>
+          <button class="more-info-btn" [routerLink]="['/game', game.id]">Więcej...</button>
         </div>
       </div>
     }

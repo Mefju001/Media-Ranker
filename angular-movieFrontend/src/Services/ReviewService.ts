@@ -8,16 +8,16 @@ import { ReviewRequest } from "../Data/Request/ReviewRequest";
 })
 export class ReviewService {
     private apiUrl = 'http://localhost:5009/api/Review';
-constructor(private http: HttpClient) {}
-getTheLastestReviews(): Observable<String[]> {
-    return this.http.get<String[]>(`${this.apiUrl}/TheLatest`);
+    constructor(private http: HttpClient) {}
+    getTheLastestReviews(): Observable<string[]> {
+        return this.http.get<string[]>(`${this.apiUrl}/TheLatest`);
+        }
+    addReview(mediaId:string, result:ReviewRequest):Observable<ReviewResponse> {
+        const payload = {
+            movieId:mediaId,
+            rating:result.Rating,
+            comment:result.Comment
+        }
+        return this.http.post<ReviewResponse>(`${this.apiUrl}`,payload)
     }
-addReview(movieId:number, result:ReviewRequest):Observable<any>{
-    const payload = {
-        movieId:movieId,
-        rating:result.Rating,
-        comment:result.Comment
-    }
-    return this.http.post<any>(`${this.apiUrl}`,payload)
-}
 }

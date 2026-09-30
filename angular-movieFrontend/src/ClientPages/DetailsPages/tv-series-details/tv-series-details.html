@@ -1,0 +1,115 @@
+@if (isLoading()) {
+  <p class="loading">Ładowanie danych serialu...</p>
+} @else if (!tvSeries) {
+  <p class="error-message">Nie znaleziono serialu lub wystąpił błąd.</p>
+} @else {
+  <div class="series-header">
+    <div class="header-info">
+      <h1>{{ tvSeries.title }}</h1>
+      <p class="rating">Ocena: <span>{{ tvSeries.mediaStatsResponse.averageRating | number:'1.1-1' }}</span></p>
+      <p class="genre">Gatunek: {{ tvSeries.genreResponse.name }}</p>
+      <p class="year">Rok Wydania: {{ tvSeries.releaseDate | date:'yyyy' }}</p>
+      <div class="rating-buttons">
+        <button 
+          class="vote-btn" 
+          [class.active]="currentVote() === ERatingVote.Liked"
+          (click)="toggleVote(ERatingVote.Liked)">
+          <span>👍</span>
+        </button>
+
+        <button 
+          class="vote-btn" 
+          [class.active]="currentVote() === ERatingVote.Disliked"
+          (click)="toggleVote(ERatingVote.Disliked)">
+          <span>👎</span>
+        </button>
+      </div>
+
+      <div class="interaction-status">
+        <label for="status-select">Stan: </label>
+        <select 
+          id="status-select"
+          [value]="currentStatus()"
+          (change)="onStatusChange($event)">
+          <option [value]="null">-- Brak statusu --</option>
+          <option [value]="ETypeInteractions.Planned">Planowane</option>
+          <option [value]="ETypeInteractions.InProgress">W trakcie</option>
+          <option [value]="ETypeInteractions.Completed">Ukończone</option>
+          <option [value]="ETypeInteractions.Ignored">Ignorowane</option>
+        </select>
+      </div>
+    </div>
+  </div>
+<section class="Details">
+  <section class="description-section">
+    <h2>Opis</h2>
+    <p>{{ tvSeries.description }}</p>
+  </section>
+
+  <div class="stats-grid">
+    <section class="info-card">
+      <h2>Sezony</h2>
+      <p class="stat-number">{{ tvSeries.seasons }}</p>
+    </section>
+
+    <section class="info-card">
+      <h2>Odcinki</h2>
+      <p class="stat-number">{{ tvSeries.episodes }}</p>
+    </section>
+  </div>
+
+  <section class="details-section">
+    <h2>Stacja / Platforma</h2>
+    <p>{{ tvSeries.network }}</p>
+  </section>
+
+  <section class="details-section">
+    <h2>Status</h2>
+    <p class="status-badge" [attr.data-status]="tvSeries.status">{{ tvSeries.status }}</p>
+  </section>
+
+  <section class="reviews-section">
+    <h2>Recenzje użytkowników</h2>
+    @if (isLoggedIn()) {
+      <button class="btn-add-review" (click)="toggleReviewForm()">
+        {{ showReviewForm() ? 'Anuluj' : '+ Dodaj recenzję' }}
+      </button>
+    }
+
+    @if (showReviewForm()) {
+      <div class="add-review-form">
+        <h3>Twoja opinia</h3>
+        <div class="rating-input">
+          <label>Twoja ocena (1-10):</label>
+          <input type="number" [(ngModel)]="newReview.Rating" min="1" max="10" class="rating-field">
+        </div>
+        <textarea [(ngModel)]="newReview.Comment" placeholder="Napisz co sądzisz o tym serialu..." rows="4"></textarea>
+        <button class="btn-submit" (click)="submitReview()" [disabled]="!newReview.Comment">Wyślij recenzję</button>
+      </div>
+    }
+
+    @if (tvSeries.reviews && tvSeries.reviews.length > 0) {
+      <div class="reviews-list">
+        @for (review of tvSeries.reviews; track review.id) {
+          <div class="review-card">
+            <div class="review-header">
+              <span class="user-name">{{ review.username }}</span>
+              <span class="review-date">{{ review.createdAt | date:'dd.MM.yyyy' }}</span>
+            </div>
+            <div class="review-rating">
+              @for (star of stars; track star) {
+                <span class="star" [class.filled]="star <= review.rating">★</span>
+              }
+              <span class="rating-value">{{ review.rating }}/10</span>
+            </div>
+            <p class="review-content">{{ review.comment }}</p>
+          </div>
+        }
+      </div>
+    } @else {
+      <p class="no-reviews">Ten serial nie ma jeszcze żadnych recenzji. Bądź pierwszy!</p>
+    }
+  </section>
+</section>
+  <a [routerLink]="['/tvSeries']" class="back-link">← Powrót do listy seriali</a>
+}

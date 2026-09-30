@@ -1,8 +1,7 @@
 ﻿using Application.Behaviours;
-using Application.Common.Interfaces;
 using Application.Features.Common.Interfaces;
-using Application.Features.Games.Command;
-using Application.Features.Games.GetByCriteria;
+using Application.Features.Medias.Games.Common;
+using Application.Features.Medias.Games.GetByCriteria;
 using Domain.Aggregate;
 using Domain.Enums;
 using Domain.Repository;
@@ -67,9 +66,9 @@ namespace Tests.Service.GameService
             appDbContext.Genres.Add(genre);
             var genre2 = Genre.Create("Adventure", Guid.NewGuid());
             appDbContext.Genres.Add(genre2);
-            var game = Game.Create("Game B", "Description B", new Language("English"),new ReleaseDate(DateTime.UtcNow.AddDays(-10)), genre.Id, "Developer B",new List<EPlatform>() { EPlatform.PC});
+            var game = Game.Create("Game B", "Description B", "English", new ReleaseDate(DateTime.UtcNow.AddDays(-10)), genre.Id, new GameDetails("Developer B", "Engine B"), 3, new List<EPlatform>() { EPlatform.PC }, EGameStatus.Announced, true);
             appDbContext.Medias.Add(game);
-            var game2 = Game.Create("Game A", "Description A", new Language("English"), new ReleaseDate(DateTime.UtcNow.AddDays(-5)), genre2.Id, "Developer A", new List<EPlatform>() { EPlatform.PlayStation5 });
+            var game2 = Game.Create("Game A", "Description A", "English", new ReleaseDate(DateTime.UtcNow.AddDays(-5)), genre2.Id, new GameDetails("Developer A", "Engine A"), 3, new List<EPlatform>() { EPlatform.PlayStation5 }, EGameStatus.Announced, true);
             appDbContext.Medias.Add(game2);
             appDbContext.SaveChanges();
         }

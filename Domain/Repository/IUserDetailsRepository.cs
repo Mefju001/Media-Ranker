@@ -1,5 +1,4 @@
-﻿using Application.Common.Interfaces;
-using Domain.Aggregate;
+﻿using Domain.Aggregate;
 
 namespace Domain.Repository
 {

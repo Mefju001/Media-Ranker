@@ -1,6 +1,6 @@
 ﻿using Application.Behaviours;
-using Application.Common.Interfaces;
 using Application.Features.Common.Interfaces;
+using Domain.Repository;
 using Infrastructure.BackgroundTasks.CleanTokens.Workers;
 using Infrastructure.BackgroundTasks.LogSender;
 using Infrastructure.Database;

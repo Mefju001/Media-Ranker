@@ -1,5 +1,4 @@
-﻿using Domain.Base;
-using Domain.Entity;
+﻿using Domain.Entity;
 using Domain.Exceptions;
 using Domain.Interfaces;
 using Domain.Value_Object;

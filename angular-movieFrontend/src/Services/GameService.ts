@@ -1,9 +1,11 @@
 import { HttpClient, HttpParams } from "@angular/common/http";
 import { Observable } from "rxjs";
-import { MovieQuery } from "../Data/Request/MovieQuery";
+import { MovieQuery } from "../ClientPages/MainPages/movie-web/MovieQuery";
 import { GameResponse } from "../Data/Response/GameResponse";
 import { Injectable } from "@angular/core";
 import { GameRequest } from "../Data/Request/GameRequest";
+import { GameQuery } from "../ClientPages/MainPages/game-web/GameQuery";
+import { GenreResponse } from "../Data/Response/GenreResponse";
 @Injectable({
     providedIn: 'root'
 })
@@ -13,21 +15,33 @@ export class GameService {
     getGames(): Observable<GameResponse[]> {
     return this.http.get<GameResponse[]>(`${this.apiUrl}`);
     }
-    getGameById(id: number): Observable<GameResponse> {
+    GetPlatforms(): Observable<string[]> {
+    return this.http.get<string[]>(`${this.apiUrl}/Platforms`);
+    }
+    GetGenres(): Observable<GenreResponse[]> {
+    return this.http.get<GenreResponse[]>(`${this.apiUrl}/Genres`);
+    }
+    getGameById(id: string): Observable<GameResponse> {
     return this.http.get<GameResponse>(`${this.apiUrl}/${id}`);
     }
-    getGamesByFilter(query: MovieQuery): Observable<GameResponse[]> {
+    getGamesByFilter(query: GameQuery): Observable<GameResponse[]> {
     let params = new HttpParams();
     Object.keys(query).forEach(key => {
-        const value = query[key as keyof MovieQuery];
+        const value = query[key as keyof GameQuery];
         if (value !== null && value !== undefined && value !== '') {
             params = params.set(key, value.toString());
         }
         });
     return this.http.get<GameResponse[]>(`${this.apiUrl}`, { params: params });
     }
-    addGame(game: GameRequest): Observable<any>
+    addGame(game: GameRequest): Observable<GameResponse>
     {
-        return this.http.post<any>(`${this.apiUrl}`, game);
+        return this.http.post<GameResponse>(`${this.apiUrl}`, game);
+    }
+    updateGame(gameId: string, updateCommand: GameRequest): Observable<GameResponse> {
+      return this.http.put<GameResponse>(`${this.apiUrl}/${gameId}`, updateCommand);
+    }
+    deleteGame(gameId: string): Observable<void> {
+      return this.http.delete<void>(`${this.apiUrl}/${gameId}`);
     }
 }

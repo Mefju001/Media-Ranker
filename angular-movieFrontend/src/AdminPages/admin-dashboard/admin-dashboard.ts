@@ -3,28 +3,84 @@ import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, FormArray, Validators, ReactiveFormsModule } from '@angular/forms';
 import { MovieService } from '../../Services/MovieService';
 import { TvSeriesService } from '../../Services/TvSeriesService';
+import { AdminService } from '../../Services/AdminService';
 import { GameService } from '../../Services/GameService';
+import { MovieResponse } from '../../Data/Response/MovieResponse';
+import { TvSeriesResponse } from '../../Data/Response/TvSeriesResponse';
+import { GameResponse } from '../../Data/Response/GameResponse';
+import { RouterModule } from '@angular/router';
 
 @Component({
   selector: 'app-admin-dashboard',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule],
+  imports: [CommonModule, ReactiveFormsModule, RouterModule],
   templateUrl: './admin-dashboard.html',
   styleUrl: './admin-dashboard.css',
 })
+
 export class AdminDashboard implements OnInit {
+  moviesCount: number = 0;
+  tvSeriesCount: number = 0;
+  gamesCount: number = 0;
+  movies: MovieResponse[] = [];
+  tvSeries: TvSeriesResponse[] = [];
+  games: GameResponse[] = [];
   mediaForm!: FormGroup;
   currentType: 'film' | 'serial' | 'gra' = 'film';
-
+  statusOptions: Record<'film' | 'serial' | 'gra', { value: string; label: string }[]> = {
+      film: [
+        { value: 'Announced', label: 'Zapowiedziany' },
+        { value: 'InProduction', label: 'W produkcji' },
+        { value: 'Released', label: 'Wydany' },
+        { value: 'Cancelled', label: 'Anulowany' }
+      ],
+      gra: [
+        { value: 'Announced', label: 'Zapowiedziana' },
+        { value: 'EarlyAccess', label: 'Wczesny dostęp' },
+        { value: 'Released', label: 'Wydana' },
+        { value: 'Delayed', label: 'Opóźniona' },
+        { value: 'Cancelled', label: 'Anulowana' }
+      ],
+      serial: [
+        { value: 'Announced', label: 'Zapowiedziany' },
+        { value: 'Ongoing', label: 'W trakcie emisji' },
+        { value: 'Ended', label: 'Zakończony' },
+        { value: 'Canceled', label: 'Anulowany' }
+      ]
+    };
+  platformOptions = [
+    { value: 'PC', label: 'PC' },
+    { value: 'PlayStation5', label: 'PlayStation 5' },
+    { value: 'PlayStation4', label: 'PlayStation 4' },
+    { value: 'XboxSeries', label: 'Xbox Series X/S' },
+    { value: 'XboxOne', label: 'Xbox One' },
+    { value: 'NintendoSwitch', label: 'Nintendo Switch' },
+    { value: 'Mobile', label: 'Urządzenia mobilne' },
+    { value: 'SteamDeck', label: 'Steam Deck' },
+    { value: 'VR', label: 'Virtual Reality' },
+    { value: 'WebBrowser', label: 'Przeglądarka WWW' }
+  ];
+  distributionTypeOptions = [
+    { value: 'Cinema', label: 'Kino' },
+    { value: 'Streaming', label: 'Streaming / VOD' },
+    { value: 'DirectToVideo', label: 'Wydanie bezpośrednie (DVD/Blu-ray)' }
+  ];
+  users: any[] = [];
   constructor(
     private fb: FormBuilder, 
     private movieService: MovieService, 
-    private tvSeriesService: TvSeriesService, 
-    private gameService: GameService
+    private tvSeriesService: TvSeriesService,
+    private gameService: GameService, 
+    private adminService: AdminService
   ) {}
 
   ngOnInit(): void {
     this.initForm();
+    this.getAllNumbers();
+    this.loadMovies();
+    this.loadGames();
+    this.loadTvSeries();
+    this.getAllUsers();
   }
 
   initForm(): void {
@@ -42,7 +98,7 @@ export class AdminDashboard implements OnInit {
         surname: ['']
       }),
       duration: [''],
-      distributionType: [''],
+      distributionType: ['Cinema'],
       status: [''],
 
       seasons: [0],
@@ -102,12 +158,9 @@ export class AdminDashboard implements OnInit {
           genre: raw.genre,
           director: raw.director,
           duration: formattedDuration,
-          distributionType: raw.distributionType || "Kino",
+          distributionType: raw.distributionType || "Cinema",
           status: raw.status || "Wydany"
       };
-
-      console.log('Wysyłam FILM do .NET API (po konwersji):', moviePayload);
-
       this.movieService.addMovie(moviePayload).subscribe({
         next: (response) => console.log('Film dodany pomyślnie:', response),
         error: (error) => console.error('Błąd podczas dodawania filmu:', error.error || error)
@@ -129,8 +182,6 @@ export class AdminDashboard implements OnInit {
         gameStatus: raw.gameStatus || "Wydana"
       };
 
-      console.log('Wysyłam GRĘ do .NET API:', gamePayload);
-
       this.gameService.addGame(gamePayload).subscribe({
         next: (response) => console.log('Gra dodana pomyślnie:', response),
         error: (error) => console.error('Błąd podczas dodawania gry:', error.error || error)
@@ -149,13 +200,72 @@ export class AdminDashboard implements OnInit {
         network: raw.network,
         status: raw.status || "Wydany"
       };
-
-      console.log('Wysyłam SERIAL do .NET API:', tvSeriesPayload);
-
       this.tvSeriesService.addTvSeries(tvSeriesPayload).subscribe({
         next: (response) => console.log('Serial dodany pomyślnie:', response),
         error: (error) => console.error('Błąd podczas dodawania serialu:', error.error || error)
       });
     }
+  }
+  loadMovies(): void {
+    this.movieService.getMovies().subscribe((data) => {
+      this.movies = data;
+    });
+  }
+  loadTvSeries(): void {
+    this.tvSeriesService.getTvSeries().subscribe((data) => {
+      this.tvSeries = data;
+    });
+  }
+  loadGames(): void {
+    this.gameService.getGames().subscribe((data) => {
+      this.games = data;
+    });
+  }
+  getAllUsers(): void {
+    this.adminService.getAllUsers().subscribe({
+      next: (users) => {
+        this.users = users;
+      },
+      error: (error) => console.error('Błąd podczas pobierania użytkowników:', error)
+    });
+  }
+  getAllNumbers(): void {
+    this.adminService.getAllNumbers().subscribe({
+      next: (numbers) => {
+        this.moviesCount = numbers.numberOfMovies;
+        this.tvSeriesCount = numbers.numberOfTvSeries;
+        this.gamesCount = numbers.numberOfGames;
+      },
+      error: (error) => console.error('Błąd podczas pobierania liczby elementów:', error)
+    });
+  }
+  deleteMovie(id: string): void{
+    this.movieService.deleteMovie(id).subscribe({})
+  }
+  deleteTvSeries(id: string): void{
+    this.tvSeriesService.deleteSeries(id).subscribe({})
+  }
+  deleteGame(id: string): void{
+    this.gameService.deleteGame(id).subscribe({})
+  }
+  deleteUser(id: string): void{
+    console.log(`Próba usunięcia użytkownika o ID: ${id}`);
+    this.adminService.deleteUser(id).subscribe({
+      next: () => {
+        console.log(`Użytkownik o ID ${id} został usunięty.`);
+        this.getAllUsers();
+      },
+      error: (error) => console.error('Błąd podczas usuwania użytkownika:', error)
+    });
+  }
+  generatePassword(userId: string): void {
+    console.log(`Próba wygenerowania nowego hasła dla użytkownika o ID: ${userId}`);
+    this.adminService.generatePassword(userId).subscribe({
+      next: () => {
+        console.log(`Nowe hasło dla użytkownika o ID ${userId} zostało wygenerowane.`);
+        alert('Nowe hasło zostało wygenerowane i wysłane na adres e-mail użytkownika.');
+      },
+      error: (error) => console.error('Błąd podczas generowania nowego hasła:', error)
+    });
   }
 }

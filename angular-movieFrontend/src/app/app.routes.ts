@@ -1,16 +1,37 @@
 import { Routes } from '@angular/router';
-import { MovieWeb } from '../ClientPages/movie-web/movie-web';
+import { MovieWeb } from '../ClientPages/MainPages/movie-web/movie-web';
 import { MovieDetails } from '../ClientPages/DetailsPages/movie-details/movie-details';
+import { GamesDetails } from '../ClientPages/DetailsPages/games-details/games-details';
 import { MainWeb } from '../ClientPages/MainPages/main-web/main-web';
 import { GameWeb } from '../ClientPages/MainPages/game-web/game-web';
 import { TvSeriesWeb } from '../ClientPages/MainPages/tv-series-web/tv-series-web';
 import { AdminDashboard } from '../AdminPages/admin-dashboard/admin-dashboard';
 import { adminGuard } from '../ClientPages/auth/guard/admin.guard';
+import { TvSeriesDetails } from '../ClientPages/DetailsPages/tv-series-details/tv-series-details';
+import { EditMovieForm } from '../AdminPages/Form/edit-movie-form/edit-movie-form';
+import { EditGameForm } from '../AdminPages/Form/edit-game-form/edit-game-form';
+import { EditTvSeriesForm } from '../AdminPages/Form/edit-tv-series-form/edit-tv-series-form';
+import { EditDetailsForm } from '../AdminPages/Form/edit-details-form/edit-details-form';
+import { Premieres } from '../ClientPages/premieres/premieres';
+import { Rankings } from '../ClientPages/rankings/rankings';
+import { UsersList } from '../ClientPages/users-list/users-list';
+import { userGuard } from '../ClientPages/auth/guard/user.guard';
+import { UserRecommendations } from '../ClientPages/user-recommendations/user-recommendations';
 export const routes: Routes = [
     {path: '',component: MainWeb},
     {path: 'movies', component: MovieWeb},
     {path: 'games',component: GameWeb},
     {path: 'tvSeries', component: TvSeriesWeb},
     {path: 'movie/:id', component: MovieDetails},
+    {path: 'game/:id', component: GamesDetails},
+    {path: 'tvSeries/:id', component: TvSeriesDetails},
+    {path: 'premieres', component: Premieres},
+    {path: 'rankings', component: Rankings},
+    {path: 'yourList', component: UsersList, canActivate: [userGuard]},
+    {path: 'userRecommendations', component: UserRecommendations, canActivate: [userGuard]},
     {path: 'adminDashboard', component: AdminDashboard, canActivate: [adminGuard]},
+    {path: 'editMovie/:id', component: EditMovieForm, canActivate: [adminGuard]},
+    {path: 'editGame/:id', component: EditGameForm, canActivate: [adminGuard]},
+    {path: 'editTvSeries/:id', component: EditTvSeriesForm, canActivate: [adminGuard]},
+    {path: 'edit-user/:id', component: EditDetailsForm, canActivate: [adminGuard]},
 ];

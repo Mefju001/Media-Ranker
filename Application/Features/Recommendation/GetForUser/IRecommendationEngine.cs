@@ -1,13 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Application.Features.Recommendation.GetForUser
+﻿namespace Application.Features.Recommendation.GetForUser
 {
     public interface IRecommendationEngine
     {
-        Task<List<Media>> GetMediasAsync(UserProfileDto profile, UserPreferencesDto prefs, CancellationToken cancellation);
+        Task<List<Media>> GetMediasAsync(UserProfileDto profile, EMediaRecommendationType eMediaRecommendationType, UserPreferencesDto prefs, CancellationToken cancellation);
     }
 }

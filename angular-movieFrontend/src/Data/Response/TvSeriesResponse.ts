@@ -3,20 +3,20 @@ import { MediaStatsResponse } from "./MediaStatsResponse";
 import { ReviewResponse } from "./ReviewResponse";
 
 export interface TvSeriesResponse {
-    mediaStats: MediaStatsResponse;
+    mediaStatsResponse: MediaStatsResponse;
     seasons: number;
     episodes: number;
     network: string;
     status: string;
-    id: number;
+    id: string;
     title: string;
     description: string;
     
-    genre: GenreResponse;
+    genreResponse: GenreResponse;
     
-    releaseDate: string; // Data jest stringiem
+    releaseDate: string;
     language: string;
-    
-    // Tablica recenzji
+
     reviews: ReviewResponse[];
+    $type?: 'tvseries';
 }

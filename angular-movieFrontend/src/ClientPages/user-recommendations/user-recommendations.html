@@ -1,0 +1,30 @@
+<div class="recommendation-container">
+  <div class="category-tabs">
+    <button [class.active]="selectedType() === 'All'" (click)="setCategory('All')">🌟 Wszystkie</button>
+    <button [class.active]="selectedType() === 'Movie'" (click)="setCategory('Movie')">🎬 Filmy</button>
+    <button [class.active]="selectedType() === 'TvShow'" (click)="setCategory('TvShow')">📺 Seriale</button>
+    <button [class.active]="selectedType() === 'Game'" (click)="setCategory('Game')">🎮 Gry</button>
+  </div>
+
+  <section class="media-grid">
+    @if (isLoading()) {
+      <div class="loading-state">Ładowanie rekomendacji...</div>
+    } @else {
+      @for (item of recommendations(); track item.id) {
+        <div class="media-card">
+          <div class="card-body">
+            <h4>{{ item.title }}</h4>
+            <span class="genre-tag">{{ item.genreResponse.name }}</span>
+            <div class="card-image">
+              <span class="rating-badge"> średnia ocen: {{ item.mediaStatsResponse.averageRating }}</span>
+            </div>
+            <button [routerLink]="changeRoute(item.$type, item.id)" class="more-info-btn">Więcej...</button>
+          </div>
+
+        </div>
+      } @empty {
+        <p class="empty-state">Brak rekomendacji dla wybranej kategorii.</p>
+      }
+    }
+  </section>
+</div>

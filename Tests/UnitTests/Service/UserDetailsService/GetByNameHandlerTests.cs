@@ -63,7 +63,7 @@ namespace Tests.Service.UserDetailsService
             var context = scope.ServiceProvider.GetRequiredService<AppDbContext>();
             var userModel = new UserModel(userId, "username", "password", "email");
             context.Users.Add(userModel);
-            var user = UserDetails.Create(userId, new Fullname("Test", "User"), new Username("testuser"), Email.Create("testuser@example.com"));
+            var user = UserDetails.Create(userId, new Fullname("Test", "User"), "testuser", Email.Create("testuser@example.com"));
             context.UsersDetails.Add(user);
             await context.SaveChangesAsync();
         }

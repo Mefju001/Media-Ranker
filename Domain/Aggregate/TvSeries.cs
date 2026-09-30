@@ -7,7 +7,7 @@ namespace Domain.Aggregate;
 
 public class TvSeries : Media, MediaInfo
 {
-    public SeasonDetails SeasonAndEpisode { get; private set; } = default!;
+    public SeasonDetails? SeasonAndEpisode { get; private set; } = default!;
     public string? Network { get; private set; }
     public ETvSeriesStatus Status { get; private set; }
 

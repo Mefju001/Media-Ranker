@@ -34,7 +34,7 @@ namespace Domain.Specification
                 var year = ReleaseYear.Value;
                 var startOfYear = new DateTime(year, 1, 1);
                 var endOfYear = new DateTime(year, 12, 31, 23, 59, 59);
-                AddCriteria(m => m.ReleaseDate >= startOfYear && m.ReleaseDate <= endOfYear);
+                AddCriteria(m => m.ReleaseDate.Value >= startOfYear && m.ReleaseDate.Value <= endOfYear);
             }
             if (directorIds != null && directorIds.Any())
             {
@@ -43,13 +43,9 @@ namespace Domain.Specification
             if (!string.IsNullOrWhiteSpace(SortByField) && sortColumns.TryGetValue(SortByField, out var sortExpression))
             {
                 if(IsDescending)ApplyOrderByDescending(sortExpression);
-                else if (sortExpression is null)
-                {
-                    sortExpression = m => m.Title;
-                    ApplyOrderBy(sortExpression);
-                }
                 else ApplyOrderBy(sortExpression);
             }
+            else { ApplyOrderBy(m => m.Title); }
         }
     }
 }

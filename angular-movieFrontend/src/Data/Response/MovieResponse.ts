@@ -4,16 +4,17 @@ import { MediaStatsResponse } from "./MediaStatsResponse";
 import { ReviewResponse } from "./ReviewResponse";
 
 export interface MovieResponse{
-id: number;
+  id: string;
   title: string;
   description: string;
-  duration: string; // HH:MM:SS format
-  isCinemaRelease: boolean;
-  releaseDate: string; // ISO 8601 date string  
-  language: string;
-
-  director: DirectorResponse;
-  genre: GenreResponse;
-  mediaStats: MediaStatsResponse;
-  reviews: ReviewResponse[];
+  genreResponse: GenreResponse;
+  directorResponse: DirectorResponse;
+  releaseDate: string;
+  language: string | null;
+  reviews: ReviewResponse[] | null;
+  mediaStatsResponse: MediaStatsResponse;
+  duration: string;
+  distributionType: string;
+  status: string;
+  $type?:'movie';
 }

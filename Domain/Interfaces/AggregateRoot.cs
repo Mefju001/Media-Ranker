@@ -1,4 +1,4 @@
-﻿namespace Domain.Base
+﻿namespace Domain.Interfaces
 {
     public abstract class AggregateRoot<TId> : Entity<TId>
     {

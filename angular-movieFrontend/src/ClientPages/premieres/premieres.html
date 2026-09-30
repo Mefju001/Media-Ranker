@@ -1,0 +1,73 @@
+<div class="premieres-container">
+  
+  <header class="premieres-header">
+    <h1>📅 Kalendarz Premier & Zapowiedzi</h1>
+    <p>Bądź na bieżąco z najnowszymi debiutami w świecie filmów, seriali i gier.</p>
+  </header>
+
+  <div class="tabs-bar">
+    <button 
+      class="tab-btn" 
+      [class.active]="selectedScope === 'recent'"
+      (click)="onScopeChange('recent')">
+      🔥 Najnowsze Premiery
+    </button>
+    <button 
+      class="tab-btn" 
+      [class.active]="selectedScope === 'upcoming'"
+      (click)="onScopeChange('upcoming')">
+      ⏳ Nadchodzące Zapowiedzi
+    </button>
+  </div>
+
+
+  <div class="chips-group">
+    @for (type of selectedTypes; track type.value) {
+      <button 
+        class="chip-btn" 
+        [class.selected]="selectedType === type.value"
+        (click)="onTypeChange(type.value)">
+        {{ type.value === 'movie' ? '🎬 Filmy' : type.value === 'tv' ? '📺 Seriale' : type.value === 'game' ? '🎮 Gry' : '🌐 Wszystkie' }}
+      </button>
+    }
+  </div>
+
+  <section class="premieres-grid">
+    @for (item of items; track item.id) {
+      <article class="premiere-card">
+        
+
+        <div class="card-badge-container">
+          <span class="media-type-badge" [attr.data-type]="item.type">
+            {{ item.typeLabel }}
+          </span>
+          <span class="date-badge">
+            {{ item.releaseDateFormatted }}
+          </span>
+        </div>
+
+        <div class="card-image-wrapper">
+          <img [src]="item.imageUrl" [alt]="item.title" loading="lazy" />
+        </div>
+
+        <div class="card-content">
+          <h3>{{ item.title }}</h3>
+          <p class="genre-list">{{ item.genres.join(', ') }}</p>
+          <p class="card-description">{{ item.description }}</p>
+        </div>
+
+        <div class="card-footer">
+          <a [routerLink]="changeRoute(item.type, item.id)" class="details-link">
+            Zobacz szczegóły
+          </a>
+        </div>
+
+      </article>
+    } @empty {
+      <div class="empty-state">
+        <p>Brak danych spełniających wybrane kryteria.</p>
+      </div>
+    }
+  </section>
+
+</div>

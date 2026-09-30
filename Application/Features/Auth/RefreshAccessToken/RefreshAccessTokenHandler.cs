@@ -1,11 +1,10 @@
 ﻿using Application.Features.Auth.Common;
-using Application.Features.Auth.RefreshAccessToken;
 using Domain.Exceptions;
 using MediatR;
 using System.Security.Claims;
 
 
-namespace Application.Features.AuthServices.RefreshAccessToken
+namespace Application.Features.Auth.RefreshAccessToken
 {
     internal class RefreshAccessTokenHandler : IRequestHandler<RefreshAccessTokenCommand, TokenResponse?>
     {

@@ -1,23 +1,19 @@
-# Stage 1: Build
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 WORKDIR /src
+COPY ["Api/Api.csproj", "Api/"]
+COPY ["Application/Application.csproj", "Application/"]
+COPY ["Domain/Domain.csproj", "Domain/"]
+COPY ["Infrastructure/Infrastructure.csproj", "Infrastructure/"]
 
-# Kopiujemy tylko plik projektu i przywracamy paczki
-COPY WebApplication1/WebApplication1.csproj ./
-RUN dotnet restore
+RUN dotnet restore "Api/Api.csproj"
 
-# Kopiujemy resztę kodu
-COPY WebApplication1/. ./
+COPY . .
+WORKDIR "/src/Api"
+RUN dotnet publish "Api.csproj" -c Release -o /app/publish
 
-# Publikujemy do czystego folderu /app
-RUN dotnet publish -c Release -o /app
 
-# Stage 2: Runtime
-FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS runtime
+FROM mcr.microsoft.com/dotnet/aspnet:8.0 as final
 WORKDIR /app
-
-# Kopiujemy opublikowane pliki z build stage
-COPY --from=build /app ./
-
-# Uruchamiamy aplikację
-ENTRYPOINT ["dotnet", "WebApplication1.dll"]
+COPY --from=build /app/publish .
+USER app
+ENTRYPOINT ["dotnet", "Api.dll"]

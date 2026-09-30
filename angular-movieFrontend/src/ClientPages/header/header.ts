@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, computed, inject, OnInit, signal } from '@angular/core';
 import { Router, RouterLink } from "@angular/router";
 import { LoginDialog } from '../auth/login-dialog/login-dialog';
 import { MatDialog, MatDialogModule} from '@angular/material/dialog';
@@ -7,6 +7,7 @@ import { AuthService } from '../../Services/AuthService';
 import { ChangePassword } from '../change-password/change-password';
 import { ChangeDetails } from '../change-details/change-details';
 import { RegisterDialog } from '../auth/register-dialog/register-dialog';
+import { UserService } from '../../Services/UserService';
 
 @Component({
   selector: 'app-header',
@@ -17,26 +18,16 @@ import { RegisterDialog } from '../auth/register-dialog/register-dialog';
   templateUrl: './header.html',
   styleUrl: './header.css'
 })
-export class Header implements OnInit {
-  isLoggedIn = false;
-  username = '';
-  userRole = false;
-  userService: any;
+export class Header{
+  private authService = inject(AuthService);
+  private userService = inject(UserService);
+  private dialog = inject(MatDialog);
+  private router = inject(Router);
 
-  constructor(
-    private authService: AuthService, 
-    private router: Router,
-    private dialog: MatDialog
-  ) {}
+  readonly isLoggedIn = this.authService.isLoggedIn;
+  readonly username = this.authService.currentUsername;
+  readonly isAdmin = computed(() => this.authService.userRoles().includes('Admin'));
 
-  ngOnInit() {
-    const token = this.authService.getAccessToken();
-    if (token) {
-      this.isLoggedIn = true;
-      this.username = sessionStorage.getItem('username') || 'Użytkownik';
-      this.userRole = this.authService.getRolesFromToken().includes('Admin');
-    }
-  }
 
   openLoginDialog(): void {
     this.dialog.open(LoginDialog, {
@@ -46,11 +37,6 @@ export class Header implements OnInit {
       if (credentials) {
         this.authService.login(credentials).subscribe({
           next: (response) => {
-            this.isLoggedIn = true;
-            this.username = credentials.username;
-            this.userRole = this.authService.getRolesFromToken().includes('Admin');
-            sessionStorage.setItem('username', this.username);
-            sessionStorage.setItem('isLoggedIn', 'true');
             this.router.navigate(['/movies']);
           },
           error: (error) => console.error('Login failed:', error)
@@ -60,12 +46,7 @@ export class Header implements OnInit {
   }
 
   logout(): void {
-    this.authService.logout();
-    this.isLoggedIn = false;
-    this.username = '';
-    this.userRole = false;
-    sessionStorage.removeItem('username');
-    this.router.navigate(['/']);
+    this.authService.logout().subscribe();
   }
 
   openChangePassword() { this.dialog.open(ChangePassword, { width: '400px' }); }
@@ -75,12 +56,11 @@ export class Header implements OnInit {
   deleteAccount() {
     this.userService.deleteAccount().subscribe({
       next: () => {
-        this.isLoggedIn = false;
-        this.username = '';
-        sessionStorage.removeItem('username');
+        this.authService.setAccessToken(null);
+        alert('Konto zostało usunięte.');
         this.router.navigate(['/']);
       },
-      error: (err:any) => alert('Nie udało się usunąć konta.')
+      error: (err: unknown) => alert('Nie udało się usunąć konta.')
     });
   }
 }

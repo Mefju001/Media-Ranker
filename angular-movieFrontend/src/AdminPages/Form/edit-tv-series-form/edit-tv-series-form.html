@@ -1,0 +1,86 @@
+@if (isLoading) {
+  <div class="loading-spinner">Ładowanie danych formularza...</div>
+} @else {
+  <div class="edit-container">
+    <div class="edit-header">
+      <h1>Edytuj: {{ editForm.get('title')?.value }}</h1>
+    </div>
+
+    <form [formGroup]="editForm" (ngSubmit)="onSubmit()" class="edit-form">
+      
+      <div class="form-group">
+        <label for="title">Tytuł serialu</label>
+        <input id="title" type="text" formControlName="title" class="form-control" [class.is-invalid]="editForm.get('title')?.touched && editForm.get('title')?.invalid">
+        @if (editForm.get('title')?.touched && editForm.get('title')?.errors?.['required']) {
+          <div class="error-text">Tytuł jest wymagany.</div>
+        }
+      </div>
+
+      <div class="form-group">
+        <label for="description">Opis</label>
+        <textarea id="description" formControlName="description" rows="5" class="form-control" [class.is-invalid]="editForm.get('description')?.touched && editForm.get('description')?.invalid"></textarea>
+        @if (editForm.get('description')?.touched && editForm.get('description')?.errors?.['required']) {
+          <div class="error-text">Opis jest wymagany.</div>
+        }
+      </div>
+
+      <div class="form-row">
+        <div class="form-group col">
+          <label for="genreId">Gatunek</label>
+          <select id="genreId" formControlName="genreId" class="form-control">
+            <option value="">Wybierz gatunek</option>
+            @for (genre of genres; track genre.id) {
+              <option [value]="genre.id">{{ genre.name }}</option>
+            }
+          </select>
+        </div>
+
+        <div class="form-group col">
+          <label for="releaseDate">Data premiery</label>
+          <input id="releaseDate" type="date" formControlName="releaseDate" class="form-control">
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group col">
+          <label for="seasons">Liczba sezonów</label>
+          <input id="seasons" type="number" formControlName="seasons" class="form-control">
+        </div>
+
+        <div class="form-group col">
+          <label for="episodes">Liczba odcinków</label>
+          <input id="episodes" type="number" formControlName="episodes" class="form-control">
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group col">
+          <label for="network">Stacja / Platforma</label>
+          <input id="network" type="text" formControlName="network" class="form-control">
+        </div>
+
+        <div class="form-group col">
+          <label for="status">Status</label>
+          <select id="status" formControlName="status" class="form-control">
+            <option value="InDevelopment">W produkcji (In Development)</option>
+            <option value="ReturningSeries">W trakcie emisji (Returning Series)</option>
+            <option value="Ended">Zakończony (Ended)</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="language">Język oryginalny</label>
+        <input id="language" type="text" formControlName="language" class="form-control">
+      </div>
+
+      <div class="form-actions">
+        <a [routerLink]="['/adminDashboard']" class="btn-cancel">Anuluj</a>
+        <button type="submit" class="btn-save" [disabled]="editForm.invalid || isSubmitting">
+          {{ isSubmitting ? 'Zapisywanie...' : 'Zapisz zmiany' }}
+        </button>
+      </div>
+
+    </form>
+  </div>
+}

@@ -1,15 +1,11 @@
-import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup, ReactiveFormsModule } from '@angular/forms';
-import { debounceTime } from 'rxjs';
-import { MovieQuery } from '../../../Data/Request/MovieQuery';
+import { Component, inject, OnInit, signal } from '@angular/core';
+import { FormBuilder, ReactiveFormsModule } from '@angular/forms';
 import { GenreResponse } from '../../../Data/Response/GenreResponse';
-import { MovieResponse } from '../../../Data/Response/MovieResponse';
-import { GenreService } from '../../../Services/GenreService';
-import { MovieService } from '../../../Services/MovieService';
 import { ReviewService } from '../../../Services/ReviewService';
 import { RouterLink } from '@angular/router';
 import { GameService } from '../../../Services/GameService';
 import { GameResponse } from '../../../Data/Response/GameResponse';
+import { GameQuery } from './GameQuery';
 
 @Component({
   selector: 'app-game-web',
@@ -18,71 +14,87 @@ import { GameResponse } from '../../../Data/Response/GameResponse';
   styleUrl: './game-web.css',
 })
 export class GameWeb implements OnInit {
-  filterForm: FormGroup;
-  games: GameResponse[] = [];
-  genres: GenreResponse[] = [];
-  reviewsTitle: String[] = [];
-  sortFields = [
-    { name: 'Tytuł (A-Z)', value: 'Title|false' }, 
-    { name: 'Ocena (najniższa)', value: 'average|false' }, 
-    { name: 'Rok Wydania (najstarsze)', value: 'releaseDate|false' },
-    { name: 'Tytuł (Z-A)', value: 'Title|true' },
-    { name: 'Ocena (najwyższa)', value: 'average|true' },
-    { name: 'Rok Wydania (najnowsze)', value: 'releaseDate|true' },
-    ];
-  constructor(private fb: FormBuilder,private cdr: ChangeDetectorRef,private gameService: GameService,private genreService: GenreService,private reviewService: ReviewService) {
-  this.filterForm = this.fb.group({
+  private readonly fb = inject(FormBuilder);
+  private readonly gameService = inject(GameService)
+  private readonly reviewService = inject(ReviewService);
+  readonly filterForm = this.fb.group({
       TitleSearch: [null],
       MinRating: [null],
+      Platform: [null],
+      Developer: [null],
       ReleaseYear: [null],
       genreName: [null],
-      DirectorName: [null],
-      DirectorSurname: [null],
-      SortByField: [null],
-      IsDescending: [false]
+      SortByField: [null as { sortBy: string; isDescending: boolean } | null]
     });
-  }
+  games= signal<GameResponse[]>([]);
+  genres= signal<GenreResponse[]>([]);
+  reviewsTitle = signal<string[]>([]);
+  platforms= signal<string[]>([]);
+  sortFields = [
+    { name: 'Tytuł (A-Z)', sortBy: 'Title', isDescending: false }, 
+    { name: 'Ocena (najniższa)', sortBy: 'average', isDescending: false }, 
+    { name: 'Rok Wydania (najstarsze)', sortBy: 'releaseDate', isDescending: false },
+    { name: 'Tytuł (Z-A)', sortBy: 'Title', isDescending: true },
+    { name: 'Ocena (najwyższa)', sortBy: 'average', isDescending: true },
+    { name: 'Rok Wydania (najnowsze)', sortBy: 'releaseDate', isDescending: true },
+    ];
+
 ngOnInit(): void {
-    this.filterForm.valueChanges
-      .pipe(
-        debounceTime(300)
-      )
-      .subscribe((query: MovieQuery) => {
-        this.loadMoviesByFilter(query);
-      });
     this.loadGames();
     this.loadGenres();
+    this.loadPlatforms();
     this.GetTheLastestReviews();
   }
-
-  loadGames(): void {
+onFilter(): void {
+    const rawValue = this.filterForm.getRawValue();
+    const selectedSortField = rawValue.SortByField;
+    const gameQuery: GameQuery = {
+      TitleSearch: rawValue.TitleSearch,
+      MinRating: rawValue.MinRating,
+      Platform: rawValue.Platform,
+      Developer: rawValue.Developer,
+      ReleaseDate: rawValue.ReleaseYear,
+      genreName: rawValue.genreName,
+      
+      SortByField: selectedSortField ? selectedSortField.sortBy : null,
+      IsDescending: selectedSortField ? selectedSortField.isDescending : false
+    };
+    this.loadGamesByFilter(gameQuery);
+  }
+onReset(): void {
+    this.filterForm.reset();
+    this.loadGames();
+  }
+loadGames(): void {
     this.gameService.getGames().subscribe((data) => {
-      this.games = data;
+      this.games.set(data);
       console.log('Załadowano gry:', data);
-      this.cdr.detectChanges();
     });
   }
-  loadMoviesByFilter(query: MovieQuery): void {
+loadGamesByFilter(query: GameQuery): void {
     this.gameService.getGamesByFilter(query).subscribe({
         next: (data) => {
-          console.log('Załadowano filmy z filtrami:', data);
-            this.games = data;
+            this.games.set(data);
         },
         error: (err) => {
-            console.error('Błąd ładowania filmów:', err);
-            this.games = [];
+            console.error('Błąd ładowania gier:', err);
+            this.games.set([]);
         }
     });
   }
-
-loadGenres(): void {
-  this.genreService.getGenres().subscribe((data) => {
-    this.genres = data;
+loadPlatforms(): void {
+  this.gameService.GetPlatforms().subscribe((data) => {
+    this.platforms.set(data);
   });
 }
-  GetTheLastestReviews(): void {
+loadGenres(): void {
+  this.gameService.GetGenres().subscribe((data) => {
+    this.genres.set(data);
+  });
+}
+GetTheLastestReviews(): void {
     this.reviewService.getTheLastestReviews().subscribe((data) => {
-      this.reviewsTitle = data;
+      this.reviewsTitle.set(data);
     });
   }
 }

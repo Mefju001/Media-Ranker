@@ -3,7 +3,7 @@ using Domain.Repository;
 using Microsoft.Extensions.Logging;
 
 
-namespace Infrastructure.BackgroundTasks.CleanService
+namespace Infrastructure.BackgroundTasks.CleanTokens
 {
     public class TokenCleanService : ITokenCleanService
     {

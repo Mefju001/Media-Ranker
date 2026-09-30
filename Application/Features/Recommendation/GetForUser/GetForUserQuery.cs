@@ -1,7 +1,7 @@
 ﻿using Application.Features.Common.Interfaces;
-using Application.Features.Liked.Common;
+using Application.Features.Common.Models;
 
 namespace Application.Features.Recommendation.GetForUser
 {
-    public record GetForUserQuery(Guid UserId) : IQuery<List<MediaResponse>>;
+    public record GetForUserQuery(Guid UserId, EMediaRecommendationType RecommendationType) : IQuery<List<MediaResponse>>;
 }

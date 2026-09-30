@@ -1,6 +1,6 @@
-﻿using Application.Common.Interfaces;
-using Application.Features.Directors.Common;
+﻿using Application.Features.Directors.Common;
 using Domain.Aggregate;
+using Domain.Repository;
 
 namespace Application.Features.Directors.Manager
 {
