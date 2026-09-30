@@ -24,7 +24,7 @@ namespace Tests.Domain
         {
             var userDetails = UserDetails.Create(Guid.NewGuid(), new Fullname("John", "Doe"), "johndoe", Email.Create("johndoe@example.com"));
             var mediaId = Guid.NewGuid();
-            userDetails.SetInteraction(mediaId, ETypeInteractions.WATCHING, ERatingVote.Liked);
+            userDetails.SetInteraction(mediaId, ETypeInteractions.InProgress, ERatingVote.Liked);
             Assert.HasCount(1, userDetails.UserInteractions);
         }
         [TestMethod]
@@ -32,7 +32,7 @@ namespace Tests.Domain
         {
             var userDetails = UserDetails.Create(Guid.NewGuid(), new Fullname("John", "Doe"), "johndoe", Email.Create("johndoe@example.com"));
             var mediaId = Guid.NewGuid();
-            userDetails.SetInteraction(mediaId, ETypeInteractions.WATCHING, null);
+            userDetails.SetInteraction(mediaId, ETypeInteractions.InProgress, null);
             userDetails.RemoveInteraction(mediaId);
             Assert.HasCount(0, userDetails.UserInteractions);
 
@@ -42,13 +42,13 @@ namespace Tests.Domain
         {
             var userDetails = UserDetails.Create(Guid.NewGuid(), new Fullname("John", "Doe"), "johndoe", Email.Create("johndoe@example.com"));
             var mediaId = Guid.NewGuid();
-            userDetails.SetInteraction(mediaId, ETypeInteractions.WATCHING, null);
+            userDetails.SetInteraction(mediaId, ETypeInteractions.InProgress, null);
             Assert.HasCount(1, userDetails.UserInteractions);
-            Assert.AreEqual(ETypeInteractions.WATCHING, userDetails.UserInteractions.First().TypeInteractions);
+            Assert.AreEqual(ETypeInteractions.InProgress, userDetails.UserInteractions.First().TypeInteractions);
             Assert.IsNull(userDetails.UserInteractions.First().RatingVote);
-            userDetails.SetInteraction(mediaId, ETypeInteractions.COMPLETED, ERatingVote.Liked);
+            userDetails.SetInteraction(mediaId, ETypeInteractions.Completed, ERatingVote.Liked);
             Assert.HasCount(1, userDetails.UserInteractions);
-            Assert.AreEqual(ETypeInteractions.COMPLETED, userDetails.UserInteractions.First().TypeInteractions);
+            Assert.AreEqual(ETypeInteractions.Completed, userDetails.UserInteractions.First().TypeInteractions);
             Assert.AreEqual(ERatingVote.Liked, userDetails.UserInteractions.First().RatingVote);
         }
         [TestMethod]

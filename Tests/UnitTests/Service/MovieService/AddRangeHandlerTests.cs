@@ -8,6 +8,7 @@ using Application.Features.Genres.GenreManager;
 using Application.Features.Medias.Movies.AddRange;
 using Application.Features.Medias.Movies.Common;
 using Domain.Aggregate;
+using Domain.Enums;
 using Domain.Exceptions;
 using Domain.Repository;
 using FluentValidation;
@@ -81,8 +82,8 @@ namespace Tests.Service.MovieService
                     DateTime.UtcNow,
                     "English",
                     TimeSpan.FromHours(2),
-                    "Cinema",
-                    "Released"
+                    EDistributionType.Cinema,
+                    EMovieStatus.Released
                 ),
                 new MovieRequest
                 (
@@ -93,8 +94,8 @@ namespace Tests.Service.MovieService
                     DateTime.UtcNow,
                     "English",
                     TimeSpan.FromHours(2),
-                    "Cinema",
-                    "Released"
+                    EDistributionType.Cinema,
+                    EMovieStatus.Released
                 )
             };
             List<Guid> result;
@@ -158,8 +159,8 @@ namespace Tests.Service.MovieService
                     DateTime.UtcNow,
                     "English",
                     TimeSpan.FromHours(2),
-                    "Cinema",
-                    "Released"
+                    EDistributionType.Cinema,
+                    EMovieStatus.Released
                 )
             };
             var command = new AddRangeCommand(listOfMovies);
@@ -193,8 +194,8 @@ namespace Tests.Service.MovieService
                 DateTime.UtcNow,
                 "English",
                 TimeSpan.FromHours(2),
-                "Cinema",
-                "Released"
+                EDistributionType.Cinema,
+                EMovieStatus.Released
                 ),
                 new MovieRequest
                 (
@@ -205,8 +206,8 @@ namespace Tests.Service.MovieService
                     DateTime.UtcNow,
                     "English",
                     TimeSpan.FromHours(2),
-                    "Cinema",
-                    "Released"
+                    EDistributionType.Cinema,
+                    EMovieStatus.Released
                 )
             };
             using(var actScope = _serviceProvider.CreateScope())
@@ -237,8 +238,8 @@ namespace Tests.Service.MovieService
                 DateTime.UtcNow,
                 "English",
                 TimeSpan.FromHours(2),
-                "Cinema",
-                "Released"
+                EDistributionType.Cinema,
+                EMovieStatus.Released
                 ),
                 new MovieRequest
                 (
@@ -249,8 +250,8 @@ namespace Tests.Service.MovieService
                     DateTime.UtcNow,
                     "English",
                     TimeSpan.FromHours(2),
-                    "Cinema",
-                    "Released"
+                    EDistributionType.Cinema,
+                    EMovieStatus.Released
                 )
             };
             using (var actScope = _serviceProvider.CreateScope())

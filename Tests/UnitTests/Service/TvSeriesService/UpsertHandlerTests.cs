@@ -90,7 +90,7 @@ namespace Tests.Service.TvSeriesService
                 2,
                 20,
                 "Netflix",
-                "Ongoing"
+                ETvSeriesStatus.Ongoing
                 );
 
             using var scope = _serviceProvider.CreateScope();
@@ -116,7 +116,7 @@ namespace Tests.Service.TvSeriesService
                             2,
                             20,
                             "Netflix",
-                            "Ongoing"
+                            ETvSeriesStatus.Ongoing
                             );
             using var scope = _serviceProvider.CreateScope();
             var mediator = _serviceProvider.GetRequiredService<IMediator>();
@@ -142,7 +142,7 @@ namespace Tests.Service.TvSeriesService
                 2,
                 20,
                 "Netflix",
-                "Ongoing"
+                ETvSeriesStatus.Ongoing
                 );
             using var scope = _serviceProvider.CreateScope();
             var mediator = _serviceProvider.GetRequiredService<IMediator>();
@@ -166,7 +166,7 @@ namespace Tests.Service.TvSeriesService
                             2,
                             20,
                             "Netflix",
-                            "Ongoing"
+                            ETvSeriesStatus.Ongoing
                             );
             using var scope = _serviceProvider.CreateScope();
             var mediator = _serviceProvider.GetRequiredService<IMediator>();
@@ -185,7 +185,7 @@ namespace Tests.Service.TvSeriesService
                             2,
                             20,
                             "Netflix",
-                            "Ongoing"
+                            ETvSeriesStatus.Ongoing
                             );
             using var scope = _serviceProvider.CreateScope();
             var mediator = _serviceProvider.GetRequiredService<IMediator>();
@@ -204,7 +204,7 @@ namespace Tests.Service.TvSeriesService
                             2,
                             20,
                             "Netflix",
-                            "Ongoing"
+                            ETvSeriesStatus.Ongoing
                             );
             using var scope = _serviceProvider.CreateScope();
             var mediator = _serviceProvider.GetRequiredService<IMediator>();

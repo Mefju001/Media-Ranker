@@ -69,8 +69,8 @@ namespace Tests.Service.MovieService
                 DateTime.UtcNow,
                 "EN",
                 TimeSpan.FromMinutes(120),
-                "Cinema",
-                "InProduction"
+                EDistributionType.Cinema,
+                EMovieStatus.InProduction
                 );
 
 
@@ -94,8 +94,8 @@ namespace Tests.Service.MovieService
                             DateTime.UtcNow,
                             "EN",
                             TimeSpan.FromMinutes(120),
-                            "Cinema",
-                            "InProduction"
+                            EDistributionType.Cinema,
+                            EMovieStatus.InProduction
                             );
             var result = await handler.Handle(command, CancellationToken.None);
             //because pipeline in real app will save changes after handler execution
@@ -117,8 +117,8 @@ namespace Tests.Service.MovieService
                 DateTime.UtcNow,
                 "EN",
                 TimeSpan.FromMinutes(120),
-                "Cinema",
-                "InProduction"
+                EDistributionType.Cinema,
+                EMovieStatus.InProduction
                 );
             var result = await handler.Handle(command, CancellationToken.None);
             //because pipeline in real app will save changes after handler execution
@@ -139,8 +139,8 @@ namespace Tests.Service.MovieService
                             DateTime.UtcNow,
                             "EN",
                             TimeSpan.FromMinutes(120),
-                            "Cinema",
-                            "InProduction"
+                            EDistributionType.Cinema,
+                            EMovieStatus.InProduction
                             );
             await Assert.ThrowsAsync<ArgumentException>(async () => await handler.Handle(command, CancellationToken.None));
         }
@@ -156,8 +156,8 @@ namespace Tests.Service.MovieService
                             DateTime.UtcNow,
                             "EN",
                             TimeSpan.FromMinutes(120),
-                            "Cinema",
-                            "InProduction"
+                            EDistributionType.Cinema,
+                            EMovieStatus.InProduction
                             );
             await Assert.ThrowsAsync<NotFoundException>(async () => await handler.Handle(command, CancellationToken.None));
         }
@@ -173,8 +173,8 @@ namespace Tests.Service.MovieService
                             DateTime.UtcNow,
                             "EN",
                             TimeSpan.FromMinutes(120),
-                            "Cinema",
-                            "InProduction"
+                            EDistributionType.Cinema,
+                            EMovieStatus.InProduction
                             );
             var result = await handler.Handle(command, CancellationToken.None);
             //because pipeline in real app will save changes after handler execution

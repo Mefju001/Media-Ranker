@@ -71,11 +71,11 @@ namespace Tests.Service.GameService
                     new GenreRequest("Genre 1"),
                     DateTime.UtcNow,
                     "English",
-                    "Released",
+                    EGameStatus.Released,
                     "Developer 1",
                     "Engine",
                     3,
-                    new List<String> { "PC" },
+                    new List<EPlatform> { EPlatform.PC },
                     true
                 ),
                 new GameRequest
@@ -85,11 +85,11 @@ namespace Tests.Service.GameService
                     new GenreRequest("Genre 2"),
                     DateTime.UtcNow,
                     "English",
-                    "Released",
+                    EGameStatus.Released,
                     "Developer 1",
                     "Engine",
                     3,
-                    new List<String> { "PC" },
+                    new List<EPlatform> { EPlatform.PC },
                     true
                 )
             };
@@ -140,11 +140,11 @@ namespace Tests.Service.GameService
                 new GenreRequest("Existing Genre"),
                 DateTime.UtcNow,
                 "English",
-                "Released",
+                EGameStatus.Released,
                 "Developer 1",
                 "Engine",
                 3,
-                new List<String> { "PC" },
+                new List<EPlatform> { EPlatform.PC },
                 true
                 )
             };
@@ -176,11 +176,11 @@ namespace Tests.Service.GameService
                 new GenreRequest("Genre 1"),
                 DateTime.UtcNow,
                 "English",
-                "Released",
+                EGameStatus.Released,
                 "Developer 1",
                 "Engine",
                 3,
-                new List<String> { "PC" },
+                new List<EPlatform> { EPlatform.PC },
                 true
                 ),
                 new GameRequest
@@ -190,11 +190,11 @@ namespace Tests.Service.GameService
                     new GenreRequest("Genre 2"),
                     DateTime.UtcNow,
                     "English",
-                    "Released",
+                    EGameStatus.Released,
                     "Developer 1",
                     "Engine",
                     3,
-                    new List<String> { "XboxOne" },
+                    new List<EPlatform> { EPlatform.XboxOne },
                     true
                 )
             };
@@ -225,11 +225,11 @@ namespace Tests.Service.GameService
                 new GenreRequest("New Genre"),
                 DateTime.UtcNow,
                 "English",
-                "Released",
+                EGameStatus.Released,
                 "Developer 1",
                 "Engine",
                 3,
-                new List<String> { "PC" },
+                new List<EPlatform> { EPlatform.PC },
                 true
                 ),
                 new GameRequest
@@ -239,11 +239,11 @@ namespace Tests.Service.GameService
                     new GenreRequest("New Genre"),
                     DateTime.UtcNow,
                     "English",
-                    "Released",
+                    EGameStatus.Released,
                     "Developer 1",
                     "Engine",
                     3,
-                    new List<String> { "XboxOne" },
+                    new List<EPlatform> { EPlatform.XboxOne },
                     true
                 )
             };

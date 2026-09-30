@@ -77,7 +77,7 @@ namespace Tests.Service.TvSeriesService
                     3,
                     20,
                     "Netflix",
-                    "Ongoing"
+                    ETvSeriesStatus.Ongoing
                 ),
                 new TvSeriesRequest
                 (
@@ -89,7 +89,7 @@ namespace Tests.Service.TvSeriesService
                     3,
                     20,
                     "Netflix",
-                    "Ongoing"
+                    ETvSeriesStatus.Ongoing
                 )
             };
             using var scope = _serviceProvider.CreateScope();
@@ -135,7 +135,7 @@ namespace Tests.Service.TvSeriesService
                     3,
                     20,
                     "Netflix",
-                    "Ongoing"
+                    ETvSeriesStatus.Ongoing
                 )
             };
             using var scope2 = _serviceProvider.CreateScope();
@@ -164,7 +164,7 @@ namespace Tests.Service.TvSeriesService
                     3,
                     20,
                     "Netflix",
-                    "Ongoing"
+                    ETvSeriesStatus.Ongoing
                 ),
                 new TvSeriesRequest
                 (
@@ -176,7 +176,7 @@ namespace Tests.Service.TvSeriesService
                     3,
                     20,
                     "Netflix",
-                    "Ongoing"
+                    ETvSeriesStatus.Ongoing
                 )
             };
             using var scope = _serviceProvider.CreateScope();
@@ -205,7 +205,7 @@ namespace Tests.Service.TvSeriesService
                     3,
                     20,
                     "Netflix",
-                    "Ongoing"
+                    ETvSeriesStatus.Ongoing
                 ),
                 new TvSeriesRequest
                 (
@@ -217,7 +217,7 @@ namespace Tests.Service.TvSeriesService
                     3,
                     20,
                     "Netflix",
-                    "Ongoing"
+                    ETvSeriesStatus.Ongoing
                 )
             };
             using var scope = _serviceProvider.CreateScope();

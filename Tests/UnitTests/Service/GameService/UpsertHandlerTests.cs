@@ -1,6 +1,5 @@
 ﻿using Application.Behaviours;
 using Application.Features.Common.Interfaces;
-using Application.Features.Games.GetByCriteria;
 using Application.Features.Genres.Common;
 using Application.Features.Genres.GenreManager;
 using Application.Features.Medias.Games.Upsert;
@@ -85,11 +84,11 @@ namespace Tests.Service.GameService
                 new GenreRequest("Action"),
                 DateTime.UtcNow,
                 "EN",
-                "Announced",
+                EGameStatus.Announced,
                 "Dev",
                 "Engine",
                 3,
-                new List<String> { "PC" },
+                new List<EPlatform> { EPlatform.PC },
                 true
                 );
             using var scope = _serviceProvider.CreateScope();
@@ -112,11 +111,11 @@ namespace Tests.Service.GameService
                             new GenreRequest("Action"),
                             DateTime.UtcNow,
                             "EN",
-                            "Announced",
+                            EGameStatus.Announced,
                             "Dev",
                             "Engine",
                             3,
-                            new List<String> { "PC" },
+                            new List<EPlatform> { EPlatform.PC },
                             true
                             );
             using var scope = _serviceProvider.CreateScope();
@@ -139,11 +138,11 @@ namespace Tests.Service.GameService
                 new GenreRequest("New Genre"),
                 DateTime.UtcNow,
                 "EN",
-                "Announced",
+                EGameStatus.Announced,
                 "Dev",
                 "Engine",
                 3,
-                new List<String> { "PC" },
+                new List<EPlatform> { EPlatform.PC },
                 true
                 );
             using var scope = _serviceProvider.CreateScope();
@@ -165,11 +164,11 @@ namespace Tests.Service.GameService
                             new GenreRequest(string.Empty),
                             DateTime.UtcNow,
                             "EN",
-                            "Announced",
+                            EGameStatus.Announced,
                             "Dev",
                             "Engine",
                             3,
-                            new List<String> { "PC" },
+                            new List<EPlatform> { EPlatform.PC },
                             true
                             );
             using var scope = _serviceProvider.CreateScope();
@@ -186,11 +185,11 @@ namespace Tests.Service.GameService
                             new GenreRequest("Action"),
                             DateTime.UtcNow,
                             "EN",
-                            "Announced",
+                            EGameStatus.Announced,
                             "Dev",
                             "Engine",
                             3,
-                            new List<String> { "PC" },
+                            new List<EPlatform> { EPlatform.PC },
                             true
                             );
             using var scope = _serviceProvider.CreateScope();
@@ -207,11 +206,11 @@ namespace Tests.Service.GameService
                             new GenreRequest("Action"),
                             DateTime.UtcNow,
                             "EN",
-                            "Announced",
+                            EGameStatus.Announced,
                             "Dev",
                             "Engine",
                             3,
-                            new List<String>() { "PlayStation5" },
+                            new List<EPlatform>() { EPlatform.PlayStation5 },
                             true
                             );
             using var scope = _serviceProvider.CreateScope();

@@ -1,6 +1,6 @@
 ﻿using Application.Behaviours;
 using Application.Features.Common.Interfaces;
-using Application.Features.ToWatch.Add;
+using Application.Features.UserInteractions.Statuses.DeleteById;
 using Domain.Aggregate;
 using Domain.Enums;
 using Domain.Exceptions;
@@ -16,15 +16,15 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 
-namespace Tests.Service.ToWatchService
+namespace Tests.Service.StatusesService
 {
     [TestClass]
-    public class AddHandlerTests
+    public class DeleteByIdHandlerTests
     {
-        private Guid gameId = Guid.NewGuid(), userId, game2Id;
         private SqliteConnection _connection;
         private IServiceProvider _serviceProvider;
-
+        private Guid userId = Guid.NewGuid();
+        private Guid gameId = Guid.NewGuid();
         [TestInitialize]
         public async Task Initialize()
         {
@@ -39,9 +39,9 @@ namespace Tests.Service.ToWatchService
             });
             services.AddScoped<IAppDbContext>(provider =>
                 provider.GetRequiredService<AppDbContext>());
-            services.AddValidatorsFromAssembly(typeof(AddCommand).Assembly);
+            services.AddValidatorsFromAssembly(typeof(DeleteByIdCommand).Assembly);
             services.AddMediatR(cfg => {
-                cfg.RegisterServicesFromAssembly(typeof(AddHandler).Assembly);
+                cfg.RegisterServicesFromAssembly(typeof(DeleteByIdHandler).Assembly);
                 cfg.AddOpenBehavior(typeof(ErrorHandlingBehaviour<,>));
                 cfg.AddOpenBehavior(typeof(LoggingBehaviour<,>));
                 cfg.AddOpenBehavior(typeof(ValidationBehavior<,>));
@@ -61,63 +61,43 @@ namespace Tests.Service.ToWatchService
         private async Task SeedData()
         {
             using var scope = _serviceProvider.CreateScope();
-            var appDbContext = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+            var appDbContext = _serviceProvider.GetRequiredService<AppDbContext>();
             var genreId = Guid.NewGuid();
             var genre = Genre.Create("Action", genreId);
             appDbContext.Genres.Add(genre);
-            var game = Game.Create("Test Game", "Test Description", "English", new ReleaseDate(DateTime.UtcNow), genreId, new GameDetails("developer","Engine"), 3, new List<EPlatform>() { EPlatform.PC }, EGameStatus.Announced, true, gameId);
-            var game2 = Game.Create("Test Game", "Test Description", "English", new ReleaseDate(DateTime.UtcNow), genreId, new GameDetails("developer","Engine"), 3, new List<EPlatform>() { EPlatform.PC }, EGameStatus.Announced, false, game2Id);
+            var game = Game.Create("Test Game", "Test Description", "English", new ReleaseDate(DateTime.UtcNow), genreId, new GameDetails("Developer A", "Engine A"), 3, new List<EPlatform>() { EPlatform.PC }, EGameStatus.Announced, true,gameId);
             appDbContext.Medias.Add(game);
-            appDbContext.Medias.Add(game2);
-            game2Id = game2.Id;
-            var userModel = new UserModel(Guid.NewGuid(), "username", "password", "email");
-            userId = userModel.Id;
             var user = UserDetails.Create(userId, new Fullname("Johnny", "Doe"), "johndoe", Email.Create("johndoe@example.com"));
             appDbContext.UsersDetails.Add(user);
+            var userModel = new UserModel(userId, "username", "password", "email");
             appDbContext.Users.Add(userModel);
-            user.SetTypeInteractions(gameId, ETypeInteractions.WANT_TO_WATCH);
+            user.SetInteraction(gameId, null, ERatingVote.Liked);
             await appDbContext.SaveChangesAsync();
         }
         [TestMethod]
-        public async Task TestAdd_ShouldAddMediaToWatchList()
+        public async Task TestRemove_ShouldRemoveMediaFromWatchList()
         {
             using var scope = _serviceProvider.CreateScope();
-            var mediator = scope.ServiceProvider.GetRequiredService<IMediator>();
-            await mediator.Send(new AddCommand(game2Id, userId ), CancellationToken.None);
+            var mediator = _serviceProvider.GetRequiredService<IMediator>();
+            await mediator.Send(new DeleteByIdCommand(userId, gameId), CancellationToken.None);
             using var scope2 = _serviceProvider.CreateScope();
-            var appDbContext = scope2.ServiceProvider.GetRequiredService<AppDbContext>();
+            var appDbContext = _serviceProvider.GetRequiredService<AppDbContext>();
             var result = appDbContext.UsersDetails.Include(u => u.UserInteractions).FirstOrDefault(u => u.Id == userId);
             Assert.IsNotNull(result);
-            Assert.HasCount(2, result.UserInteractions);
-            Assert.AreEqual(gameId, result.UserInteractions.Last().MediaId);
-            Assert.AreEqual(game2Id,result.UserInteractions.First().MediaId );
+            Assert.HasCount(0, result.UserInteractions);
         }
         [TestMethod]
-        public async Task TestAdd_ShouldThrowNotFoundException()
+        public async Task TestRemove_ShouldThrowDomainException_WhenMediaIsNotInWatchList()
         {
             using var scope = _serviceProvider.CreateScope();
-            var mediator = scope.ServiceProvider.GetRequiredService<IMediator>();
-            var invalidMediaId = Guid.NewGuid();
-            var invalidUserId = Guid.NewGuid();
-            await Assert.ThrowsExactlyAsync<NotFoundException>(async () =>
-            {
-                await mediator.Send(new AddCommand(invalidMediaId, userId), CancellationToken.None);
-            });
-            await Assert.ThrowsExactlyAsync<NotFoundException>(async () =>
-            { 
-                await mediator.Send(new AddCommand(gameId, invalidUserId), CancellationToken.None);
-            });
+            var mediator = _serviceProvider.GetRequiredService<IMediator>();
+            var nonExistentMediaId = Guid.NewGuid();
+            await Assert.ThrowsExactlyAsync<NotFoundException>(async()=>await mediator.Send(new DeleteByIdCommand(nonExistentMediaId, userId), CancellationToken.None));
+            using var scope2 = _serviceProvider.CreateScope();
+            var appDbContext = _serviceProvider.GetRequiredService<AppDbContext>();
+            var result = appDbContext.UsersDetails.Include(u => u.UserInteractions).FirstOrDefault(u => u.Id == userId);
+            Assert.IsNotNull(result);
+            Assert.HasCount(1, result.UserInteractions);
         }
-        [TestMethod]
-        public async Task TestAdd_ShouldNotAddDuplicateMedia()
-        {
-            using var scope = _serviceProvider.CreateScope();
-            var mediator = scope.ServiceProvider.GetRequiredService<IMediator>();
-            await Assert.ThrowsExactlyAsync<DomainException>(async () =>
-            {
-                await mediator.Send(new AddCommand(gameId, userId), CancellationToken.None);
-            });            
-        }
-
     }
 }
