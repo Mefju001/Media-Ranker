@@ -1,68 +1,104 @@
-# Media Ranker(ASP.NET Core + PostgreSQL)
+# Media Ranker (ASP.NET Core + Angular + PostgreSQL)
 
-A simple application that has a similar function to Filmweb built using ASP.NET Core Web API, leveraging Entity Framework Core and PostgreSQL as the database. This project is dedicated to learning C#, EF Core fundamentals, and building a robust REST API.
+**Media Ranker** is a full-stack web application inspired by platforms like Filmweb or IMDb. It allows users to catalog, rate, filter, and review various types of media, including movies, TV series, and video games.
+
+The project is built with **ASP.NET Core 8 Web API** leveraging **CQRS (MediatR)** architecture and domain-driven practices, paired with an **Angular** frontend and a **PostgreSQL** database. The entire environment is fully containerized with **Docker** and features an automated **CI/CD pipeline (GitHub Actions)**.
 
 ---
-## Configuration & Setup
-### Prerequisites
-* .NET 8
+
+## 🚀 Quick Start (Docker)
+
+The easiest and recommended way to run the entire application (Database, API, and Frontend) is using Docker Compose:
+
+1. Clone the repository:
+   git clone [https://github.com/Mefju001/Media-Ranker.git](https://github.com/Mefju001/Media-Ranker.git)
+   cd Media-Ranker
+
+2. Create an environment file:
+   Copy `.env.example` to `.env` and fill in your values (or use the defaults):
+   cp .env.example .env
+
+   Example `.env` content:
+   DB_USER=postgres
+   DB_PASSWORD=your_secure_password!
+   DB_NAME=MovieDb
+   JWT_SECRET_KEY=YourSuperSecretKeyThatIsAtLeast32BytesLong!
+   ASPNETCORE_ENVIRONMENT=Development
+
+3. Start the application stack:
+   docker compose up -d
+
+Once running, access the services at:
+* **Frontend (Angular / Nginx):** http://localhost
+* **API / Swagger UI:** http://localhost:5000/swagger/index.html
+
+---
+
+## 🛠️ Tech Stack
+
+* **Backend:** ASP.NET Core 8 Web API, Entity Framework Core 8, MediatR (CQRS), FluentValidation, JWT Authentication
+* **Frontend:** Angular 17+, Nginx
+* **Database:** PostgreSQL
+* **Testing:** MSTest, SQLite In-Memory
+* **DevOps & Infrastructure:** Docker, Docker Compose, GitHub Actions (CI/CD)
+
+---
+
+## ✨ Features & Architecture
+
+* **Authentication & Authorization:** Secure user registration and login using JWT tokens.
+* **Media Catalog:** Browse, dynamically sort, and filter games, movies, and TV series with custom predicates.
+* **User Interactions & Reviews:** Rate entities, manage interaction statuses (e.g., Planned, In Progress, Completed), and write reviews.
+* **CQRS & MediatR Pipeline:** Clean Command/Query Responsibility Segregation with open behaviors for validation (ValidationBehaviour), logging (LoggingBehaviour), and database transactions (TransactionBehaviour).
+* **Automated Testing:** Integration and unit tests built with MSTest and SQLite In-Memory for fast and reliable domain logic verification.
+
+---
+
+## 💻 Local Development Setup
+
+To run and debug the project without Docker:
+
+### Prerequisites:
+* .NET 8 SDK
 * Node.js 18+ & npm
-* Angular CLI (install globally: npm install -g @angular/cli)
 * PostgreSQL
-* Visual Studio / VS Code
-* `dotnet-ef` CLI
-#### 1. Clone the Repository
 
-```bash
-git clone https://github.com/Mefju001/Media-Ranker.git
-cd Media-Ranker
-```
+### 1. Configure Secrets (Visual Studio User Secrets / .NET CLI)
+Local configuration relies on **.NET User Secrets** to keep sensitive data out of source control. 
 
-#### 2. Configure Database Connection
+Right-click the `Api` project in Visual Studio -> **Manage User Secrets** and configure the required settings:
 
-Update the connection string in appsettings.json, ensuring the Username and Password match your local PostgreSQL setup:
-
-```json
-"ConnectionStrings": {
-  "DefaultConnection": "Host=localhost;Port=5432;Database=FilmwebDb;Username=postgres;Password=yourPassword"
+{
+  "ConnectionStrings": {
+    "DefaultConnection": "Host=localhost;Port=5432;Database=postgres;Username=postgres;Password=yourPassword"
+  },
+  "Jwt": {
+    "Key": "YourSuperSecretKeyThatIsAtLeast32BytesLong!",
+    "Key2": "YourRefreshTokenSecretKeyAtLeast32BytesLong!"
+  }
 }
-```
----
 
-## EF Core Migrations
+### 2. Apply EF Core Migrations
+dotnet ef database update --project Api
 
-### Install EF Core Tools (If necessary):
+### 3. Run Backend (.NET API)
+dotnet run --project Api
 
-```bash
-dotnet tool install --global dotnet-ef
-```
-
-### Create and Apply Migrations:
-
-```bash
-dotnet ef migrations add InitialCreate
-dotnet ef database update
-```
----
-## technologies
-
-* ASP.NET Core Web API (.NET 8)
-* Entity Framework Core
-* PostgreSQL
-* JWT Authentication
-* REST API
-* Angular
----
----
-
-## Features
-* User registration & login with JWT authentication
-* View, filter with predicate anad dynamic sort for data like games, movies and tv series
-* User can add review to entities
----
-
-## Future Development
-*  Frontend (Angular)
-*  docker
+### 4. Run Frontend (Angular)
+cd angular-movieFrontend
+npm install
+ng serve
 
 ---
+
+## 🧪 Testing
+
+The repository includes a suite of MSTest integration and unit tests. Run them using:
+
+dotnet test
+
+---
+
+## 🔮 Future Development
+
+* Enhanced user profiles with generated statistics (e.g., total watch/play time).
